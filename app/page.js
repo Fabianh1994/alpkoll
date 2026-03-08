@@ -1,14 +1,49 @@
 import { supabase } from '../lib/supabase'
 
-const resortImages = {
-  'Zermatt': 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
-  'Val Thorens': 'https://images.unsplash.com/photo-1548777123-e216912df7d8?w=800',
-  'St. Anton': 'https://images.unsplash.com/photo-1605540436563-5bca919ae766?w=800',
-  'Verbier': 'https://images.unsplash.com/photo-1520209759809-a9bcb6cb3241?w=800',
-  'Courchevel': 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800',
+function getResortImage(resort) {
+  const queries = {
+    'Zermatt': 'zermatt-ski-matterhorn',
+    'Val Thorens': 'val-thorens-ski-france',
+    'St. Anton': 'st-anton-ski-austria',
+    'Verbier': 'verbier-ski-switzerland',
+    'Courchevel': 'courchevel-ski-france',
+    'Méribel': 'meribel-ski-three-valleys',
+    'Chamonix': 'chamonix-mont-blanc-ski',
+    'Tignes': 'tignes-ski-glacier-france',
+    'Les Arcs': 'les-arcs-ski-france',
+    'Alpe d Huez': 'alpe-huez-ski-france',
+    'Davos': 'davos-ski-switzerland',
+    'Saas-Fee': 'saas-fee-ski-glacier',
+    'Crans-Montana': 'crans-montana-ski-switzerland',
+    'Kitzbühel': 'kitzbuehel-ski-austria',
+    'Ischgl': 'ischgl-ski-austria',
+    'Mayrhofen': 'mayrhofen-ski-zillertal',
+    'Sölden': 'soelden-ski-glacier-austria',
+    'Cortina d Ampezzo': 'cortina-dolomites-ski-italy',
+    'Madonna di Campiglio': 'madonna-campiglio-ski-italy',
+    'Livigno': 'livigno-ski-italy',
+    'Grandvalira': 'grandvalira-ski-andorra',
+    'Åre': 'are-ski-sweden',
+    'Sälen': 'salen-ski-sweden',
+    'Riksgränsen': 'riksgransen-arctic-ski-sweden',
+    'Hemavan': 'hemavan-ski-sweden',
+    'Trysil': 'trysil-ski-norway',
+    'Hemsedal': 'hemsedal-ski-norway',
+    'Voss': 'voss-ski-norway',
+    'Geilo': 'geilo-ski-norway',
+    'Myrkdalen': 'myrkdalen-ski-norway',
+    'Levi': 'levi-ski-finland-lapland',
+    'Ruka': 'ruka-ski-finland',
+    'Whistler': 'whistler-blackcomb-ski-canada',
+    'Aspen': 'aspen-ski-colorado',
+    'Park City': 'park-city-ski-utah',
+    'Jackson Hole': 'jackson-hole-ski-wyoming',
+    'Niseko': 'niseko-powder-ski-japan',
+    'Queenstown': 'queenstown-ski-new-zealand',
+  }
+  const query = queries[resort.name] || `${resort.name}-ski-resort`
+  return `https://source.unsplash.com/800x600/?${query}`
 }
-
-const defaultImage = 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800'
 
 export default async function Home() {
   const { data: resorts, error } = await supabase
@@ -107,7 +142,7 @@ export default async function Home() {
               className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group"
             >
               <img
-                src={resortImages[resort.name] || defaultImage}
+                src={getResortImage(resort)}
                 alt={resort.name}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
               />

@@ -1,48 +1,6 @@
 import { supabase } from '../lib/supabase'
 
-function getResortImage(resort) {
-  const images = {
-    'Zermatt': 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg',
-    'Val Thorens': 'https://images.pexels.com/photos/848599/pexels-photo-848599.jpeg',
-    'St. Anton': 'https://images.pexels.com/photos/1209978/pexels-photo-1209978.jpeg',
-    'Verbier': 'https://images.pexels.com/photos/2739664/pexels-photo-2739664.jpeg',
-    'Courchevel': 'https://images.pexels.com/photos/3639542/pexels-photo-3639542.jpeg',
-    'Méribel': 'https://images.pexels.com/photos/1647976/pexels-photo-1647976.jpeg',
-    'Chamonix': 'https://images.pexels.com/photos/1271618/pexels-photo-1271618.jpeg',
-    'Tignes': 'https://images.pexels.com/photos/2166553/pexels-photo-2166553.jpeg',
-    'Les Arcs': 'https://images.pexels.com/photos/1534057/pexels-photo-1534057.jpeg',
-    'Alpe d Huez': 'https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg',
-    'Davos': 'https://images.pexels.com/photos/1320684/pexels-photo-1320684.jpeg',
-    'Saas-Fee': 'https://images.pexels.com/photos/2356045/pexels-photo-2356045.jpeg',
-    'Crans-Montana': 'https://images.pexels.com/photos/1370704/pexels-photo-1370704.jpeg',
-    'Kitzbühel': 'https://images.pexels.com/photos/1153655/pexels-photo-1153655.jpeg',
-    'Ischgl': 'https://images.pexels.com/photos/1154646/pexels-photo-1154646.jpeg',
-    'Mayrhofen': 'https://images.pexels.com/photos/1271621/pexels-photo-1271621.jpeg',
-    'Sölden': 'https://images.pexels.com/photos/2220336/pexels-photo-2220336.jpeg',
-    'Cortina d Ampezzo': 'https://images.pexels.com/photos/1366919/pexels-photo-1366919.jpeg',
-    'Madonna di Campiglio': 'https://images.pexels.com/photos/1486974/pexels-photo-1486974.jpeg',
-    'Livigno': 'https://images.pexels.com/photos/1485894/pexels-photo-1485894.jpeg',
-    'Grandvalira': 'https://images.pexels.com/photos/1232459/pexels-photo-1232459.jpeg',
-    'Åre': 'https://images.pexels.com/photos/1594818/pexels-photo-1594818.jpeg',
-    'Sälen': 'https://images.pexels.com/photos/1271624/pexels-photo-1271624.jpeg',
-    'Riksgränsen': 'https://images.pexels.com/photos/2440061/pexels-photo-2440061.jpeg',
-    'Hemavan': 'https://images.pexels.com/photos/1647972/pexels-photo-1647972.jpeg',
-    'Trysil': 'https://images.pexels.com/photos/1374064/pexels-photo-1374064.jpeg',
-    'Hemsedal': 'https://images.pexels.com/photos/1271625/pexels-photo-1271625.jpeg',
-    'Voss': 'https://images.pexels.com/photos/1366957/pexels-photo-1366957.jpeg',
-    'Geilo': 'https://images.pexels.com/photos/1271626/pexels-photo-1271626.jpeg',
-    'Myrkdalen': 'https://images.pexels.com/photos/2166552/pexels-photo-2166552.jpeg',
-    'Levi': 'https://images.pexels.com/photos/1647977/pexels-photo-1647977.jpeg',
-    'Ruka': 'https://images.pexels.com/photos/1271627/pexels-photo-1271627.jpeg',
-    'Whistler': 'https://images.pexels.com/photos/1054050/pexels-photo-1054050.jpeg',
-    'Aspen': 'https://images.pexels.com/photos/1271628/pexels-photo-1271628.jpeg',
-    'Park City': 'https://images.pexels.com/photos/2356046/pexels-photo-2356046.jpeg',
-    'Jackson Hole': 'https://images.pexels.com/photos/1271629/pexels-photo-1271629.jpeg',
-    'Niseko': 'https://images.pexels.com/photos/1647978/pexels-photo-1647978.jpeg',
-    'Queenstown': 'https://images.pexels.com/photos/1366920/pexels-photo-1366920.jpeg',
-  }
-  return images[resort.name] || 'https://images.pexels.com/photos/1271619/pexels-photo-1271619.jpeg'
-}
+
 
 export default async function Home() {
   const { data: resorts, error } = await supabase
@@ -141,7 +99,7 @@ export default async function Home() {
               className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group"
             >
               <img
-                src={getResortImage(resort)}
+                src={resort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800'}
                 alt={resort.name}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
               />

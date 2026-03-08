@@ -26,7 +26,7 @@ export default async function Home() {
 
       {/* Nav */}
       <nav className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-8 py-6">
-        <span className="text-white font-bold text-xl tracking-tight">⛷️ SkiIntel</span>
+        <span className="text-white font-bold text-xl tracking-tight">⛷️ Alpkoll</span>
         <div className="flex gap-8 text-sm text-white/70">
           <span className="cursor-pointer hover:text-white transition">Resorts</span>
           <span className="cursor-pointer hover:text-white transition">Plan a Trip</span>

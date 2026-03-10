@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'
-
+import Link from 'next/link'
 
 
 export default async function Home() {
@@ -94,10 +94,11 @@ export default async function Home() {
         {/* Cards grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {resorts.map((resort) => (
-            <div
-              key={resort.id}
-              className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group"
-            >
+            <Link
+  key={resort.id}
+  href={`/resort/${resort.slug}`}
+  className="relative rounded-3xl overflow-hidden h-72 cursor-pointer group block"
+>
               <img
                 src={resort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800'}
                 alt={resort.name}
@@ -121,7 +122,7 @@ export default async function Home() {
                   </span>
                 </div>
               </div>
-            </div>
+</Link>
           ))}
         </div>
       </div>

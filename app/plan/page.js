@@ -24,11 +24,43 @@ const DEPARTURE_CITIES = [
   { label: 'Dublin (DUB)', code: 'DUB' },
 ];
 
+function OptionGroup({ label, options, value, onChange }) {
+  return (
+    <div>
+      <div style={{
+        fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500,
+        color: 'rgba(255,255,255,0.35)', letterSpacing: '0.1em',
+        textTransform: 'uppercase', marginBottom: 10,
+      }}>{label}</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {options.map(opt => {
+          const isSelected = value === (opt.value || opt);
+          return (
+            <button
+              key={opt.value || opt}
+              onClick={() => onChange(opt.value || opt)}
+              style={{
+                fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: isSelected ? 600 : 400,
+                padding: '9px 16px',
+                borderRadius: 4,
+                border: isSelected ? '1px solid rgba(212,165,116,0.6)' : '1px solid rgba(255,255,255,0.08)',
+                background: isSelected ? 'rgba(212,165,116,0.12)' : 'rgba(255,255,255,0.03)',
+                color: isSelected ? '#D4A574' : 'rgba(255,255,255,0.45)',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+              }}
+            >{opt.label || opt}</button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export default function PlanPage() {
   const [resorts, setResorts] = useState([]);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   const [preferences, setPreferences] = useState({
     skillLevel: 'Intermediate',
@@ -43,6 +75,7 @@ export default function PlanPage() {
   const [departurInput, setDeparturInput] = useState('Stockholm (ARN)');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [travelDates, setTravelDates] = useState({ from: '', to: '' });
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     async function fetchResorts() {
@@ -94,9 +127,7 @@ export default function PlanPage() {
   function getBookingLink() {
     if (!selectedResort) return '#';
     const area = encodeURIComponent(selectedResort.accommodation_zone || selectedResort.name);
-    const checkIn = travelDates.from;
-    const checkOut = travelDates.to;
-    return `https://www.booking.com/searchresults.html?ss=${area}&checkin=${checkIn}&checkout=${checkOut}`;
+    return `https://www.booking.com/searchresults.html?ss=${area}&checkin=${travelDates.from}&checkout=${travelDates.to}`;
   }
 
   const inputStyle = {
@@ -228,47 +259,44 @@ export default function PlanPage() {
             }}>Step 1 — Find Your Resort</h2>
 
             <div style={cardStyle}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
-                <div>
-                  <label style={labelStyle}>Skill Level</label>
-                  <select value={preferences.skillLevel}
-                    onChange={e => setPreferences({ ...preferences, skillLevel: e.target.value })}
-                    style={inputStyle}>
-                    {['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Max Day Pass (EUR)</label>
-                  <select value={preferences.budget}
-                    onChange={e => setPreferences({ ...preferences, budget: e.target.value })}
-                    style={inputStyle}>
-                    {['30', '40', '50', '60', '70', '80', 'Any'].map(b => (
-                      <option key={b} value={b}>{b === 'Any' ? 'Any budget' : `Up to €${b}`}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Travel Month</label>
-                  <select value={preferences.month}
-                    onChange={e => setPreferences({ ...preferences, month: e.target.value })}
-                    style={inputStyle}>
-                    {['December', 'January', 'February', 'March', 'April'].map(m => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>Top Priority</label>
-                  <select value={preferences.priority}
-                    onChange={e => setPreferences({ ...preferences, priority: e.target.value })}
-                    style={inputStyle}>
-                    {['Snow quality', 'Terrain variety', 'Après ski', 'Village charm', 'Value for money', 'Off-piste'].map(p => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
-                </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+
+                <OptionGroup
+                  label="Skill Level"
+                  options={['Beginner', 'Intermediate', 'Advanced', 'Expert']}
+                  value={preferences.skillLevel}
+                  onChange={v => setPreferences({ ...preferences, skillLevel: v })}
+                />
+
+                <OptionGroup
+                  label="Max Day Pass (EUR)"
+                  options={[
+                    { label: 'Up to €30', value: '30' },
+                    { label: 'Up to €40', value: '40' },
+                    { label: 'Up to €50', value: '50' },
+                    { label: 'Up to €60', value: '60' },
+                    { label: 'Up to €70', value: '70' },
+                    { label: 'Up to €80', value: '80' },
+                    { label: 'Any budget', value: 'Any' },
+                  ]}
+                  value={preferences.budget}
+                  onChange={v => setPreferences({ ...preferences, budget: v })}
+                />
+
+                <OptionGroup
+                  label="Travel Month"
+                  options={['December', 'January', 'February', 'March', 'April']}
+                  value={preferences.month}
+                  onChange={v => setPreferences({ ...preferences, month: v })}
+                />
+
+                <OptionGroup
+                  label="Top Priority"
+                  options={['Snow quality', 'Terrain variety', 'Après ski', 'Village charm', 'Value for money', 'Off-piste']}
+                  value={preferences.priority}
+                  onChange={v => setPreferences({ ...preferences, priority: v })}
+                />
+
               </div>
 
               <button onClick={handleFindResorts} disabled={loading} style={primaryBtn(loading)}>
@@ -342,10 +370,10 @@ export default function PlanPage() {
             </p>
 
             <div style={cardStyle}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
 
                 {/* Departure city autocomplete */}
-                <div style={{ gridColumn: '1 / -1' }}>
+                <div>
                   <label style={labelStyle}>Flying From</label>
                   <div style={{ position: 'relative' }}>
                     <input
@@ -383,7 +411,6 @@ export default function PlanPage() {
                               color: 'rgba(255,255,255,0.7)',
                               cursor: 'pointer',
                               borderBottom: '1px solid rgba(255,255,255,0.04)',
-                              transition: 'background 0.15s',
                             }}
                             onMouseEnter={e => e.currentTarget.style.background = 'rgba(212,165,116,0.08)'}
                             onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
@@ -396,24 +423,27 @@ export default function PlanPage() {
                             padding: '11px 16px',
                             fontFamily: 'var(--font-body)', fontSize: 13,
                             color: 'rgba(255,255,255,0.25)', fontStyle: 'italic',
-                          }}>No matches — try typing an airport code like "LHR"</div>
+                          }}>No matches — try an airport code like "LHR"</div>
                         )}
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div>
-                  <label style={labelStyle}>Departure Date</label>
-                  <input type="date" value={travelDates.from}
-                    onChange={e => setTravelDates({ ...travelDates, from: e.target.value })}
-                    style={inputStyle} />
-                </div>
-                <div>
-                  <label style={labelStyle}>Return Date</label>
-                  <input type="date" value={travelDates.to}
-                    onChange={e => setTravelDates({ ...travelDates, to: e.target.value })}
-                    style={inputStyle} />
+                {/* Dates */}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+                  <div>
+                    <label style={labelStyle}>Departure Date</label>
+                    <input type="date" value={travelDates.from}
+                      onChange={e => setTravelDates({ ...travelDates, from: e.target.value })}
+                      style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Return Date</label>
+                    <input type="date" value={travelDates.to}
+                      onChange={e => setTravelDates({ ...travelDates, to: e.target.value })}
+                      style={inputStyle} />
+                  </div>
                 </div>
               </div>
 

@@ -21,7 +21,6 @@ export default async function ResortPage({ params }) {
     )
   }
 
-  // Calculated fields
   const verticalDrop = resort.altitude_top - resort.altitude_base
   const estimatedTransferMins = resort.airport_distance_km < 50 ? '30–45 min'
     : resort.airport_distance_km < 100 ? '1–1.5 hrs'
@@ -31,12 +30,14 @@ export default async function ResortPage({ params }) {
     : '3.5+ hrs'
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
+  const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
+  const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(resort.accommodation_zone || resort.name)}&lang=en-gb`
 
   const weekCostLow = Math.round((resort.lift_pass_week_eur + 400) / 50) * 50
   const weekCostHigh = Math.round((resort.lift_pass_week_eur + 900) / 50) * 50
 
   const scores = [
-    { label: 'Snow guarantee',      value: resort.snow_guarantee_score,  color: '#60a5fa' },
+    { label: 'Snow guarantee',       value: resort.snow_guarantee_score,  color: '#60a5fa' },
     { label: 'Intermediate terrain', value: resort.intermediate_score,    color: '#34d399' },
     { label: 'Expert terrain',       value: resort.expert_score,          color: '#a78bfa' },
     { label: 'Beginner friendly',    value: resort.beginner_score,        color: '#4ade80' },
@@ -48,15 +49,26 @@ export default async function ResortPage({ params }) {
     { label: 'Crowd levels',         value: resort.crowd_score,           color: '#e879f9' },
   ]
 
-  const sectionHead = (title) => ({
-    fontFamily: 'var(--font-heading)', fontSize: 22,
-    color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 20,
-  })
-
   const card = {
     background: '#1c1a17',
     border: '1px solid rgba(255,255,255,0.06)',
     borderRadius: 10,
+  }
+
+  const sectionTitle = {
+    fontFamily: 'var(--font-heading)', fontSize: 22,
+    color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 20,
+  }
+
+  const fieldLabel = {
+    fontFamily: 'var(--font-body)', fontSize: 10,
+    color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
+    letterSpacing: '0.08em', marginBottom: 5,
+  }
+
+  const fieldValue = {
+    fontFamily: 'var(--font-body)', fontSize: 14,
+    fontWeight: 500, color: '#f0ece4',
   }
 
   return (
@@ -124,12 +136,12 @@ export default async function ResortPage({ params }) {
 
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {[
-              { label: 'Base', value: `${resort.altitude_base}m` },
-              { label: 'Summit', value: `${resort.altitude_top}m` },
-              { label: 'Vertical', value: `${verticalDrop}m` },
-              { label: 'Pistes', value: `${resort.total_pistes_km}km` },
-              { label: 'Lifts', value: resort.total_lifts },
-              { label: 'Day pass', value: `€${resort.lift_pass_day_eur}` },
+              { label: 'Base',      value: `${resort.altitude_base}m` },
+              { label: 'Summit',    value: `${resort.altitude_top}m` },
+              { label: 'Vertical',  value: `${verticalDrop}m` },
+              { label: 'Pistes',    value: `${resort.total_pistes_km}km` },
+              { label: 'Lifts',     value: resort.total_lifts },
+              { label: 'Day pass',  value: `€${resort.lift_pass_day_eur}` },
               { label: 'Week pass', value: `€${resort.lift_pass_week_eur}` },
             ].map(s => (
               <div key={s.label} style={{
@@ -170,27 +182,27 @@ export default async function ResortPage({ params }) {
 
             {/* ── Snow & conditions ── */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionHead()}>Snow & conditions</h2>
+              <h2 style={sectionTitle}>Snow & conditions</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                 {[
-                  { label: 'Season opens',   value: resort.season_start },
-                  { label: 'Season closes',  value: resort.season_end },
-                  { label: 'Best months',    value: resort.best_months },
-                  { label: 'Avg snowfall',   value: `${resort.avg_snowfall_cm}cm / season` },
+                  { label: 'Season opens',  value: resort.season_start },
+                  { label: 'Season closes', value: resort.season_end },
+                  { label: 'Best months',   value: resort.best_months },
+                  { label: 'Avg snowfall',  value: `${resort.avg_snowfall_cm}cm / season` },
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{item.label}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
+                    <div style={fieldLabel}>{item.label}</div>
+                    <div style={fieldValue}>{item.value}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Altitude snow reliability visual */}
+              {/* Altitude profile */}
               <div style={{ ...card, padding: '18px 20px' }}>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 12 }}>Altitude profile — snow reliability</div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12 }}>
+                <div style={fieldLabel}>Altitude profile — snow reliability</div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 8 }}>
                   <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                       <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${Math.min(resort.altitude_top / 40, 100)}%`, background: 'linear-gradient(90deg, #60a5fa, #a78bfa)', borderRadius: 3 }} />
                       </div>
@@ -218,10 +230,9 @@ export default async function ResortPage({ params }) {
               </div>
             </div>
 
-            {/* ── Terrain breakdown ── */}
+            {/* ── Terrain ── */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionHead()}>Terrain</h2>
-
+              <h2 style={sectionTitle}>Terrain</h2>
               <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 12 }}>
                 <div style={{ width: `${resort.blue_percent}%`, background: '#3b82f6' }} />
                 <div style={{ width: `${resort.red_percent}%`, background: '#ef4444' }} />
@@ -240,45 +251,61 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               </div>
-
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 {[
-                  { label: 'Total pistes', value: `${resort.total_pistes_km}km` },
-                  { label: 'Vertical drop', value: `${verticalDrop}m` },
-                  { label: 'Total lifts', value: resort.total_lifts },
-                  { label: 'Lift capacity', value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)}k/hr` : '—' },
-                  { label: 'Off-piste score', value: `${resort.off_piste_score}/10` },
-                  { label: 'Snowpark score', value: `${resort.snowpark_score}/10` },
+                  { label: 'Total pistes',   value: `${resort.total_pistes_km}km` },
+                  { label: 'Vertical drop',  value: `${verticalDrop}m` },
+                  { label: 'Total lifts',    value: resort.total_lifts },
+                  { label: 'Lift capacity',  value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)}k/hr` : '—' },
+                  { label: 'Off-piste',      value: `${resort.off_piste_score}/10` },
+                  { label: 'Snowpark',       value: `${resort.snowpark_score}/10` },
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{item.label}</div>
+                    <div style={fieldLabel}>{item.label}</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
                   </div>
                 ))}
               </div>
+
+              {/* Piste map */}
+              {resort.piste_map_url ? (
+                <div style={{ marginTop: 16 }}>
+                  <div style={fieldLabel}>Piste map</div>
+                  <img
+                    src={resort.piste_map_url}
+                    alt={`${resort.name} piste map`}
+                    style={{ width: '100%', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', marginTop: 8 }}
+                  />
+                </div>
+              ) : (
+                <div style={{ marginTop: 16 }}>
+                  <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{
+                    display: 'inline-block',
+                    fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
+                    color: 'rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 6, padding: '9px 16px',
+                    textDecoration: 'none', letterSpacing: '0.04em',
+                  }}>View official piste map →</a>
+                </div>
+              )}
             </div>
 
             {/* ── Resort scores ── */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionHead()}>Resort scores</h2>
+              <h2 style={sectionTitle}>Resort scores</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {scores.map(s => (
                     <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)', minWidth: 170 }}>{s.label}</span>
                       <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-                        <div style={{
-                          height: '100%', borderRadius: 2,
-                          width: `${(s.value || 0) * 10}%`,
-                          background: s.color,
-                        }} />
+                        <div style={{ height: '100%', borderRadius: 2, width: `${(s.value || 0) * 10}%`, background: s.color }} />
                       </div>
                       <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', minWidth: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{s.value}/10</span>
                     </div>
                   ))}
                 </div>
-
-                {/* Crowd score callout */}
                 <div style={{
                   marginTop: 20, paddingTop: 16,
                   borderTop: '1px solid rgba(255,255,255,0.05)',
@@ -305,45 +332,113 @@ export default async function ResortPage({ params }) {
 
             {/* ── Getting there ── */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionHead()}>Getting there</h2>
+              <h2 style={sectionTitle}>Getting there</h2>
               <div style={{ ...card, padding: '20px 24px', marginBottom: 10 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
                   {[
-                    { label: 'Nearest airport', value: resort.nearest_airport },
-                    { label: 'Distance', value: `${resort.airport_distance_km}km` },
+                    { label: 'Nearest airport',    value: resort.nearest_airport },
+                    { label: 'Distance',           value: `${resort.airport_distance_km}km` },
                     { label: 'Est. transfer time', value: estimatedTransferMins },
-                    { label: 'Stay in', value: resort.accommodation_zone },
+                    { label: 'Stay in',            value: resort.accommodation_zone },
                   ].map(item => (
                     <div key={item.label}>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{item.label}</div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
+                      <div style={fieldLabel}>{item.label}</div>
+                      <div style={fieldValue}>{item.value}</div>
                     </div>
                   ))}
                 </div>
-                <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
-                  display: 'inline-block',
-                  fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-                  color: 'rgba(255,255,255,0.4)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 6, padding: '9px 16px',
-                  textDecoration: 'none', letterSpacing: '0.04em',
-                }}>View on Google Maps →</a>
+
+                {/* Transport info */}
+                {resort.transport_info && (
+                  <div style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    borderRadius: 8, padding: '12px 16px', marginBottom: 16,
+                  }}>
+                    <div style={fieldLabel}>By train & flight</div>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>
+                      {resort.transport_info}
+                    </p>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
+                    fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
+                    color: 'rgba(255,255,255,0.4)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 6, padding: '9px 16px',
+                    textDecoration: 'none', letterSpacing: '0.04em',
+                  }}>Open in Google Maps →</a>
+                </div>
+              </div>
+
+              {/* Google Maps embed */}
+              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
+                <iframe
+                  src={mapsEmbedUrl}
+                  width="100%"
+                  height="320"
+                  style={{ border: 0, display: 'block' }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
               </div>
             </div>
 
-            {/* ── Pricing context ── */}
+            {/* ── Where to stay ── */}
+            <div style={{ marginBottom: 48 }}>
+              <h2 style={sectionTitle}>Where to stay</h2>
+              <div style={{ ...card, padding: '20px 24px', marginBottom: 10 }}>
+                <div style={{ marginBottom: resort.where_to_stay ? 16 : 0 }}>
+                  <div style={fieldLabel}>Accommodation zone</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4', marginBottom: resort.where_to_stay ? 16 : 0 }}>
+                    {resort.accommodation_zone}
+                  </div>
+                </div>
+
+                {resort.where_to_stay && (
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>
+                    {resort.where_to_stay}
+                  </p>
+                )}
+              </div>
+
+              {/* Booking.com button */}
+              <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                background: '#003580',
+                borderRadius: 10, padding: '18px 22px',
+                textDecoration: 'none',
+              }}>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
+                    Find hotels near {resort.name}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
+                    Search accommodation on Booking.com →
+                  </div>
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-heading)', fontSize: 22,
+                  color: '#fff', letterSpacing: '0.06em', flexShrink: 0, marginLeft: 16,
+                }}>booking.com</div>
+              </a>
+            </div>
+
+            {/* ── What it costs ── */}
             <div>
-              <h2 style={sectionHead()}>What it costs</h2>
+              <h2 style={sectionTitle}>What it costs</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                   {[
-                    { label: 'Day ski pass', value: `€${resort.lift_pass_day_eur}` },
+                    { label: 'Day ski pass',  value: `€${resort.lift_pass_day_eur}` },
                     { label: 'Week ski pass', value: `€${resort.lift_pass_week_eur}` },
-                    { label: 'Price tier', value: resort.price_tier === 1 ? 'Budget' : resort.price_tier === 2 ? 'Mid-range' : 'Premium' },
-                    { label: 'Value score', value: `${resort.value_score}/10` },
+                    { label: 'Price tier',    value: resort.price_tier === 1 ? 'Budget' : resort.price_tier === 2 ? 'Mid-range' : 'Premium' },
+                    { label: 'Value score',   value: `${resort.value_score}/10` },
                   ].map(item => (
                     <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 5 }}>{item.label}</div>
+                      <div style={fieldLabel}>{item.label}</div>
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
                     </div>
                   ))}
@@ -369,8 +464,7 @@ export default async function ResortPage({ params }) {
             <div style={{
               background: 'rgba(212,165,116,0.07)',
               border: '1px solid rgba(212,165,116,0.2)',
-              borderRadius: 12, padding: '22px',
-              marginBottom: 12,
+              borderRadius: 12, padding: '22px', marginBottom: 12,
             }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: '#D4A574', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Ready to go?</p>
               <p style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 8 }}>{resort.name}</p>
@@ -382,49 +476,58 @@ export default async function ResortPage({ params }) {
                 fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600,
                 letterSpacing: '0.08em', textTransform: 'uppercase',
                 color: '#121110', background: '#D4A574',
-                borderRadius: 6, padding: '14px 24px',
-                textDecoration: 'none',
+                borderRadius: 6, padding: '14px 24px', textDecoration: 'none',
               }}>Plan this trip →</Link>
             </div>
+
+            {/* Booking.com */}
+            <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{
+              display: 'block', textAlign: 'center',
+              fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
+              color: '#fff', background: '#003580',
+              borderRadius: 6, padding: '12px 24px',
+              textDecoration: 'none', marginBottom: 12,
+              letterSpacing: '0.04em',
+            }}>Find hotels on Booking.com →</a>
 
             {/* Official site */}
             <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{
               display: 'block', textAlign: 'center',
               fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
               color: 'rgba(255,255,255,0.4)',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 6, padding: '12px 24px',
               textDecoration: 'none', marginBottom: 12,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
             }}>Official resort website →</a>
 
             {/* Google Maps */}
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
               display: 'block', textAlign: 'center',
               fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
               color: 'rgba(255,255,255,0.4)',
               border: '1px solid rgba(255,255,255,0.08)',
               borderRadius: 6, padding: '12px 24px',
               textDecoration: 'none', marginBottom: 16,
+              letterSpacing: '0.06em', textTransform: 'uppercase',
             }}>View on Google Maps →</a>
 
-            {/* Key numbers */}
+            {/* At a glance */}
             <div style={{ ...card, padding: '20px' }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>At a glance</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { label: 'Base altitude',    value: `${resort.altitude_base}m` },
-                  { label: 'Summit',            value: `${resort.altitude_top}m` },
-                  { label: 'Vertical drop',     value: `${verticalDrop}m` },
-                  { label: 'Total pistes',      value: `${resort.total_pistes_km}km` },
-                  { label: 'Total lifts',       value: resort.total_lifts },
-                  { label: 'Lift capacity',     value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)}k/hr` : '—' },
-                  { label: 'Day pass',          value: `€${resort.lift_pass_day_eur}` },
-                  { label: 'Week pass',         value: `€${resort.lift_pass_week_eur}` },
-                  { label: 'Avg snowfall',      value: `${resort.avg_snowfall_cm}cm` },
-                  { label: 'Airport',           value: resort.nearest_airport },
-                  { label: 'Transfer',          value: estimatedTransferMins },
+                  { label: 'Base altitude',  value: `${resort.altitude_base}m` },
+                  { label: 'Summit',         value: `${resort.altitude_top}m` },
+                  { label: 'Vertical drop',  value: `${verticalDrop}m` },
+                  { label: 'Total pistes',   value: `${resort.total_pistes_km}km` },
+                  { label: 'Total lifts',    value: resort.total_lifts },
+                  { label: 'Lift capacity',  value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)}k/hr` : '—' },
+                  { label: 'Day pass',       value: `€${resort.lift_pass_day_eur}` },
+                  { label: 'Week pass',      value: `€${resort.lift_pass_week_eur}` },
+                  { label: 'Avg snowfall',   value: `${resort.avg_snowfall_cm}cm` },
+                  { label: 'Airport',        value: resort.nearest_airport },
+                  { label: 'Transfer',       value: estimatedTransferMins },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>{row.label}</span>

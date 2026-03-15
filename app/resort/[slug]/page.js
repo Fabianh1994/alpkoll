@@ -267,28 +267,60 @@ export default async function ResortPage({ params }) {
                 ))}
               </div>
 
-              {/* Piste map */}
-              {resort.piste_map_url ? (
-                <div style={{ marginTop: 16 }}>
-                  <div style={fieldLabel}>Piste map</div>
-                  <img
-                    src={resort.piste_map_url}
-                    alt={`${resort.name} piste map`}
-                    style={{ width: '100%', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', marginTop: 8 }}
-                  />
+              {/* Piste map card */}
+              <a
+                href={resort.piste_map_url || resort.resort_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'block', marginTop: 16, textDecoration: 'none',
+                  background: '#1c1a17',
+                  border: '1px solid rgba(255,255,255,0.06)',
+                  borderRadius: 10, padding: '20px 22px',
+                  position: 'relative', overflow: 'hidden',
+                }}
+              >
+                <svg
+                  viewBox="0 0 400 80"
+                  style={{
+                    position: 'absolute', bottom: 0, right: 0, width: '55%', opacity: 0.04,
+                    pointerEvents: 'none',
+                  }}
+                >
+                  <path d="M400,80 L400,35 L350,10 L310,30 L280,5 L240,28 L210,15 L170,38 L130,20 L100,40 L60,25 L30,45 L0,35 L0,80 Z" fill="#D4A574" />
+                </svg>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, position: 'relative' }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: 8, flexShrink: 0,
+                    background: 'rgba(212,165,116,0.1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A574" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
+                      <line x1="8" y1="2" x2="8" y2="18" />
+                      <line x1="16" y1="6" x2="16" y2="22" />
+                    </svg>
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontFamily: 'var(--font-heading)', fontSize: 16,
+                      color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4,
+                    }}>Piste map</div>
+                    <p style={{
+                      fontFamily: 'var(--font-body)', fontSize: 12,
+                      color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, margin: '0 0 12px',
+                    }}>
+                      View the full trail map for {resort.name} — all runs, lifts and mountain restaurants on the official resort map.
+                    </p>
+                    <span style={{
+                      fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
+                      color: '#D4A574', letterSpacing: '0.04em',
+                    }}>Open piste map →</span>
+                  </div>
                 </div>
-              ) : (
-                <div style={{ marginTop: 16 }}>
-                  <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{
-                    display: 'inline-block',
-                    fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-                    color: 'rgba(255,255,255,0.4)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 6, padding: '9px 16px',
-                    textDecoration: 'none', letterSpacing: '0.04em',
-                  }}>View official piste map →</a>
-                </div>
-              )}
+              </a>
             </div>
 
             {/* ── Resort scores ── */}

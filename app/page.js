@@ -21,7 +21,7 @@ function NoiseOverlay() {
   );
 }
 
-function MagBtn({ children, href, primary = false }) {
+function MagBtn({ children, href, primary = false, pill = false }) {
   const ref = useRef(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [hover, setHover] = useState(false);
@@ -31,9 +31,9 @@ function MagBtn({ children, href, primary = false }) {
     setOffset({ x: (e.clientX - r.left - r.width / 2) * 0.14, y: (e.clientY - r.top - r.height / 2) * 0.14 });
   }, []);
   const style = {
-    fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: primary ? 600 : 500,
+    fontFamily: 'var(--font-body)', fontSize: pill ? 11 : 13, fontWeight: primary ? 600 : 500,
     letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block',
-    padding: '15px 32px', borderRadius: 3, cursor: 'pointer',
+    padding: pill ? '8px 18px' : '15px 32px', borderRadius: pill ? 40 : 3, cursor: 'pointer',
     transform: `translate(${offset.x}px,${offset.y}px) scale(${hover ? 1.03 : 1})`,
     transition: 'transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.4s, background 0.25s',
     ...(primary ? {
@@ -142,7 +142,7 @@ export default function Home() {
           {[{ label: 'Resorts', href: '#resorts' }, { label: 'About', href: '/about' }].map(item => (
             <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
           ))}
-          <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: '#D4A574', textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Plan Trip</Link>
+          <MagBtn href="/plan" primary pill>Plan Trip</MagBtn>
         </div>
       </nav>
 

@@ -23,7 +23,7 @@ function NoiseOverlay() {
 }
 
 // ─── Scroll-reveal hook ───────────────────────────────────────
-function useScrollReveal(threshold = 0.1) {
+function useScrollReveal(threshold = 0.01) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
@@ -98,7 +98,7 @@ function ResortCard({ resort, index }) {
     <div ref={ref} style={{
       opacity: visible ? 1 : 0,
       transform: visible ? 'translateY(0)' : 'translateY(36px)',
-      transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${index * 0.07}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${index * 0.07}s`,
+      transition: `opacity 0.8s cubic-bezier(0.16,1,0.3,1) ${index * 0.04}s, transform 0.8s cubic-bezier(0.16,1,0.3,1) ${index * 0.04}s`,
     }}>
       <Link href={`/resort/${resort.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div
@@ -217,7 +217,7 @@ export default function Home() {
           ALPKOLL
         </Link>
         <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
-          {[{ label: 'Resorts', href: '#resorts' }, { label: 'Plan a Trip', href: '/plan' }, { label: 'About', href: '/about' }].map(item => (
+          {[{ label: 'Resorts', href: '#resorts' }, { label: 'About', href: '/about' }].map(item => (
             <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>
               {item.label}
             </a>
@@ -285,7 +285,7 @@ export default function Home() {
       </header>
 
       {/* ── Philosophy ── */}
-      <section style={{ padding: '100px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
+      <section style={{ padding: '60px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.28)', lineHeight: 1.75, marginBottom: 22 }}>
             Most ski tools show you a list of resorts and hope you figure it out.

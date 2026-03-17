@@ -74,34 +74,69 @@ export default async function ResortPage({ params }) {
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
 
-      {/* Nav */}
+      <style>{`
+        .resort-grid {
+          display: grid;
+          grid-template-columns: 1fr 320px;
+          gap: 48px;
+          align-items: start;
+        }
+        .resort-sidebar {
+          position: sticky;
+          top: 84px;
+        }
+        .resort-sidebar-mobile-cta {
+          display: none;
+        }
+        @media (max-width: 768px) {
+          .resort-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+          .resort-sidebar {
+            display: none;
+          }
+          .resort-sidebar-mobile-cta {
+            display: block;
+            margin-bottom: 48px;
+          }
+          .nav-links-desktop {
+            display: none;
+          }
+          .hero-stat-pills {
+            gap: 6px;
+          }
+          .hero-stat-pills > div {
+            padding: 6px 10px;
+          }
+        }
+      `}</style>
+
+      {/* ── Pill Nav ── */}
       <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 clamp(24px, 4vw, 64px)', height: 64,
-        background: 'rgba(18,17,16,0.95)', backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
+        position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)',
+        zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '0 24px', height: 52, width: 'min(92vw, 860px)',
+        background: 'rgba(18,17,16,0.88)', backdropFilter: 'blur(20px)',
+        border: '1px solid rgba(255,255,255,0.07)',
+        borderRadius: 50,
       }}>
-        <Link href="/" style={{
-          fontFamily: 'var(--font-heading)', fontSize: 28,
-          color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none',
-        }}>ALPKOLL</Link>
-        <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
-          {[
-            { label: 'Resorts', href: '/#resorts' },
-            { label: 'Plan a Trip', href: '/plan' },
-            { label: 'About', href: '/about' },
-          ].map(item => (
-            <a key={item.label} href={item.href} style={{
-              fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
-              color: 'rgba(255,255,255,0.4)', textDecoration: 'none',
-              letterSpacing: '0.04em', textTransform: 'uppercase',
-            }}>{item.label}</a>
+        <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none' }}>
+          ALPKOLL
+        </Link>
+        <div className="nav-links-desktop" style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
+          {[{ label: 'Resorts', href: '/#resorts' }, { label: 'About', href: '/about' }].map(item => (
+            <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+              {item.label}
+            </a>
           ))}
+          <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: '#D4A574', textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            Plan Trip
+          </Link>
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* ── Hero ── */}
       <div style={{ position: 'relative', height: '75vh', minHeight: 520, overflow: 'hidden' }}>
         <img
           src={resort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'}
@@ -112,29 +147,14 @@ export default async function ResortPage({ params }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
 
         <div style={{ position: 'absolute', top: 80, left: 'clamp(24px, 4vw, 64px)' }}>
-          <Link href="/" style={{
-            fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-            color: 'rgba(255,255,255,0.5)', textDecoration: 'none',
-            letterSpacing: '0.08em', textTransform: 'uppercase',
-          }}>← All resorts</Link>
+          <Link href="/" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>← All resorts</Link>
         </div>
 
-        <div style={{
-          position: 'absolute', bottom: 0, left: 0, right: 0,
-          padding: '0 clamp(24px, 4vw, 64px) 48px',
-        }}>
-          <p style={{
-            fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500,
-            color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10,
-          }}>{resort.region} · {resort.country}</p>
-          <h1 style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(48px, 8vw, 88px)',
-            fontWeight: 400, lineHeight: 0.95,
-            color: '#f0ece4', letterSpacing: '0.02em', marginBottom: 24,
-          }}>{resort.name}</h1>
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 clamp(24px, 4vw, 64px) 48px' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{resort.region} · {resort.country}</p>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 8vw, 88px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', letterSpacing: '0.02em', marginBottom: 24 }}>{resort.name}</h1>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div className="hero-stat-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {[
               { label: 'Base',      value: `${resort.altitude_base}m` },
               { label: 'Summit',    value: `${resort.altitude_top}m` },
@@ -144,12 +164,7 @@ export default async function ResortPage({ params }) {
               { label: 'Day pass',  value: `€${resort.lift_pass_day_eur}` },
               { label: 'Week pass', value: `€${resort.lift_pass_week_eur}` },
             ].map(s => (
-              <div key={s.label} style={{
-                background: 'rgba(18,17,16,0.75)', backdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.08)',
-                borderRadius: 6, padding: '8px 14px',
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-              }}>
+              <div key={s.label} style={{ background: 'rgba(18,17,16,0.75)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '8px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', lineHeight: 1 }}>{s.value}</span>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>{s.label}</span>
               </div>
@@ -158,29 +173,31 @@ export default async function ResortPage({ params }) {
         </div>
       </div>
 
-      {/* Main content */}
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '60px clamp(24px, 4vw, 64px) 120px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 48, alignItems: 'start' }}>
+      {/* ── Main content ── */}
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '60px clamp(24px, 4vw, 40px) 120px' }}>
+
+        {/* Mobile-only CTA — shows above content on small screens */}
+        <div className="resort-sidebar-mobile-cta">
+          <div style={{ background: 'rgba(212,165,116,0.07)', border: '1px solid rgba(212,165,116,0.2)', borderRadius: 12, padding: '22px', marginBottom: 12 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: '#D4A574', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Ready to go?</p>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 18 }}>{resort.name}</p>
+            <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Plan this trip →</Link>
+          </div>
+          <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
+        </div>
+
+        <div className="resort-grid">
 
           {/* ── Left column ── */}
           <div>
 
-            {/* Notes */}
             {resort.notes && (
-              <div style={{
-                background: 'rgba(212,165,116,0.06)',
-                border: '1px solid rgba(212,165,116,0.15)',
-                borderLeft: '3px solid #D4A574',
-                borderRadius: '0 10px 10px 0',
-                padding: '16px 20px', marginBottom: 48,
-              }}>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>
-                  {resort.notes}
-                </p>
+              <div style={{ background: 'rgba(212,165,116,0.06)', border: '1px solid rgba(212,165,116,0.15)', borderLeft: '3px solid #D4A574', borderRadius: '0 10px 10px 0', padding: '16px 20px', marginBottom: 48 }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>{resort.notes}</p>
               </div>
             )}
 
-            {/* ── Snow & conditions ── */}
+            {/* Snow & conditions */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Snow & conditions</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
@@ -196,8 +213,6 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               </div>
-
-              {/* Altitude profile */}
               <div style={{ ...card, padding: '18px 20px' }}>
                 <div style={fieldLabel}>Altitude profile — snow reliability</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 8 }}>
@@ -230,7 +245,7 @@ export default async function ResortPage({ params }) {
               </div>
             </div>
 
-            {/* ── Terrain ── */}
+            {/* Terrain */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Terrain</h2>
               <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 12 }}>
@@ -266,64 +281,28 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               </div>
-
-              {/* Piste map card */}
-              <a
-                href={resort.piste_map_url || resort.resort_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block', marginTop: 16, textDecoration: 'none',
-                  background: '#1c1a17',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: 10, padding: '20px 22px',
-                  position: 'relative', overflow: 'hidden',
-                }}
-              >
-                <svg
-                  viewBox="0 0 400 80"
-                  style={{
-                    position: 'absolute', bottom: 0, right: 0, width: '55%', opacity: 0.04,
-                    pointerEvents: 'none',
-                  }}
-                >
+              <a href={resort.piste_map_url || resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', marginTop: 16, textDecoration: 'none', background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
+                <svg viewBox="0 0 400 80" style={{ position: 'absolute', bottom: 0, right: 0, width: '55%', opacity: 0.04, pointerEvents: 'none' }}>
                   <path d="M400,80 L400,35 L350,10 L310,30 L280,5 L240,28 L210,15 L170,38 L130,20 L100,40 L60,25 L30,45 L0,35 L0,80 Z" fill="#D4A574" />
                 </svg>
-
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16, position: 'relative' }}>
-                  <div style={{
-                    width: 40, height: 40, borderRadius: 8, flexShrink: 0,
-                    background: 'rgba(212,165,116,0.1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
+                  <div style={{ width: 40, height: 40, borderRadius: 8, flexShrink: 0, background: 'rgba(212,165,116,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D4A574" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6" />
                       <line x1="8" y1="2" x2="8" y2="18" />
                       <line x1="16" y1="6" x2="16" y2="22" />
                     </svg>
                   </div>
-
                   <div style={{ flex: 1 }}>
-                    <div style={{
-                      fontFamily: 'var(--font-heading)', fontSize: 16,
-                      color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4,
-                    }}>Piste map</div>
-                    <p style={{
-                      fontFamily: 'var(--font-body)', fontSize: 12,
-                      color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, margin: '0 0 12px',
-                    }}>
-                      View the full trail map for {resort.name} — all runs, lifts and mountain restaurants on the official resort map.
-                    </p>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
-                      color: '#D4A574', letterSpacing: '0.04em',
-                    }}>Open piste map →</span>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>Piste map</div>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, margin: '0 0 12px' }}>View the full trail map for {resort.name} — all runs, lifts and mountain restaurants on the official resort map.</p>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', letterSpacing: '0.04em' }}>Open piste map →</span>
                   </div>
                 </div>
               </a>
             </div>
 
-            {/* ── Resort scores ── */}
+            {/* Resort scores */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Resort scores</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
@@ -338,31 +317,19 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-                <div style={{
-                  marginTop: 20, paddingTop: 16,
-                  borderTop: '1px solid rgba(255,255,255,0.05)',
-                  display: 'flex', alignItems: 'center', gap: 12,
-                }}>
-                  <div style={{
-                    fontFamily: 'var(--font-heading)', fontSize: 32,
-                    color: resort.crowd_score >= 7 ? '#4ade80' : resort.crowd_score >= 5 ? '#fbbf24' : '#fb923c',
-                    lineHeight: 1,
-                  }}>{resort.crowd_score}/10</div>
+                <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, color: resort.crowd_score >= 7 ? '#4ade80' : resort.crowd_score >= 5 ? '#fbbf24' : '#fb923c', lineHeight: 1 }}>{resort.crowd_score}/10</div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', marginBottom: 2 }}>Crowd level</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>
-                      {resort.crowd_score >= 8
-                        ? 'Uncrowded — short lift queues, wide open pistes.'
-                        : resort.crowd_score >= 6
-                        ? 'Moderate crowds — busiest at peak weeks and weekends.'
-                        : 'Popular resort — expect queues at peak times and school holidays.'}
+                      {resort.crowd_score >= 8 ? 'Uncrowded — short lift queues, wide open pistes.' : resort.crowd_score >= 6 ? 'Moderate crowds — busiest at peak weeks and weekends.' : 'Popular resort — expect queues at peak times and school holidays.'}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* ── Getting there ── */}
+            {/* Getting there */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Getting there</h2>
               <div style={{ ...card, padding: '20px 24px', marginBottom: 10 }}>
@@ -379,86 +346,43 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-
-                {/* Transport info */}
                 {resort.transport_info && (
-                  <div style={{
-                    background: 'rgba(255,255,255,0.03)',
-                    borderRadius: 8, padding: '12px 16px', marginBottom: 16,
-                  }}>
+                  <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
                     <div style={fieldLabel}>By train & flight</div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>
-                      {resort.transport_info}
-                    </p>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>{resort.transport_info}</p>
                   </div>
                 )}
-
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
-                    fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-                    color: 'rgba(255,255,255,0.4)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 6, padding: '9px 16px',
-                    textDecoration: 'none', letterSpacing: '0.04em',
-                  }}>Open in Google Maps →</a>
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Open in Google Maps →</a>
                 </div>
               </div>
-
-              {/* Google Maps embed */}
               <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
-                <iframe
-                  src={mapsEmbedUrl}
-                  width="100%"
-                  height="320"
-                  style={{ border: 0, display: 'block' }}
-                  allowFullScreen=""
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                <iframe src={mapsEmbedUrl} width="100%" height="320" style={{ border: 0, display: 'block' }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
               </div>
             </div>
 
-            {/* ── Where to stay ── */}
+            {/* Where to stay */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Where to stay</h2>
               <div style={{ ...card, padding: '20px 24px', marginBottom: 10 }}>
                 <div style={{ marginBottom: resort.where_to_stay ? 16 : 0 }}>
                   <div style={fieldLabel}>Accommodation zone</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4', marginBottom: resort.where_to_stay ? 16 : 0 }}>
-                    {resort.accommodation_zone}
-                  </div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4', marginBottom: resort.where_to_stay ? 16 : 0 }}>{resort.accommodation_zone}</div>
                 </div>
-
                 {resort.where_to_stay && (
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>
-                    {resort.where_to_stay}
-                  </p>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
               </div>
-
-              {/* Booking.com button */}
-              <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                background: '#003580',
-                borderRadius: 10, padding: '18px 22px',
-                textDecoration: 'none',
-              }}>
+              <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#003580', borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>
-                    Find hotels near {resort.name}
-                  </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>
-                    Search accommodation on Booking.com →
-                  </div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Find hotels near {resort.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Search accommodation on Booking.com →</div>
                 </div>
-                <div style={{
-                  fontFamily: 'var(--font-heading)', fontSize: 22,
-                  color: '#fff', letterSpacing: '0.06em', flexShrink: 0, marginLeft: 16,
-                }}>booking.com</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#fff', letterSpacing: '0.06em', flexShrink: 0, marginLeft: 16 }}>booking.com</div>
               </a>
             </div>
 
-            {/* ── What it costs ── */}
+            {/* What it costs */}
             <div>
               <h2 style={sectionTitle}>What it costs</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
@@ -475,11 +399,7 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-                <div style={{
-                  background: 'rgba(212,165,116,0.05)',
-                  border: '1px solid rgba(212,165,116,0.1)',
-                  borderRadius: 8, padding: '12px 16px',
-                }}>
+                <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
                     A typical week at {resort.name} costs <span style={{ color: '#D4A574', fontWeight: 500 }}>€{weekCostLow.toLocaleString('de-DE')}–€{weekCostHigh.toLocaleString('de-DE')}</span> per person including flights, accommodation and ski pass.
                   </div>
@@ -489,62 +409,17 @@ export default async function ResortPage({ params }) {
 
           </div>
 
-          {/* ── Right column — sticky sidebar ── */}
-          <div style={{ position: 'sticky', top: 84 }}>
-
-            {/* Plan trip CTA */}
-            <div style={{
-              background: 'rgba(212,165,116,0.07)',
-              border: '1px solid rgba(212,165,116,0.2)',
-              borderRadius: 12, padding: '22px', marginBottom: 12,
-            }}>
+          {/* ── Right column — sticky sidebar (desktop only) ── */}
+          <div className="resort-sidebar">
+            <div style={{ background: 'rgba(212,165,116,0.07)', border: '1px solid rgba(212,165,116,0.2)', borderRadius: 12, padding: '22px', marginBottom: 12 }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: '#D4A574', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Ready to go?</p>
               <p style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 8 }}>{resort.name}</p>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 18 }}>
-                Use the trip planner to rank this resort against your skill level, budget and month.
-              </p>
-              <Link href="/plan" style={{
-                display: 'block', textAlign: 'center',
-                fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600,
-                letterSpacing: '0.08em', textTransform: 'uppercase',
-                color: '#121110', background: '#D4A574',
-                borderRadius: 6, padding: '14px 24px', textDecoration: 'none',
-              }}>Plan this trip →</Link>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 18 }}>Use the trip planner to rank this resort against your skill level, budget and month.</p>
+              <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Plan this trip →</Link>
             </div>
-
-            {/* Booking.com */}
-            <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{
-              display: 'block', textAlign: 'center',
-              fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600,
-              color: '#fff', background: '#003580',
-              borderRadius: 6, padding: '12px 24px',
-              textDecoration: 'none', marginBottom: 12,
-              letterSpacing: '0.04em',
-            }}>Find hotels on Booking.com →</a>
-
-            {/* Official site */}
-            <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{
-              display: 'block', textAlign: 'center',
-              fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-              color: 'rgba(255,255,255,0.4)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 6, padding: '12px 24px',
-              textDecoration: 'none', marginBottom: 12,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-            }}>Official resort website →</a>
-
-            {/* Google Maps */}
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{
-              display: 'block', textAlign: 'center',
-              fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-              color: 'rgba(255,255,255,0.4)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: 6, padding: '12px 24px',
-              textDecoration: 'none', marginBottom: 16,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-            }}>View on Google Maps →</a>
-
-            {/* At a glance */}
+            <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
+            <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Official resort website →</a>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>View on Google Maps →</a>
             <div style={{ ...card, padding: '20px' }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>At a glance</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -568,17 +443,13 @@ export default async function ResortPage({ params }) {
                 ))}
               </div>
             </div>
-
           </div>
+
         </div>
       </div>
 
       {/* Footer */}
-      <footer style={{
-        padding: '40px clamp(24px, 4vw, 64px)',
-        borderTop: '1px solid rgba(255,255,255,0.04)',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      }}>
+      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
         <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>ALPKOLL</span>
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Compare mountains, find yours.</span>
       </footer>

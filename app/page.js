@@ -128,6 +128,12 @@ export default function Home() {
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
       <NoiseOverlay />
 
+      <style>{`
+        @media (max-width: 600px) {
+          .nav-links { display: none !important; }
+        }
+      `}</style>
+
       <nav style={{
         position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)',
         zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -139,9 +145,11 @@ export default function Home() {
       }}>
         <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none' }}>ALPKOLL</Link>
         <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
-          {[{ label: 'Resorts', href: '#resorts' }, { label: 'About', href: '/about' }].map(item => (
-            <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
-          ))}
+          <div className="nav-links" style={{ display: 'flex', gap: 22 }}>
+            {[{ label: 'Resorts', href: '#resorts' }, { label: 'About', href: '/about' }].map(item => (
+              <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
+            ))}
+          </div>
           <MagBtn href="/plan" primary pill>Plan Trip</MagBtn>
         </div>
       </nav>

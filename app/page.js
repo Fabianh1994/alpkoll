@@ -208,9 +208,24 @@ export default function Home() {
         )}
       </section>
 
-      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-        <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Compare mountains, find yours.</span>
+ <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
+          <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>ALPKOLL</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Compare mountains, find yours.</span>
+        </div>
+        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)' }}>
+          {[
+            { href: '/privacy', label: 'Privacy Policy' },
+            { href: '/terms', label: 'Terms of Use' },
+            { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
+            { href: '/about', label: 'About' },
+          ].map(link => (
+            <a key={link.href} href={link.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s ease' }}
+              onMouseEnter={e => e.target.style.color = '#D4A574'}
+              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.25)'}
+            >{link.label}</a>
+          ))}
+        </div>
       </footer>
     </div>
   );

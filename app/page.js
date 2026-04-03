@@ -1,7 +1,10 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import { useLang } from '../lib/LangContext';
+import { useDictionary } from '../lib/useDictionary';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -53,7 +56,7 @@ function MagBtn({ children, href, primary = false, pill = false }) {
   );
 }
 
-function ResortCard({ resort }) {
+function ResortCard({ resort, t }) {
   const [hover, setHover] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const flags = {
@@ -94,6 +97,10 @@ function ResortCard({ resort }) {
 }
 
 export default function Home() {
+  const t = useDictionary();
+  const lang = useLang();
+  const pathname = usePathname();
+
   const [resorts, setResorts] = useState([]);
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('All');
@@ -117,12 +124,15 @@ export default function Home() {
   }, []);
 
   const parallaxY = scrollY * 0.3;
-  const countries = ['All', ...new Set(resorts.map(r => r.country).filter(Boolean))].sort((a, b) => a === 'All' ? -1 : a.localeCompare(b));
+  const countries = [t.resorts.all, ...new Set(resorts.map(r => r.country).filter(Boolean))].sort((a, b) => a === t.resorts.all ? -1 : a.localeCompare(b));
   const filtered = resorts.filter(r => {
     const q = search.toLowerCase();
     const matchText = !q || r.name?.toLowerCase().includes(q) || r.region?.toLowerCase().includes(q) || r.country?.toLowerCase().includes(q) || r.notes?.toLowerCase().includes(q);
-    return matchText && (country === 'All' || r.country === country);
+    return matchText && (country === t.resorts.all || r.country === country);
   });
+
+  const switchDomain = lang === 'sv' ? `https://alpkoll.com${pathname}` : `https://alpkoll.se${pathname}`;
+  const switchLabel = lang === 'sv' ? 'EN' : 'SV';
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
@@ -146,11 +156,12 @@ export default function Home() {
         <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none' }}>ALPKOLL</Link>
         <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
           <div className="nav-links" style={{ display: 'flex', gap: 22 }}>
-            {[{ label: 'Resorts', href: '#resorts' }, { label: 'About', href: '/about' }].map(item => (
+            {[{ label: t.nav.resorts, href: '#resorts' }, { label: t.nav.about, href: '/about' }].map(item => (
               <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
             ))}
           </div>
-          <MagBtn href="/plan" primary pill>Plan Trip</MagBtn>
+          <a href={switchDomain} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', letterSpacing: '0.06em', transition: 'color 0.25s', padding: '4px 0' }}>{switchLabel}</a>
+          <MagBtn href="/plan" primary pill>{t.nav.planTrip}</MagBtn>
         </div>
       </nav>
 
@@ -159,37 +170,37 @@ export default function Home() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.3) 0%, rgba(18,17,16,0.5) 40%, rgba(18,17,16,0.85) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
         <div style={{ position: 'relative', maxWidth: 750 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>For skiers who do their homework</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>{t.hero.tagline}</p>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(52px, 8vw, 100px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', marginBottom: 24, letterSpacing: '0.02em', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(26px)', transition: 'all 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s' }}>
-            Every Mountain<br />Tells A Different<br /><span style={{ color: '#D4A574' }}>Story.</span>
+            {t.hero.title1}<br />{t.hero.title2}<br /><span style={{ color: '#D4A574' }}>{t.hero.title3}</span>
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 300, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, marginBottom: 40, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(22px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s' }}>
-            We compare snow, terrain, price and character across {resorts.length} resorts worldwide — so you pick the one that actually fits.
+            {t.hero.description.replace('{count}', resorts.length)}
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s' }}>
-            <MagBtn href="#resorts" primary>Browse Resorts ↓</MagBtn>
-            <MagBtn href="/plan">Plan a Trip</MagBtn>
+            <MagBtn href="#resorts" primary>{t.hero.browseResorts}</MagBtn>
+            <MagBtn href="/plan">{t.hero.planTrip}</MagBtn>
           </div>
         </div>
       </header>
 
       <section style={{ padding: '60px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.28)', lineHeight: 1.75, marginBottom: 22 }}>Most ski tools show you a list of resorts and hope you figure it out.</p>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 400, color: '#f0ece4', lineHeight: 1, marginBottom: 22 }}>We Match The Mountain<br />To The <span style={{ color: '#D4A574' }}>Skier.</span></h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(13px,1.3vw,15px)', fontWeight: 300, color: 'rgba(255,255,255,0.38)', lineHeight: 1.75, maxWidth: 480, margin: '0 auto' }}>Snow depth, terrain mix, village vibe, budget, travel time — we score everything so you spend less time researching and more time actually skiing.</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.28)', lineHeight: 1.75, marginBottom: 22 }}>{t.mission.intro}</p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 400, color: '#f0ece4', lineHeight: 1, marginBottom: 22 }}>{t.mission.title1}<br />{t.mission.title2} <span style={{ color: '#D4A574' }}>{t.mission.title3}</span></h2>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(13px,1.3vw,15px)', fontWeight: 300, color: 'rgba(255,255,255,0.38)', lineHeight: 1.75, maxWidth: 480, margin: '0 auto' }}>{t.mission.description}</p>
         </div>
       </section>
 
       <section id="resorts" style={{ padding: '80px clamp(24px, 4vw, 64px) 120px', maxWidth: 1320, margin: '0 auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 24 }}>
           <div>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 38, fontWeight: 400, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>Resorts</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>{filtered.length} destination{filtered.length !== 1 ? 's' : ''}</p>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 38, fontWeight: 400, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>{t.resorts.title}</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>{filtered.length} {filtered.length !== 1 ? t.resorts.destinations : t.resorts.destination}</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, marginBottom: 40, flexWrap: 'wrap', alignItems: 'center' }}>
-          <input type="text" placeholder="Search by name, country or vibe..." value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 13, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
+          <input type="text" placeholder={t.resorts.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 13, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
           <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
             {countries.map(c => (
               <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c}</button>
@@ -198,33 +209,37 @@ export default function Home() {
         </div>
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.25)' }}>
-            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.04em', marginBottom: 8 }}>No Results</p>
-            <p style={{ fontSize: 14 }}>Try a different name or country.</p>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.04em', marginBottom: 8 }}>{t.resorts.noResults}</p>
+            <p style={{ fontSize: 14 }}>{t.resorts.noResultsHint}</p>
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 20 }}>
-            {filtered.map(r => <ResortCard key={r.slug} resort={r} />)}
+            {filtered.map(r => <ResortCard key={r.slug} resort={r} t={t} />)}
           </div>
         )}
       </section>
 
- <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
           <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Compare mountains, find yours.</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>{t.footer.copyright}</span>
         </div>
         <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)' }}>
           {[
-            { href: '/privacy', label: 'Privacy Policy' },
-            { href: '/terms', label: 'Terms of Use' },
-            { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
-            { href: '/about', label: 'About' },
+            { href: '/privacy', label: t.footer.privacy },
+            { href: '/terms', label: t.footer.terms },
+            { href: '/affiliate-disclosure', label: t.footer.affiliate },
+            { href: '/about', label: t.footer.about },
           ].map(link => (
             <a key={link.href} href={link.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s ease' }}
               onMouseEnter={e => e.target.style.color = '#D4A574'}
               onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.25)'}
             >{link.label}</a>
           ))}
+          <a href={switchDomain} style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s ease' }}
+            onMouseEnter={e => e.target.style.color = '#D4A574'}
+            onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.25)'}
+          >{lang === 'sv' ? 'English' : 'Svenska'}</a>
         </div>
       </footer>
     </div>

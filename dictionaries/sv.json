@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "resorts": "Skidorter",
+    "about": "Om oss",
+    "planTrip": "Planera resa"
+  },
+  "hero": {
+    "tagline": "För skidåkare som gör sin hemläxa",
+    "title1": "Varje berg",
+    "title2": "berättar en egen",
+    "title3": "historia.",
+    "description": "Vi jämför snö, terräng, pris och karaktär för {count} skidorter världen över — så att du hittar den som verkligen passar dig.",
+    "browseResorts": "Utforska skidorter ↓",
+    "planTrip": "Planera en resa"
+  },
+  "mission": {
+    "intro": "De flesta skidverktyg visar en lista med skidorter och hoppas att du klarar resten själv.",
+    "title1": "Vi matchar berget",
+    "title2": "med",
+    "title3": "skidåkaren.",
+    "description": "Snödjup, terrängmix, bykänsla, budget, restid — vi poängsätter allt så att du spenderar mindre tid på research och mer tid på pisten."
+  },
+  "resorts": {
+    "title": "Skidorter",
+    "destinations": "destinationer",
+    "destination": "destination",
+    "searchPlaceholder": "Sök efter namn, land eller känsla...",
+    "noResults": "Inga resultat",
+    "noResultsHint": "Prova ett annat namn eller land.",
+    "all": "Alla"
+  },
+  "footer": {
+    "copyright": "© 2026 — Jämför berg, hitta ditt.",
+    "privacy": "Integritetspolicy",
+    "terms": "Användarvillkor",
+    "affiliate": "Affiliateinformation",
+    "about": "Om oss"
+  }
+}

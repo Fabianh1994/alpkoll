@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "resorts": "Resorts",
+    "about": "About",
+    "planTrip": "Plan Trip"
+  },
+  "hero": {
+    "tagline": "For skiers who do their homework",
+    "title1": "Every Mountain",
+    "title2": "Tells A Different",
+    "title3": "Story.",
+    "description": "We compare snow, terrain, price and character across {count} resorts worldwide — so you pick the one that actually fits.",
+    "browseResorts": "Browse Resorts ↓",
+    "planTrip": "Plan a Trip"
+  },
+  "mission": {
+    "intro": "Most ski tools show you a list of resorts and hope you figure it out.",
+    "title1": "We Match The Mountain",
+    "title2": "To The",
+    "title3": "Skier.",
+    "description": "Snow depth, terrain mix, village vibe, budget, travel time — we score everything so you spend less time researching and more time actually skiing."
+  },
+  "resorts": {
+    "title": "Resorts",
+    "destinations": "destinations",
+    "destination": "destination",
+    "searchPlaceholder": "Search by name, country or vibe...",
+    "noResults": "No Results",
+    "noResultsHint": "Try a different name or country.",
+    "all": "All"
+  },
+  "footer": {
+    "copyright": "© 2026 — Compare mountains, find yours.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "affiliate": "Affiliate Disclosure",
+    "about": "About"
+  }
+}

@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
+import { useDictionary } from '../../lib/useDictionary';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -123,7 +124,7 @@ function PillGroup({ label, options, value, onChange, multi = false, maxSelect =
       <div style={{ ...labelStyle, display: 'block', marginBottom: 8 }}>{label}</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>
         {options.map(opt => {
-          const val = opt.value || opt;
+          const val = opt.value !== undefined ? opt.value : opt;
           const isOn = multi ? selected.includes(val) : value === val;
           const isDisabled = multi && !isOn && selected.length >= maxSelect;
           return (
@@ -137,7 +138,7 @@ function PillGroup({ label, options, value, onChange, multi = false, maxSelect =
               transition: 'all 0.18s',
             }}>
               {multi && isOn && selected.indexOf(val) >= 0 && <span style={{ marginRight: 5, fontSize: 10 }}>{selected.indexOf(val) + 1}</span>}
-              {opt.label || opt}
+              {opt.label !== undefined ? opt.label : opt}
             </button>
           );
         })}
@@ -152,6 +153,8 @@ function Divider() {
 
 // ── Main component ───────────────────────────────────────────────
 export default function PlanPage() {
+  const t = useDictionary();
+
   const [resorts, setResorts] = useState([]);
   const [step, setStep] = useState(1);
 
@@ -245,7 +248,7 @@ export default function PlanPage() {
           transition: 'all 0.3s',
         }}>{done ? '✓' : n}</div>
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.2)' }}>
-          {n === 1 ? 'What you want' : n === 2 ? 'Your resorts' : 'Book it'}
+          {t.plan.stepLabels[n]}
         </span>
       </div>
     );
@@ -280,6 +283,12 @@ export default function PlanPage() {
   const hotel = Math.round(budget * 0.50);
   const onMtn = budget - flights - hotel;
 
+  // Build month/skill/party/length options with translated labels
+  const monthOptions = ['December', 'January', 'February', 'March', 'April'].map(m => ({ value: m, label: t.plan.step1.months[m] }));
+  const skillOptions = ['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(s => ({ value: s, label: t.plan.step1.skills[s] }));
+  const partyOptions = ['Solo', 'Couple', 'Group', 'Family with kids'].map(p => ({ value: p, label: t.plan.step1.parties[p] }));
+  const lengthOptions = [4, 7, 10, 14].map(d => ({ value: d, label: t.plan.step1b.lengths[d] }));
+
   return (
     <div style={{ background: T.bg, minHeight: '100vh', color: T.text }}>
 
@@ -296,22 +305,22 @@ export default function PlanPage() {
         <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: T.text, letterSpacing: '0.06em', textDecoration: 'none' }}>ALPKOLL</Link>
         <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
           <div className="nav-links" style={{ display: 'flex', gap: 22 }}>
-            {[{ label: 'Resorts', href: '/#resorts' }, { label: 'About', href: '/about' }].map(item => (
+            {[{ label: t.nav.resorts, href: '/#resorts' }, { label: t.nav.about, href: '/about' }].map(item => (
               <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.label}</a>
             ))}
           </div>
-          <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: T.accent, textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Plan Trip</Link>
+          <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: T.accent, textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t.nav.planTrip}</Link>
         </div>
       </nav>
 
       <main style={{ maxWidth: 740, margin: '0 auto', padding: '90px clamp(24px, 4vw, 48px) 120px' }}>
 
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: T.accent, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>Trip Planner</p>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: T.accent, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 12 }}>{t.plan.eyebrow}</p>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 400, lineHeight: 0.95, color: T.text, marginBottom: 14, letterSpacing: '0.02em' }}>
-          Find Your<br /><span style={{ color: T.accent }}>Mountain.</span>
+          {t.plan.headline1}<br /><span style={{ color: T.accent }}>{t.plan.headline2}</span>
         </h1>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: 48, maxWidth: 480 }}>
-          Tell us what you want, set your budget, and we'll rank every resort in our database against your preferences.
+          {t.plan.intro}
         </p>
 
         {/* Step indicator */}
@@ -329,41 +338,43 @@ export default function PlanPage() {
             <style>{`@keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }`}</style>
 
             <div style={{ marginBottom: 8 }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>Step 1 of 3</p>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>What are you looking for?</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>Tell us about your trip — we'll find resorts that actually fit.</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step1.label}</p>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step1.title}</h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step1.subtitle}</p>
             </div>
 
             <div style={cardStyle}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-                <PillGroup label="When are you going?" options={['December', 'January', 'February', 'March', 'April']} value={month} onChange={setMonth} />
+                <PillGroup label={t.plan.step1.monthLabel} options={monthOptions} value={month} onChange={setMonth} />
                 <Divider />
-                <PillGroup label="Skill level" options={['Beginner', 'Intermediate', 'Advanced', 'Expert']} value={skill} onChange={setSkill} />
+                <PillGroup label={t.plan.step1.skillLabel} options={skillOptions} value={skill} onChange={setSkill} />
                 <Divider />
-                <PillGroup label="Travelling as" options={['Solo', 'Couple', 'Group', 'Family with kids']} value={party} onChange={setParty} />
+                <PillGroup label={t.plan.step1.partyLabel} options={partyOptions} value={party} onChange={setParty} />
                 <Divider />
                 <div>
                   <div style={{ ...labelStyle, display: 'block', marginBottom: 4 }}>
-                    What matters most?
-                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.2)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>Pick up to 3 — first pick counts most</span>
+                    {t.plan.step1.prioritiesLabel}
+                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.2)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>{t.plan.step1.prioritiesHint}</span>
                   </div>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.25)', marginBottom: 10 }}>
-                    {priorities.length === 0 && "Nothing selected yet — we'll use balanced weights"}
-                    {priorities.length > 0 && priorities.length < 3 && `${priorities.length} selected — pick ${3 - priorities.length} more or continue`}
-                    {priorities.length === 3 && '3 selected — click any to deselect'}
+                    {priorities.length === 0 && t.plan.step1.statusEmpty}
+                    {priorities.length > 0 && priorities.length < 3 && t.plan.step1.statusPartial.replace('{n}', priorities.length).replace('{remaining}', 3 - priorities.length)}
+                    {priorities.length === 3 && t.plan.step1.statusFull}
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
                     {[
-                      { key: 'snow',    icon: '❄', label: 'Best snow',     hint: 'Reliable cover, high altitude' },
-                      { key: 'terrain', icon: '⛰', label: 'Big terrain',   hint: 'Piste km, off-piste, vertical' },
-                      { key: 'value',   icon: '💰', label: 'Best value',    hint: 'Pass price, accommodation' },
-                      { key: 'access',  icon: '✈', label: 'Easy to reach', hint: 'Short airport transfer' },
-                      { key: 'family',  icon: '🏠', label: 'Family',        hint: 'Ski school, gentle slopes' },
-                      { key: 'apres',   icon: '🎉', label: 'Après-ski',     hint: 'Bars, nightlife, scene' },
-                    ].map(({ key, icon, label, hint }) => {
+                      { key: 'snow',    icon: '❄' },
+                      { key: 'terrain', icon: '⛰' },
+                      { key: 'value',   icon: '💰' },
+                      { key: 'access',  icon: '✈' },
+                      { key: 'family',  icon: '🏠' },
+                      { key: 'apres',   icon: '🎉' },
+                    ].map(({ key, icon }) => {
                       const isOn = priorities.includes(key);
                       const rank = priorities.indexOf(key);
                       const isDisabled = !isOn && priorities.length >= 3;
+                      const label = t.plan.step1.priorities[key].label;
+                      const hint = t.plan.step1.priorities[key].hint;
                       return (
                         <div key={key} onClick={() => !isDisabled && togglePriority(key)} style={{
                           border: isOn ? '1px solid #D4A574' : '1px solid rgba(255,255,255,0.07)',
@@ -388,21 +399,21 @@ export default function PlanPage() {
             </div>
 
             <div style={{ marginBottom: 8 }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>Step 2 of 3</p>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>How much can it cost?</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>Total per person — flights, hotel, ski pass and food included.</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step1b.label}</p>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step1b.title}</h2>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step1b.subtitle}</p>
             </div>
 
             <div style={cardStyle}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 22 }}>
-                <PillGroup label="Trip length" options={[{ label: '4 days', value: 4 }, { label: '1 week', value: 7 }, { label: '10 days', value: 10 }, { label: '2 weeks', value: 14 }]} value={days} onChange={setDays} />
+                <PillGroup label={t.plan.step1b.tripLengthLabel} options={lengthOptions} value={days} onChange={setDays} />
                 <Divider />
                 <div>
-                  <div style={{ ...labelStyle, display: 'block', marginBottom: 12 }}>Total budget per person</div>
+                  <div style={{ ...labelStyle, display: 'block', marginBottom: 12 }}>{t.plan.step1b.budgetLabel}</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 14 }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(255,255,255,0.3)' }}>€</span>
                     <span style={{ fontFamily: 'var(--font-heading)', fontSize: 52, color: T.text, lineHeight: 1, letterSpacing: '-0.01em' }}>{budget.toLocaleString('de-DE')}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)', marginLeft: 6 }}>per person, total</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)', marginLeft: 6 }}>{t.plan.step1b.perPerson}</span>
                   </div>
                   <input type="range" min={400} max={5000} step={50} value={budget} onChange={e => setBudget(parseInt(e.target.value))} style={{ width: '100%', height: 4, borderRadius: 2, outline: 'none', cursor: 'pointer', marginBottom: 6, appearance: 'none', background: `linear-gradient(to right, #D4A574 ${(budget - 400) / 4600 * 100}%, rgba(255,255,255,0.1) ${(budget - 400) / 4600 * 100}%)` }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
@@ -410,9 +421,9 @@ export default function PlanPage() {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 16 }}>
                     {[
-                      { cat: '✈ Flights', val: `€${flights}`, note: 'Return pp' },
-                      { cat: '🏨 Hotel', val: `€${hotel}`, note: `${days} nights pp` },
-                      { cat: '🎿 On mountain', val: `€${onMtn}`, note: `Pass + food, ${days} days` },
+                      { cat: t.plan.step1b.flights, val: `€${flights}`, note: t.plan.step1b.returnPp },
+                      { cat: t.plan.step1b.hotel, val: `€${hotel}`, note: t.plan.step1b.nightsPp.replace('{n}', days) },
+                      { cat: t.plan.step1b.onMountain, val: `€${onMtn}`, note: t.plan.step1b.passFood.replace('{n}', days) },
                     ].map(b => (
                       <div key={b.cat} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
                         <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{b.cat}</div>
@@ -423,7 +434,7 @@ export default function PlanPage() {
                   </div>
                 </div>
               </div>
-              <button onClick={runScoring} style={ctaStyle(false)}>Show me my resorts →</button>
+              <button onClick={runScoring} style={ctaStyle(false)}>{t.plan.step1b.cta}</button>
             </div>
           </div>
         )}
@@ -431,18 +442,25 @@ export default function PlanPage() {
         {/* ── STEP 2 ── */}
         {step === 2 && (
           <div style={{ animation: 'fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>Step 2 of 3</p>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>Your resorts</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>Ranked by how well they match your preferences. Click one to continue.</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step2.label}</p>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step2.title}</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step2.subtitle}</p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 24 }}>
-              {[month, skill, party, priorities.length ? priorities.map(p => ({ snow: '❄ Snow', terrain: '⛰ Terrain', value: '💰 Value', access: '✈ Access', family: '🏠 Family', apres: '🎉 Après' }[p])).join(' · ') : 'Balanced', `€${budget.toLocaleString('de-DE')}`, `${days} days`].map(chip => (
+              {[
+                t.plan.step1.months[month],
+                t.plan.step1.skills[skill],
+                t.plan.step1.parties[party],
+                priorities.length ? priorities.map(p => t.plan.step2.chips[p]).join(' · ') : t.plan.step2.balanced,
+                `€${budget.toLocaleString('de-DE')}`,
+                t.plan.step2.daysChip.replace('{n}', days),
+              ].map(chip => (
                 <span key={chip} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)' }}>{chip}</span>
               ))}
             </div>
 
             {rankedResorts.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-body)' }}>No resorts matched your filters. Try a higher budget or different month.</div>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-body)' }}>{t.plan.step2.noResults}</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {rankedResorts.map((resort, i) => (
@@ -459,10 +477,10 @@ export default function PlanPage() {
                       </div>
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.45 }}>{resort.why}</div>
                       <div style={{ display: 'flex', gap: 6, marginTop: 7, flexWrap: 'wrap' }}>
-                        {resort.snow_guarantee_score >= 8 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.12)', color: '#1D9E75' }}>Snow {resort.snow_guarantee_score}</span>}
-                        {resort.total_pistes_km >= 200 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(83,74,183,0.12)', color: '#534AB7' }}>{resort.total_pistes_km}km</span>}
-                        {resort.value_score >= 8 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(186,117,23,0.12)', color: '#BA7517' }}>Great value</span>}
-                        {resort.airport_distance_km <= 100 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(59,139,212,0.12)', color: '#185FA5' }}>{resort.airport_distance_km}km transfer</span>}
+                        {resort.snow_guarantee_score >= 8 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.12)', color: '#1D9E75' }}>{t.plan.step2.snowBadge.replace('{n}', resort.snow_guarantee_score)}</span>}
+                        {resort.total_pistes_km >= 200 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(83,74,183,0.12)', color: '#534AB7' }}>{t.plan.step2.kmBadge.replace('{n}', resort.total_pistes_km)}</span>}
+                        {resort.value_score >= 8 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(186,117,23,0.12)', color: '#BA7517' }}>{t.plan.step2.valueBadge}</span>}
+                        {resort.airport_distance_km <= 100 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(59,139,212,0.12)', color: '#185FA5' }}>{t.plan.step2.transferBadge.replace('{n}', resort.airport_distance_km)}</span>}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
@@ -473,25 +491,25 @@ export default function PlanPage() {
                 ))}
               </div>
             )}
-            <button onClick={() => setStep(1)} style={{ ...backLink, marginTop: 20 }}>← Edit preferences</button>
+            <button onClick={() => setStep(1)} style={{ ...backLink, marginTop: 20 }}>{t.plan.step2.editPrefs}</button>
           </div>
         )}
 
         {/* ── STEP 3 ── */}
         {step === 3 && selectedResort && (
           <div style={{ animation: 'fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>Step 3 of 3</p>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>Book your trip</h2>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step3.label}</p>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step3.title}</h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>
-              Resort: <span style={{ color: T.accent }}>{selectedResort.name}</span>{' '}· Nearest airport: <span style={{ color: T.text }}>{selectedResort.nearest_airport}</span>{' '}· {selectedResort.airport_distance_km}km transfer
+              {t.plan.step3.resortLabel} <span style={{ color: T.accent }}>{selectedResort.name}</span>{' '}{t.plan.step3.airportLabel} <span style={{ color: T.text }}>{selectedResort.nearest_airport}</span>{' '}· {t.plan.step3.transferText.replace('{n}', selectedResort.airport_distance_km)}
             </p>
 
             <div style={cardStyle}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                 <div>
-                  <label style={labelStyle}>Flying from</label>
+                  <label style={labelStyle}>{t.plan.step3.flyingFrom}</label>
                   <div style={{ position: 'relative' }}>
-                    <input type="text" placeholder="Type city or airport..." value={departureInput} onChange={e => { setDepartureInput(e.target.value); setShowSuggestions(true); }} onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} style={inputStyle} />
+                    <input type="text" placeholder={t.plan.step3.airportPlaceholder} value={departureInput} onChange={e => { setDepartureInput(e.target.value); setShowSuggestions(true); }} onFocus={() => setShowSuggestions(true)} onBlur={() => setTimeout(() => setShowSuggestions(false), 150)} style={inputStyle} />
                     {showSuggestions && (
                       <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 50, background: T.card, border: '1px solid rgba(255,255,255,0.1)', borderTop: 'none', borderRadius: '0 0 6px 6px', maxHeight: 220, overflowY: 'auto' }}>
                         {AIRPORTS.filter(a => a.label.toLowerCase().includes(departureInput.toLowerCase())).map(a => (
@@ -503,30 +521,30 @@ export default function PlanPage() {
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                   <div>
-                    <label style={labelStyle}>Departure date</label>
+                    <label style={labelStyle}>{t.plan.step3.departureDate}</label>
                     <input type="date" value={travelDates.from} onChange={e => setTravelDates({ ...travelDates, from: e.target.value })} style={inputStyle} />
                   </div>
                   <div>
-                    <label style={labelStyle}>Return date</label>
+                    <label style={labelStyle}>{t.plan.step3.returnDate}</label>
                     <input type="date" value={travelDates.to} onChange={e => setTravelDates({ ...travelDates, to: e.target.value })} style={inputStyle} />
                   </div>
                 </div>
               </div>
-              <a href={getFlightLink()} target="_blank" rel="noopener noreferrer" style={ctaStyle(!travelDates.from || !travelDates.to)}>Search flights on Skyscanner →</a>
-              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.08)' }}>Find hotels on Booking.com →</a>
+              <a href={getFlightLink()} target="_blank" rel="noopener noreferrer" style={ctaStyle(!travelDates.from || !travelDates.to)}>{t.plan.step3.searchFlights}</a>
+              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.08)' }}>{t.plan.step3.findHotels}</a>
             </div>
 
             <div style={{ background: 'rgba(212,165,116,0.05)', borderRadius: 10, border: '1px solid rgba(212,165,116,0.12)', padding: '22px 24px', marginBottom: 20 }}>
-              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: T.accent, letterSpacing: '0.06em', marginBottom: 14 }}>Trip summary</h3>
+              <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: T.accent, letterSpacing: '0.06em', marginBottom: 14 }}>{t.plan.step3.summaryTitle}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {[
-                  { label: 'Resort', value: `${selectedResort.name}, ${selectedResort.country}` },
-                  { label: 'Score', value: `${selectedResort.score}/100` },
-                  { label: 'Dates', value: travelDates.from ? `${travelDates.from} → ${travelDates.to}` : 'Not set' },
-                  { label: 'Flying from', value: departureInput },
-                  { label: 'Fly to', value: `${selectedResort.nearest_airport} airport` },
-                  { label: 'Transfer', value: `${selectedResort.airport_distance_km}km to resort` },
-                  { label: 'Budget', value: `€${budget.toLocaleString('de-DE')} per person` },
+                  { label: t.plan.step3.summary.resort, value: `${selectedResort.name}, ${selectedResort.country}` },
+                  { label: t.plan.step3.summary.score, value: `${selectedResort.score}/100` },
+                  { label: t.plan.step3.summary.dates, value: travelDates.from ? `${travelDates.from} → ${travelDates.to}` : t.plan.step3.notSet },
+                  { label: t.plan.step3.summary.flyingFrom, value: departureInput },
+                  { label: t.plan.step3.summary.flyTo, value: t.plan.step3.airportSuffix.replace('{n}', selectedResort.nearest_airport) },
+                  { label: t.plan.step3.summary.transfer, value: t.plan.step3.transferToResort.replace('{n}', selectedResort.airport_distance_km) },
+                  { label: t.plan.step3.summary.budget, value: t.plan.step3.budgetPerPerson.replace('{n}', budget.toLocaleString('de-DE')) },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', minWidth: 100 }}>{row.label}</span>
@@ -536,11 +554,11 @@ export default function PlanPage() {
               </div>
             </div>
 
-            <Link href={`/resort/${selectedResort.slug}`} style={{ display: 'block', textAlign: 'center', padding: '12px', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>View full resort details →</Link>
+            <Link href={`/resort/${selectedResort.slug}`} style={{ display: 'block', textAlign: 'center', padding: '12px', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t.plan.step3.viewDetails}</Link>
 
             <div style={{ display: 'flex', gap: 20 }}>
-              <button onClick={() => setStep(2)} style={backLink}>← Back to results</button>
-              <button onClick={() => { setStep(1); setRankedResorts([]); setSelectedResort(null); setPriorities([]); }} style={backLink}>Start over</button>
+              <button onClick={() => setStep(2)} style={backLink}>{t.plan.step3.backToResults}</button>
+              <button onClick={() => { setStep(1); setRankedResorts([]); setSelectedResort(null); setPriorities([]); }} style={backLink}>{t.plan.step3.startOver}</button>
             </div>
           </div>
         )}
@@ -549,7 +567,7 @@ export default function PlanPage() {
 
       <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Compare mountains, find yours.</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>{t.footer.copyright}</span>
       </footer>
 
     </div>

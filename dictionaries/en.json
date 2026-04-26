@@ -35,5 +35,128 @@
     "terms": "Terms of Use",
     "affiliate": "Affiliate Disclosure",
     "about": "About"
+  },
+  "plan": {
+    "eyebrow": "Trip Planner",
+    "headline1": "Find Your",
+    "headline2": "Mountain.",
+    "intro": "Tell us what you want, set your budget, and we'll rank every resort in our database against your preferences.",
+    "stepLabels": {
+      "1": "What you want",
+      "2": "Your resorts",
+      "3": "Book it"
+    },
+    "step1": {
+      "label": "Step 1 of 3",
+      "title": "What are you looking for?",
+      "subtitle": "Tell us about your trip — we'll find resorts that actually fit.",
+      "monthLabel": "When are you going?",
+      "months": {
+        "December": "December",
+        "January": "January",
+        "February": "February",
+        "March": "March",
+        "April": "April"
+      },
+      "skillLabel": "Skill level",
+      "skills": {
+        "Beginner": "Beginner",
+        "Intermediate": "Intermediate",
+        "Advanced": "Advanced",
+        "Expert": "Expert"
+      },
+      "partyLabel": "Travelling as",
+      "parties": {
+        "Solo": "Solo",
+        "Couple": "Couple",
+        "Group": "Group",
+        "Family with kids": "Family with kids"
+      },
+      "prioritiesLabel": "What matters most?",
+      "prioritiesHint": "Pick up to 3 — first pick counts most",
+      "statusEmpty": "Nothing selected yet — we'll use balanced weights",
+      "statusPartial": "{n} selected — pick {remaining} more or continue",
+      "statusFull": "3 selected — click any to deselect",
+      "priorities": {
+        "snow": { "label": "Best snow", "hint": "Reliable cover, high altitude" },
+        "terrain": { "label": "Big terrain", "hint": "Piste km, off-piste, vertical" },
+        "value": { "label": "Best value", "hint": "Pass price, accommodation" },
+        "access": { "label": "Easy to reach", "hint": "Short airport transfer" },
+        "family": { "label": "Family", "hint": "Ski school, gentle slopes" },
+        "apres": { "label": "Après-ski", "hint": "Bars, nightlife, scene" }
+      }
+    },
+    "step1b": {
+      "label": "Step 2 of 3",
+      "title": "How much can it cost?",
+      "subtitle": "Total per person — flights, hotel, ski pass and food included.",
+      "tripLengthLabel": "Trip length",
+      "lengths": {
+        "4": "4 days",
+        "7": "1 week",
+        "10": "10 days",
+        "14": "2 weeks"
+      },
+      "budgetLabel": "Total budget per person",
+      "perPerson": "per person, total",
+      "flights": "✈ Flights",
+      "hotel": "🏨 Hotel",
+      "onMountain": "🎿 On mountain",
+      "returnPp": "Return pp",
+      "nightsPp": "{n} nights pp",
+      "passFood": "Pass + food, {n} days",
+      "cta": "Show me my resorts →"
+    },
+    "step2": {
+      "label": "Step 2 of 3",
+      "title": "Your resorts",
+      "subtitle": "Ranked by how well they match your preferences. Click one to continue.",
+      "balanced": "Balanced",
+      "daysChip": "{n} days",
+      "chips": {
+        "snow": "❄ Snow",
+        "terrain": "⛰ Terrain",
+        "value": "💰 Value",
+        "access": "✈ Access",
+        "family": "🏠 Family",
+        "apres": "🎉 Après"
+      },
+      "snowBadge": "Snow {n}",
+      "kmBadge": "{n}km",
+      "valueBadge": "Great value",
+      "transferBadge": "{n}km transfer",
+      "noResults": "No resorts matched your filters. Try a higher budget or different month.",
+      "editPrefs": "← Edit preferences"
+    },
+    "step3": {
+      "label": "Step 3 of 3",
+      "title": "Book your trip",
+      "resortLabel": "Resort:",
+      "airportLabel": "Nearest airport:",
+      "transferText": "{n}km transfer",
+      "flyingFrom": "Flying from",
+      "airportPlaceholder": "Type city or airport...",
+      "departureDate": "Departure date",
+      "returnDate": "Return date",
+      "searchFlights": "Search flights on Skyscanner →",
+      "findHotels": "Find hotels on Booking.com →",
+      "summaryTitle": "Trip summary",
+      "summary": {
+        "resort": "Resort",
+        "score": "Score",
+        "dates": "Dates",
+        "flyingFrom": "Flying from",
+        "flyTo": "Fly to",
+        "transfer": "Transfer",
+        "budget": "Budget"
+      },
+      "notSet": "Not set",
+      "airportSuffix": "{n} airport",
+      "transferToResort": "{n}km to resort",
+      "budgetPerPerson": "€{n} per person",
+      "viewDetails": "View full resort details →",
+      "backToResults": "← Back to results",
+      "startOver": "Start over"
+    }
   }
 }

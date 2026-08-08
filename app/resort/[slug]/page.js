@@ -4,6 +4,7 @@ import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal, manadslista } from '../../../lib/months'
+import { restid } from '../../../lib/travel'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -65,12 +66,7 @@ export default async function ResortPage({ params }) {
 
   const lang = getLang()
   const verticalDrop = resort.altitude_top - resort.altitude_base
-  const estimatedTransferMins = resort.airport_distance_km < 50 ? '30–45 min'
-    : resort.airport_distance_km < 100 ? '1–1,5 tim'
-    : resort.airport_distance_km < 150 ? '1,5–2 tim'
-    : resort.airport_distance_km < 200 ? '2–2,5 tim'
-    : resort.airport_distance_km < 300 ? '2,5–3,5 tim'
-    : '3,5+ tim'
+  const estimatedTransferMins = restid(resort)
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
   const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`

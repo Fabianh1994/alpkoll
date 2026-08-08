@@ -110,7 +110,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetchResorts() {
-      const { data } = await supabase.from('resorts').select('*').order('name');
+      const { data } = await supabase.from('resorts').select('*').eq('published', true).order('name');
       if (data) setResorts(data);
     }
     fetchResorts();

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
+import { manadVersal, manadslista } from '../../../lib/months'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -84,15 +85,20 @@ export default async function ResortPage({ params }) {
   const weekCostHigh = Math.round((resort.lift_pass_week_eur + 900) / 50) * 50
 
   const scores = [
-    { label: 'Snögaranti',           value: resort.snow_guarantee_score,  color: '#60a5fa' },
-    { label: 'Terräng för medelgod', value: resort.intermediate_score,    color: '#34d399' },
-    { label: 'Terräng för avancerad',value: resort.expert_score,          color: '#a78bfa' },
-    { label: 'Nybörjarvänligt',      value: resort.beginner_score,        color: '#4ade80' },
+    // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
+    // pengarna tillbaka om snön uteblir. Poängen är en bedömning av
+    // sannolikhet, inte en utfästelse.
+    { label: 'Snösäkerhet',          value: resort.snow_guarantee_score,  color: '#60a5fa' },
+    { label: 'Mellannivå',           value: resort.intermediate_score,    color: '#34d399' },
+    { label: 'Avancerad nivå',       value: resort.expert_score,          color: '#a78bfa' },
+    { label: 'Nybörjarnivå',         value: resort.beginner_score,        color: '#4ade80' },
     { label: 'Offpist',              value: resort.off_piste_score,       color: '#D4A574' },
     { label: 'Snowpark',             value: resort.snowpark_score,        color: '#f472b6' },
     { label: 'Bykänsla',             value: resort.village_charm_score,   color: '#fbbf24' },
     { label: 'Afterski',             value: resort.apres_ski_score,       color: '#fb923c' },
     { label: 'Familjevänligt',       value: resort.family_friendly_score, color: '#2dd4bf' },
+    // Högt crowd_score betyder FÄRRE människor. Etiketten måste peka åt
+    // samma håll som skalan — "Trängsel 9/10" hade sagt tvärtom.
     { label: 'Gott om plats',        value: resort.crowd_score,           color: '#e879f9' },
   ]
 
@@ -235,8 +241,8 @@ export default async function ResortPage({ params }) {
 
           <div className="hero-stat-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {[
-              { label: 'Dalstation', value: `${resort.altitude_base} m` },
-              { label: 'Topp',       value: `${resort.altitude_top} m` },
+              { label: 'Lägsta',     value: `${resort.altitude_base} m` },
+              { label: 'Högsta',     value: `${resort.altitude_top} m` },
               { label: 'Fallhöjd',   value: `${verticalDrop} m` },
               { label: 'Pist',       value: `${resort.total_pistes_km} km` },
               { label: 'Liftar',     value: resort.total_lifts },
@@ -281,10 +287,10 @@ export default async function ResortPage({ params }) {
               <h2 style={sectionTitle}>Snö och förhållanden</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                 {[
-                  { label: 'Säsongen öppnar', value: resort.season_start },
-                  { label: 'Säsongen stänger', value: resort.season_end },
-                  { label: 'Bästa månader',   value: resort.best_months },
-                  { label: 'Snöfall i snitt', value: `${resort.avg_snowfall_cm} cm/säsong` },
+                  { label: 'Säsongen öppnar',  value: manadVersal(resort.season_start_month) || '—' },
+                  { label: 'Säsongen stänger', value: manadVersal(resort.season_end_month) || '—' },
+                  { label: 'Bäst i',           value: manadslista(resort.best_months_nums) || '—' },
+                  { label: 'Snöfall per säsong', value: `${resort.avg_snowfall_cm} cm` },
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
                     <div style={fieldLabel}>{item.label}</div>
@@ -293,7 +299,7 @@ export default async function ResortPage({ params }) {
                 ))}
               </div>
               <div style={{ ...card, padding: '18px 20px' }}>
-                <div style={fieldLabel}>Höjdprofil — snösäkerhet</div>
+                <div style={fieldLabel}>Höjd och snösäkerhet</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 8 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -316,10 +322,10 @@ export default async function ResortPage({ params }) {
                 </div>
                 <div style={{ marginTop: 12, fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
                   {resort.altitude_top >= 3000
-                    ? `På ${resort.altitude_top} m är snötäcket mycket pålitligt hela säsongen. Glaciäråkning finns.`
+                    ? `Med ${resort.altitude_top} m på toppen är snön pålitlig hela säsongen, och det finns åkning på glaciär.`
                     : resort.altitude_top >= 2000
-                    ? `Toppen på ${resort.altitude_top} m ger god snösäkerhet under högsäsongen.`
-                    : `Lägre belägen ort — bäst i januari och februari för säker snö.`}
+                    ? `Toppen på ${resort.altitude_top} m ger god snösäkerhet mitt i säsongen.`
+                    : `Lägre belägen ort — kom i januari eller februari för säkrast snö.`}
                 </div>
               </div>
             </div>
@@ -350,7 +356,7 @@ export default async function ResortPage({ params }) {
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
                   { label: 'Fallhöjd',       value: `${verticalDrop} m` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
-                  { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)} tusen/tim` : '—' },
+                  { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
                   { label: 'Offpist',        value: `${resort.off_piste_score}/10` },
                   { label: 'Snowpark',       value: `${resort.snowpark_score}/10` },
                 ].map(item => (
@@ -399,7 +405,7 @@ export default async function ResortPage({ params }) {
                 <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, color: resort.crowd_score >= 7 ? '#4ade80' : resort.crowd_score >= 5 ? '#fbbf24' : '#fb923c', lineHeight: 1 }}>{resort.crowd_score}/10</div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', marginBottom: 2 }}>Trängsel</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', marginBottom: 2 }}>Gott om plats</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>
                       {resort.crowd_score >= 8 ? 'Gott om plats — korta liftköer och vidöppna pister.' : resort.crowd_score >= 6 ? 'Måttlig trängsel — mest folk under högsäsong och helger.' : 'Populär ort — räkna med köer under högsäsong och skollov.'}
                     </div>
@@ -416,8 +422,8 @@ export default async function ResortPage({ params }) {
                   {[
                     { label: 'Närmaste flygplats', value: resort.nearest_airport },
                     { label: 'Avstånd',            value: `${resort.airport_distance_km} km` },
-                    { label: 'Restid, uppskattad', value: estimatedTransferMins },
-                    { label: 'Bo i',               value: resort.accommodation_zone },
+                    { label: 'Ungefärlig restid',  value: estimatedTransferMins },
+                    { label: 'Boendeområde',       value: resort.accommodation_zone },
                   ].map(item => (
                     <div key={item.label}>
                       <div style={fieldLabel}>{item.label}</div>
@@ -432,7 +438,7 @@ export default async function ResortPage({ params }) {
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Öppna i Google Maps →</a>
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
                 </div>
               </div>
               <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
@@ -469,8 +475,8 @@ export default async function ResortPage({ params }) {
                   {[
                     { label: 'Dagskort',      value: `€${resort.lift_pass_day_eur}` },
                     { label: 'Veckokort',     value: `€${resort.lift_pass_week_eur}` },
-                    { label: 'Prisklass',     value: resort.price_tier === 1 ? 'Budget' : resort.price_tier === 2 ? 'Mellan' : 'Premium' },
-                    { label: 'Prisvärdhet',   value: `${resort.value_score}/10` },
+                    { label: 'Prisklass',     value: resort.price_tier === 1 ? 'Budget' : resort.price_tier === 2 ? 'Mellanklass' : 'Premium' },
+                    { label: 'Prisvärde',     value: `${resort.value_score}/10` },
                   ].map(item => (
                     <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
                       <div style={fieldLabel}>{item.label}</div>
@@ -503,12 +509,12 @@ export default async function ResortPage({ params }) {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>I korthet</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { label: 'Dalstation',     value: `${resort.altitude_base} m` },
-                  { label: 'Topp',           value: `${resort.altitude_top} m` },
+                  { label: 'Lägsta',         value: `${resort.altitude_base} m` },
+                  { label: 'Högsta',         value: `${resort.altitude_top} m` },
                   { label: 'Fallhöjd',       value: `${verticalDrop} m` },
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
-                  { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${(resort.lift_capacity_per_hour / 1000).toFixed(0)} tusen/tim` : '—' },
+                  { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
                   { label: 'Dagskort',       value: `€${resort.lift_pass_day_eur}` },
                   { label: 'Veckokort',      value: `€${resort.lift_pass_week_eur}` },
                   { label: 'Snöfall i snitt', value: `${resort.avg_snowfall_cm} cm` },

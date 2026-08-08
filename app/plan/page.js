@@ -3,11 +3,20 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { useDictionary } from '../../lib/useDictionary';
+import { oppenIManad } from '../../lib/months';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
+
+// Månadsväljaren använder engelska nycklar internt; etiketterna kommer
+// från dictionaries. Här översätts nyckeln till det månadsnummer som
+// databasen lagrar.
+const MONTH_NUMBERS = {
+  January: 1, February: 2, March: 3, April: 4, May: 5, June: 6,
+  July: 7, August: 8, September: 9, October: 10, November: 11, December: 12,
+};
 
 // ── Scoring formula ──────────────────────────────────────────────
 const PRIORITY_BOOSTS = {
@@ -53,15 +62,25 @@ function getAccessScore(resort) {
   return 0.3;
 }
 
+// Säsongen läses nu ur season_start_month och season_end_month, som är
+// heltal 1–12 sedan migration 001.
+//
+// Den tidigare versionen slog upp engelska månadsnamn i tre tabeller och
+// föll tillbaka på `|| 12` respektive `|| 4` vid miss. För de orter som
+// visas gav den rätt svar — tabellerna råkade täcka värdena i datan.
+// Enda undantaget var Queenstown, vars start i juni saknades och tyst
+// blev december; den orten är numera dold.
+//
+// Poängen med bytet är att fallbacken döljer fel i stället för att visa
+// dem. Hade månadsnamnen översatts till svenska hade samtliga uppslag
+// missat och alla orter fått december–april, utan ett enda felmeddelande.
+// Med heltal finns ingen strängmatchning som kan sluta träffa.
 function isOpenInMonth(resort, month) {
-  const monthMap = { December: 12, January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11 };
-  const seasonStartMap = { November: 11, December: 12, October: 10, September: 9, February: 2 };
-  const seasonEndMap = { April: 4, May: 5, June: 6, October: 10, March: 3 };
-  const m = monthMap[month];
-  const start = seasonStartMap[resort.season_start] || 12;
-  const end = seasonEndMap[resort.season_end] || 4;
-  if (start <= end) return m >= start && m <= end;
-  return m >= start || m <= end;
+  return oppenIManad(
+    resort.season_start_month,
+    resort.season_end_month,
+    MONTH_NUMBERS[month]
+  );
 }
 
 function isBudgetFit(resort, budget) {
@@ -174,7 +193,8 @@ export default function PlanPage() {
   const [travelDates, setTravelDates] = useState({ from: '', to: '' });
 
   useEffect(() => {
-    supabase.from('resorts').select('*').then(({ data }) => { if (data) setResorts(data); });
+    supabase.from('resorts').select('*').eq('published', true)
+      .then(({ data }) => { if (data) setResorts(data); });
   }, []);
 
   function togglePriority(p) {

@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { cookies, headers } from "next/headers";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import MobileNav from "./MobileNav";
 import { LangProvider } from "../lib/LangContext";
+import { SITE_LANG, SITE_URL } from "../lib/lang";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,23 +15,12 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export async function generateMetadata() {
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const lang = host.includes("alpkoll.se") ? "sv" : "en";
-
-  const title =
-    lang === "sv"
-      ? "Alpkoll — Jämför skidorter, planera din resa"
-      : "Alpkoll — Compare Ski Resorts, Plan Your Trip";
-
+export function generateMetadata() {
+  // Sajten körs enbart på svenska via alpkoll.se — se lib/lang.js.
+  const title = "Alpkoll — Jämför skidorter, planera din resa";
   const description =
-    lang === "sv"
-      ? "Jämför snö, terräng, pris och karaktär för skidorter världen över. Hitta skidorten som passar dig."
-      : "Compare snow, terrain, price and character across ski resorts worldwide. Find the resort that actually fits.";
-
-  const baseUrl =
-    lang === "sv" ? "https://alpkoll.se" : "https://alpkoll.com";
+    "Jämför snö, terräng, pris och karaktär för skidorter världen över. Hitta skidorten som passar dig.";
+  const baseUrl = SITE_URL;
 
   return {
     title,
@@ -59,7 +48,7 @@ export async function generateMetadata() {
           alt: title,
         },
       ],
-      locale: lang === "sv" ? "sv_SE" : "en_US",
+      locale: "sv_SE",
       type: "website",
     },
     twitter: {
@@ -69,26 +58,20 @@ export async function generateMetadata() {
       images: ["/og-image.png"],
     },
     alternates: {
+      // Ingen hreflang: alpkoll.com redirectas till .se, så det finns
+      // bara en indexerbar språkversion att peka ut.
       canonical: baseUrl,
-      languages: {
-        en: "https://alpkoll.com",
-        sv: "https://alpkoll.se",
-      },
     },
   };
 }
 
-export default async function RootLayout({ children }) {
-  const headersList = await headers();
-  const host = headersList.get("host") || "";
-  const lang = host.includes("alpkoll.se") ? "sv" : "en";
-
+export default function RootLayout({ children }) {
   return (
-    <html lang={lang}>
+    <html lang={SITE_LANG}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <LangProvider lang={lang}>
+        <LangProvider lang={SITE_LANG}>
           {children}
           <MobileNav />
         </LangProvider>

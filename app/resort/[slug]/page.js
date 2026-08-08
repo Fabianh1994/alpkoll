@@ -1,26 +1,68 @@
-import { supabase } from '../../../lib/supabase'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { getResort, getResortSlugs } from '../../../lib/resorts'
+import { bookingUrl } from '../../../lib/booking'
+import { getLang, SITE_URL } from '../../../lib/lang'
+
+// Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
+// Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const slugs = await getResortSlugs()
+  return slugs.map((slug) => ({ slug }))
+}
+
+export async function generateMetadata({ params }) {
+  const slug = (await params).slug
+  const resort = await getResort(slug)
+
+  if (!resort) {
+    return { title: 'Skidorten hittades inte — Alpkoll' }
+  }
+
+  const baseUrl = SITE_URL
+  const place = `${resort.name}, ${resort.country}`
+
+  const title = `${place} — snö, terräng, priser | Alpkoll`
+
+  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m. Veckopass €${resort.lift_pass_week_eur}, närmaste flygplats ${resort.nearest_airport}. Snögaranti ${resort.snow_guarantee_score}/10.`
+
+  const path = `/resort/${resort.slug}`
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${baseUrl}${path}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `${baseUrl}${path}`,
+      siteName: 'Alpkoll',
+      type: 'article',
+      locale: 'sv_SE',
+      images: resort.image_url
+        ? [{ url: resort.image_url, width: 1200, height: 630, alt: resort.name }]
+        : ['/og-image.png'],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: resort.image_url ? [resort.image_url] : ['/og-image.png'],
+    },
+  }
+}
 
 export default async function ResortPage({ params }) {
   const slug = (await params).slug
+  const resort = await getResort(slug)
 
-  const { data: resort, error } = await supabase
-    .from('resorts')
-    .select('*')
-    .eq('slug', slug)
-    .single()
+  if (!resort) notFound()
 
-  if (error || !resort) {
-    return (
-      <div style={{ background: '#121110', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ textAlign: 'center' }}>
-          <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.3)', marginBottom: 16 }}>Resort not found</p>
-          <Link href="/" style={{ fontFamily: 'var(--font-body)', color: '#D4A574', textDecoration: 'none' }}>← Back to resorts</Link>
-        </div>
-      </div>
-    )
-  }
-
+  const lang = getLang()
   const verticalDrop = resort.altitude_top - resort.altitude_base
   const estimatedTransferMins = resort.airport_distance_km < 50 ? '30–45 min'
     : resort.airport_distance_km < 100 ? '1–1.5 hrs'
@@ -31,7 +73,12 @@ export default async function ResortPage({ params }) {
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
   const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
-  const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(resort.accommodation_zone || resort.name)}&lang=en-gb`
+  // Affiliate-länkar med separata labels så Partner Hub visar vilken
+  // placering som faktiskt konverterar.
+  const bookingDestination = resort.accommodation_zone || resort.name
+  const bookingHrefMobile = bookingUrl(bookingDestination, { lang, label: `resort-mobile-${resort.slug}` })
+  const bookingHrefStay = bookingUrl(bookingDestination, { lang, label: `resort-stay-${resort.slug}` })
+  const bookingHrefSidebar = bookingUrl(bookingDestination, { lang, label: `resort-sidebar-${resort.slug}` })
 
   const weekCostLow = Math.round((resort.lift_pass_week_eur + 400) / 50) * 50
   const weekCostHigh = Math.round((resort.lift_pass_week_eur + 900) / 50) * 50
@@ -71,8 +118,40 @@ export default async function ResortPage({ params }) {
     fontWeight: 500, color: '#f0ece4',
   }
 
+  // Strukturerad data för Google. Medvetet utan aggregateRating —
+  // poängen är vår egen redaktionella bedömning, inte användarbetyg,
+  // och att presentera den som betyg vore missvisande.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SkiResort',
+    name: resort.name,
+    description: resort.notes || undefined,
+    url: `${SITE_URL}/resort/${resort.slug}`,
+    image: resort.image_url || undefined,
+    sameAs: resort.resort_url || undefined,
+    address: {
+      '@type': 'PostalAddress',
+      addressRegion: resort.region || undefined,
+      addressCountry: resort.country || undefined,
+    },
+    geo:
+      resort.latitude && resort.longitude
+        ? {
+            '@type': 'GeoCoordinates',
+            latitude: resort.latitude,
+            longitude: resort.longitude,
+            elevation: resort.altitude_base,
+          }
+        : undefined,
+  }
+
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <style>{`
         .resort-grid {
@@ -183,7 +262,7 @@ export default async function ResortPage({ params }) {
             <p style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 18 }}>{resort.name}</p>
             <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Plan this trip →</Link>
           </div>
-          <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
+          <a href={bookingHrefMobile} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
         </div>
 
         <div className="resort-grid">
@@ -373,7 +452,7 @@ export default async function ResortPage({ params }) {
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
               </div>
-              <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#003580', borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
+              <a href={bookingHrefStay} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#003580', borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
                 <div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Find hotels near {resort.name}</div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Search accommodation on Booking.com →</div>
@@ -417,7 +496,7 @@ export default async function ResortPage({ params }) {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 18 }}>Use the trip planner to rank this resort against your skill level, budget and month.</p>
               <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Plan this trip →</Link>
             </div>
-            <a href={bookingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
+            <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Find hotels on Booking.com →</a>
             <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Official resort website →</a>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>View on Google Maps →</a>
             <div style={{ ...card, padding: '20px' }}>

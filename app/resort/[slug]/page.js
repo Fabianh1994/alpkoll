@@ -8,7 +8,8 @@ import SiteFooter from '../../SiteFooter'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
-import { manadVersal, manadslista } from '../../../lib/months'
+import { manadVersal } from '../../../lib/months'
+import { veckokostnad } from '../../../lib/pris'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -34,7 +35,10 @@ export async function generateMetadata({ params }) {
 
   const title = `${place} — snö, terräng, priser | Alpkoll`
 
-  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m. Veckopass €${resort.lift_pass_week_eur}, närmaste flygplats ${resort.nearest_airport}. Snögaranti ${resort.snow_guarantee_score}/10.`
+  // "Snögaranti" betyder i svensk resebransch pengarna tillbaka. Den
+  // synliga etiketten rättades tidigare, men beskrivningen — den text
+  // Google visar — missades och stod kvar på alla 32 ortsidor.
+  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m. Veckopass €${resort.lift_pass_week_eur}, närmaste flygplats ${resort.nearest_airport}. Snösäkerhet ${resort.snow_guarantee_score}/10.`
 
   const path = `/resort/${resort.slug}`
 
@@ -86,8 +90,12 @@ export default async function ResortPage({ params }) {
   const bookingHrefStay = bookingUrl(bookingDestination, { lang, label: `resort-stay-${resort.slug}` })
   const bookingHrefSidebar = bookingUrl(bookingDestination, { lang, label: `resort-sidebar-${resort.slug}` })
 
-  const weekCostLow = Math.round((resort.lift_pass_week_eur + 400) / 50) * 50
-  const weekCostHigh = Math.round((resort.lift_pass_week_eur + 900) / 50) * 50
+  // Veckokostnaden räknades tidigare fram som veckokortet plus 400 till
+  // 900 euro — samma påslag för Sälen som för Zermatt, oavsett om man
+  // flyger eller kör. Formeln träffade det researchade
+  // est_weekly_cost_eur för två av 32 orter och låg systematiskt lågt:
+  // Courchevel visade 750–1 250 € där fältet säger 2 000 €.
+  const veckokostnadText = veckokostnad(resort)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -286,7 +294,13 @@ export default async function ResortPage({ params }) {
                 {[
                   { label: 'Säsongen öppnar',  value: manadVersal(resort.season_start_month) || '—' },
                   { label: 'Säsongen stänger', value: manadVersal(resort.season_end_month) || '—' },
-                  { label: 'Bäst i',           value: manadslista(resort.best_months_nums) || '—' },
+                  // "Bäst i" stod här och läste best_months_nums, som är
+                  // exakt januari–mars för 29 av 32 orter. Det var ett
+                  // standardvärde som såg ut som ett omdöme om orten.
+                  // Konstsnötäckningen skiljer däremot orterna åt på
+                  // riktigt — 0 % i Riksgränsen, 95 % i Madonna di
+                  // Campiglio — och hör hemma under snö och förhållanden.
+                  { label: 'Konstsnö',         value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—' },
                   { label: 'Snöfall per säsong', value: `${resort.avg_snowfall_cm} cm` },
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
@@ -488,10 +502,18 @@ export default async function ResortPage({ params }) {
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                   {[
+                    // Prisklass läste price_tier, vars klasser överlappar:
+                    // klass 1 spänner 900–1 550 € och klass 3 spänner
+                    // 1 300–2 600 €. Cortina d'Ampezzo och Kitzbühel stod
+                    // som Budget, Hemavan som Premium fast Hemavan är
+                    // billigast av de tre. Prisvärde läste value_score,
+                    // vars vanligaste värde är 4 — satt på 12 orter utan
+                    // att gå att härleda ur något annat fält.
+                    //
+                    // Kvar står de två tal som kommer ur samma källa som
+                    // resten av sifferrutorna.
                     { label: 'Dagskort',      value: `€${resort.lift_pass_day_eur}` },
                     { label: 'Veckokort',     value: `€${resort.lift_pass_week_eur}` },
-                    { label: 'Prisklass',     value: resort.price_tier === 1 ? 'Budget' : resort.price_tier === 2 ? 'Mellanklass' : 'Premium' },
-                    { label: 'Prisvärde',     value: `${resort.value_score}/10` },
                   ].map(item => (
                     <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
                       <div style={fieldLabel}>{item.label}</div>
@@ -501,7 +523,9 @@ export default async function ResortPage({ params }) {
                 </div>
                 <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
-                    En vanlig vecka i {resort.name} kostar <span style={{ color: '#D4A574', fontWeight: 500 }}>€{weekCostLow.toLocaleString('sv-SE')}–€{weekCostHigh.toLocaleString('sv-SE')}</span> per person inklusive flyg, boende och liftkort.
+                    {veckokostnadText
+                      ? <>En vecka i {resort.name} kostar uppskattningsvis <span style={{ color: '#D4A574', fontWeight: 500 }}>{veckokostnadText}</span> per person med resa, boende och liftkort. Priset varierar med vecka och boende — kontrollera hos arrangören innan du bokar.</>
+                      : <>Liftkortspriserna ovan är hämtade från orten. Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.</>}
                   </div>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal, manadslista } from '../../../lib/months'
 import { restid } from '../../../lib/travel'
+import { land } from '../../../lib/countries'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }) {
   }
 
   const baseUrl = SITE_URL
-  const place = `${resort.name}, ${resort.country}`
+  const place = `${resort.name}, ${land(resort.country)}`
 
   const title = `${place} — snö, terräng, priser | Alpkoll`
 
@@ -134,6 +135,8 @@ export default async function ResortPage({ params }) {
     address: {
       '@type': 'PostalAddress',
       addressRegion: resort.region || undefined,
+      // Strukturerad data läses av maskiner, inte av besökare — här ska
+      // det engelska landsnamnet stå kvar.
       addressCountry: resort.country || undefined,
     },
     geo:
@@ -232,7 +235,7 @@ export default async function ResortPage({ params }) {
         </div>
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 clamp(24px, 4vw, 64px) 48px' }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{resort.region} · {resort.country}</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{resort.region} · {land(resort.country)}</p>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 8vw, 88px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', letterSpacing: '0.02em', marginBottom: 24 }}>{resort.name}</h1>
 
           <div className="hero-stat-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>

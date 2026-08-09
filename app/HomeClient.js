@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useDictionary } from '../lib/useDictionary';
 import { farOptimeras } from '../lib/images';
+import { PLANERAREN_SYNLIG } from '../lib/features';
 import { land, ALLA_LANDER } from '../lib/countries';
 
 const heroImage = 'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg';
@@ -175,7 +176,7 @@ export default function HomeClient({ resorts }) {
               <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
             ))}
           </div>
-          <MagBtn href="/plan" primary pill>{t.nav.planTrip}</MagBtn>
+          {PLANERAREN_SYNLIG && <MagBtn href="/plan" primary pill>{t.nav.planTrip}</MagBtn>}
         </div>
       </nav>
 
@@ -193,7 +194,7 @@ export default function HomeClient({ resorts }) {
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s' }}>
             <MagBtn href="#resorts" primary>{t.hero.browseResorts}</MagBtn>
-            <MagBtn href="/plan">{t.hero.planTrip}</MagBtn>
+            {PLANERAREN_SYNLIG && <MagBtn href="/plan">{t.hero.planTrip}</MagBtn>}
           </div>
         </div>
       </header>

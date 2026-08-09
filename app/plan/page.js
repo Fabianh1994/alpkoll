@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import { useDictionary } from '../../lib/useDictionary';
 import { oppenIManad } from '../../lib/months';
+import { formateraRestid } from '../../lib/travel';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -115,16 +116,33 @@ function scoreResort(resort, weights, skill) {
   return Math.round(score * 100);
 }
 
+// Förklaringen till varför en ort hamnade där den hamnade. Låg tidigare
+// hårdkodad på engelska — den enda texten i planeraren som aldrig gick
+// via dictionaries, och därför den enda som besökarna såg på engelska.
+//
+// Ligger kvar i koden snarare än i sv.json eftersom varje mening väver
+// in ortens egna siffror; en mall i JSON hade blivit svårare att läsa
+// än meningen den bygger.
+//
+// "Snösäkerhet", inte "snögaranti": en snögaranti är ett avtalsvillkor
+// om återbetalning, och poängen är en bedömning av sannolikhet.
 function getWhyText(resort, priorities) {
-  if (!priorities.length) return `Solid all-round resort with ${resort.snow_guarantee_score >= 8 ? 'reliable snow' : 'good terrain variety'}.`;
+  if (!priorities.length) {
+    return `Bra allroundort med ${resort.snow_guarantee_score >= 8 ? 'pålitlig snö' : 'varierad terräng'}.`;
+  }
+
+  const restidText = resort.transfer_minutes
+    ? `${formateraRestid(resort.transfer_minutes)} ${resort.transfer_note || ''}`.trim()
+    : `${resort.airport_distance_km} km`;
+
   const p = priorities[0];
   const reasons = {
-    snow:    `Snow guarantee score ${resort.snow_guarantee_score}/10. ${resort.altitude_top > 2500 ? 'High altitude ensures reliable cover.' : 'Good snow record for its altitude.'}`,
-    terrain: `${resort.total_pistes_km}km of piste, ${resort.black_percent}% black runs. ${resort.off_piste_score >= 8 ? 'Exceptional off-piste access.' : 'Good terrain variety.'}`,
-    value:   `Week pass €${resort.lift_pass_week_eur}. ${resort.value_score >= 8 ? 'Excellent value for money.' : 'Reasonable pricing for what it offers.'}`,
-    access:  `${resort.airport_distance_km}km from ${resort.nearest_airport} airport. ${resort.airport_distance_km < 100 ? 'Very easy to reach.' : 'Manageable transfer.'}`,
-    family:  `Family score ${resort.family_friendly_score}/10. ${resort.beginner_score >= 7 ? 'Strong beginner terrain and ski school.' : 'Good facilities for families.'}`,
-    apres:   `Après-ski score ${resort.apres_ski_score}/10. ${resort.apres_ski_score >= 9 ? 'Among the best nightlife in the Alps.' : 'Good bar and restaurant scene.'}`,
+    snow:    `Snösäkerhet ${resort.snow_guarantee_score}/10. ${resort.altitude_top > 2500 ? 'Höjden gör snötäcket pålitligt.' : 'Bra snöhistorik för sin höjd.'}`,
+    terrain: `${resort.total_pistes_km} km pist, ${resort.black_percent} procent svarta nedfarter. ${resort.off_piste_score >= 8 ? 'Ovanligt bra offpist.' : 'Varierad terräng.'}`,
+    value:   `Veckokort €${resort.lift_pass_week_eur}. ${resort.value_score >= 8 ? 'Mycket för pengarna.' : 'Rimligt pris för det du får.'}`,
+    access:  `${restidText} från ${resort.nearest_airport}. ${resort.transfer_minutes && resort.transfer_minutes <= 90 ? 'Snabbt att ta sig dit.' : 'Överkomlig transfer.'}`,
+    family:  `Familjebetyg ${resort.family_friendly_score}/10. ${resort.beginner_score >= 7 ? 'Bra nybörjarterräng och skidskola.' : 'Bra utbud för barnfamiljer.'}`,
+    apres:   `Afterski ${resort.apres_ski_score}/10. ${resort.apres_ski_score >= 9 ? 'Hör till Alpernas livligaste.' : 'Gott om barer och restauranger.'}`,
   };
   return reasons[p] || reasons.snow;
 }
@@ -316,7 +334,12 @@ export default function PlanPage() {
   const onMtn = budget - flights - hotel;
 
   // Build month/skill/party/length options with translated labels
-  const monthOptions = ['December', 'January', 'February', 'March', 'April'].map(m => ({ value: m, label: t.plan.step1.months[m] }));
+  // Erbjöd tidigare bara december–april. Det stängde ute orter som
+  // faktiskt har öppet: Sölden, Levi och Ruka drar igång i oktober, och
+  // Riksgränsens säsong är februari till maj — den kunde alltså aldrig
+  // matcha någon månad man kunde välja.
+  const monthOptions = ['October', 'November', 'December', 'January', 'February', 'March', 'April', 'May']
+    .map(m => ({ value: m, label: t.plan.step1.months[m] }));
   const skillOptions = ['Beginner', 'Intermediate', 'Advanced', 'Expert'].map(s => ({ value: s, label: t.plan.step1.skills[s] }));
   const partyOptions = ['Solo', 'Couple', 'Group', 'Family with kids'].map(p => ({ value: p, label: t.plan.step1.parties[p] }));
   const lengthOptions = [4, 7, 10, 14].map(d => ({ value: d, label: t.plan.step1b.lengths[d] }));

@@ -51,14 +51,26 @@ function getSkillScore(resort, skill) {
   return (map[skill] || resort.intermediate_score) / 10;
 }
 
+// Tillgänglighet räknas på uppmätt restid, inte på avståndet till
+// flygplatsen. Avståndet visste inget om serpentinvägar: Val Thorens
+// ligger 180 km från Genève men tar tre timmar, medan Chamonix på 90 km
+// tar drygt en.
+//
+// KVARSTÅR: poängen mäter transfern från flygplatsen, inte hela resan
+// hemifrån. Hemavan får därför högsta betyg för en flygplats fem
+// kilometer bort, oavsett hur få avgångar den har, medan Åre straffas
+// för timmen från Östersund trots att nattåget går ända in i byn. Att
+// lösa det kräver ett fält för total restid från Sverige — eget arbete,
+// och ett beslut om varifrån man ska räkna.
 function getAccessScore(resort) {
-  const km = resort.airport_distance_km;
-  if (!km) return 0.5;
-  if (km < 50)  return 1.0;
-  if (km < 100) return 0.9;
-  if (km < 150) return 0.75;
-  if (km < 200) return 0.6;
-  if (km < 300) return 0.45;
+  const minuter = resort.transfer_minutes;
+  if (!minuter) return 0.5;
+  if (minuter <= 30)  return 1.0;
+  if (minuter <= 60)  return 0.9;
+  if (minuter <= 90)  return 0.8;
+  if (minuter <= 120) return 0.7;
+  if (minuter <= 180) return 0.55;
+  if (minuter <= 240) return 0.4;
   return 0.3;
 }
 

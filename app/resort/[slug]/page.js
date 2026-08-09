@@ -329,6 +329,21 @@ export default async function ResortPage({ params }) {
             {/* Terrain */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Terräng</h2>
+
+              {/* Utan den här raden ser tre orter i Les 3 Vallées ut att ha
+                  identiska siffror av misstag. Se migration 004. */}
+              {resort.ski_area && (
+                <p style={{
+                  fontFamily: 'var(--font-body)', fontSize: 12,
+                  color: 'rgba(255,255,255,0.35)', lineHeight: 1.6,
+                  margin: '-12px 0 18px',
+                }}>
+                  Pist, liftar och höjder avser hela{' '}
+                  <span style={{ color: '#D4A574' }}>{resort.ski_area}</span> — området
+                  du kommer åt med liftkortet, inte bara {resort.name}.
+                </p>
+              )}
+
               <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 12 }}>
                 <div style={{ width: `${resort.blue_percent}%`, background: '#3b82f6' }} />
                 <div style={{ width: `${resort.red_percent}%`, background: '#ef4444' }} />
@@ -416,7 +431,10 @@ export default async function ResortPage({ params }) {
               <div style={{ ...card, padding: '20px 24px', marginBottom: 10 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
                   {[
-                    { label: 'Närmaste flygplats', value: resort.nearest_airport },
+                    // "Flyg till", inte "Närmaste flygplats" — fältet anger porten
+                    // hit, den flygplats man faktiskt kan boka sig till från
+                    // Sverige. Den geografiskt närmaste saknar ibland trafik.
+                    { label: 'Flyg till',          value: resort.nearest_airport },
                     { label: 'Avstånd',            value: `${resort.airport_distance_km} km` },
                     { label: 'Ungefärlig restid',  value: estimatedTransferMins },
                     { label: 'Boendeområde',       value: resort.accommodation_zone },
@@ -514,7 +532,7 @@ export default async function ResortPage({ params }) {
                   { label: 'Dagskort',       value: `€${resort.lift_pass_day_eur}` },
                   { label: 'Veckokort',      value: `€${resort.lift_pass_week_eur}` },
                   { label: 'Snöfall i snitt', value: `${resort.avg_snowfall_cm} cm` },
-                  { label: 'Flygplats',      value: resort.nearest_airport },
+                  { label: 'Flyg till',      value: resort.nearest_airport },
                   { label: 'Restid',         value: estimatedTransferMins },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>

@@ -9,22 +9,22 @@
     "title1": "Varje berg",
     "title2": "berättar en egen",
     "title3": "historia.",
-    "description": "Vi jämför snö, terräng, pris och karaktär för {count} skidorter världen över — så att du hittar den som verkligen passar dig.",
+    "description": "Vi jämför snö, terräng, pris och karaktär för {count} skidorter i Alperna och Norden — så att du hittar den som verkligen passar dig.",
     "browseResorts": "Utforska skidorter ↓",
     "planTrip": "Planera en resa"
   },
   "mission": {
-    "intro": "De flesta skidverktyg visar en lista med skidorter och hoppas att du klarar resten själv.",
+    "intro": "De flesta skidsajter radar upp orter och hoppas att du klarar resten själv.",
     "title1": "Vi matchar berget",
     "title2": "med",
     "title3": "skidåkaren.",
-    "description": "Snödjup, terrängmix, bykänsla, budget, restid — vi poängsätter allt så att du spenderar mindre tid på research och mer tid på pisten."
+    "description": "Snösäkerhet, terräng, bykänsla, budget och restid — vi väger allt, så att du lägger mindre tid på att leta och mer på att åka."
   },
   "resorts": {
     "title": "Skidorter",
     "destinations": "destinationer",
     "destination": "destination",
-    "searchPlaceholder": "Sök efter namn, land eller känsla...",
+    "searchPlaceholder": "Sök på ort, region eller land...",
     "noResults": "Inga resultat",
     "noResultsHint": "Prova ett annat namn eller land.",
     "all": "Alla"
@@ -40,7 +40,7 @@
     "eyebrow": "Reseplanerare",
     "headline1": "Hitta ditt",
     "headline2": "berg.",
-    "intro": "Berätta vad du vill, sätt din budget — vi rankar alla skidorter i databasen efter dina önskemål.",
+    "intro": "Berätta vad du vill ha och vad det får kosta — vi rangordnar alla skidorter efter dina önskemål.",
     "stepLabels": {
       "1": "Vad du vill",
       "2": "Dina skidorter",
@@ -52,16 +52,19 @@
       "subtitle": "Berätta om din resa — vi hittar skidorter som verkligen passar.",
       "monthLabel": "När åker du?",
       "months": {
+        "October": "Oktober",
+        "November": "November",
         "December": "December",
         "January": "Januari",
         "February": "Februari",
         "March": "Mars",
-        "April": "April"
+        "April": "April",
+        "May": "Maj"
       },
       "skillLabel": "Åknivå",
       "skills": {
         "Beginner": "Nybörjare",
-        "Intermediate": "Medel",
+        "Intermediate": "Mellannivå",
         "Advanced": "Avancerad",
         "Expert": "Expert"
       },
@@ -74,22 +77,22 @@
       },
       "prioritiesLabel": "Vad är viktigast?",
       "prioritiesHint": "Välj upp till 3 — första valet väger tyngst",
-      "statusEmpty": "Inget valt ännu — vi använder balanserad viktning",
+      "statusEmpty": "Inget valt ännu — vi viktar allt lika",
       "statusPartial": "{n} valda — välj {remaining} till eller fortsätt",
-      "statusFull": "3 valda — klicka på någon för att avmarkera",
+      "statusFull": "3 valda — klicka på någon för att ångra",
       "priorities": {
         "snow": { "label": "Bäst snö", "hint": "Pålitligt snötäcke, hög höjd" },
-        "terrain": { "label": "Stor terräng", "hint": "Pistkilometer, off-pist, fall" },
-        "value": { "label": "Prisvärt", "hint": "Liftkort, boende" },
-        "access": { "label": "Lättillgänglig", "hint": "Kort transfer från flyget" },
+        "terrain": { "label": "Stor terräng", "hint": "Pistkilometer, offpist, fallhöjd" },
+        "value": { "label": "Prisvärt", "hint": "Liftkort och boende" },
+        "access": { "label": "Lättillgänglig", "hint": "Kort restid från flygplatsen" },
         "family": { "label": "Familj", "hint": "Skidskola, lätta pister" },
         "apres": { "label": "Afterski", "hint": "Barer, nattliv, stämning" }
       }
     },
     "step1b": {
-      "label": "Steg 2 av 3",
+      "label": "Steg 1 av 3",
       "title": "Vad får det kosta?",
-      "subtitle": "Totalt per person — flyg, hotell, liftkort och mat ingår.",
+      "subtitle": "Totalt per person — flyg, boende, liftkort och mat ingår.",
       "tripLengthLabel": "Reslängd",
       "lengths": {
         "4": "4 dagar",
@@ -100,46 +103,46 @@
       "budgetLabel": "Total budget per person",
       "perPerson": "per person, totalt",
       "flights": "✈ Flyg",
-      "hotel": "🏨 Hotell",
+      "hotel": "🏨 Boende",
       "onMountain": "🎿 På berget",
       "returnPp": "Tur och retur",
       "nightsPp": "{n} nätter",
-      "passFood": "Liftkort + mat, {n} dagar",
+      "passFood": "Liftkort och mat, {n} dagar",
       "cta": "Visa mina skidorter →"
     },
     "step2": {
       "label": "Steg 2 av 3",
       "title": "Dina skidorter",
-      "subtitle": "Rankade efter hur väl de matchar dina önskemål. Klicka på en för att fortsätta.",
+      "subtitle": "Rangordnade efter hur väl de matchar dina önskemål. Klicka på en för att fortsätta.",
       "balanced": "Balanserad",
       "daysChip": "{n} dagar",
       "chips": {
         "snow": "❄ Snö",
         "terrain": "⛰ Terräng",
-        "value": "💰 Värde",
+        "value": "💰 Prisvärde",
         "access": "✈ Tillgänglighet",
         "family": "🏠 Familj",
         "apres": "🎉 Afterski"
       },
       "snowBadge": "Snö {n}",
-      "kmBadge": "{n}km",
+      "kmBadge": "{n} km",
       "valueBadge": "Prisvärt",
-      "transferBadge": "{n}km transfer",
-      "noResults": "Inga skidorter matchade dina filter. Prova en högre budget eller annan månad.",
-      "editPrefs": "← Ändra inställningar"
+      "transferBadge": "{n} km transfer",
+      "noResults": "Ingen skidort matchade dina val. Prova en högre budget eller en annan månad.",
+      "editPrefs": "← Ändra dina val"
     },
     "step3": {
       "label": "Steg 3 av 3",
       "title": "Boka din resa",
       "resortLabel": "Skidort:",
-      "airportLabel": "Närmaste flygplats:",
-      "transferText": "{n}km transfer",
+      "airportLabel": "Flyg till:",
+      "transferText": "{n} km transfer",
       "flyingFrom": "Avresa från",
       "airportPlaceholder": "Skriv stad eller flygplats...",
       "departureDate": "Avresedatum",
       "returnDate": "Hemkomstdatum",
       "searchFlights": "Sök flyg på Skyscanner →",
-      "findHotels": "Hitta hotell på Booking.com →",
+      "findHotels": "Hitta boende på Booking.com →",
       "summaryTitle": "Reseöversikt",
       "summary": {
         "resort": "Skidort",
@@ -147,12 +150,12 @@
         "dates": "Datum",
         "flyingFrom": "Avresa från",
         "flyTo": "Flyg till",
-        "transfer": "Transfer",
+        "transfer": "Restid",
         "budget": "Budget"
       },
       "notSet": "Ej angivet",
       "airportSuffix": "{n} flygplats",
-      "transferToResort": "{n}km till skidorten",
+      "transferToResort": "{n} km till skidorten",
       "budgetPerPerson": "€{n} per person",
       "viewDetails": "Se hela skidortssidan →",
       "backToResults": "← Tillbaka till resultat",

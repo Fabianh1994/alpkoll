@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { PLANERAREN_SYNLIG } from '../../lib/features';
 
 export default function AboutPage() {
   const [scrolled, setScrolled] = useState(false);
@@ -32,9 +33,11 @@ export default function AboutPage() {
         }}>ALPKOLL</Link>
         <div style={{ display: 'flex', gap: 28, alignItems: 'center' }}>
           {[
-            { label: 'Resorts', href: '/#resorts' },
-            { label: 'Plan a Trip', href: '/plan' },
-            { label: 'About', href: '/about' },
+            { label: 'Skidorter', href: '/#resorts' },
+            // Reseplaneraren är dold — se lib/features.js. Den här sidan
+            // har en egen meny och missades när länkarna togs bort.
+            ...(PLANERAREN_SYNLIG ? [{ label: 'Planera resa', href: '/plan' }] : []),
+            { label: 'Om oss', href: '/about' },
           ].map(item => (
             <Link key={item.label} href={item.href} style={{
               fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,

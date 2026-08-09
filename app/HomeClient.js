@@ -6,6 +6,8 @@ import { useDictionary } from '../lib/useDictionary';
 import { farOptimeras } from '../lib/images';
 import { PLANERAREN_SYNLIG } from '../lib/features';
 import { land, ALLA_LANDER } from '../lib/countries';
+import SiteHeader from './SiteHeader';
+import SiteFooter from './SiteFooter';
 
 const heroImage = 'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg';
 
@@ -119,12 +121,13 @@ export default function HomeClient({ resorts }) {
   const [search, setSearch] = useState('');
   // Sentinel, inte den översatta etiketten — se lib/countries.js.
   const [country, setCountry] = useState(ALLA_LANDER);
-  const [scrolled, setScrolled] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [heroVisible, setHeroVisible] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => { setScrolled(window.scrollY > 40); setScrollY(window.scrollY); };
+    // Menyns egen scrollyta ligger numera i SiteHeader. Här behövs bara
+    // positionen till hjältebildens parallax.
+    const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', onScroll, { passive: true });
     setTimeout(() => setHeroVisible(true), 200);
     return () => window.removeEventListener('scroll', onScroll);
@@ -154,31 +157,7 @@ export default function HomeClient({ resorts }) {
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
       <NoiseOverlay />
 
-      <style>{`
-        @media (max-width: 600px) {
-          .nav-links { display: none !important; }
-        }
-      `}</style>
-
-      <nav style={{
-        position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: 52, width: 'min(92vw, 860px)',
-        background: scrolled ? 'rgba(18,17,16,0.88)' : 'rgba(18,17,16,0.18)',
-        backdropFilter: scrolled ? 'blur(20px)' : 'blur(6px)',
-        border: `1px solid ${scrolled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)'}`,
-        borderRadius: 50, transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)',
-      }}>
-        <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none' }}>ALPKOLL</Link>
-        <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
-          <div className="nav-links" style={{ display: 'flex', gap: 22 }}>
-            {[{ label: t.nav.resorts, href: '#resorts' }, { label: t.nav.about, href: '/about' }].map(item => (
-              <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase', transition: 'color 0.25s' }}>{item.label}</a>
-            ))}
-          </div>
-          {PLANERAREN_SYNLIG && <MagBtn href="/plan" primary pill>{t.nav.planTrip}</MagBtn>}
-        </div>
-      </nav>
+      <SiteHeader genomskinligOverst />
 
       <header style={{ position: 'relative', height: '100vh', minHeight: 600, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 clamp(24px, 4vw, 64px) clamp(60px, 10vh, 140px)', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('${heroImage}')`, backgroundSize: 'cover', backgroundPosition: 'center 30%', transform: `scale(1.06) translateY(-${parallaxY * 0.25}px)`, willChange: 'transform' }} />
@@ -234,27 +213,7 @@ export default function HomeClient({ resorts }) {
         )}
       </section>
 
-      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 20 }}>
-          <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>{t.footer.copyright}</span>
-        </div>
-        <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)' }}>
-          {[
-            { href: '/privacy', label: t.footer.privacy },
-            { href: '/terms', label: t.footer.terms },
-            { href: '/affiliate-disclosure', label: t.footer.affiliate },
-            { href: '/about', label: t.footer.about },
-          ].map(link => (
-            <a key={link.href} href={link.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s ease' }}
-              onMouseEnter={e => e.target.style.color = '#D4A574'}
-              onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.25)'}
-            >{link.label}</a>
-          ))}
-          {/* Språkväxlaren är borttagen: alpkoll.com redirectar till .se,
-              så länken hade bara skickat besökaren tillbaka hit. */}
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

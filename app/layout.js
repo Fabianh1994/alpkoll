@@ -1,18 +1,31 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bebas_Neue, Barlow } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import MobileNav from "./MobileNav";
 import { LangProvider } from "../lib/LangContext";
 import { SITE_LANG, SITE_URL } from "../lib/lang";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Varenda rubrik och brödtext på sajten anger var(--font-heading) eller
+// var(--font-body). Variablerna definierades aldrig någonstans, så alla
+// deklarationerna var ogiltiga och allt föll tillbaka på body-regeln i
+// globals.css — hela alpkoll.se renderades i Arial. Geist laddades men
+// pekades aldrig ut av något.
+//
+// Bebas Neue och Barlow är de typsnitt sajten var ritad för; de låg
+// hårdkodade i de tre lagsidorna utan att laddas. Latin-ext behövs för
+// å, ä och ö.
+const heading = Bebas_Neue({
+  variable: "--font-heading",
+  subsets: ["latin", "latin-ext"],
+  weight: "400",
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const body = Barlow({
+  variable: "--font-body",
+  subsets: ["latin", "latin-ext"],
+  weight: ["300", "400", "500", "600"],
+  display: "swap",
 });
 
 export function generateMetadata() {
@@ -69,7 +82,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang={SITE_LANG}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${heading.variable} ${body.variable} antialiased`}
       >
         <LangProvider lang={SITE_LANG}>
           {children}

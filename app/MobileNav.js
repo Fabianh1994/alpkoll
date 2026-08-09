@@ -8,7 +8,7 @@ export default function MobileNav() {
 
   const tabs = [
     {
-      label: 'Resorts',
+      label: 'Skidorter',
       href: '/#resorts',
       icon: (active) => (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -18,7 +18,7 @@ export default function MobileNav() {
       isActive: pathname === '/',
     },
     {
-      label: 'About',
+      label: 'Om oss',
       href: '/about',
       icon: (active) => (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

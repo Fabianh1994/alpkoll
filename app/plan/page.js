@@ -5,6 +5,8 @@ import { createClient } from '@supabase/supabase-js';
 import { useDictionary } from '../../lib/useDictionary';
 import { oppenIManad } from '../../lib/months';
 import { formateraRestid } from '../../lib/travel';
+import SiteHeader from '../SiteHeader';
+import SiteFooter from '../SiteFooter';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -347,26 +349,9 @@ export default function PlanPage() {
   return (
     <div style={{ background: T.bg, minHeight: '100vh', color: T.text }}>
 
-      <style>{`@media (max-width: 600px) { .nav-links { display: none !important; } }`}</style>
-
-      {/* ── Pill Nav ── */}
-      <nav style={{
-        position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: 52, width: 'min(92vw, 860px)',
-        background: 'rgba(18,17,16,0.88)', backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.07)', borderRadius: 50,
-      }}>
-        <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: T.text, letterSpacing: '0.06em', textDecoration: 'none' }}>ALPKOLL</Link>
-        <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
-          <div className="nav-links" style={{ display: 'flex', gap: 22 }}>
-            {[{ label: t.nav.resorts, href: '/#resorts' }, { label: t.nav.about, href: '/about' }].map(item => (
-              <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase' }}>{item.label}</a>
-            ))}
-          </div>
-          <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: T.accent, textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t.nav.planTrip}</Link>
-        </div>
-      </nav>
+      {/* Planeraren hade en fjärde kopia av menyn. Den delade komponenten
+          gäller även här, så sidan är rätt den dag flaggan tänds igen. */}
+      <SiteHeader />
 
       <main style={{ maxWidth: 740, margin: '0 auto', padding: '90px clamp(24px, 4vw, 48px) 120px' }}>
 
@@ -620,10 +605,7 @@ export default function PlanPage() {
 
       </main>
 
-      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: `1px solid ${T.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>{t.footer.copyright}</span>
-      </footer>
+      <SiteFooter />
 
     </div>
   );

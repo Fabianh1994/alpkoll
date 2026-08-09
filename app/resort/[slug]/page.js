@@ -3,6 +3,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { farOptimeras } from '../../../lib/images'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
+import SiteHeader from '../../SiteHeader'
+import SiteFooter from '../../SiteFooter'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
@@ -190,9 +192,6 @@ export default async function ResortPage({ params }) {
             display: block;
             margin-bottom: 48px;
           }
-          .nav-links-desktop {
-            display: none;
-          }
           .hero-stat-pills {
             gap: 6px;
           }
@@ -202,31 +201,7 @@ export default async function ResortPage({ params }) {
         }
       `}</style>
 
-      {/* ── Pill Nav ── */}
-      <nav style={{
-        position: 'fixed', top: 14, left: '50%', transform: 'translateX(-50%)',
-        zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '0 24px', height: 52, width: 'min(92vw, 860px)',
-        background: 'rgba(18,17,16,0.88)', backdropFilter: 'blur(20px)',
-        border: '1px solid rgba(255,255,255,0.07)',
-        borderRadius: 50,
-      }}>
-        <Link href="/" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.06em', textDecoration: 'none' }}>
-          ALPKOLL
-        </Link>
-        <div className="nav-links-desktop" style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
-          {[{ label: 'Skidorter', href: '/#resorts' }, { label: 'Om oss', href: '/about' }].map(item => (
-            <a key={item.label} href={item.href} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.45)', textDecoration: 'none', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-              {item.label}
-            </a>
-          ))}
-          {PLANERAREN_SYNLIG && (
-            <Link href="/plan" style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, color: '#121110', background: '#D4A574', textDecoration: 'none', padding: '8px 18px', borderRadius: 40, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-              Planera resa
-            </Link>
-          )}
-        </div>
-      </nav>
+      <SiteHeader />
 
       {/* ── Hero ── */}
       <div style={{ position: 'relative', height: '75vh', minHeight: 520, overflow: 'hidden' }}>
@@ -575,11 +550,7 @@ export default async function ResortPage({ params }) {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer style={{ padding: '40px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-        <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.06em' }}>ALPKOLL</span>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.15)' }}>© 2026 — Jämför berg, hitta ditt.</span>
-      </footer>
+      <SiteFooter />
 
     </div>
   )

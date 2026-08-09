@@ -1,143 +1,85 @@
 // app/terms/page.js
+import JuridiskSida, { Avsnitt, Lank, KONTAKT } from '../JuridiskSida';
+
 export const metadata = {
-  title: 'Terms of Use — Alpkoll',
-  description: 'Terms and conditions for using Alpkoll, a ski resort comparison tool.',
+  title: 'Användarvillkor — Alpkoll',
+  description:
+    'Villkoren för att använda Alpkoll: vad sajten är, vad siffrorna bygger på och vad vi inte lovar.',
+  alternates: { canonical: '/terms' },
 };
 
 export default function TermsPage() {
   return (
-    <main style={{
-      minHeight: '100vh',
-      background: '#121110',
-      color: '#f0ece4',
-      padding: '120px clamp(24px, 4vw, 64px) 80px',
-    }}>
-      <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        {/* Header */}
-        <p style={{
-          fontFamily: "'Barlow', sans-serif",
-          fontSize: 12,
-          fontWeight: 600,
-          color: '#D4A574',
-          letterSpacing: '0.15em',
-          textTransform: 'uppercase',
-          marginBottom: 12,
-        }}>
-          LEGAL
+    <JuridiskSida titel="Användarvillkor" uppdaterad="augusti 2026">
+      <Avsnitt titel="Vad Alpkoll är">
+        <p>
+          Alpkoll är ett kostnadsfritt verktyg för att jämföra skidorter. Vi
+          hjälper dig att utforska och ställa orter mot varandra utifrån
+          offentligt tillgängliga uppgifter om snö, terräng, priser och
+          resväg. Vi säljer varken liftkort, flyg eller boende.
         </p>
-        <h1 style={{
-          fontFamily: "'Bebas Neue', sans-serif",
-          fontSize: 'clamp(36px, 5vw, 56px)',
-          color: '#f0ece4',
-          letterSpacing: '0.03em',
-          lineHeight: 1.1,
-          marginBottom: 12,
-        }}>
-          Terms of Use
-        </h1>
-        <p style={{
-          fontFamily: "'Barlow', sans-serif",
-          fontSize: 14,
-          color: 'rgba(255,255,255,0.3)',
-          marginBottom: 48,
-        }}>
-          Last updated: March 2026
+      </Avsnitt>
+
+      <Avsnitt titel="Inga garantier">
+        <p>
+          Uppgifterna om orterna — priser, snödjup, säsongsdatum, pistlängder —
+          är hämtade från offentliga källor och uppdateras för hand. Vi gör vad
+          vi kan för att hålla dem korrekta, men förhållanden ändras. Kontrollera
+          alltid avgörande uppgifter hos orten eller researrangören innan du
+          bokar.
         </p>
+        <p style={{ marginTop: 12 }}>
+          Alpkoll tillhandahålls i befintligt skick, utan garantier av något
+          slag. Vi ansvarar inte för beslut som fattas utifrån det som visas
+          här.
+        </p>
+      </Avsnitt>
 
-        {/* Content */}
-        <div style={{
-          fontFamily: "'Barlow', sans-serif",
-          fontSize: 15,
-          lineHeight: 1.8,
-          color: 'rgba(255,255,255,0.65)',
-        }}>
-          <Section title="What Alpkoll is">
-            <p>
-              Alpkoll is a free ski resort comparison tool. We help you explore and compare 
-              ski resorts based on publicly available data such as snow conditions, terrain, 
-              pricing, and accessibility. We do not sell lift passes, flights, or accommodation directly.
-            </p>
-          </Section>
+      <Avsnitt titel="Affiliate-länkar">
+        <p>
+          Vissa länkar på Alpkoll går vidare till tredjepartstjänster, till
+          exempel Booking.com. Det är affiliate-länkar, vilket betyder att vi
+          kan få en mindre provision om du bokar via dem. Priset du betalar
+          påverkas inte.
+        </p>
+        <p style={{ marginTop: 12 }}>
+          Samarbetena påverkar inte hur orterna presenteras eller i vilken
+          ordning de visas. Det avgörs av data — samma källa och samma fält för
+          alla orter — inte av kommersiella avtal. Läs mer i vår{' '}
+          <Lank href="/affiliate-disclosure">affiliateinformation</Lank>.
+        </p>
+      </Avsnitt>
 
-          <Section title="No guarantees">
-            <p>
-              Resort data (prices, snow depths, season dates, piste counts) is collected from 
-              public sources and updated manually. While we do our best to keep it accurate, 
-              conditions change — always verify critical details with the resort or provider 
-              before booking.
-            </p>
-            <p style={{ marginTop: 12 }}>
-              Alpkoll is provided &quot;as is&quot; without warranties of any kind. We are not 
-              responsible for decisions made based on information shown on this site.
-            </p>
-          </Section>
+      <Avsnitt titel="Din användning av sajten">
+        <p>
+          Du får använda Alpkoll för personligt, icke-kommersiellt bruk. Du får
+          inte skrapa, kopiera eller vidaredistribuera vårt innehåll eller vår
+          databas utan tillstånd.
+        </p>
+      </Avsnitt>
 
-          <Section title="Affiliate links">
-            <p>
-              Some links on Alpkoll point to third-party services such as Booking.com and 
-              Skyscanner. These are affiliate links, which means we may earn a small commission 
-              if you make a booking through them. This does not affect the price you pay.
-            </p>
-            <p style={{ marginTop: 12 }}>
-              Affiliate relationships do not influence our resort rankings or recommendations. 
-              Scoring is based on a transparent weighted formula using structured data — not 
-              on commercial partnerships. See our{' '}
-              <a href="/affiliate-disclosure" style={{ color: '#D4A574', textDecoration: 'none' }}>
-                Affiliate Disclosure
-              </a>{' '}
-              for more details.
-            </p>
-          </Section>
+      <Avsnitt titel="Immateriella rättigheter">
+        <p>
+          Namnet Alpkoll, logotypen, formgivningen och de texter vi själva
+          skrivit tillhör Alpkoll. Bilderna på orterna kommer från offentligt
+          tillgängligt material och används i informationssyfte.
+        </p>
+      </Avsnitt>
 
-          <Section title="Your use of the site">
-            <p>
-              You may use Alpkoll for personal, non-commercial purposes. You may not scrape, 
-              copy, or redistribute our content or database without permission.
-            </p>
-          </Section>
+      <Avsnitt titel="Ändringar i villkoren">
+        <p>
+          Vi kan komma att uppdatera de här villkoren. Att fortsätta använda
+          sajten efter att ändringar publicerats innebär att du godtar de
+          uppdaterade villkoren.
+        </p>
+      </Avsnitt>
 
-          <Section title="Intellectual property">
-            <p>
-              The Alpkoll name, logo, design, and original content are the property of Alpkoll. 
-              Resort photos used on the site are sourced from publicly available materials and 
-              are used for informational purposes.
-            </p>
-          </Section>
-
-          <Section title="Changes to these terms">
-            <p>
-              We may update these terms from time to time. Continued use of the site after 
-              changes are posted constitutes acceptance of the updated terms.
-            </p>
-          </Section>
-
-          <Section title="Contact">
-            <p>
-              Questions about these terms? Email us at{' '}
-              <a href="mailto:hello@alpkoll.com" style={{ color: '#D4A574', textDecoration: 'none' }}>
-                hello@alpkoll.com
-              </a>.
-            </p>
-          </Section>
-        </div>
-      </div>
-    </main>
-  );
-}
-
-function Section({ title, children }) {
-  return (
-    <div style={{ marginBottom: 40 }}>
-      <h2 style={{
-        fontFamily: "'Bebas Neue', sans-serif",
-        fontSize: 22,
-        color: '#f0ece4',
-        letterSpacing: '0.04em',
-        marginBottom: 12,
-      }}>
-        {title}
-      </h2>
-      {children}
-    </div>
+      <Avsnitt titel="Kontakt">
+        <p>
+          Frågor om villkoren? Skriv till{' '}
+          <Lank href={`mailto:${KONTAKT}`}>{KONTAKT}</Lank>.
+        </p>
+      </Avsnitt>
+    </JuridiskSida>
   );
 }

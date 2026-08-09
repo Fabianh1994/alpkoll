@@ -18,6 +18,12 @@ const nextConfig = {
   },
 
   images: {
+    // Bara källor vi får använda. Fyra ortbilder hotlänkas i dag från
+    // andra företags servrar — igluski.com, snowfinders.co.uk,
+    // skiresort.info och en squarespace-sajt. De står medvetet INTE här:
+    // att optimera dem skulle innebära att Alpkoll serverar kopior från
+    // sin egen domän, vilket är sämre än att bara länka. De renderas som
+    // vanliga img-taggar tills bilderna byts ut. Se lib/images.js.
     remotePatterns: [
       {
         protocol: 'https',
@@ -26,6 +32,11 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'images.unsplash.com',
+      },
+      {
+        // Egen Supabase-lagring, bland annat startsidans hjältebild.
+        protocol: 'https',
+        hostname: 'odlzoewjwyipiopttucv.supabase.co',
       },
     ],
   },

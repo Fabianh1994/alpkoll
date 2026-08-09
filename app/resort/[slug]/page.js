@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
+import { farOptimeras } from '../../../lib/images'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
@@ -73,6 +75,9 @@ export default async function ResortPage({ params }) {
   const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
   // Affiliate-länkar med separata labels så Partner Hub visar vilken
   // placering som faktiskt konverterar.
+  const heroImageUrl = resort.image_url
+    || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'
+
   const bookingDestination = resort.accommodation_zone || resort.name
   const bookingHrefMobile = bookingUrl(bookingDestination, { lang, label: `resort-mobile-${resort.slug}` })
   const bookingHrefStay = bookingUrl(bookingDestination, { lang, label: `resort-stay-${resort.slug}` })
@@ -222,11 +227,24 @@ export default async function ResortPage({ params }) {
 
       {/* ── Hero ── */}
       <div style={{ position: 'relative', height: '75vh', minHeight: 520, overflow: 'hidden' }}>
-        <img
-          src={resort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'}
-          alt={resort.name}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
-        />
+        {/* Hjältebilden är sidans LCP-element. Den optimeras när källan
+            får kopieras — se lib/images.js. */}
+        {farOptimeras(heroImageUrl) ? (
+          <Image
+            src={heroImageUrl}
+            alt={resort.name}
+            fill
+            priority
+            sizes="100vw"
+            style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
+          />
+        ) : (
+          <img
+            src={heroImageUrl}
+            alt={resort.name}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
+          />
+        )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.3) 0%, rgba(18,17,16,0.1) 35%, rgba(18,17,16,0.9) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
 

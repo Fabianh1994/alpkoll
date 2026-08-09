@@ -1,7 +1,9 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useDictionary } from '../lib/useDictionary';
+import { farOptimeras } from '../lib/images';
 import { land, ALLA_LANDER } from '../lib/countries';
 
 const heroImage = 'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg';
@@ -67,11 +69,28 @@ function ResortCard({ resort, t }) {
         boxShadow: hover ? '0 12px 36px rgba(0,0,0,0.32)' : 'none',
       }}>
         <div style={{ position: 'relative', height: 200, overflow: 'hidden', background: '#141210' }}>
-          <img src={resort.image_url} alt={resort.name} onLoad={() => setLoaded(true)} style={{
-            width: '100%', height: '100%', objectFit: 'cover', opacity: loaded ? 1 : 0,
-            transform: hover ? 'scale(1.06)' : 'scale(1)',
-            transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.4s',
-          }} />
+          {/* 32 kort i full originalstorlek är sidans tyngsta post.
+              Optimeras när källan får kopieras — se lib/images.js. */}
+          {farOptimeras(resort.image_url) ? (
+            <Image
+              src={resort.image_url}
+              alt={resort.name}
+              fill
+              sizes="(max-width: 700px) 100vw, 340px"
+              onLoad={() => setLoaded(true)}
+              style={{
+                objectFit: 'cover', opacity: loaded ? 1 : 0,
+                transform: hover ? 'scale(1.06)' : 'scale(1)',
+                transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.4s',
+              }}
+            />
+          ) : (
+            <img src={resort.image_url} alt={resort.name} onLoad={() => setLoaded(true)} style={{
+              width: '100%', height: '100%', objectFit: 'cover', opacity: loaded ? 1 : 0,
+              transform: hover ? 'scale(1.06)' : 'scale(1)',
+              transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.4s',
+            }} />
+          )}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(transparent, #1c1a17)' }} />
           <div style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 500, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.75)', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 4, letterSpacing: '0.03em' }}>
             {flags[resort.country] || ''} {land(resort.country)}

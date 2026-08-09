@@ -30,9 +30,17 @@ const body = Barlow({
 
 export function generateMetadata() {
   // Sajten körs enbart på svenska via alpkoll.se — se lib/lang.js.
-  const title = "Alpkoll — Jämför skidorter, planera din resa";
+  //
+  // Titeln bär sajtens avgränsning, eftersom namnet inte gör det: Alpkoll
+  // säger Alperna, men Norden är halva innehållet. Den lovade tidigare
+  // "planera din resa", vilket pekade på reseplaneraren som är dold sedan
+  // augusti 2026 — se lib/features.js.
+  const title = "Alpkoll — jämför skidorter i Alperna och Norden";
+  // "världen över" stämde när sex orter utanför Europa var publicerade.
+  // De är dolda sedan migration 003, och alla 32 publicerade ligger i
+  // Alperna eller Norden.
   const description =
-    "Jämför snö, terräng, pris och karaktär för skidorter världen över. Hitta skidorten som passar dig.";
+    "Jämför snö, terräng, pris och restid för skidorter i Alperna och Norden. Hitta skidorten som passar dig.";
   const baseUrl = SITE_URL;
 
   return {

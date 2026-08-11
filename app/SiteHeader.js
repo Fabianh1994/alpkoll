@@ -14,6 +14,7 @@ import { PLANERAREN_SYNLIG } from '../lib/features';
 
 const LANKAR = [
   { label: 'Skidorter', href: '/#resorts', match: (p) => p === '/' },
+  { label: 'Jämför', href: '/jamfor', match: (p) => p.startsWith('/jamfor') },
   { label: 'Om oss', href: '/about', match: (p) => p === '/about' },
 ];
 

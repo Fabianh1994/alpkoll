@@ -13,7 +13,7 @@
 // finns inte" på 352 av 435 par är inget verktyg. Vilka par vi
 // marknadsför är en annan fråga och avgörs i lib/jamfor.js.
 
-import { useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -25,9 +25,35 @@ const URVAL = [
   { id: 'alperna', etikett: 'Alperna' },
 ]
 
+/**
+ * Jämförbar form av en söksträng.
+ *
+ * Halva ortnamnen på sajten bär tecken som ingen skriver när det går
+ * fort: Åre, Sälen, Sölden, Kitzbühel, Riksgränsen, Méribel. NFD delar
+ * bokstaven i grundtecken och accent, och regexen kastar accenten — så
+ * "solden" hittar Sölden och "meribel" hittar Méribel.
+ *
+ * Det gäller åt båda hållen. Skriver någon "Åre" med rätt tecken matchar
+ * det fortfarande, eftersom namnet normaliseras på samma sätt.
+ *
+ * Accentintervallet skrivs som \u-koder och inte som tecknen själva. Ett
+ * kombinerande tecken i källkoden går inte att skilja från ingenting när
+ * man läser filen — samma skäl som det hårda mellanslaget i lib/pris.js.
+ */
+const ACCENTER = new RegExp('[\\u0300-\\u036f]', 'g')
+
+const normalisera = (text) =>
+  String(text || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(ACCENTER, '')
+    .trim()
+
 export default function Valjaren({ orter }) {
   const [valda, setValda] = useState([])
   const [urval, setUrval] = useState('alla')
+  const [sok, setSok] = useState('')
+  const sokRuta = useRef(null)
 
   // Tredje klicket ersätter den först valda i stället för att göra
   // ingenting. Att tvinga fram ett avmarkerande klick är en osynlig regel.
@@ -36,9 +62,38 @@ export default function Valjaren({ orter }) {
       f.includes(slug) ? f.filter((s) => s !== slug) : [...f, slug].slice(-2)
     )
 
-  const synliga = orter.filter(
-    (o) => urval === 'alla' || (urval === 'norden' ? o.nordisk : !o.nordisk)
+  const sokbara = useMemo(
+    () => orter.map((o) => ({ ...o, sokord: normalisera(`${o.name} ${o.land} ${o.region || ''}`) })),
+    [orter]
   )
+
+  const fras = normalisera(sok)
+
+  // Namn som börjar på det man skrivit läggs först. Skriver man "va" ska
+  // Val Thorens ligga före Riksgränsen, som bara råkar innehålla samma två
+  // bokstäver längre in.
+  const synliga = useMemo(() => {
+    const iUrvalet = sokbara.filter(
+      (o) => urval === 'alla' || (urval === 'norden' ? o.nordisk : !o.nordisk)
+    )
+    if (!fras) return iUrvalet
+
+    const traffar = iUrvalet.filter((o) => o.sokord.includes(fras))
+    return traffar.sort((x, y) => {
+      const xb = normalisera(x.name).startsWith(fras)
+      const yb = normalisera(y.name).startsWith(fras)
+      return xb === yb ? 0 : xb ? -1 : 1
+    })
+  }, [sokbara, urval, fras])
+
+  // Enter väljer den översta träffen och tömmer rutan, så att hela flödet
+  // går att göra från tangentbordet: skriv, enter, skriv, enter.
+  const sokTangent = (e) => {
+    if (e.key !== 'Enter' || !synliga.length) return
+    e.preventDefault()
+    vaxla(synliga[0].slug)
+    setSok('')
+  }
 
   const [a, b] = valda
   const klar = valda.length === 2
@@ -80,7 +135,16 @@ export default function Valjaren({ orter }) {
           gap: 12px;
           align-items: center;
         }
+        .valj-sok {
+          display: flex;
+          gap: 10px;
+          align-items: center;
+          flex-wrap: wrap;
+        }
+        .valj-sok input::placeholder { color: rgba(255,255,255,0.28); }
+        .valj-sok input:focus { border-color: ${ACCENT}; }
         @media (max-width: 640px) {
+          .valj-sok > div:first-child { flex-basis: 100%; }
           .valj-rutnat { grid-template-columns: 1fr 1fr; gap: 8px; }
           .valj-lada { grid-template-columns: 1fr 1fr; }
           .valj-lada > :last-child { grid-column: 1 / -1; }
@@ -125,8 +189,42 @@ export default function Valjaren({ orter }) {
         )}
       </div>
 
-      {/* ── Urvalet ── */}
-      <div style={{ display: 'flex', gap: 8, margin: '28px 0 16px' }}>
+      {/* ── Sök och urval ──
+          Sökrutan finns för att den som redan vet vilka två orter hon
+          menar inte ska behöva leta i ett rutnät på trettio kort. */}
+      <div className="valj-sok" style={{ margin: '28px 0 16px' }}>
+        <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
+          <input
+            ref={sokRuta}
+            type="search"
+            value={sok}
+            onChange={(e) => setSok(e.target.value)}
+            onKeyDown={sokTangent}
+            placeholder="Skriv ortens namn…"
+            aria-label="Sök skidort"
+            style={{
+              width: '100%', boxSizing: 'border-box',
+              fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#f0ece4',
+              background: '#1c1a17', border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 40, padding: '11px 40px 11px 18px', outline: 'none',
+            }}
+          />
+          {sok && (
+            <button
+              type="button"
+              onClick={() => { setSok(''); sokRuta.current?.focus() }}
+              aria-label="Rensa sökningen"
+              style={{
+                position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)',
+                width: 26, height: 26, borderRadius: '50%', border: 'none',
+                background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.55)',
+                fontFamily: 'var(--font-body)', fontSize: 13, lineHeight: 1, cursor: 'pointer',
+              }}
+            >×</button>
+          )}
+        </div>
+
+        <div style={{ display: 'flex', gap: 8 }}>
         {URVAL.map((v) => (
           <button key={v.id} onClick={() => setUrval(v.id)} style={{
             fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500,
@@ -137,11 +235,19 @@ export default function Valjaren({ orter }) {
             borderRadius: 40, padding: '7px 16px', cursor: 'pointer',
           }}>{v.etikett}</button>
         ))}
+        </div>
       </div>
 
       {/* ── Korten ──
           Bild plus de två tal som skiljer orterna mest, så skillnaden
           syns redan medan man väljer. */}
+      {synliga.length === 0 && (
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '4px 0 0' }}>
+          Ingen ort heter något i den stilen — åtminstone ingen av de {orter.length} vi har.
+          {urval !== 'alla' && ' Prova "Alla" om du filtrerat bort halva listan.'}
+        </p>
+      )}
+
       <div className="valj-rutnat">
         {synliga.map((ort) => {
           const plats = valda.indexOf(ort.slug)

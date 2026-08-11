@@ -52,6 +52,9 @@ export default async function JamforIndex() {
     slug: ort.slug,
     name: ort.name,
     land: land(ort.country),
+    // Följer med för sökningen, inte för kortet: "jämtland" och "tyrolen"
+    // är rimliga saker att skriva när man inte minns ortens namn.
+    region: ort.region,
     nordisk: arNordisk(ort),
     bild: ort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
     optimeras: farOptimeras(ort.image_url),

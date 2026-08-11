@@ -1,15 +1,19 @@
 import Link from 'next/link'
 import SiteHeader from '../SiteHeader'
 import SiteFooter from '../SiteFooter'
+import Valjaren from './Valjaren'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
+import { land } from '../../lib/countries'
+import { euro } from '../../lib/pris'
+import { farOptimeras } from '../../lib/images'
 import { arNordisk, parSlugsFor } from '../../lib/jamfor'
 
 export const revalidate = 3600
 
 const titel = 'Jämför skidorter — Alperna och Norden | Alpkoll'
 const beskrivning =
-  'Två skidorter sida vid sida: pist, liftar, höjder, liftkort och resan från Sverige. Samma källa för båda orterna, så talen går att ställa mot varandra.'
+  'Välj två skidorter och ställ dem mot varandra: storlek, vad veckan kostar, fallhöjd och resan från Sverige. Samma källa för båda orterna.'
 
 export const metadata = {
   title: titel,
@@ -26,100 +30,75 @@ export const metadata = {
   },
 }
 
+// En handfull utvalda par under väljaren, inte alla 83. Listan finns för
+// att ge sidan en ingång åt den som inte vet vad hon letar efter, och för
+// att ge de kuraterade sidorna interna länkar. Resten når Google via
+// sitemapen.
+const UTVALDA = [
+  'are-vs-salen',
+  'are-vs-solden',
+  'salen-vs-trysil',
+  'are-vs-trysil',
+  'ischgl-vs-salen',
+  'hemsedal-vs-trysil',
+  'are-vs-chamonix',
+  'riksgransen-vs-salen',
+]
+
 export default async function JamforIndex() {
   const orter = await getResorts()
+
+  const forValjaren = orter.map((ort) => ({
+    slug: ort.slug,
+    name: ort.name,
+    land: land(ort.country),
+    nordisk: arNordisk(ort),
+    bild: ort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
+    optimeras: farOptimeras(ort.image_url),
+    pist: ort.total_pistes_km,
+    vecka: euro(ort.est_weekly_cost_eur),
+  }))
+
   const namn = new Map(orter.map((ort) => [ort.slug, ort.name]))
-  const nordisk = new Map(orter.map((ort) => [ort.slug, arNordisk(ort)]))
-
-  // Adressen har slugarna i bokstavsordning, men etiketten behöver det
-  // inte. Utan omkastningen står "Alpe d'Huez eller Åre" bredvid "Åre
-  // eller Chamonix" i samma lista, och kolumnen ser ut att sakna ordning.
-  // Den svenska orten först är också den läsningen listan handlar om:
-  // hemifrån och bort.
-  const par = parSlugsFor(orter.map((ort) => ort.slug)).map((slug) => {
-    const [forsta, andra] = slug.split('-vs-')
-    const kors = nordisk.get(forsta) !== nordisk.get(andra)
-    const vandOm = kors && !nordisk.get(forsta)
-
-    return {
-      slug,
-      kors,
-      a: vandOm ? andra : forsta,
-      b: vandOm ? forsta : andra,
-    }
-  })
-
-  const efterNamn = (x, y) =>
-    `${namn.get(x.a)} ${namn.get(x.b)}`.localeCompare(`${namn.get(y.a)} ${namn.get(y.b)}`, 'sv')
-
-  const grupper = [
-    {
-      rubrik: 'Norden mot Alperna',
-      // Det här är valet svensken faktiskt står inför: stanna hemma
-      // eller flyga. Därför står de överst.
-      ingress:
-        'Åre och Sälen mot de alporter svenska arrangörer säljer mest av. Här ligger den största skillnaden i resan, inte i pistkilometrarna.',
-      par: par.filter((p) => p.kors).sort(efterNamn),
-    },
-    {
-      rubrik: 'Norden mot Norden',
-      ingress:
-        'Alla par bland de elva nordiska orterna — de jämförelser ingen internationell skidsajt gör.',
-      par: par.filter((p) => !p.kors).sort(efterNamn),
-    },
-  ]
+  const kuraterade = new Set(parSlugsFor(orter.map((o) => o.slug)))
+  const utvalda = UTVALDA.filter((par) => kuraterade.has(par))
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
-
-      <style>{`
-        .jamfor-lista {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-          gap: 8px;
-        }
-      `}</style>
-
       <SiteHeader />
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '110px clamp(20px, 4vw, 40px) 120px' }}>
+      <div style={{ maxWidth: 980, margin: '0 auto', padding: '104px clamp(20px, 4vw, 40px) 110px' }}>
 
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Jämförelser</p>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(34px, 7vw, 64px)', fontWeight: 400, lineHeight: 1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>
-          Två orter sida vid sida
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>Jämför</p>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(32px, 6vw, 56px)', fontWeight: 400, lineHeight: 1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>
+          Välj två orter
         </h1>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, marginTop: 18, maxWidth: 620 }}>
-          {par.length} jämförelser, alla byggda på samma källa. Alporter ställs
-          medvetet inte mot varandra — Chamonix mot Val d&apos;Isère är en sida
-          varje internationell skidsajt redan skrivit. Det som saknas är den
-          svenska frågan: hemma eller borta, och vilken nordisk ort som passar.
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '16px 0 30px', maxWidth: 560 }}>
+          Storlek, vad veckan kostar, fallhöjd och resan från Sverige — sida vid
+          sida, ur samma källa för båda orterna. Det sista går inte att läsa sig
+          till på ortens egen webbplats.
         </p>
 
-        {grupper.map((grupp) => (
-          <section key={grupp.rubrik} style={{ marginTop: 56 }}>
-            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 8 }}>{grupp.rubrik}</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 18px', maxWidth: 620 }}>{grupp.ingress}</p>
+        <Valjaren orter={forValjaren} />
 
-            <div className="jamfor-lista">
-              {grupp.par.map((p) => (
-                <Link key={p.slug} href={`/jamfor/${p.slug}`} style={{
-                  background: '#1c1a17',
-                  border: '1px solid rgba(255,255,255,0.06)',
-                  borderRadius: 8,
-                  padding: '13px 16px',
-                  textDecoration: 'none',
-                  fontFamily: 'var(--font-body)',
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: '#f0ece4',
-                  display: 'block',
-                }}>
-                  {namn.get(p.a)} <span style={{ color: 'rgba(255,255,255,0.3)' }}>eller</span> {namn.get(p.b)}
-                </Link>
-              ))}
+        {utvalda.length > 0 && (
+          <section style={{ marginTop: 56 }}>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 14 }}>Vanliga jämförelser</h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {utvalda.map((par) => {
+                const [x, y] = par.split('-vs-')
+                return (
+                  <Link key={par} href={`/jamfor/${par}`} style={{
+                    fontFamily: 'var(--font-body)', fontSize: 12.5, fontWeight: 500,
+                    color: 'rgba(255,255,255,0.55)', textDecoration: 'none',
+                    border: '1px solid rgba(255,255,255,0.1)', borderRadius: 40,
+                    padding: '9px 16px',
+                  }}>{namn.get(x)} <span style={{ color: 'rgba(255,255,255,0.25)' }}>eller</span> {namn.get(y)}</Link>
+                )
+              })}
             </div>
           </section>
-        ))}
+        )}
 
       </div>
 

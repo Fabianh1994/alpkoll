@@ -1,13 +1,17 @@
 import { notFound, permanentRedirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { SITE_URL } from '../../../lib/lang'
 import { land } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
+import { farOptimeras } from '../../../lib/images'
 import {
   GRUPPER,
+  HUVUDPUNKTER,
+  PASSAR,
   arNordisk,
   jamforelseMeningar,
   parSlugsFor,
@@ -18,19 +22,21 @@ import {
 // igenom på jämförelsesidan inom en timme, utan ny deploy.
 export const revalidate = 3600
 
+// De kuraterade paren byggs i förväg. Övriga par renderas vid första
+// besöket — väljaren på /jamfor släpper fram vilka två orter som helst,
+// och en sida som inte finns hade gjort väljaren meningslös.
 export async function generateStaticParams() {
   const publicerade = await getResortSlugs()
   return parSlugsFor(publicerade).map((par) => ({ par }))
 }
 
-/** Paret som två orter, eller null när adressen inte ska ha en sida. */
+/** Paret som två orter, eller null när adressen inte kan visas. */
 async function hamtaPar(parSlug) {
   const tolkat = tolkaPar(parSlug)
   if (!tolkat) return null
 
   const orter = await Promise.all(tolkat.slugs.map((slug) => getResort(slug)))
-  // En dold ort ger null här. Paret står i koden, publiceringen i
-  // databasen — går de isär ska sidan försvinna, inte krascha.
+  // Dolda och påhittade orter ger båda null här, och båda ska ge 404.
   if (orter.some((ort) => !ort)) return null
 
   return { ...tolkat, orter }
@@ -42,18 +48,21 @@ export async function generateMetadata({ params }) {
 
   if (!par) return { title: 'Jämförelsen hittades inte — Alpkoll' }
 
-  // Metadata beskriver alltid den kanoniska sidan. Den omvända adressen
-  // svarar med en vidarebefordran och visar aldrig den här titeln.
   const [a, b] = par.kanonisk ? par.orter : [...par.orter].reverse()
 
   const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
-  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${a.total_lifts} liftar mot ${b.total_lifts}, veckokort €${a.lift_pass_week_eur} mot €${b.lift_pass_week_eur}. Samma källa för båda orterna.`
+  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, veckan kostar ungefär ${a.est_weekly_cost_eur} € mot ${b.est_weekly_cost_eur} €. Samma källa för båda orterna.`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
 
   return {
     title,
     description,
     alternates: { canonical: url },
+    // Vi marknadsför de kuraterade paren. Övriga svarar för besökaren som
+    // valt dem i väljaren, men ska inte tävla med våra egna sidor i
+    // sökresultaten — och alport mot alport är en sida vi ändå inte kan
+    // vinna mot de internationella skidsajterna.
+    robots: par.kurerat ? undefined : { index: false, follow: true },
     openGraph: {
       title,
       description,
@@ -61,14 +70,14 @@ export async function generateMetadata({ params }) {
       siteName: 'Alpkoll',
       type: 'article',
       locale: 'sv_SE',
-      images: ['/og-image.png'],
+      images: a.image_url ? [{ url: a.image_url, width: 1200, height: 630, alt: a.name }] : ['/og-image.png'],
     },
     twitter: { card: 'summary_large_image', title, description, images: ['/og-image.png'] },
   }
 }
 
 /**
- * Värdet att märka ut i en rad, eller null.
+ * Värdet att märka ut, eller null.
  *
  * Null när fältet saknar riktning — mer blå pist är en fördel för
  * nybörjaren och en nackdel för den som vill ha brant — och null när
@@ -86,6 +95,8 @@ function bastaVardet(falt, orter) {
   return basta
 }
 
+const ACCENT = '#D4A574'
+
 const kort = {
   background: '#1c1a17',
   border: '1px solid rgba(255,255,255,0.06)',
@@ -97,7 +108,7 @@ const rubrik = {
   fontSize: 22,
   color: '#f0ece4',
   letterSpacing: '0.04em',
-  marginBottom: 18,
+  marginBottom: 16,
 }
 
 const etikett = {
@@ -106,7 +117,6 @@ const etikett = {
   color: 'rgba(255,255,255,0.25)',
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
-  marginBottom: 5,
 }
 
 const brodtext = {
@@ -117,6 +127,18 @@ const brodtext = {
   margin: 0,
 }
 
+/** Ortbilden. Hotlänkade bilder optimeras inte — se lib/images.js. */
+function Ortbild({ ort }) {
+  const url = ort.image_url
+    || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'
+
+  return farOptimeras(url) ? (
+    <Image src={url} alt={ort.name} fill priority sizes="50vw" style={{ objectFit: 'cover' }} />
+  ) : (
+    <img src={url} alt={ort.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+  )
+}
+
 export default async function JamforPage({ params }) {
   const parSlug = (await params).par
   const par = await hamtaPar(parSlug)
@@ -124,173 +146,241 @@ export default async function JamforPage({ params }) {
   if (!par) notFound()
 
   // are-vs-solden och solden-vs-are är samma jämförelse. Den omvända
-  // ordningen får en permanent vidarebefordran i stället för en egen
-  // sida med identiskt innehåll — annars hade Google fått välja vilken
-  // av två adresser som räknas.
+  // ordningen får en permanent vidarebefordran i stället för en egen sida
+  // med identiskt innehåll — annars hade Google fått välja vilken av två
+  // adresser som räknas.
   if (!par.kanonisk) permanentRedirect(`/jamfor/${par.kanoniskSlug}`)
 
   const orter = par.orter
   const [a, b] = orter
-  const meningar = jamforelseMeningar(a, b)
 
-  // Ett kors-par ställer Norden mot Alperna. Då är restiden från
-  // flygplatsen inte jämförbar mellan kolumnerna, och det måste stå
-  // på sidan — inte bara i koden.
+  // Tre meningar, inte alla. Resten av skillnaderna syns i talen ovanför
+  // dem; en punktlista som upprepar tabellen är brus.
+  const ingress = jamforelseMeningar(a, b).slice(0, 3).join(' ')
+
   const korsPar = arNordisk(a) !== arNordisk(b)
+
+  // "Sverige" över båda bilderna säger ingenting när paret är Åre mot
+  // Sälen. Landskapet skiljer dem åt; landet gör det bara när de ligger i
+  // olika länder.
+  const overskrift = (ort) =>
+    a.country === b.country ? ort.region : land(ort.country)
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
 
       <style>{`
-        .jamfor-tva {
+        .jamfor-hjalte {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 12px;
+          height: 46vh;
+          min-height: 300px;
         }
-        .jamfor-tabell {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        .jamfor-tabell td, .jamfor-tabell th {
-          text-align: left;
-          padding: 11px 16px;
+        .jamfor-tva { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .jamfor-rad {
+          display: grid;
+          grid-template-columns: 1fr 150px 1fr;
+          align-items: center;
+          gap: 10px;
+          padding: 15px 20px;
           border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .jamfor-rad:last-child { border-bottom: none; }
+        .jamfor-tabell { width: 100%; border-collapse: collapse; }
+        .jamfor-tabell td, .jamfor-tabell th {
+          text-align: left;
+          padding: 10px 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .jamfor-detaljer summary {
+          cursor: pointer;
+          list-style: none;
+          padding: 15px 20px;
+          font-family: var(--font-body);
+          font-size: 13px;
+          font-weight: 500;
+          color: ${ACCENT};
+          letter-spacing: 0.04em;
+        }
+        .jamfor-detaljer summary::-webkit-details-marker { display: none; }
+        .jamfor-detaljer[open] summary { border-bottom: 1px solid rgba(255,255,255,0.06); }
         @media (max-width: 640px) {
+          .jamfor-hjalte { height: 34vh; min-height: 200px; }
           .jamfor-tva { grid-template-columns: 1fr; }
-          .jamfor-tabell td, .jamfor-tabell th { padding: 10px 12px; }
+          .jamfor-rad { grid-template-columns: 1fr 96px 1fr; padding: 13px 12px; gap: 6px; }
+          .jamfor-tabell td, .jamfor-tabell th { padding: 9px 12px; }
         }
       `}</style>
 
       <SiteHeader />
 
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: '110px clamp(20px, 4vw, 40px) 120px' }}>
+      {/* ── Hjälten ──
+          Två orter, två bilder. Sidan ska säga vad den handlar om innan
+          man läst ett ord. */}
+      <div className="jamfor-hjalte">
+        {orter.map((ort) => (
+          <div key={ort.slug} style={{ position: 'relative', overflow: 'hidden' }}>
+            <Ortbild ort={ort} />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.45) 0%, rgba(18,17,16,0.15) 40%, rgba(18,17,16,0.95) 100%)' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 clamp(14px, 3vw, 32px) 22px' }}>
+              <p style={{ ...etikett, color: ACCENT, letterSpacing: '0.16em', marginBottom: 6 }}>{overskrift(ort)}</p>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px, 5vw, 52px)', fontWeight: 400, lineHeight: 1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>{ort.name}</h2>
+            </div>
+          </div>
+        ))}
+      </div>
 
-        <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>← Alla jämförelser</Link>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: '44px clamp(20px, 4vw, 40px) 110px' }}>
 
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', margin: '28px 0 10px' }}>
-          {land(a.country)} mot {land(b.country)}
-        </p>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(34px, 7vw, 64px)', fontWeight: 400, lineHeight: 1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px, 4.5vw, 40px)', fontWeight: 400, lineHeight: 1.1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>
           {a.name} eller {b.name}?
         </h1>
-        <p style={{ ...brodtext, fontSize: 14, marginTop: 18, maxWidth: 620 }}>
-          Båda orternas siffror kommer ur samma källa och avser hela det
-          sammankopplade skidområdet. Det gör dem jämförbara — vilket de
-          inte är när man läser två orters egna webbplatser.
-        </p>
+        {ingress && <p style={{ ...brodtext, fontSize: 14.5, marginTop: 14 }}>{ingress}</p>}
 
-        {/* ── Resan från Sverige ──
-            Överst med flit. Pist och liftar kan läsaren hitta var som
-            helst; hur orten nås härifrån står ingen annanstans. */}
-        <section style={{ marginTop: 56 }}>
+        {/* ── Kort svar ──
+            Tre tal, inte arton. Valda för att de avgör valet och för att
+            de går att lita på — se HUVUDPUNKTER i lib/jamfor.js. */}
+        <section style={{ marginTop: 40 }}>
+          <div style={kort}>
+            {HUVUDPUNKTER.map((punkt) => {
+              const basta = bastaVardet(punkt, orter)
+              return (
+                <div key={punkt.etikett} className="jamfor-rad">
+                  {orter.map((ort, i) => (
+                    <div key={ort.slug} style={{ order: i === 0 ? 0 : 2, textAlign: i === 0 ? 'right' : 'left' }}>
+                      <div style={{
+                        fontFamily: 'var(--font-heading)',
+                        fontSize: 'clamp(19px, 3.4vw, 27px)',
+                        lineHeight: 1.1,
+                        color: basta !== null && punkt.varde(ort) === basta ? ACCENT : 'rgba(255,255,255,0.55)',
+                      }}>{punkt.visa(ort) || '—'}</div>
+                    </div>
+                  ))}
+                  <div style={{ order: 1, textAlign: 'center' }}>
+                    <div style={{ ...etikett, lineHeight: 1.35 }}>{punkt.etikett}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, color: 'rgba(255,255,255,0.18)', marginTop: 2 }}>{punkt.enhet}</div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+            Veckan är en uppskattning per ort med resa, boende och liftkort —
+            inte ett pris vi hämtat, och den varierar med vecka och arrangör.
+          </p>
+        </section>
+
+        {/* ── Vem orten passar ── */}
+        <section style={{ marginTop: 48 }}>
+          <h2 style={rubrik}>Vem orten passar</h2>
+          <div style={{ ...kort, padding: '6px 20px 18px' }}>
+            {PASSAR.map((rad) => (
+              <div key={rad.etikett} style={{ marginTop: 16 }}>
+                <div style={{ ...etikett, marginBottom: 8 }}>{rad.etikett}</div>
+                {orter.map((ort) => {
+                  const varde = ort[rad.falt]
+                  const vinner = varde > orter.find((o) => o !== ort)?.[rad.falt]
+                  return (
+                    <div key={ort.slug} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.4)', minWidth: 84, flexShrink: 0 }}>{ort.name}</span>
+                      <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{ height: '100%', borderRadius: 3, width: `${(varde || 0) * 10}%`, background: vinner ? ACCENT : 'rgba(255,255,255,0.22)' }} />
+                      </div>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, fontWeight: 500, color: vinner ? ACCENT : 'rgba(255,255,255,0.45)', minWidth: 16, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{varde ?? '—'}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+            De fyra är redaktionella omdömen på en skala 1–10, inte mätvärden.
+            Vad varje steg betyder står i poängskalan.
+          </p>
+        </section>
+
+        {/* ── Resan ──
+            Pist och liftar kan läsaren hitta var som helst; hur orten nås
+            härifrån står ingen annanstans. */}
+        <section style={{ marginTop: 48 }}>
           <h2 style={rubrik}>Resan från Sverige</h2>
           <div className="jamfor-tva">
             {orter.map((ort) => (
-              <div key={ort.slug} style={{ ...kort, padding: '18px 20px' }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 19, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 16 }}>{ort.name}</div>
-                <div style={{ display: 'flex', gap: 24, marginBottom: ort.transport_info ? 16 : 0 }}>
+              <div key={ort.slug} style={{ ...kort, padding: '16px 18px' }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 12 }}>{ort.name}</div>
+                <div style={{ display: 'flex', gap: 20, marginBottom: ort.transport_info ? 12 : 0 }}>
                   <div>
-                    <div style={etikett}>Flyg till</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>{ort.nearest_airport || '—'}</div>
+                    <div style={{ ...etikett, marginBottom: 4 }}>Flyg till</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{ort.nearest_airport || '—'}</div>
                   </div>
                   <div>
-                    <div style={etikett}>Från flygplatsen</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>{restid(ort)}</div>
+                    <div style={{ ...etikett, marginBottom: 4 }}>Sista biten</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{restid(ort)}</div>
                   </div>
                 </div>
-                {ort.transport_info && (
-                  <p style={{ ...brodtext, fontSize: 12.5 }}>{ort.transport_info}</p>
-                )}
+                {ort.transport_info && <p style={{ ...brodtext, fontSize: 12 }}>{ort.transport_info}</p>}
               </div>
             ))}
           </div>
 
           {korsPar && (
-            <div style={{ background: 'rgba(212,165,116,0.06)', border: '1px solid rgba(212,165,116,0.15)', borderLeft: '3px solid #D4A574', borderRadius: '0 10px 10px 0', padding: '14px 18px', marginTop: 12 }}>
-              <p style={{ ...brodtext, fontSize: 12.5 }}>
-                Restiden ovan mäter bara sträckan från flygplatsen till orten,
-                och går inte att jämföra rakt av mellan Norden och Alperna:
-                den nordiska orten nås ofta med bil eller nattåg utan att man
-                flyger alls. Läs styckena, inte klockslagen.
-              </p>
-            </div>
+            <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+              Sista biten mäter bara sträckan från flygplatsen och går inte att
+              ställa mot varandra över gränsen mellan Norden och Alperna — den
+              nordiska orten nås ofta med bil eller nattåg utan att man flyger
+              alls. Läs styckena, inte klockslagen.
+            </p>
           )}
         </section>
 
-        {/* ── Meningarna ──
-            Härledda ur fälten i lib/jamfor.js, inte skrivna för paret.
-            Se kommentaren där om varför. */}
-        {meningar.length > 0 && (
-          <section style={{ marginTop: 56 }}>
-            <h2 style={rubrik}>Skillnaden i korthet</h2>
-            <div style={{ ...kort, padding: '8px 22px 18px' }}>
-              <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                {meningar.map((mening) => (
-                  <li key={mening} style={{ display: 'flex', gap: 12, paddingTop: 14 }}>
-                    <span aria-hidden="true" style={{ color: '#D4A574', lineHeight: 1.7 }}>·</span>
-                    <p style={brodtext}>{mening}</p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
-        )}
-
-        {/* ── Tabellen ──
-            Byggd för N orter, inte för exakt två. En väljare för tre
-            orter blir då en fråga om urval, inte om att skriva om den. */}
-        <section style={{ marginTop: 56 }}>
-          <h2 style={rubrik}>Alla siffror</h2>
-          <div style={{ ...kort, overflowX: 'auto' }}>
-            <table className="jamfor-tabell">
-              <thead>
-                <tr>
-                  <th style={{ ...etikett, marginBottom: 0, fontWeight: 500 }}>Fält</th>
-                  {orter.map((ort) => (
-                    <th key={ort.slug} style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#f0ece4', letterSpacing: '0.04em', fontWeight: 400 }}>{ort.name}</th>
+        {/* ── Alla siffror ──
+            Hopfälld. Den är för den som vill kontrollera, inte för den som
+            ska välja. Tabellen tar N orter, inte exakt två. */}
+        <section style={{ marginTop: 48 }}>
+          <details className="jamfor-detaljer" style={{ ...kort }}>
+            <summary>Alla siffror, fält för fält →</summary>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="jamfor-tabell">
+                <thead>
+                  <tr>
+                    <th style={{ ...etikett, fontWeight: 500 }}>Fält</th>
+                    {orter.map((ort) => (
+                      <th key={ort.slug} style={{ fontFamily: 'var(--font-heading)', fontSize: 15, color: '#f0ece4', letterSpacing: '0.04em', fontWeight: 400 }}>{ort.name}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {GRUPPER.map((grupp) => (
+                    <Fragmentgrupp key={grupp.rubrik} grupp={grupp} orter={orter} />
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                {GRUPPER.map((grupp) => (
-                  <Fragmentgrupp key={grupp.rubrik} grupp={grupp} orter={orter} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <p style={{ ...brodtext, fontSize: 12, marginTop: 12 }}>
-            Markerat värde är det bättre — men bara på raderna där ett håll
-            faktiskt är bättre. Lägsta höjden, pistfördelningen och konstsnön
-            står omarkerade: mer blå pist är en fördel för nybörjaren och en
-            nackdel för den som vill ha brant, och vem som läser vet vi inte.
-            Snöfallet står omarkerat av ett annat skäl — vi har inte mätt det
-            fältet mot källan än.
-          </p>
+                </tbody>
+              </table>
+            </div>
+          </details>
         </section>
 
         {/* ── Vidare ── */}
-        <section style={{ marginTop: 56 }}>
-          <h2 style={rubrik}>Läs mer om orterna</h2>
+        <section style={{ marginTop: 48 }}>
           <div className="jamfor-tva">
             {orter.map((ort) => (
-              <Link key={ort.slug} href={`/resort/${ort.slug}`} style={{ ...kort, padding: '18px 20px', textDecoration: 'none', display: 'block' }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 19, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 4 }}>{ort.name}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', marginBottom: 12 }}>{ort.region} · {land(ort.country)}</div>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', letterSpacing: '0.04em' }}>Hela sidan om {ort.name} →</span>
+              <Link key={ort.slug} href={`/resort/${ort.slug}`} style={{ ...kort, padding: '16px 18px', textDecoration: 'none', display: 'block' }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 3 }}>{ort.name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.35)', marginBottom: 10 }}>{ort.region} · {land(ort.country)}</div>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: ACCENT, letterSpacing: '0.04em' }}>Hela sidan om {ort.name} →</span>
               </Link>
             ))}
+          </div>
+          <div style={{ marginTop: 12 }}>
+            <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase' }}>← Välj två andra orter</Link>
           </div>
         </section>
 
         {/* Källan står på sidan som bär siffrorna, inte bara på about. */}
-        <p style={{ ...brodtext, fontSize: 12, marginTop: 40, color: 'rgba(255,255,255,0.3)' }}>
+        <p style={{ ...brodtext, fontSize: 11.5, marginTop: 44, color: 'rgba(255,255,255,0.28)' }}>
           Pist, liftar, höjder och liftkortspriser är hämtade från
-          skiresort.com för båda orterna, eftersom blandade källor gör orter
-          ojämförbara. Talen avser hela det sammankopplade skidområdet — det
-          liftkortet ger tillgång till — inte bara byns egen sektor.
-          Veckokostnaden är en uppskattning per ort och varierar med vecka,
-          boende och arrangör.
+          skiresort.com för båda orterna — blandade källor gör orter
+          ojämförbara. Talen avser hela det sammankopplade skidområdet, det
+          liftkortet ger tillgång till, inte bara byns egen sektor.
         </p>
 
       </div>
@@ -306,7 +396,7 @@ function Fragmentgrupp({ grupp, orter }) {
     <>
       <tr>
         <td colSpan={orter.length + 1} style={{ background: 'rgba(255,255,255,0.02)' }}>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 600, color: '#D4A574', textTransform: 'uppercase', letterSpacing: '0.12em' }}>{grupp.rubrik}</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 600, color: ACCENT, textTransform: 'uppercase', letterSpacing: '0.12em' }}>{grupp.rubrik}</span>
         </td>
       </tr>
       {grupp.falt.map((falt) => {
@@ -318,9 +408,9 @@ function Fragmentgrupp({ grupp, orter }) {
               const vinnare = basta !== null && falt.varde(ort) === basta
               return (
                 <td key={ort.slug} style={{
-                  fontFamily: 'var(--font-body)', fontSize: 13.5,
+                  fontFamily: 'var(--font-body)', fontSize: 13,
                   fontWeight: vinnare ? 600 : 500,
-                  color: vinnare ? '#D4A574' : '#f0ece4',
+                  color: vinnare ? ACCENT : '#f0ece4',
                   fontVariantNumeric: 'tabular-nums',
                 }}>{falt.visa(ort) || '—'}</td>
               )

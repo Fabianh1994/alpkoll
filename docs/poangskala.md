@@ -153,8 +153,10 @@ Poängen ersätter inte `transfer_minutes`, som bara mäter flygplats → ort oc
 
 Skalan är skriven mot de fyra nya orterna (Saalbach, Cervinia, Val Gardena, Bad Gastein). **De befintliga är ännu inte omsatta enligt den** — de nämns här som ankare där deras nuvarande poäng är rätt, men mittfältet ligger kvar orört. Tills det arbetet är gjort är poängen jämförbara i topp och botten, inte i mitten.
 
+**Migration 014 är körd 2026-08-12 och verifierad mot databasen.** Efterkontrollen i migrationen fångade en ort som föll bort när den skrevs: Tignes har 55 % blå pist och stod kvar på 5 för nybörjare. Den rättas i migration 015 till 7, samma värde som Voss fick vid identisk blå andel.
+
 Migration 014 rättade det som gick att belägga, och bara det: Sälen till 10 på båda skalorna, de tre orter vars nybörjarpoäng stred mot en blå andel över hälften (Hemsedal 67 %, Voss 55 %, Sölden 52 %), och Les 3 Vallées, där Courchevel, Méribel och Val Thorens bar tre olika omdömen om samma pister. Resten av mittfältet står kvar — 120 nya omdömen utan källa hade varit samma arbetssätt som skapade problemet.
 
 **Kvar att avgöra:** om `family_friendly_score` avser området eller byn. Skalan beskriver den med ord som handlar om byn, men undantaget ovan räknar bara upp bykänsla och afterski. Frågan är skarp för Les 3 Vallées, där Courchevel står på 9 och Méribel och Val Thorens på 7 för samma backar.
 
-**Fältet som inte hör hit men hänger ihop:** `avg_snowfall_cm` bär samma signatur som pistfördelningen gjorde före migration 013 — alla 30 publicerade värden delbara med tio, elva unika tal bland trettio. Jämförelsesidorna visar raden men går inte i god för den.
+**Fältet som inte hör hit men hänger ihop:** `avg_snowfall_cm` visas inte längre någonstans. Mätningen 2026-08-12 mot skiresort.com — sajtens enda källa — visar att den inte bär någon säsongssiffra alls, bara aktuellt snödjup; kontrollerat på både Sölden och Åre. Talen kan därmed inte komma därifrån och går inte att kontrollera mot något. Fördelningen pekade åt samma håll: alla 30 publicerade värden delbara med tio, elva unika tal bland trettio. Kolumnen ligger kvar i databasen — orter döljs och fält slutar visas, ingetdera raderas.

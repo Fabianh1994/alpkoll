@@ -288,7 +288,7 @@ export default function Valjaren({ orter }) {
                   </span>
                   {ort.vecka && (
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
-                      <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.vecka}</b>/vecka
+                      <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.vecka}</b>/v
                     </span>
                   )}
                 </div>

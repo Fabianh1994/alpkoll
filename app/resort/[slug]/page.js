@@ -5,11 +5,13 @@ import { farOptimeras } from '../../../lib/images'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
-import { getResort, getResortSlugs } from '../../../lib/resorts'
+import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
-import { veckokostnad } from '../../../lib/pris'
+import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
+import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
+import { arNordisk, motparten, parFor } from '../../../lib/jamfor'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -38,7 +40,12 @@ export async function generateMetadata({ params }) {
   // "Snögaranti" betyder i svensk resebransch pengarna tillbaka. Den
   // synliga etiketten rättades tidigare, men beskrivningen — den text
   // Google visar — missades och stod kvar på alla 32 ortsidor.
-  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m. Veckopass €${resort.lift_pass_week_eur}, närmaste flygplats ${resort.nearest_airport}. Snösäkerhet ${resort.snow_guarantee_score}/10.`
+  // Beskrivningen är det Google visar och ska tala samma språk som sidan.
+  // Veckopasset stod i euro medan sidan numera skriver kronor.
+  const kurser = await hamtaKurser()
+  const veckopass = pris(resort.lift_pass_week_eur, resort.lift_pass_currency || 'EUR', kurser)
+
+  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m.${veckopass ? ` Veckopass ${veckopass.kr},` : ''} närmaste flygplats ${resort.nearest_airport}. Snösäkerhet ${resort.snow_guarantee_score}/10.`
 
   const path = `/resort/${resort.slug}`
 
@@ -95,7 +102,36 @@ export default async function ResortPage({ params }) {
   // flyger eller kör. Formeln träffade det researchade
   // est_weekly_cost_eur för två av 32 orter och låg systematiskt lågt:
   // Courchevel visade 750–1 250 € där fältet säger 2 000 €.
-  const veckokostnadText = veckokostnad(resort)
+  // Priserna visas i kronor med ortens eget belopp inom parentes — sajten
+  // är svensk och läsaren ska slippa räkna om i huvudet. Omräkningen sker
+  // mot ECB:s dagskurs, se lib/valuta.js.
+  const kurser = await hamtaKurser()
+  // Valutan gäller liftkortet och bara det. Veckokostnaden är euro oavsett
+  // vad orten tar betalt för sitt kort — se VALUTA_VECKOKOSTNAD i lib/pris.js.
+  const valuta = resort.lift_pass_currency || 'EUR'
+  const dagskort = pris(resort.lift_pass_day_eur, valuta, kurser)
+  const veckokort = pris(resort.lift_pass_week_eur, valuta, kurser)
+  const veckokostnadPris = pris(resort.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)
+
+  /** "ca 5 150 kr (469 €)" som ren sträng, för rutor utan egen styling. */
+  const rakt = (p) => (p ? (p.ursprung ? `${p.kr} (${p.ursprung})` : p.kr) : '—')
+
+  // Jämförelserna orten förekommer i. Utan det här blocket nås
+  // /jamfor-sidorna bara från väljaren och sitemapen, och ortsidan
+  // förblir den återvändsgränd den varit sedan sajten byggdes: du står
+  // på Åre-sidan och det finns ingen väg vidare till Åre mot Sälen.
+  //
+  // Talen står med i länken så att den säger något innan man klickar.
+  // Samma två som på korten i väljaren, av samma skäl.
+  const allaOrter = await getResorts()
+  const jamforelser = parFor(resort.slug, allaOrter.map((r) => r.slug))
+    .map((par) => ({ par, annan: allaOrter.find((r) => r.slug === motparten(par, resort.slug)) }))
+    .filter((x) => x.annan)
+
+  const jamforGrupper = [
+    { rubrik: 'I Norden', par: jamforelser.filter((x) => arNordisk(x.annan)) },
+    { rubrik: 'I Alperna', par: jamforelser.filter((x) => !arNordisk(x.annan)) },
+  ].filter((g) => g.par.length > 0)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -249,8 +285,8 @@ export default async function ResortPage({ params }) {
               { label: 'Fallhöjd',   value: `${verticalDrop} m` },
               { label: 'Pist',       value: `${resort.total_pistes_km} km` },
               { label: 'Liftar',     value: resort.total_lifts },
-              { label: 'Dagskort',   value: `€${resort.lift_pass_day_eur}` },
-              { label: 'Veckokort',  value: `€${resort.lift_pass_week_eur}` },
+              { label: 'Dagskort',   value: dagskort?.kr || '—' },
+              { label: 'Veckokort',  value: veckokort?.kr || '—' },
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(18,17,16,0.75)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '8px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', lineHeight: 1 }}>{s.value}</span>
@@ -290,7 +326,12 @@ export default async function ResortPage({ params }) {
             {/* Snow & conditions */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Snö och förhållanden</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+              {/* Tre rutor, inte fyra. Snöfallet togs bort och ingenting
+                  ersatte det — höjden står redan i stapeln strax nedanför
+                  och i sammanfattningen, och ett upprepat tal är inte
+                  bättre än ett tal vi inte kan belägga. auto-fit håller
+                  raden jämn på både tre och två kolumner. */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 16 }}>
                 {[
                   { label: 'Säsongen öppnar',  value: manadVersal(resort.season_start_month) || '—' },
                   { label: 'Säsongen stänger', value: manadVersal(resort.season_end_month) || '—' },
@@ -301,7 +342,18 @@ export default async function ResortPage({ params }) {
                   // riktigt — 0 % i Riksgränsen, 95 % i Madonna di
                   // Campiglio — och hör hemma under snö och förhållanden.
                   { label: 'Konstsnö',         value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—' },
-                  { label: 'Snöfall per säsong', value: `${resort.avg_snowfall_cm} cm` },
+                  // "Snöfall per säsong" stod här och läste avg_snowfall_cm.
+                  // Fältet är hämtat 2026-08-12: skiresort.com — sajtens enda
+                  // källa — bär ingen säsongssiffra alls, bara aktuellt
+                  // snödjup. Kontrollerat på både en alport och en nordisk
+                  // ort. Talen kan alltså inte komma därifrån, och
+                  // fördelningen bekräftar det: alla 30 publicerade värden
+                  // delbara med tio, elva unika tal bland trettio. Samma
+                  // signatur som pistfördelningen hade före migration 013.
+                  //
+                  // Snösäkerheten står kvar som poäng längre ner, och
+                  // höjdstapeln nedanför säger samma sak med tal vi kan
+                  // belägga. Ingen ruta ersätter den borttagna.
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
                     <div style={fieldLabel}>{item.label}</div>
@@ -497,7 +549,7 @@ export default async function ResortPage({ params }) {
             </div>
 
             {/* What it costs */}
-            <div>
+            <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Vad det kostar</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
@@ -512,8 +564,8 @@ export default async function ResortPage({ params }) {
                     //
                     // Kvar står de två tal som kommer ur samma källa som
                     // resten av sifferrutorna.
-                    { label: 'Dagskort',      value: `€${resort.lift_pass_day_eur}` },
-                    { label: 'Veckokort',     value: `€${resort.lift_pass_week_eur}` },
+                    { label: 'Dagskort',      value: rakt(dagskort) },
+                    { label: 'Veckokort',     value: rakt(veckokort) },
                   ].map(item => (
                     <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
                       <div style={fieldLabel}>{item.label}</div>
@@ -523,12 +575,56 @@ export default async function ResortPage({ params }) {
                 </div>
                 <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
-                    {veckokostnadText
-                      ? <>En vecka i {resort.name} kostar uppskattningsvis <span style={{ color: '#D4A574', fontWeight: 500 }}>{veckokostnadText}</span> per person med resa, boende och liftkort. Priset varierar med vecka och boende — kontrollera hos arrangören innan du bokar.</>
+                    {veckokostnadPris
+                      ? <>En vecka i {resort.name} kostar uppskattningsvis <span style={{ color: '#D4A574', fontWeight: 500 }}>{veckokostnadPris.kr}</span>{veckokostnadPris.ursprung ? <> ({veckokostnadPris.ursprung})</> : null} per person med resa, boende och liftkort. Kronbeloppet är omräknat mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundat till närmaste femtio. Priset varierar med vecka och boende — kontrollera hos arrangören innan du bokar.</>
                       : <>Liftkortspriserna ovan är hämtade från orten. Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.</>}
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* ── Jämförelser ──
+                Ortsidan var en återvändsgränd: ingen väg härifrån till
+                någon annan ort, trots att sajtens namn lovar jämförelse.
+                Länkarna bär talen så att de säger något oklickade. */}
+            <div>
+              <h2 style={sectionTitle}>{resort.name} mot andra orter</h2>
+
+              {/* Fem orter ingår inte i något kuraterat par — Courchevel,
+                  Méribel, Verbier, Saas-Fee och Grandvalira. De skulle
+                  annars förbli exakt den återvändsgränd blocket finns för
+                  att laga. Väljaren tar vilka två orter som helst, så det
+                  finns någonstans att skicka dem. */}
+              {jamforGrupper.length === 0 && (
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                  Vi har ingen färdig jämförelse för {resort.name} ännu, men du
+                  kan ställa orten mot vilken som helst av de andra.
+                </p>
+              )}
+
+              {jamforGrupper.map((grupp) => (
+                  <div key={grupp.rubrik} style={{ marginBottom: 20 }}>
+                    {jamforGrupper.length > 1 && (
+                      <div style={{ ...fieldLabel, marginBottom: 10 }}>{grupp.rubrik}</div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 8 }}>
+                      {grupp.par.map(({ par, annan }) => (
+                        <Link key={par} href={`/jamfor/${par}`} style={{ ...card, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.3)' }}>mot</span> {annan.name}
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                            {annan.total_pistes_km} km pist
+                            {pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr
+                              ? ` · ${pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser).kr}/vecka`
+                              : ''}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', textDecoration: 'none', letterSpacing: '0.04em' }}>Välj vilka två orter du vill →</Link>
             </div>
 
           </div>
@@ -556,9 +652,11 @@ export default async function ResortPage({ params }) {
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
                   { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
-                  { label: 'Dagskort',       value: `€${resort.lift_pass_day_eur}` },
-                  { label: 'Veckokort',      value: `€${resort.lift_pass_week_eur}` },
-                  { label: 'Snöfall i snitt', value: `${resort.avg_snowfall_cm} cm` },
+                  { label: 'Dagskort',       value: dagskort?.kr || '—' },
+                  { label: 'Veckokort',      value: veckokort?.kr || '—' },
+                  // "Snöfall i snitt" läste avg_snowfall_cm — se kommentaren
+                  // under Snö och förhållanden om varför fältet inte visas.
+                  { label: 'Konstsnö',       value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} %` : '—' },
                   { label: 'Flyg till',      value: resort.nearest_airport },
                   { label: 'Restid',         value: estimatedTransferMins },
                 ].map(row => (

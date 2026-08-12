@@ -5,7 +5,8 @@ import Valjaren from './Valjaren'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { euro } from '../../lib/pris'
+import { pris } from '../../lib/pris'
+import { hamtaKurser } from '../../lib/valuta'
 import { farOptimeras } from '../../lib/images'
 import { arNordisk, parSlugsFor } from '../../lib/jamfor'
 
@@ -46,7 +47,7 @@ const UTVALDA = [
 ]
 
 export default async function JamforIndex() {
-  const orter = await getResorts()
+  const [orter, kurser] = await Promise.all([getResorts(), hamtaKurser()])
 
   const forValjaren = orter.map((ort) => ({
     slug: ort.slug,
@@ -59,7 +60,9 @@ export default async function JamforIndex() {
     bild: ort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
     optimeras: farOptimeras(ort.image_url),
     pist: ort.total_pistes_km,
-    vecka: euro(ort.est_weekly_cost_eur),
+    // Kortet visar bara kronbeloppet. Originalvalutan hör hemma där man
+    // fattar beslutet, inte i ett rutnät man ögnar igenom.
+    vecka: pris(ort.est_weekly_cost_eur, ort.lift_pass_currency || 'EUR', kurser)?.kr || null,
   }))
 
   const namn = new Map(orter.map((ort) => [ort.slug, ort.name]))

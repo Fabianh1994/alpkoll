@@ -8,6 +8,8 @@ import { SITE_URL } from '../../../lib/lang'
 import { land } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
 import { farOptimeras } from '../../../lib/images'
+import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
+import { pris } from '../../../lib/pris'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -51,7 +53,10 @@ export async function generateMetadata({ params }) {
   const [a, b] = par.kanonisk ? par.orter : [...par.orter].reverse()
 
   const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
-  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, veckan kostar ungefär ${a.est_weekly_cost_eur} € mot ${b.est_weekly_cost_eur} €. Samma källa för båda orterna.`
+  const kurser = await hamtaKurser()
+  const vecka = (r) => pris(r.est_weekly_cost_eur, r.lift_pass_currency || 'EUR', kurser)?.kr
+
+  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}${vecka(a) && vecka(b) ? `, veckan kostar ${vecka(a)} mot ${vecka(b)}` : ''}. Samma källa för båda orterna.`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
 
   return {
@@ -127,6 +132,41 @@ const brodtext = {
   margin: 0,
 }
 
+/**
+ * Ett pris i två delar, eller vilket annat fältvärde som helst.
+ *
+ * `visa` returnerar { kr, ursprung } för prisfälten och en sträng för
+ * resten, så renderingen skiljer på dem här i stället för att varje
+ * anropsställe ska behöva veta vilket fält som är ett pris.
+ *
+ * `staplat` lägger originalvalutan under kronbeloppet i stället för inom
+ * parentes efter. Under de stora talen blir en parentes trång och drar
+ * blicken fel; i en tabellrad är det tvärtom parentesen som håller ihop.
+ */
+function Falt({ varde, staplat = false, blek = 'rgba(255,255,255,0.3)' }) {
+  if (!varde) return '—'
+  if (typeof varde === 'string') return varde
+  if (!varde.ursprung) return varde.kr
+
+  if (staplat) {
+    return (
+      <>
+        {varde.kr}
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 400, color: blek, marginTop: 3, letterSpacing: 0 }}>
+          {varde.ursprung}
+        </div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      {varde.kr}{' '}
+      <span style={{ color: blek, fontWeight: 400 }}>({varde.ursprung})</span>
+    </>
+  )
+}
+
 /** Ortbilden. Hotlänkade bilder optimeras inte — se lib/images.js. */
 function Ortbild({ ort }) {
   const url = ort.image_url
@@ -151,12 +191,14 @@ export default async function JamforPage({ params }) {
   // adresser som räknas.
   if (!par.kanonisk) permanentRedirect(`/jamfor/${par.kanoniskSlug}`)
 
+  const kurser = await hamtaKurser()
+
   const orter = par.orter
   const [a, b] = orter
 
   // Tre meningar, inte alla. Resten av skillnaderna syns i talen ovanför
   // dem; en punktlista som upprepar tabellen är brus.
-  const ingress = jamforelseMeningar(a, b).slice(0, 3).join(' ')
+  const ingress = jamforelseMeningar(a, b, kurser).slice(0, 3).join(' ')
 
   const korsPar = arNordisk(a) !== arNordisk(b)
 
@@ -253,7 +295,7 @@ export default async function JamforPage({ params }) {
                         fontSize: 'clamp(19px, 3.4vw, 27px)',
                         lineHeight: 1.1,
                         color: basta !== null && punkt.varde(ort) === basta ? ACCENT : 'rgba(255,255,255,0.55)',
-                      }}>{punkt.visa(ort) || '—'}</div>
+                      }}><Falt varde={punkt.visa(ort, kurser)} staplat /></div>
                     </div>
                   ))}
                   <div style={{ order: 1, textAlign: 'center' }}>
@@ -267,6 +309,12 @@ export default async function JamforPage({ params }) {
           <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
             Veckan är en uppskattning per ort med resa, boende och liftkort —
             inte ett pris vi hämtat, och den varierar med vecka och arrangör.
+            Kronbeloppen är omräknade från ortens egen valuta{' '}
+            {kurser.farsk
+              ? <>mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)}</>
+              : <>mot en sparad kurs, eftersom centralbankens inte gick att nå</>}
+            {' '}och avrundade till närmaste femtio. Beloppet inom parentes är
+            det orten faktiskt tar betalt.
           </p>
         </section>
 
@@ -351,7 +399,7 @@ export default async function JamforPage({ params }) {
                 </thead>
                 <tbody>
                   {GRUPPER.map((grupp) => (
-                    <Fragmentgrupp key={grupp.rubrik} grupp={grupp} orter={orter} />
+                    <Fragmentgrupp key={grupp.rubrik} grupp={grupp} orter={orter} kurser={kurser} />
                   ))}
                 </tbody>
               </table>
@@ -391,7 +439,7 @@ export default async function JamforPage({ params }) {
 }
 
 /** En rubrikrad följd av gruppens fält. */
-function Fragmentgrupp({ grupp, orter }) {
+function Fragmentgrupp({ grupp, orter, kurser }) {
   return (
     <>
       <tr>
@@ -412,7 +460,7 @@ function Fragmentgrupp({ grupp, orter }) {
                   fontWeight: vinnare ? 600 : 500,
                   color: vinnare ? ACCENT : '#f0ece4',
                   fontVariantNumeric: 'tabular-nums',
-                }}>{falt.visa(ort) || '—'}</td>
+                }}><Falt varde={falt.visa(ort, kurser)} blek="rgba(255,255,255,0.28)" /></td>
               )
             })}
           </tr>

@@ -5,11 +5,12 @@ import { farOptimeras } from '../../../lib/images'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
-import { getResort, getResortSlugs } from '../../../lib/resorts'
+import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
-import { veckokostnad } from '../../../lib/pris'
+import { euro, veckokostnad } from '../../../lib/pris'
+import { arNordisk, motparten, parFor } from '../../../lib/jamfor'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -96,6 +97,23 @@ export default async function ResortPage({ params }) {
   // est_weekly_cost_eur för två av 32 orter och låg systematiskt lågt:
   // Courchevel visade 750–1 250 € där fältet säger 2 000 €.
   const veckokostnadText = veckokostnad(resort)
+
+  // Jämförelserna orten förekommer i. Utan det här blocket nås
+  // /jamfor-sidorna bara från väljaren och sitemapen, och ortsidan
+  // förblir den återvändsgränd den varit sedan sajten byggdes: du står
+  // på Åre-sidan och det finns ingen väg vidare till Åre mot Sälen.
+  //
+  // Talen står med i länken så att den säger något innan man klickar.
+  // Samma två som på korten i väljaren, av samma skäl.
+  const allaOrter = await getResorts()
+  const jamforelser = parFor(resort.slug, allaOrter.map((r) => r.slug))
+    .map((par) => ({ par, annan: allaOrter.find((r) => r.slug === motparten(par, resort.slug)) }))
+    .filter((x) => x.annan)
+
+  const jamforGrupper = [
+    { rubrik: 'I Norden', par: jamforelser.filter((x) => arNordisk(x.annan)) },
+    { rubrik: 'I Alperna', par: jamforelser.filter((x) => !arNordisk(x.annan)) },
+  ].filter((g) => g.par.length > 0)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -497,7 +515,7 @@ export default async function ResortPage({ params }) {
             </div>
 
             {/* What it costs */}
-            <div>
+            <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Vad det kostar</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
@@ -529,6 +547,48 @@ export default async function ResortPage({ params }) {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* ── Jämförelser ──
+                Ortsidan var en återvändsgränd: ingen väg härifrån till
+                någon annan ort, trots att sajtens namn lovar jämförelse.
+                Länkarna bär talen så att de säger något oklickade. */}
+            <div>
+              <h2 style={sectionTitle}>{resort.name} mot andra orter</h2>
+
+              {/* Fem orter ingår inte i något kuraterat par — Courchevel,
+                  Méribel, Verbier, Saas-Fee och Grandvalira. De skulle
+                  annars förbli exakt den återvändsgränd blocket finns för
+                  att laga. Väljaren tar vilka två orter som helst, så det
+                  finns någonstans att skicka dem. */}
+              {jamforGrupper.length === 0 && (
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                  Vi har ingen färdig jämförelse för {resort.name} ännu, men du
+                  kan ställa orten mot vilken som helst av de andra.
+                </p>
+              )}
+
+              {jamforGrupper.map((grupp) => (
+                  <div key={grupp.rubrik} style={{ marginBottom: 20 }}>
+                    {jamforGrupper.length > 1 && (
+                      <div style={{ ...fieldLabel, marginBottom: 10 }}>{grupp.rubrik}</div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 8 }}>
+                      {grupp.par.map(({ par, annan }) => (
+                        <Link key={par} href={`/jamfor/${par}`} style={{ ...card, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
+                            <span style={{ color: 'rgba(255,255,255,0.3)' }}>mot</span> {annan.name}
+                          </div>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                            {annan.total_pistes_km} km pist
+                            {euro(annan.est_weekly_cost_eur) && ` · ${euro(annan.est_weekly_cost_eur)}/vecka`}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', textDecoration: 'none', letterSpacing: '0.04em' }}>Välj vilka två orter du vill →</Link>
             </div>
 
           </div>

@@ -18,6 +18,17 @@ export default function MobileNav() {
       isActive: pathname === '/',
     },
     {
+      label: 'Jämför',
+      href: '/jamfor',
+      icon: (active) => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="4" width="7" height="16" rx="1" />
+          <rect x="14" y="4" width="7" height="16" rx="1" />
+        </svg>
+      ),
+      isActive: pathname.startsWith('/jamfor'),
+    },
+    {
       label: 'Om oss',
       href: '/about',
       icon: (active) => (

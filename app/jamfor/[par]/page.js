@@ -9,7 +9,7 @@ import { land } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
-import { pris } from '../../../lib/pris'
+import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -54,7 +54,7 @@ export async function generateMetadata({ params }) {
 
   const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
   const kurser = await hamtaKurser()
-  const vecka = (r) => pris(r.est_weekly_cost_eur, r.lift_pass_currency || 'EUR', kurser)?.kr
+  const vecka = (r) => pris(r.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr
 
   const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}${vecka(a) && vecka(b) ? `, veckan kostar ${vecka(a)} mot ${vecka(b)}` : ''}. Samma källa för båda orterna.`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`

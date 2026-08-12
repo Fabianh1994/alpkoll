@@ -5,7 +5,7 @@ import Valjaren from './Valjaren'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { pris } from '../../lib/pris'
+import { pris, VALUTA_VECKOKOSTNAD } from '../../lib/pris'
 import { hamtaKurser } from '../../lib/valuta'
 import { farOptimeras } from '../../lib/images'
 import { arNordisk, parSlugsFor } from '../../lib/jamfor'
@@ -62,7 +62,7 @@ export default async function JamforIndex() {
     pist: ort.total_pistes_km,
     // Kortet visar bara kronbeloppet. Originalvalutan hör hemma där man
     // fattar beslutet, inte i ett rutnät man ögnar igenom.
-    vecka: pris(ort.est_weekly_cost_eur, ort.lift_pass_currency || 'EUR', kurser)?.kr || null,
+    vecka: pris(ort.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr || null,
   }))
 
   const namn = new Map(orter.map((ort) => [ort.slug, ort.name]))

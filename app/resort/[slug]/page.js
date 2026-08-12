@@ -9,7 +9,7 @@ import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
-import { pris } from '../../../lib/pris'
+import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { arNordisk, motparten, parFor } from '../../../lib/jamfor'
 import { restid } from '../../../lib/travel'
@@ -106,10 +106,12 @@ export default async function ResortPage({ params }) {
   // är svensk och läsaren ska slippa räkna om i huvudet. Omräkningen sker
   // mot ECB:s dagskurs, se lib/valuta.js.
   const kurser = await hamtaKurser()
+  // Valutan gäller liftkortet och bara det. Veckokostnaden är euro oavsett
+  // vad orten tar betalt för sitt kort — se VALUTA_VECKOKOSTNAD i lib/pris.js.
   const valuta = resort.lift_pass_currency || 'EUR'
   const dagskort = pris(resort.lift_pass_day_eur, valuta, kurser)
   const veckokort = pris(resort.lift_pass_week_eur, valuta, kurser)
-  const veckokostnadPris = pris(resort.est_weekly_cost_eur, valuta, kurser)
+  const veckokostnadPris = pris(resort.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)
 
   /** "ca 5 150 kr (469 €)" som ren sträng, för rutor utan egen styling. */
   const rakt = (p) => (p ? (p.ursprung ? `${p.kr} (${p.ursprung})` : p.kr) : '—')
@@ -613,8 +615,8 @@ export default async function ResortPage({ params }) {
                           </div>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
                             {annan.total_pistes_km} km pist
-                            {pris(annan.est_weekly_cost_eur, annan.lift_pass_currency || 'EUR', kurser)?.kr
-                              ? ` · ${pris(annan.est_weekly_cost_eur, annan.lift_pass_currency || 'EUR', kurser).kr}/vecka`
+                            {pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr
+                              ? ` · ${pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser).kr}/vecka`
                               : ''}
                           </div>
                         </Link>

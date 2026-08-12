@@ -1,10 +1,10 @@
 # Liftkortspriser från ortens egen sida
 
-**Arbetsdokument, påbörjat 2026-08-12.** Tjugo av de trettio publicerade
-orterna är hämtade och kontrollerade. Av de tio som återstår är sex
-blockerade av att orten inte publicerat vinterpriser ännu, en är underkänd
-på område, och fyra nordiska ligger i bokningsmotorer som inte kontrollerats
-än. Ingenting härifrån har gått in i databasen — det blir en egen migration.
+**Arbetsdokument, påbörjat 2026-08-12.** Tjugotvå av de trettio publicerade
+orterna är hämtade och kontrollerade, med både dags- och sexdagarspris utom
+för St. Anton. Av de åtta som återstår är sju blockerade av att orten inte
+publicerat vinterpriser ännu — sajterna står i sommarläge i augusti — och en
+är underkänd på område.
 
 **Migrationen måste bevara de gamla priserna.** Fabian vill publicera en
 årlig nyhetsartikel om hur mycket varje ort höjde liftkortspriset mot året
@@ -39,10 +39,12 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | val-thorens | EUR | ~82 | **421** | 5,13 | 26/27 | Les 3 Vallées |
 | verbier | CHF | 94 | **409** | 4,35 | 26/27 | 4 Vallées, samma som våra 412 km. Verbier–Tzoumaz ensamt: 86/374 |
 | geilo | NOK | 693 | **2 871** | 4,14 | 25/26 | produkten heter "6–8 dagar" |
-| are | SEK | — | **3 744** | — | 26/27 | SkiStar, fångat 2026-08-12 för 1 mars 2027 |
-| salen | SEK | — | **3 126** | — | 26/27 | inkluderar två skiddagar i Trysil |
-| trysil | SEK | — | **3 739** | — | 26/27 | |
-| hemsedal | SEK | — | **3 702** | — | 26/27 | |
+| are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, fångat 2026-08-12 för 1 mars 2027 |
+| salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil |
+| trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan |
+| hemsedal | NOK | 745 | **3 769** | 5,06 | 26/27 | hämtat på SkiStars norska sida, i NOK |
+| myrkdalen | NOK | 660 | **2 620** | 3,97 | ej utsatt | kvoten är låg för att priset är kapat: 6, 7 och 8 dagar kostar alla 2 620 |
+| riksgransen | SEK | 520 | **2 547** | 4,90 | 25/26 | 5 dagar 2 195 + extra dag 352; ingen egen sexdagarsrad finns. **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
 | zermatt | CHF | 104 | **432** | 4,15 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Zermatt ensamt: 89/384 |
 | st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
@@ -50,6 +52,24 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | saas-fee | CHF | 84 | **413** | 4,92 | 26/27 | Saas-Fee-kortet (Saas-Fee + Saas-Almagell). Destination-kortet gäller hela Saastal och är inte detta |
 | livigno | EUR | 72 | **362** | 5,03 | **25/26** | högsäsong 31.1–27.3. Dagspriset matchar databasens 72 exakt |
 | madonna-di-campiglio | EUR | 85 | **424** | 4,99 | **25/26** | SkiArea Campiglio Dolomiti di Brenta, samma namn som vårt `ski_area`. Söndagsregel: +10 € om kortet innehåller en söndag |
+
+## SkiStar säljer samma kort i två valutor
+
+Trysil och Hemsedal ligger i Norge men säljs också på SkiStars svenska
+sida, i kronor: 3 739 respektive 3 702 SEK. De talen stod här tidigare.
+De är utbytta mot de norska, 3 806 och 3 769 NOK, hämtade på
+skistar.com/no.
+
+Skälet är regeln i `lib/valuta.js`: beloppet lagras i den valuta orten tar
+betalt i, och räknas om vid visning. Lagrar vi SEK för en norsk ort ser
+det ut som ett exakt svenskt pris — sidan skriver då ut talet utan "ca"
+och utan omräkning, fast det bygger på SkiStars egen växling den dagen.
+Skillnaden är liten idag (NOK och SEK står nästan lika mot euron) men den
+är godtycklig, och den skulle vandra i tysthet.
+
+Åre och Sälen är svenska och lagras i SEK. Det är också därför de blir de
+enda orterna som visar ett exakt kronbelopp utan "ca" — det finns ingen
+omräkning att ta höjd för.
 
 ## UNDERKÄNDA — priset avser ett annat område än våra tal
 
@@ -64,6 +84,15 @@ Gastein-bara-alternativ finns. Dagsbiljetten 78,50 avser Gasteins 82,7 km.
 
 **Sälen** har samma drag: veckokortet inkluderar två skiddagar i Trysil.
 Det är alltså inte en österrikisk egenhet utan ett allmänt mönster.
+
+**Riksgränsen — samma mönster, men det finns inget alternativ.** Skidpasset
+gäller "Björkliden Fjällby och Riksgränsen", medan våra 21 km och 6 liftar
+avser Riksgränsen ensamt. Till skillnad från Saalbach säljer orten inget
+kort som bara gäller den egna sidan — det finns ingen rätt produkt att
+välja i stället. Talet står i tabellen med den här reservationen. Frågan är
+inte vilket pris som ska hämtas utan om pisttalet borde avse båda
+anläggningarna; det är samma fråga som Sälens två delområden, och den
+väntar på `sub_areas`.
 
 **Grandvalira.** Flerdagarskortet (2 dagar och uppåt) gäller Grandvalira
 PLUS Ordino Arcalís PLUS Pal Arinsal — 308 km mot våra 215. Dagsbiljetten
@@ -113,11 +142,16 @@ källa — det är för tidigt. Datumet står utsatt där orten uppger ett.
   om det gick att hitta. Valleykortet är rätt produkt när det kommer: sidan
   skriver själv "over 120 kilometres of slopes", vilket är exakt våra 120.
 
-## KVAR att hämta — nordiska bokningsmotorer
-levi, myrkdalen, hemavan, riksgransen
+## KVAR — Hemavan och Levi, blockerade av samma skäl som de sex ovan
 
-Alla fyra prissätter dynamiskt och kräver webbläsaren mot bokningen med
-datum, som Åre och Sälen. Hemavans bokning ligger på quickbook.hemavan.nu.
+- **hemavan** — quickbook.hemavan.nu säljer hittills bara säsongspass för
+  26/27 ("Övriga liftkort för vintern släpps under juni", men bara
+  säsongskortet ligger uppe). Databasens 35 € / 245 € står kvar så länge,
+  och det är den enda raden där veckokortet kostar mer än sex dagsbiljetter.
+- **levi** — både prissidan och webbshoppen (levi.skiperformance.com) står
+  i sommarläge. Prislistan på sidan avser sightseeing och Bike Park, inte
+  skidåkning; att läsa "1 day 37,00 €" därifrån vore att hämta ett
+  sommarpris till en vinterjämförelse.
 
 ## KVAR — orter som ännu inte finns i databasen
 val-gardena, saalbach, bad-gastein, cervinia

@@ -308,7 +308,12 @@ export default async function ResortPage({ params }) {
             {/* Snow & conditions */}
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Snö och förhållanden</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+              {/* Tre rutor, inte fyra. Snöfallet togs bort och ingenting
+                  ersatte det — höjden står redan i stapeln strax nedanför
+                  och i sammanfattningen, och ett upprepat tal är inte
+                  bättre än ett tal vi inte kan belägga. auto-fit håller
+                  raden jämn på både tre och två kolumner. */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 16 }}>
                 {[
                   { label: 'Säsongen öppnar',  value: manadVersal(resort.season_start_month) || '—' },
                   { label: 'Säsongen stänger', value: manadVersal(resort.season_end_month) || '—' },
@@ -319,7 +324,18 @@ export default async function ResortPage({ params }) {
                   // riktigt — 0 % i Riksgränsen, 95 % i Madonna di
                   // Campiglio — och hör hemma under snö och förhållanden.
                   { label: 'Konstsnö',         value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—' },
-                  { label: 'Snöfall per säsong', value: `${resort.avg_snowfall_cm} cm` },
+                  // "Snöfall per säsong" stod här och läste avg_snowfall_cm.
+                  // Fältet är hämtat 2026-08-12: skiresort.com — sajtens enda
+                  // källa — bär ingen säsongssiffra alls, bara aktuellt
+                  // snödjup. Kontrollerat på både en alport och en nordisk
+                  // ort. Talen kan alltså inte komma därifrån, och
+                  // fördelningen bekräftar det: alla 30 publicerade värden
+                  // delbara med tio, elva unika tal bland trettio. Samma
+                  // signatur som pistfördelningen hade före migration 013.
+                  //
+                  // Snösäkerheten står kvar som poäng längre ner, och
+                  // höjdstapeln nedanför säger samma sak med tal vi kan
+                  // belägga. Ingen ruta ersätter den borttagna.
                 ].map(item => (
                   <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
                     <div style={fieldLabel}>{item.label}</div>
@@ -618,7 +634,9 @@ export default async function ResortPage({ params }) {
                   { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
                   { label: 'Dagskort',       value: `€${resort.lift_pass_day_eur}` },
                   { label: 'Veckokort',      value: `€${resort.lift_pass_week_eur}` },
-                  { label: 'Snöfall i snitt', value: `${resort.avg_snowfall_cm} cm` },
+                  // "Snöfall i snitt" läste avg_snowfall_cm — se kommentaren
+                  // under Snö och förhållanden om varför fältet inte visas.
+                  { label: 'Konstsnö',       value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} %` : '—' },
                   { label: 'Flyg till',      value: resort.nearest_airport },
                   { label: 'Restid',         value: estimatedTransferMins },
                 ].map(row => (

@@ -18,6 +18,9 @@ export default async function sitemap() {
       ? [{ path: '/plan', changeFrequency: 'weekly', priority: 0.9 }]
       : []),
     { path: '/jamfor', changeFrequency: 'weekly', priority: 0.9 },
+    // Prislistan ändras när orterna släpper nya priser, inte dagligen,
+    // men den är sajtens starkaste enskilda sida och ligger högt.
+    { path: '/liftkortspriser', changeFrequency: 'weekly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },

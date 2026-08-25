@@ -43,14 +43,15 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil |
 | trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan |
 | hemsedal | NOK | 745 | **3 769** | 5,06 | 26/27 | hämtat på SkiStars norska sida, i NOK |
-| myrkdalen | NOK | 660 | **2 620** | 3,97 | ej utsatt | kvoten är låg för att priset är kapat: 6, 7 och 8 dagar kostar alla 2 620 |
+| myrkdalen | NOK | 660 | **2 620** | 3,97 | gällande 26/27 | bekräftad mot ortens egen prislista 2026-08-25. Kapat pris: 6, 7 och 8 sammanhängande dagar kostar alla 2 620. Valfria dagar kostar 3 050 |
+| voss | NOK | 675 | **2 990** | 4,43 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Platt 2 990 hela 15–28.2.27; dagspriset 675 vardag / 720 helg. Ur bokningskalendern |
 | riksgransen | SEK | 520 | **2 547** | 4,90 | 25/26 | 5 dagar 2 195 + extra dag 352; ingen egen sexdagarsrad finns. **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
 | zermatt | CHF | 104 | **432** | 4,15 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Zermatt ensamt: 89/384 |
 | st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
 | les-arcs | EUR | 71 | **368** | 5,18 | 26/27 | Classic Pass = Les Arcs/Peisey-Vallandry, 200 km, våra tal. 19.12.26–16.4.27 |
 | saas-fee | CHF | 84 | **413** | 4,92 | 26/27 | Saas-Fee-kortet (Saas-Fee + Saas-Almagell). Destination-kortet gäller hela Saastal och är inte detta |
-| livigno | EUR | 72 | **362** | 5,03 | **25/26** | högsäsong 31.1–27.3. Dagspriset matchar databasens 72 exakt |
+| livigno | EUR | 74,50 | **374,50** | 5,03 | 26/27 | ALTA STAGIONE 30.1–29.3.27, bandet v9 ligger i. Ur tariffe_26-27.pdf. Lagras som 75/375 — heltalskolumn |
 | madonna-di-campiglio | EUR | 85 | **424** | 4,99 | **25/26** | SkiArea Campiglio Dolomiti di Brenta, samma namn som vårt `ski_area`. Söndagsregel: +10 € om kortet innehåller en söndag |
 
 ## SkiStar säljer samma kort i två valutor
@@ -198,3 +199,105 @@ fälla som `lift_pass_week_eur` gick i.
 Kolumnen `lift_pass_currency` skapas i migration 016. Regeln som gör den
 ofarlig står i den filen och gäller varje rad här: **valutan och beloppet
 ändras i samma UPDATE, aldrig var för sig.**
+
+## KONTROLL 2026-08-25 — två veckor senare
+
+Alla fjorton orter utan verifierat 26/27-pris öppnades på nytt. Två löstes,
+en bekräftades, två visade sig ha ett annat problem än årstiden, och fyra
+gav ett datum för när priset kommer.
+
+**Löst: Livigno och Voss.** Se tabellen ovan. Båda ligger nu i migration 021.
+
+**Bekräftad: Myrkdalen.** Prislistan som ligger länkad från
+myrkdalen.no/en/ski-resort/lift-pass i dag ger 660 / 2 620 — exakt det vi
+lagrat. Kvoten 3,97 är inte ett fel: sammanhängande 6, 7 och 8 dagar kostar
+alla 2 620. Gissningen från 12 augusti är nu belagd med källa.
+
+### Ny distinktion som definitionen saknade
+
+Myrkdalen och Voss säljer båda **sammanhängande** och **valfria** dagar som
+skilda produkter. Myrkdalen: sex sammanhängande 2 620, sex valfria 3 050 —
+sexton procents skillnad. Vi har råkat lagra den sammanhängande varianten
+överallt, vilket är rätt, men definitionen sa inte vilken. Den ska nu läsas:
+vuxen, sex **sammanhängande** dagar, huvudsäsong, referensvecka v9 2027.
+
+En prisjämförelsesida måste säga vilken variant den jämför, annars ställer
+den två olika produkter mot varandra.
+
+### Blockerade av årstid — nu med datum
+
+- **geilo** — skigeilo.no/skipass säljer säsongskort men märker skipass
+  "I salg fra september!". Vår 25/26-rad står kvar till dess.
+- **ruka** — oförändrat: "lift tickets will be available when the winter
+  season begins on October 2nd". Enda orten som anger exakt datum.
+- **st-anton** — Ski Arlberg har byggt om sajten sedan augusti. Vinterns
+  prislänk heter nu bokstavligen `prices-tickets-winter-coming-soon`.
+  Säsongen uppges 2.12.26–18.4.27. 25/26-priset 450 står kvar.
+- **madonna-di-campiglio** — ski.it/it/skipass/listini skriver överst
+  "Questa pagina riporta le informazioni dell'inverno 2025/26".
+- **cortina-d-ampezzo** — Dolomiti Superskis e-butik säljer enbart
+  "Dolomiti Supersummer". Ingen vinterprodukt i försäljning.
+- **mayrhofen** — mayrhofner-bergbahnen.com står kvar i sommarläge,
+  titeln lyder "Experience Summer".
+- **hemavan** — quickbook.hemavan.nu står på säsongen 26/27 men säljer bara
+  säsongspass, och sidans egen text säger fortfarande "Övriga liftkort för
+  vintern släpps under juni". Missade sin egen utlovade tid.
+
+Sju orter publicerar alltså inom ungefär sex veckor. **En insamling i
+början av oktober plockar upp nästan allihop på en gång** och är effektivare
+än att jaga dem en och en.
+
+### Inte blockerade av tid utan av område
+
+Två orter löses inte av att vänta, eftersom frågan är vilket kort som
+motsvarar orten.
+
+**Chamonix — nytt fynd.** Biljettsidan för CHAMONIX Le Pass anger sina egna
+tal: 110 km pist, 2 linbanor, 6 gondoler, 14 stolliftar, 21 släpliftar.
+Vår databas har 170 km och 49 liftar. Sidan skriver dessutom rakt ut: "Nos
+domaines et sites ne sont pas reliés, exceptés Brévent - Flégère."
+Dagspriset står som ett spann, 47,00–59,20 €, mot vårt lagrade 60.
+
+Det löser också gåtan som fick Chamonix kastat på rimlighetskontroll:
+1 400,80 € var **årskortet**, inte veckokortet. Kvoten 24 var alltså ett
+läsfel, inte ett prisfel.
+
+Frågan som återstår är inte vilket pris som ska hämtas utan vilket kort
+orten ska representeras av — Le Pass på 110 km eller Mont Blanc Unlimited,
+som också ger Courmayeur och en dag i Verbier. Ingen av dem är 170 km.
+
+**Grandvalira.** Beslut 2026-08-25: talet ändras INTE till 308 km.
+skiresort.com listar Grandvalira 215 km och Ordino Arcalís 30 km som skilda
+poster, och Pal Arinsal som en tredje. Enkällsregeln väger tyngre än att
+kortet råkar täcka alla tre, och "sammankopplat område" betyder
+liftförbundet — 93 av de 308 kilometrarna kräver buss. Skillnaden mot Sälen
+är att källan där behandlar orten som en post, alltså säger källa och
+liftkort samma sak. Regeln blir: när källan slår ihop gör vi det, när den
+delar gör vi det.
+
+Grandvalira, Chamonix och Sälen är därmed tre fall av samma sak, och det är
+vad `sub_areas` finns för.
+
+### Hittar fortfarande ingenting
+
+- **riksgransen** — ingen prislänk går att hitta i markupen på
+  riksgransen.se, och ingen prislista har lokaliserats. 25/26-raden står
+  kvar med sin reservation om att kortet gäller Björkliden också.
+- **levi** — oförändrat, ingen prislista funnen.
+
+### METOD — lärdom som kostade tid
+
+**Leta efter filen, inte efter navigationen.** Livigno bedömdes som
+blockerad efter att både livigno.eu och skipasslivigno.com öppnats och
+befunnits stå i sommarläge. Prislistan för 26/27 fanns hela tiden, på
+`livigno.eu/hubfs/tariffe_26-27.pdf` — HubSpots filarea, olänkad från
+sommarsidorna. Myrkdalens prislista låg likadant på en Sanity-CDN.
+
+En sajt i sommarläge betyder att sajten är i sommarläge. Det betyder inte
+att filen saknas. Sök på domänen efter pdf innan orten skrivs som blockerad.
+
+**`pdftotext -layout` räcker inte för prislistor med flera bandkolumner.**
+Livignos tabell kom ut med dagsiffrorna i en kolumn och priserna i en annan,
+förskjutna ett steg, vilket gav sex dagar för 127 € i stället för 331.
+`-table` löser det. Ett tal som ser en faktor för lågt ut är förskjutning,
+inte rabatt.

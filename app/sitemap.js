@@ -1,7 +1,7 @@
 import { getResortSlugs } from '../lib/resorts'
 import { SITE_URL } from '../lib/lang'
 import { PLANERAREN_SYNLIG } from '../lib/features'
-import { parSlugsFor } from '../lib/jamfor'
+import { indexeradeParFor } from '../lib/jamfor'
 
 // Genereras om enligt samma intervall som ortsidorna, så nya orter i
 // Supabase dyker upp i sitemapen utan ny deploy.
@@ -37,10 +37,14 @@ export default async function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.8,
     })),
-    // Bara par där båda orterna är publicerade. Par-listorna står i
-    // koden och publiceringen i databasen; utan filtret hade en dold ort
-    // lagt en 404 i sitemapen.
-    ...parSlugsFor(slugs).map((par) => ({
+    // Bara de par som ska indexeras, och bara där båda orterna är
+    // publicerade. Par-listorna står i koden och publiceringen i
+    // databasen; utan filtret hade en dold ort lagt en 404 i sitemapen.
+    //
+    // Sitemapen ska bara innehålla sidor vi faktiskt vill se indexerade.
+    // Alla 83 kuraterade par byggs och länkas fortfarande — se
+    // INDEXERADE_PAR i lib/jamfor.js för varför de inte alla ligger här.
+    ...indexeradeParFor(slugs).map((par) => ({
       url: `${SITE_URL}/jamfor/${par}`,
       lastModified: now,
       changeFrequency: 'weekly',

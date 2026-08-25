@@ -11,7 +11,7 @@ import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
 import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
-import { arNordisk, motparten, parFor } from '../../../lib/jamfor'
+import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -132,6 +132,11 @@ export default async function ResortPage({ params }) {
     { rubrik: 'I Norden', par: jamforelser.filter((x) => arNordisk(x.annan)) },
     { rubrik: 'I Alperna', par: jamforelser.filter((x) => !arNordisk(x.annan)) },
   ].filter((g) => g.par.length > 0)
+
+  // Sex ortsidor att gå vidare till. Skilt från jämförelserna ovan: de
+  // länkar till /jamfor-sidor, det här till andra ortsidor. Det är den
+  // kanten som saknades i länkgrafen — se naraOrter i lib/jamfor.js.
+  const nara = naraOrter(resort, allaOrter)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -625,6 +630,29 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', textDecoration: 'none', letterSpacing: '0.04em' }}>Välj vilka två orter du vill →</Link>
+            </div>
+
+            {/* ── Liknande orter ──
+                Länkar till andra ORTSIDOR, inte till jämförelser. Blocket
+                ovan pekar på /jamfor-sidor; den här kanten saknades helt.
+                Fem orter — Courchevel, Méribel, Verbier, Saas-Fee och
+                Grandvalira — ingår inte i något par och hade därför en enda
+                inlänk från hela sajten, startsidan. Nu har varje ortsida sex
+                inlänkar till på köpet. Se naraOrter i lib/jamfor.js. */}
+            <div style={{ marginTop: 40 }}>
+              <h2 style={sectionTitle}>Liknande orter</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: 8 }}>
+                {nara.map((annan) => (
+                  <Link key={annan.slug} href={`/resort/${annan.slug}`} style={{ ...card, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
+                      {annan.name}
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                      {land(annan.country)} · {annan.total_pistes_km} km pist
+                    </div>
+                  </Link>
+                ))}
+              </div>
             </div>
 
           </div>

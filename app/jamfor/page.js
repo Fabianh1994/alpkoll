@@ -8,7 +8,7 @@ import { land } from '../../lib/countries'
 import { pris, VALUTA_VECKOKOSTNAD } from '../../lib/pris'
 import { hamtaKurser } from '../../lib/valuta'
 import { farOptimeras } from '../../lib/images'
-import { arNordisk, parSlugsFor } from '../../lib/jamfor'
+import { arNordisk, LANKADE_PAR, parSlugsFor } from '../../lib/jamfor'
 
 export const revalidate = 3600
 
@@ -33,18 +33,12 @@ export const metadata = {
 
 // En handfull utvalda par under väljaren, inte alla 83. Listan finns för
 // att ge sidan en ingång åt den som inte vet vad hon letar efter, och för
-// att ge de kuraterade sidorna interna länkar. Resten når Google via
-// sitemapen.
-const UTVALDA = [
-  'are-vs-salen',
-  'are-vs-solden',
-  'salen-vs-trysil',
-  'are-vs-trysil',
-  'ischgl-vs-salen',
-  'hemsedal-vs-trysil',
-  'are-vs-chamonix',
-  'riksgransen-vs-salen',
-]
+// att ge de kuraterade sidorna interna länkar.
+//
+// Den bor i lib/jamfor.js som LANKADE_PAR, eftersom samma lista avgör
+// vad som får indexeras. Att hålla dem isär hade låtit dem glida isär:
+// en internlänk är det som avgör om Google hämtar sidan alls.
+const UTVALDA = LANKADE_PAR
 
 export default async function JamforIndex() {
   const [orter, kurser] = await Promise.all([getResorts(), hamtaKurser()])

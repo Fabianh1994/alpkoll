@@ -63,11 +63,12 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical: url },
-    // Vi marknadsför de kuraterade paren. Övriga svarar för besökaren som
-    // valt dem i väljaren, men ska inte tävla med våra egna sidor i
-    // sökresultaten — och alport mot alport är en sida vi ändå inte kan
-    // vinna mot de internationella skidsajterna.
-    robots: par.kurerat ? undefined : { index: false, follow: true },
+    // Bara paren i INDEXERADE_PAR ber vi Google indexera. Övriga svarar
+    // för besökaren som valt dem i väljaren och behåller sina interna
+    // länkar — follow, så att länkkraften fortsätter till ortsidorna —
+    // men de ska inte tävla med våra egna sidor i sökresultaten, och de
+    // ska inte tränga undan ortsidorna i genomsökningskön.
+    robots: par.indexerat ? undefined : { index: false, follow: true },
     openGraph: {
       title,
       description,

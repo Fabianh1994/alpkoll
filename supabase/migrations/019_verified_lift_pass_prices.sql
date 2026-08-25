@@ -171,17 +171,36 @@ UPDATE resorts SET lift_pass_day_eur = 660, lift_pass_week_eur = 2620, lift_pass
 
 -- ── Efterkontroll ─────────────────────────────────────────────────────
 --
--- 1. Kvoten vecka/dag ska ligga i 4,5–5,5 för de tjugotvå rättade, utom
---    Myrkdalen som kapar priset (3,97). De åtta orörda ligger kvar utanför
---    bandet — det är själva poängen med att de är kvar att göra:
+-- 1. RÄTTAD 2026-08-25. Den här kontrollen var fel skriven när migrationen
+--    kördes, och felet upptäcktes först när utfallet mättes mot databasen.
+--    Den påstod att alla tjugotvå rättade rader hamnar i bandet 4,5–5,5
+--    utom Myrkdalen. Sex gör inte det. Den namngav dessutom Chamonix 4,75,
+--    Ruka 4,83 och Voss 5,24 som utanför bandet, fastän alla tre ligger
+--    inne i det — talen var rätt, klassningen fel.
 --
 --      SELECT slug, lift_pass_currency, lift_pass_day_eur, lift_pass_week_eur,
 --             round(lift_pass_week_eur / lift_pass_day_eur, 2) AS kvot
 --      FROM resorts WHERE published ORDER BY kvot;
 --
---      Förväntat utanför bandet: grandvalira 2,52, cortina 2,80,
---      mayrhofen 2,90, myrkdalen 3,97 (kapat), chamonix 4,75, ruka 4,83,
---      voss 5,24, hemavan 7,00. Åtta rader, sju av dem de orörda.
+--    Faktiskt utanför 4,5–5,5, uppmätt 2026-08-25:
+--
+--      av de tjugotvå rättade   myrkdalen 3,97 (kapat pris, dokumenterat
+--                               ovan), geilo 4,14, zermatt 4,15,
+--                               verbier 4,35, sölden 5,52, tignes 6,00
+--      av de åtta orörda        grandvalira 2,52, cortina 2,80,
+--                               mayrhofen 2,90, hemavan 7,00
+--
+--    De sex rättade raderna är inte felavlästa. Varje pris är hämtat från
+--    ortens egen sida och står med produkt och säsong i
+--    docs/liftkortspriser.md. Det som inte höll var bandet: 4,5–5,5 är för
+--    smalt som passerkrav när kortets rabattkurva varierar mellan orter.
+--    Behåll det som varningsflagga, inte som godkännande.
+--
+--    Sölden står på 5,52 och inte 5,55 för att lift_pass_day_eur är en
+--    heltalskolumn: 84,50 avrundades till 85 vid körning. Alpe d'Huez
+--    veckopris 336,50 blev 337 av samma skäl. Räkna inte med decimaler.
+--
+--    De fyra orörda nollas i migration 020 — se skälen där.
 --
 -- 2. Ingen rad får ha en valuta utan att beloppet hämtats i den valutan.
 --    Alla icke-euro-rader ska vara de tio nordiska och schweiziska ovan:

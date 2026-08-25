@@ -100,7 +100,12 @@ function isOpenInMonth(resort, month) {
 
 function isBudgetFit(resort, budget) {
   if (!budget) return true;
+  // Fyra orter saknar veckopris sedan migration 020 — vi kunde inte
+  // belägga det och nollade hellre än att visa ett tal vi vet är fel.
+  // Utan vakten hade jämförelsen med null gett false och tyst filtrerat
+  // bort dem ur varje budgetval.
   const pass = resort.lift_pass_week_eur;
+  if (!Number.isFinite(pass)) return true;
   const accommodation = budget * 0.50;
   const flights = budget * 0.15;
   const remaining = budget - flights - accommodation;
@@ -141,7 +146,7 @@ function getWhyText(resort, priorities) {
   const reasons = {
     snow:    `Snösäkerhet ${resort.snow_guarantee_score}/10. ${resort.altitude_top > 2500 ? 'Höjden gör snötäcket pålitligt.' : 'Bra snöhistorik för sin höjd.'}`,
     terrain: `${resort.total_pistes_km} km pist, ${resort.black_percent} procent svarta nedfarter. ${resort.off_piste_score >= 8 ? 'Ovanligt bra offpist.' : 'Varierad terräng.'}`,
-    value:   `Veckokort €${resort.lift_pass_week_eur}. ${resort.value_score >= 8 ? 'Mycket för pengarna.' : 'Rimligt pris för det du får.'}`,
+    value:   `${Number.isFinite(resort.lift_pass_week_eur) ? `Veckokort €${resort.lift_pass_week_eur}. ` : ''}${resort.value_score >= 8 ? 'Mycket för pengarna.' : 'Rimligt pris för det du får.'}`,
     access:  `${restidText} från ${resort.nearest_airport}. ${resort.transfer_minutes && resort.transfer_minutes <= 90 ? 'Snabbt att ta sig dit.' : 'Överkomlig transfer.'}`,
     family:  `Familjebetyg ${resort.family_friendly_score}/10. ${resort.beginner_score >= 7 ? 'Bra nybörjarterräng och skidskola.' : 'Bra utbud för barnfamiljer.'}`,
     apres:   `Afterski ${resort.apres_ski_score}/10. ${resort.apres_ski_score >= 9 ? 'Hör till Alpernas livligaste.' : 'Gott om barer och restauranger.'}`,

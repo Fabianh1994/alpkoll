@@ -12,6 +12,7 @@ import { manadVersal } from '../../../lib/months'
 import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
+import { alpsidaFor } from '../../../lib/ellerAlperna'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -137,6 +138,10 @@ export default async function ResortPage({ params }) {
   // länkar till /jamfor-sidor, det här till andra ortsidor. Det är den
   // kanten som saknades i länkgrafen — se naraOrter i lib/jamfor.js.
   const nara = naraOrter(resort, allaOrter)
+
+  // Åre och Sälen har en egen sida mot Alperna som helhet. Den är sajtens
+  // enda ingång till frågan besökaren faktiskt ställer före bokningen.
+  const alpsida = alpsidaFor(resort.slug)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -594,6 +599,20 @@ export default async function ResortPage({ params }) {
                 Länkarna bär talen så att de säger något oklickade. */}
             <div>
               <h2 style={sectionTitle}>{resort.name} mot andra orter</h2>
+
+              {alpsida && (
+                <Link href={alpsida} style={{
+                  display: 'block', ...card, padding: '16px 18px', marginBottom: 16,
+                  textDecoration: 'none', borderColor: 'rgba(212,165,116,0.22)',
+                }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 600, color: '#D4A574' }}>
+                    {resort.name} eller Alperna? →
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.42)', marginTop: 5, lineHeight: 1.6 }}>
+                    Storlek, pris i kronor och hur lång resan är — inklusive alporterna du når med nattåg.
+                  </div>
+                </Link>
+              )}
 
               {/* Fem orter ingår inte i något kuraterat par — Courchevel,
                   Méribel, Verbier, Saas-Fee och Grandvalira. De skulle

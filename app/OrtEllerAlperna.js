@@ -137,7 +137,7 @@ export default async function OrtEllerAlperna({ slug }) {
             />
             <Tal
               etikett="Liftkort, sex dagar"
-              ort={rundat(j.liftkort.ort)}
+              ort={ortKort ? ortKort.kr : '—'}
               alper={`Alperna: ${rundat(j.liftkort.alper.lag)}–${rundat(j.liftkort.alper.hog)}, median ${rundat(j.liftkort.alper.median)}. ${j.billigare === 0 ? 'Ingen är billigare än' : `${storVersal(avAntal(j.billigare, j.antal))} är billigare än`} ${ort.name}.`}
             />
             <Tal
@@ -245,7 +245,7 @@ export default async function OrtEllerAlperna({ slug }) {
               : 'Det är en ort som klarar hela sällskapet utan att vara extrem åt något håll.'}
           </p>
           <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
-            {avAntal(j.hogre, j.antal)} alporter har mer fallhöjd än {ort.name}s{' '}
+            {storVersal(avAntal(j.hogre, j.antal))} alporter har mer fallhöjd än {ort.name}s{' '}
             {ort.vertical_drop_m} meter, och det är den skillnad som märks mest i
             backen. Söker du långa nedfarter och höghöjdssnö är Alperna svaret.
             Söker du kortare resa, färre restimmar med barn och ett liftkort på{' '}

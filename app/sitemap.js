@@ -21,6 +21,9 @@ export default async function sitemap() {
     // Prislistan ändras när orterna släpper nya priser, inte dagligen,
     // men den är sajtens starkaste enskilda sida och ligger högt.
     { path: '/liftkortspriser', changeFrequency: 'weekly', priority: 0.9 },
+    // Frågan varje svensk skidåkare ställer före bokningen, och den enda
+    // kategori sajten kan vinna — se lib/ellerAlperna.js.
+    { path: '/are-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },

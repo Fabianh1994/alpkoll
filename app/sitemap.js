@@ -24,6 +24,7 @@ export default async function sitemap() {
     // Frågan varje svensk skidåkare ställer före bokningen, och den enda
     // kategori sajten kan vinna — se lib/ellerAlperna.js.
     { path: '/are-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },
+    { path: '/salen-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },

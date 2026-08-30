@@ -30,7 +30,7 @@ Engelskan är inte borttagen — `dictionaries/en.json`, `LangContext` och `useD
 
 **Orter döljs, raderas aldrig.** `published = false` behåller rader, poäng och bilder.
 
-Migrationer ligger i `supabase/migrations/` och körs för hand i Supabase SQL Editor. Varje fil börjar med en tom rad, eftersom kopiering ibland tappar första tecknet.
+Migrationer ligger i `supabase/migrations/` och körs för hand i Supabase SQL Editor.
 
 ## Kod
 

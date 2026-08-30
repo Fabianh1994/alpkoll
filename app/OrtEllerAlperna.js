@@ -5,7 +5,7 @@ import { getResorts } from '../lib/resorts'
 import { pris } from '../lib/pris'
 import { hamtaKurser } from '../lib/valuta'
 import { parFor, motparten } from '../lib/jamfor'
-import { alpjamforelse, arAlport, NATTAG_SASONG } from '../lib/ellerAlperna'
+import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
 
 const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
@@ -127,7 +127,7 @@ export default async function OrtEllerAlperna({ slug }) {
             />
             <Tal
               etikett="Fallhöjd"
-              ort={ort.vertical_drop_m} enhet="m"
+              ort={fallhojd(ort)} enhet="m"
               alper={`Alperna: ${j.fallhojd.alper.lag}–${j.fallhojd.alper.hog} m, median ${j.fallhojd.alper.median}. Det är den tydligaste skillnaden.`}
             />
             <Tal
@@ -197,7 +197,7 @@ export default async function OrtEllerAlperna({ slug }) {
                       {r.name}
                     </div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
-                      {r.total_pistes_km} km pist · {r.vertical_drop_m} m fallhöjd
+                      {r.total_pistes_km} km pist · {fallhojd(r)} m fallhöjd
                     </div>
                   </Link>
                 ))}
@@ -246,7 +246,7 @@ export default async function OrtEllerAlperna({ slug }) {
           </p>
           <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
             {storVersal(avAntal(j.hogre, j.antal))} alporter har mer fallhöjd än {ort.name}s{' '}
-            {ort.vertical_drop_m} meter, och det är den skillnad som märks mest i
+            {fallhojd(ort)} meter, och det är den skillnad som märks mest i
             backen. Söker du långa nedfarter och höghöjdssnö är Alperna svaret.
             Söker du kortare resa, färre restimmar med barn och ett liftkort på{' '}
             {ortKort ? ortKort.kr : '—'} är det inte självklart.

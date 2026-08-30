@@ -6,6 +6,7 @@ import { pris } from '../lib/pris'
 import { hamtaKurser } from '../lib/valuta'
 import { parFor, motparten } from '../lib/jamfor'
 import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
+import { restidText, stationFor, SVERIGE } from '../lib/nattaget'
 
 const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
@@ -71,6 +72,13 @@ export default async function OrtEllerAlperna({ slug }) {
 
   const j = alpjamforelse(ort, orter, kurser)
   const publicerade = orter.map((r) => r.slug)
+
+  // Nattågsorterna delas på hur man faktiskt kommer fram. Skillnaden är
+  // hela poängen med avsnittet: en ort tåget stannar i är en annan resa
+  // än en ort med buss från Innsbruck, och sidan påstod tidigare att de
+  // var samma sak.
+  const utanBuss = j.nattag.filter((r) => !r.nattaget.buss)
+  const medBuss = j.nattag.filter((r) => r.nattaget.buss)
 
   // Paren mot alporter finns redan och rankar. Sidan ska mata dem, inte
   // konkurrera med dem — därför ligger de som fortsättning längst ned.
@@ -181,10 +189,29 @@ export default async function OrtEllerAlperna({ slug }) {
               <div style={{ ...etikett, color: ACCENT, marginBottom: 10 }}>
                 Till Alperna — utan att flyga
               </div>
+              {/* Meningen räknas fram, den skrivs inte. Tidigare stod här
+                  att alla orterna nåddes "direkt, utan flygplats och utan
+                  transfer" — vilket var falskt för samtliga fyra som
+                  listades, och utelämnade Kitzbühel, som tåget stannar i.
+                  Ett handskrivet påstående om bytesfrihet kan inte hållas
+                  sant när tidtabellen ändras. Se lib/nattaget.js. */}
               <p style={{ ...brod, fontSize: 15, margin: '0 0 16px' }}>
-                Snälltåget kör nattåg Malmö–Österrike {NATTAG_SASONG}. Med det når du{' '}
-                {j.nattag.length} av orterna nedan direkt, utan flygplats och utan
-                transfer. Det är den jämförelse som sällan görs: {ort.name} med tåg mot
+                Snälltåget kör nattåg {SVERIGE.avgangsort}–Österrike {NATTAG_SASONG},
+                med avgång på {SVERIGE.avgangsdag}seftermiddagen och framme i Alperna
+                på lördagsmorgonen.{' '}
+                {utanBuss.length > 0 && (
+                  <>
+                    Tåget stannar i {utanBuss.map((r) => r.name).join(' och ')} — ingen
+                    flygplats, ingen buss, inget byte.{' '}
+                  </>
+                )}
+                {medBuss.length > 0 && (
+                  <>
+                    Till {medBuss.map((r) => r.name).join(', ').replace(/, ([^,]*)$/, ' och $1')}{' '}
+                    går transferbuss från stationen.{' '}
+                  </>
+                )}
+                Det är den jämförelse som sällan görs: {ort.name} med tåg mot
                 Alperna med tåg, i stället för mot Alperna med flyg.
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
@@ -198,6 +225,16 @@ export default async function OrtEllerAlperna({ slug }) {
                     </div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
                       {r.total_pistes_km} km pist · {fallhojd(r)} m fallhöjd
+                    </div>
+                    {/* Hur man tar sig dit, ort för ort. Det är den
+                        uppgiften som saknades och som gjorde meningen
+                        ovanför osann. Restiden räknas från Malmö. */}
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: ACCENT, marginTop: 6, lineHeight: 1.45 }}>
+                      {r.nattaget.buss
+                        ? r.nattaget.station
+                          ? `Buss från ${r.nattaget.station}`
+                          : 'Buss från tåget'
+                        : `Tåget stannar här · ${restidText(stationFor(r.slug)?.restidMin)}`}
                     </div>
                   </Link>
                 ))}

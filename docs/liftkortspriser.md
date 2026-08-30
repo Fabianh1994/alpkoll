@@ -16,6 +16,16 @@ ortens egen valuta — en kursrörelse är inte en prishöjning — och måste a
 samma produkt båda åren, annars visar de underkända orterna nedan en
 femtioprocentig "höjning" som bara är ett annat område.
 
+**Avgjort 2026-08-30: pristabellen, inte kommentarerna.**
+`022_lift_pass_price_history.sql` skapar `lift_pass_prices` med ort, säsong,
+valuta, produkt och källa per pris, och lägger in de tjugotre hämtade priserna
+ur tabellen nedan. Fyra av dem bär säsongen 25/26 i klartext — geilo,
+riksgransen, st-anton, madonna-di-campiglio — vilket är hela poängen: i dagens
+kolumner ser de ut som 26/27 och skulle nästa år visa två års prisutveckling som
+ett års höjning. De sju orter som aldrig fått ett pris hämtat får ingen rad
+förrän de hämtas. Kolumnerna på `resorts` är orörda och sajten läser dem
+oförändrat; att koppla om läsningen är ett eget steg.
+
 Bakgrunden: `lift_pass_week_eur` har aldrig rörts av någon migration.
 Migration 013 rättade dagspriserna kraftigt uppåt men lämnade veckopriserna,
 så kvoten vecka/dag kollapsade — spannet är 2,19–7,00 och tolv av trettio

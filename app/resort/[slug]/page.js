@@ -12,7 +12,8 @@ import { manadVersal } from '../../../lib/months'
 import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
-import { alpsidaFor } from '../../../lib/ellerAlperna'
+import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
+import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 
@@ -142,6 +143,11 @@ export default async function ResortPage({ params }) {
   // Åre och Sälen har en egen sida mot Alperna som helhet. Den är sajtens
   // enda ingång till frågan besökaren faktiskt ställer före bokningen.
   const alpsida = alpsidaFor(resort.slug)
+
+  // Nattågsrutan visas bara för de orter tåget faktiskt går till, och bara
+  // under säsongen. Efter 14 mars vore en tidtabell på en ortsida ett
+  // påstående om ett tåg som inte går — se lib/nattaget.js.
+  const nattag = sasongenSlut() ? null : nattagFor(resort.slug)
 
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
@@ -526,6 +532,25 @@ export default async function ResortPage({ params }) {
                   <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
                     <div style={fieldLabel}>Med tåg och flyg</div>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>{resort.transport_info}</p>
+                  </div>
+                )}
+                {/* Nattåget, för de fem orter det faktiskt går till.
+                    Uppgiften stod tidigare bara på alpsidorna, som Åre och
+                    Sälen länkar till — alltså aldrig på den ortsida resan
+                    handlar om. Texten kommer ur lib/nattaget.js så att den
+                    inte kan säga "utan byte" om en ort som kräver buss. */}
+                {nattag && (
+                  <div style={{ background: 'rgba(212,165,116,0.06)', border: '1px solid rgba(212,165,116,0.16)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
+                    <div style={{ ...fieldLabel, color: '#D4A574' }}>Med nattåg från Sverige</div>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: '4px 0 0' }}>
+                      {nattag.buss
+                        ? `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG}. ${nattag.station
+                            ? `Kliv av i ${nattag.station} och ta transferbussen${nattag.hallplats ? `, som stannar vid ${nattag.hallplats}` : ''}.`
+                            : `Sista biten går med transferbuss${nattag.hallplats ? ` till hållplatsen vid ${nattag.hallplats}` : ''}.`}`
+                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${resort.name} — ingen flygplats, ingen buss, inget byte. Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
+                      {' '}
+                      <Link href="/nattaget-till-alperna" style={{ color: '#D4A574', textDecoration: 'none' }}>Tider och orter →</Link>
+                    </p>
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>

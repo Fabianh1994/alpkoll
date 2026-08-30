@@ -25,6 +25,11 @@ export default async function sitemap() {
     // kategori sajten kan vinna — se lib/ellerAlperna.js.
     { path: '/are-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/salen-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },
+    // Nattåget ligger lika högt som prislistan: det är den uppgift på
+    // sajten som ingen internationell skidsajt kan bära. monthly och inte
+    // yearly trots att tidtabellen byts en gång om året — sidan byter
+    // innehåll när säsongen tar slut, och den ändringen ska hämtas.
+    { path: '/nattaget-till-alperna', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },

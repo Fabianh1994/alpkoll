@@ -29,15 +29,17 @@ en språkmodell citerar inte det den kan räkna ut själv.
 
 ## Git
 
-`main` är i fas med `origin/main`. Inga öppna PR:ar. Senast mergat 26 augusti:
+`main` är i fas med `origin/main`. Senast mergat 30 augusti:
 
 | PR | Vad |
 |---|---|
+| #22 | Nattågspåståendet rättat — tåget stannar inte i de fyra orter sidan namngav |
+| #21 | Pristabell med säsong per rad, och en fallhöjd i stället för två |
 | #19 | Sälen mot Alperna, plus två rättade fel på Åre-sidan |
 | #18 | `/are-eller-alperna` — sidan som svarar på frågan svensken faktiskt ställer |
 | #17 | `/liftkortspriser` — prislistan över sex skiddagar |
 
-Sitemapen ligger på 63 adresser. `OrtEllerAlperna.js` är samma komponent för båda
+Sitemapen ligger på 64 adresser. `OrtEllerAlperna.js` är samma komponent för båda
 alpsidorna; ett tillägg är en routfil plus en slug i `HAR_ALPSIDA`. Meningarna härleds
 ur datan — ingen text skrivs per ort.
 
@@ -49,16 +51,31 @@ september, Ruka den 2 oktober, St. Anton har en sida som heter
 bokningssäsongen. Skäl, datum och metod per ort står i `docs/liftkortspriser.md`.
 **Riksgränsen och Levi har vi fortfarande inte hittat någon prislista för.**
 
-**2. Tre orter där frågan är vilket kort som motsvarar orten.** Chamonix Le Pass ger 110 km
+Gör nattågstidtabellen i samma svep — se punkt 2.
+
+**2. Nattågets tidtabell, varje höst.** Hela `/nattaget-till-alperna` beskriver
+säsongen 2026/27 och går ut med den 14 mars 2027. Snälltåget publicerar nästa
+vinters tider under hösten, ungefär när skidorterna släpper sina liftkortspriser.
+
+Allt som åldras ligger i `lib/nattaget.js`, och checklistan för vad som ska bytas
+står överst i filen. Ingen SQL, ingen migration — en fil, en PR.
+
+Sidan skyddar sig själv under tiden: efter `SASONG_SLUT` slutar den visa
+tidtabellen och säger att nästa säsong inte är publicerad. Ortsidornas
+nattågsruta försvinner samtidigt. Det är med flit — en utgången tidtabell som ser
+aktuell ut är värre än ingen sida alls, vilket är samma fel `lift_pass_week_eur`
+led av i två år.
+
+**3. Tre orter där frågan är vilket kort som motsvarar orten.** Chamonix Le Pass ger 110 km
 mot vårt tal på 170. Grandvaliras flerdagarskort ger 308 mot vårt 215. Sälen är samma sak.
 Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
 
-**3. Startsidans filter och sortering** på samma fält som jämförelsesidorna använder.
+**4. Startsidans filter och sortering** på samma fält som jämförelsesidorna använder.
 
-**4. Fler nordiska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. Kräver din
+**5. Fler nordiska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. Kräver din
 research, inte kod.
 
-**5. Vandring**, med datamodellen delad i plats och aktivitet först.
+**6. Vandring**, med datamodellen delad i plats och aktivitet först.
 
 **Kräver dig, inte kod:** fyra hotlänkade ortbilder ska bytas (Voss, Geilo, Myrkdalen,
 Grandvalira), redaktionella poäng för nya orter, affiliate-ID. Obekräftat i
@@ -74,8 +91,15 @@ En rättad siffra i Supabase syns inte direkt — sidorna förrenderades vid dep
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 21 filer i `supabase/migrations/`, alla körda och verifierade till och med
-021. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln.
+**Migrationer:** 22 filer i `supabase/migrations/`, alla körda och verifierade till och med
+022. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men den
+räcker för att läsa hela `resorts` och `lift_pass_prices`, vilket är hur granskningarna görs.
+
+**Priserna har en egen tabell sedan 022.** `lift_pass_prices` bär ort, säsong, valuta,
+produkt och källa per pris, med 23 rader. Fyra av dem är säsongen 2025/2026 och inte
+2026/2027 — geilo, riksgransen, st-anton, madonna-di-campiglio — därför att orten inte
+publicerat nästa säsong när priset hämtades. Prisökningsartikeln måste hoppa över dem
+eller märka ut dem. Kolumnerna på `resorts` är kvar och är fortfarande det sidorna läser.
 
 **Efterkontrollen som fångar ohämtade rader:** leta efter orter där hela pisttrippeln är
 delbar med fem — det var signaturen på det gissade underlaget. Den flaggar Chamonix och

@@ -16,6 +16,11 @@ const LANKAR = [
   { label: 'Skidorter', href: '/#resorts', match: (p) => p === '/' },
   { label: 'Jämför', href: '/jamfor', match: (p) => p.startsWith('/jamfor') },
   { label: 'Liftkortspriser', href: '/liftkortspriser', match: (p) => p === '/liftkortspriser' },
+  // Nattåget står i menyn av samma skäl som mätningen 2026-08-25 gav:
+  // 62 procent av de länkade sidorna var genomsökta mot 21 av de olänkade.
+  // Materialet fanns förut bara som ett kort en bit ner på två sidor som
+  // själva inte låg i menyn — alltså osynligt för den som söker på det.
+  { label: 'Nattåget', href: '/nattaget-till-alperna', match: (p) => p === '/nattaget-till-alperna' },
   { label: 'Om oss', href: '/about', match: (p) => p === '/about' },
 ];
 

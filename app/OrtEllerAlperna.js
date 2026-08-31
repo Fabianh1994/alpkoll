@@ -6,7 +6,7 @@ import { pris } from '../lib/pris'
 import { hamtaKurser } from '../lib/valuta'
 import { parFor, motparten } from '../lib/jamfor'
 import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
-import { restidText, stationFor, SVERIGE } from '../lib/nattaget'
+import { restidText, sasongenSlut, stationFor, SVERIGE } from '../lib/nattaget'
 
 const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
@@ -73,12 +73,18 @@ export default async function OrtEllerAlperna({ slug }) {
   const j = alpjamforelse(ort, orter, kurser)
   const publicerade = orter.map((r) => r.slug)
 
+  // Efter sista trafikdagen ska tidtabellen inte stå kvar som säljargument.
+  // /nattaget-till-alperna och ortsidorna tystnade redan när SASONG_SLUT
+  // passerats; de här två sidorna gjorde det inte, vilket hade lämnat en
+  // utgången säsong stående som skälet att välja Alperna. Se lib/nattaget.js.
+  const nattag = sasongenSlut() ? [] : j.nattag
+
   // Nattågsorterna delas på hur man faktiskt kommer fram. Skillnaden är
   // hela poängen med avsnittet: en ort tåget stannar i är en annan resa
   // än en ort med buss från Innsbruck, och sidan påstod tidigare att de
   // var samma sak.
-  const utanBuss = j.nattag.filter((r) => !r.nattaget.buss)
-  const medBuss = j.nattag.filter((r) => r.nattaget.buss)
+  const utanBuss = nattag.filter((r) => !r.nattaget.buss)
+  const medBuss = nattag.filter((r) => r.nattaget.buss)
 
   // Paren mot alporter finns redan och rankar. Sidan ska mata dem, inte
   // konkurrera med dem — därför ligger de som fortsättning längst ned.
@@ -114,9 +120,14 @@ export default async function OrtEllerAlperna({ slug }) {
           {j.billigare === 0
             ? `Ingen av dem har ett billigare liftkort för sex dagar`
             : `Men ${ord(j.billigare)} av dem har ett billigare liftkort för sex dagar`}
-          {j.nattag.length > 0
-            ? `, och ${ord(j.nattag.length)} når du med nattåg från Sverige utan att flyga.`
-            : ', och resan dit kräver flyg.'}
+          {/* Mellan säsongerna sägs ingenting om tåget alls. "Resan dit
+              kräver flyg" vore fel så snart nästa tidtabell publiceras, och
+              nattågsmeningen vore fel innan dess. */}
+          {nattag.length > 0
+            ? `, och ${ord(nattag.length)} når du med nattåg från Sverige utan att flyga.`
+            : j.nattag.length > 0
+              ? '.'
+              : ', och resan dit kräver flyg.'}
         </p>
         <p style={{ ...brod, margin: '0 0 46px' }}>
           Det gör valet till något annat än en storleksfråga. Nedan står talen,
@@ -184,7 +195,7 @@ export default async function OrtEllerAlperna({ slug }) {
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>{ort.transport_info}</p>
           </div>
 
-          {j.nattag.length > 0 && (
+          {nattag.length > 0 && (
             <div style={{ ...kort, padding: 'clamp(20px, 4vw, 28px)', borderColor: 'rgba(212,165,116,0.22)' }}>
               <div style={{ ...etikett, color: ACCENT, marginBottom: 10 }}>
                 Till Alperna — utan att flyga
@@ -215,7 +226,7 @@ export default async function OrtEllerAlperna({ slug }) {
                 Alperna med tåg, i stället för mot Alperna med flyg.
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-                {j.nattag.map((r) => (
+                {nattag.map((r) => (
                   <Link key={r.slug} href={`/resort/${r.slug}`} style={{
                     background: 'rgba(212,165,116,0.06)', border: '1px solid rgba(212,165,116,0.14)',
                     borderRadius: 8, padding: '12px 14px', textDecoration: 'none', display: 'block',

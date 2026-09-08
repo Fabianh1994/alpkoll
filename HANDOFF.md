@@ -109,6 +109,49 @@ ur datan — ingen text skrivs per ort.
 
 ## Vad som väntar
 
+### Nästa session: rörelse och prestanda
+
+Beslutat 8 september. Två fynd ur en genomgång av sajten mot tasteskills regeluppsättning
+— en öppen `SKILL.md` på github.com/Leonxlnx/taste-skill som vi **inte** installerade och
+inte tänker installera; vi plockade bara ut fynden. Allt nedan är mätt live på alpkoll.se
+den 8 september, inte läst ur koden.
+
+**Ingen `prefers-reduced-motion` någonstans.** Startsidan har 88 element med övergångar och
+noll CSS-regler som respekterar systeminställningen för minskad rörelse. Det är den enda
+riktiga bristen av de fem fynden, och den är billig att åtgärda.
+
+**`transition-property: all` på 14 element**, plus `border-color, transform, box-shadow` på
+de trettio ortskorten. `all` får webbläsaren att bevaka varje egenskap; `box-shadow` och
+`border-color` går inte på GPU:n utan tvingar omritning. Ska ner till `transform` och
+`opacity`.
+
+**Tre fynd ur samma genomgång tas medvetet inte:**
+
+*Hero-rubriken är tre rader* mot regelns max två — 100 px Bebas Neue på desktop, 52 px vid
+430 px bredd, tre rader i båda fallen. Regeln kallar det ett typsnittsstorleksfel. Vi kallar
+det ett designval.
+
+*Hero-undertexten är 23 ord* mot max 20. För litet att bry sig om.
+
+*Mörkt läge saknas.* Enda `prefers-color-scheme`-regeln på sajten är oanvänd boilerplate
+från `create-next-app` (`--background: #0a0a0a`) som designen inte läser. Kräm
+`rgb(240,236,228)` mot off-black `rgb(20,18,16)` är ett medvetet enkelt läge. Beslutet finns
+men står ingenstans — repot har ingen `DESIGN.md`, så det får plats i `CLAUDE.md` eller i en
+egen fil den dagen det finns fler designbeslut att samla.
+
+**Resten av regeluppsättningen klarade sajten redan**, vilket är värt att veta innan någon
+öppnar filen igen: inga påhittade namn, siffror eller varumärken, inga div-byggda
+skärmdumpar, ingen ren svart på någon synlig yta, inga sektionsnummer eller
+versionsetiketter, noll mittprickar på startsidan, nav på en rad och 52 px, trettio kort för
+trettio orter utan tom cell, ingen horisontell overflow vid 430 px, ingen `h-screen`, inga
+`w-[calc(`. Pristabellens rader har `border-bottom: 1px` med `border-top: 0`, alltså bara
+linje under.
+
+Två saker gick inte att avgöra utifrån och är alltså oprövade: kontrollen av `package.json`
+före import, och städning i `useEffect`.
+
+---
+
 **1. Prisinsamling i oktober — ta alla sju i ett svep.** Ruka anger 2 oktober och är den
 enda orten med ett datum; resten står i sommarläge eller "coming soon" utan besked. Att gå
 tillbaka en ort i taget kostar mer än det ger.

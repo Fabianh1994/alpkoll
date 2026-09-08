@@ -16,7 +16,7 @@ import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
 import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
-import { harPris } from '../../../lib/liftkortspriser'
+import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -136,8 +136,34 @@ export default async function ResortPage({ params }) {
   // liftkortspris alls. Se migration 024 för hela underlaget.
   const kurser = await hamtaKurser()
   const valuta = resort.lift_pass_currency || 'EUR'
-  const dagskort = pris(resort.lift_pass_day_eur, valuta, kurser)
-  const veckokort = pris(resort.lift_pass_week_eur, valuta, kurser)
+
+  // Samma spärr som /liftkortspriser och som taggarna. Sju orter bär tal
+  // i databasen som aldrig hämtats ur en prislista, och ortsidan skrev ut
+  // dem ändå: Ruka stod som "släpps 2 oktober" i prislistan och som
+  // "Veckokort ca 3 150 kr" här. Ett rättat Ischgl bredvid ett orättat
+  // Ruka är sämre än två gamla tal — så priserna visas nu på samma villkor
+  // överallt, och där de saknas står skälet i stället för ett streck.
+  const prisAttVisa = harPris(resort)
+  const dagskort = prisAttVisa ? pris(resort.lift_pass_day_eur, valuta, kurser) : null
+  const veckokort = prisAttVisa ? pris(resort.lift_pass_week_eur, valuta, kurser) : null
+  const utanPris = prisAttVisa ? null : UTAN_PRIS[resort.slug]
+
+  // Vad talet betyder, inte varför vi saknar ett annat tal. Rutan sade
+  // förut att resa och boende varierar för mycket för att sätta en siffra
+  // på — en ursäkt för något som inte står på sidan, och som besökaren
+  // aldrig frågat efter. Det som faktiskt behövs för att förstå 3 744 kr
+  // är vad kortet omfattar och vilken säsong det gäller.
+  //
+  // Säsongen är inte en detalj. Fyra orter bär 25/26-priser därför att de
+  // inte publicerat nästa säsong — st-anton, madonna-di-campiglio, geilo
+  // och riksgransen. /liftkortspriser märker ut dem med en etikett per
+  // rad; ortsidan gjorde det inte alls, och visade alltså förra årets
+  // pris som om det vore årets.
+  const prismeta = prisAttVisa ? VERIFIERADE[resort.slug] : null
+  const sasongen =
+    prismeta?.sasong === '26/27' ? 'Säsongen 2026/2027.'
+      : prismeta?.sasong === '25/26' ? 'Säsongen 2025/2026.'
+        : null
 
   /** Sant när kronbeloppet är omräknat ur en annan valuta och alltså avrundat. */
   const omraknat = Boolean(dagskort?.ursprung || veckokort?.ursprung)
@@ -354,8 +380,12 @@ export default async function ResortPage({ params }) {
               { label: 'Fallhöjd',   value: `${verticalDrop} m` },
               { label: 'Pist',       value: `${resort.total_pistes_km} km` },
               { label: 'Liftar',     value: resort.total_lifts },
-              { label: 'Dagskort',   value: dagskort?.kr || '—' },
-              { label: 'Veckokort',  value: veckokort?.kr || '—' },
+              // Prisrutorna faller bort helt för de orter vi inte har ett
+              // hämtat pris för, i stället för att visa "—". Ett streck i
+              // hjältebilden ser ut som saknad data i en tabell som annars
+              // är full; skälet står i prissektionen längre ner.
+              ...(dagskort ? [{ label: 'Dagskort', value: dagskort.kr }] : []),
+              ...(veckokort ? [{ label: 'Veckokort', value: veckokort.kr }] : []),
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(18,17,16,0.75)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '8px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', lineHeight: 1 }}>{s.value}</span>
@@ -650,34 +680,52 @@ export default async function ResortPage({ params }) {
               */}
               <h2 style={sectionTitle}>Liftkort och priser i {resort.name}</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
-                  {[
-                    // Prisklass läste price_tier, vars klasser överlappar:
-                    // klass 1 spänner 900–1 550 € och klass 3 spänner
-                    // 1 300–2 600 €. Cortina d'Ampezzo och Kitzbühel stod
-                    // som Budget, Hemavan som Premium fast Hemavan är
-                    // billigast av de tre. Prisvärde läste value_score,
-                    // vars vanligaste värde är 4 — satt på 12 orter utan
-                    // att gå att härleda ur något annat fält.
-                    //
-                    // Kvar står de två tal som kommer ur samma källa som
-                    // resten av sifferrutorna.
-                    { label: 'Dagskort',      value: rakt(dagskort) },
-                    { label: 'Veckokort',     value: rakt(veckokort) },
-                  ].map(item => (
-                    <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
-                      <div style={fieldLabel}>{item.label}</div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
-                    </div>
-                  ))}
-                </div>
+                {prisAttVisa ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+                    {[
+                      // Prisklass läste price_tier, vars klasser överlappar:
+                      // klass 1 spänner 900–1 550 € och klass 3 spänner
+                      // 1 300–2 600 €. Cortina d'Ampezzo och Kitzbühel stod
+                      // som Budget, Hemavan som Premium fast Hemavan är
+                      // billigast av de tre. Prisvärde läste value_score,
+                      // vars vanligaste värde är 4 — satt på 12 orter utan
+                      // att gå att härleda ur något annat fält.
+                      //
+                      // Kvar står de två tal som kommer ur samma källa som
+                      // resten av sifferrutorna.
+                      { label: 'Dagskort',      value: rakt(dagskort) },
+                      { label: 'Veckokort',     value: rakt(veckokort) },
+                    ].map(item => (
+                      <div key={item.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 14px' }}>
+                        <div style={fieldLabel}>{item.label}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
                 <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
-                    Liftkortspriserna ovan är hämtade från orten.{' '}
-                    {omraknat
-                      ? <>Kronbeloppen är omräknade mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundade till närmaste femtio.{' '}</>
-                      : null}
-                    Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.
+                    {prisAttVisa ? (
+                      <>
+                        {sasongen ? <>{sasongen}{' '}</> : null}
+                        {OMFATTNING}{' '}
+                        {/* Referensveckan ligger i februari 2027 och gäller
+                            därför bara 26/27-priser — se lib/liftkortspriser.js. */}
+                        {prismeta?.sasong === '26/27' ? <>{REFERENSVECKA}{' '}</> : null}
+                        {prismeta?.not ? <>{prismeta.not}{' '}</> : null}
+                        Hämtat ur ortens egen prislista.{' '}
+                        {omraknat
+                          ? <>Kronbeloppen är omräknade mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundade till närmaste femtio.{' '}</>
+                          : null}
+                      </>
+                    ) : (
+                      <>
+                        Vi visar inget liftkortspris för {resort.name}.{' '}
+                        {utanPris?.skal ? <>{utanPris.skal}{' '}</> : null}
+                        Ett pris vi inte kan belägga mot ortens egen prislista är sämre än inget pris — se{' '}
+                        <Link href="/liftkortspriser" style={{ color: '#D4A574', textDecoration: 'none' }}>hela prislistan</Link>.
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
@@ -787,8 +835,11 @@ export default async function ResortPage({ params }) {
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
                   { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
-                  { label: 'Dagskort',       value: dagskort?.kr || '—' },
-                  { label: 'Veckokort',      value: veckokort?.kr || '—' },
+                  // Raderna faller bort helt när priset inte är hämtat, av
+                  // samma skäl som i hjältebilden: ett streck läses som
+                  // "vi vet inte" i en lista där allt annat står ifyllt.
+                  ...(dagskort ? [{ label: 'Dagskort', value: dagskort.kr }] : []),
+                  ...(veckokort ? [{ label: 'Veckokort', value: veckokort.kr }] : []),
                   // "Snöfall i snitt" läste avg_snowfall_cm — se kommentaren
                   // under Snö och förhållanden om varför fältet inte visas.
                   { label: 'Konstsnö',       value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} %` : '—' },

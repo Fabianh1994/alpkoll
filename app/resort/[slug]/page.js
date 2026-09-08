@@ -16,7 +16,7 @@ import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
 import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
-import { harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
+import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -147,6 +147,23 @@ export default async function ResortPage({ params }) {
   const dagskort = prisAttVisa ? pris(resort.lift_pass_day_eur, valuta, kurser) : null
   const veckokort = prisAttVisa ? pris(resort.lift_pass_week_eur, valuta, kurser) : null
   const utanPris = prisAttVisa ? null : UTAN_PRIS[resort.slug]
+
+  // Vad talet betyder, inte varför vi saknar ett annat tal. Rutan sade
+  // förut att resa och boende varierar för mycket för att sätta en siffra
+  // på — en ursäkt för något som inte står på sidan, och som besökaren
+  // aldrig frågat efter. Det som faktiskt behövs för att förstå 3 744 kr
+  // är vad kortet omfattar och vilken säsong det gäller.
+  //
+  // Säsongen är inte en detalj. Fyra orter bär 25/26-priser därför att de
+  // inte publicerat nästa säsong — st-anton, madonna-di-campiglio, geilo
+  // och riksgransen. /liftkortspriser märker ut dem med en etikett per
+  // rad; ortsidan gjorde det inte alls, och visade alltså förra årets
+  // pris som om det vore årets.
+  const prismeta = prisAttVisa ? VERIFIERADE[resort.slug] : null
+  const sasongen =
+    prismeta?.sasong === '26/27' ? 'Säsongen 2026/2027.'
+      : prismeta?.sasong === '25/26' ? 'Säsongen 2025/2026.'
+        : null
 
   /** Sant när kronbeloppet är omräknat ur en annan valuta och alltså avrundat. */
   const omraknat = Boolean(dagskort?.ursprung || veckokort?.ursprung)
@@ -690,7 +707,13 @@ export default async function ResortPage({ params }) {
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
                     {prisAttVisa ? (
                       <>
-                        Liftkortspriserna ovan är hämtade från orten.{' '}
+                        {sasongen ? <>{sasongen}{' '}</> : null}
+                        {OMFATTNING}{' '}
+                        {/* Referensveckan ligger i februari 2027 och gäller
+                            därför bara 26/27-priser — se lib/liftkortspriser.js. */}
+                        {prismeta?.sasong === '26/27' ? <>{REFERENSVECKA}{' '}</> : null}
+                        {prismeta?.not ? <>{prismeta.not}{' '}</> : null}
+                        Hämtat ur ortens egen prislista.{' '}
                         {omraknat
                           ? <>Kronbeloppen är omräknade mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundade till närmaste femtio.{' '}</>
                           : null}
@@ -700,10 +723,9 @@ export default async function ResortPage({ params }) {
                         Vi visar inget liftkortspris för {resort.name}.{' '}
                         {utanPris?.skal ? <>{utanPris.skal}{' '}</> : null}
                         Ett pris vi inte kan belägga mot ortens egen prislista är sämre än inget pris — se{' '}
-                        <Link href="/liftkortspriser" style={{ color: '#D4A574', textDecoration: 'none' }}>hela prislistan</Link>.{' '}
+                        <Link href="/liftkortspriser" style={{ color: '#D4A574', textDecoration: 'none' }}>hela prislistan</Link>.
                       </>
                     )}
-                    Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.
                   </div>
                 </div>
               </div>

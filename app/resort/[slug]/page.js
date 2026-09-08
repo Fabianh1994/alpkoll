@@ -16,6 +16,7 @@ import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
 import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
+import { harPris } from '../../../lib/liftkortspriser'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -37,17 +38,42 @@ export async function generateMetadata({ params }) {
   const baseUrl = SITE_URL
   const place = `${resort.name}, ${land(resort.country)}`
 
-  const title = `${place} — snö, terräng, priser | Alpkoll`
-
   // "Snögaranti" betyder i svensk resebransch pengarna tillbaka. Den
   // synliga etiketten rättades tidigare, men beskrivningen — den text
   // Google visar — missades och stod kvar på alla 32 ortsidor.
   // Beskrivningen är det Google visar och ska tala samma språk som sidan.
   // Veckopasset stod i euro medan sidan numera skriver kronor.
+  //
+  // Vad taggarna bär är uppmätt, inte antaget. Search Console 8 september
+  // 2026, sajtens första sex veckor i indexet: prisfrågor 151 exponeringar,
+  // fallhöjdsfrågor 59 — och noll klick på båda. Fallhöjden stod elva
+  // gånger på sidan och inte en gång i taggen, dagskortet inte alls, och
+  // "Snösäkerhet 6/10" avslutade beskrivningen utan att matcha en enda
+  // fråga. Beskrivningen väger inte på position, bara på om någon som
+  // redan ser sidan klickar. Titeln väger på båda — därför står sökorden
+  // där också.
   const kurser = await hamtaKurser()
-  const veckopass = pris(resort.lift_pass_week_eur, resort.lift_pass_currency || 'EUR', kurser)
 
-  const description = `${resort.name}: ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar, ${resort.altitude_base}–${resort.altitude_top} m.${veckopass ? ` Veckopass ${veckopass.kr},` : ''} närmaste flygplats ${resort.nearest_airport}. Snösäkerhet ${resort.snow_guarantee_score}/10.`
+  // Samma spärr som /liftkortspriser. Sju orter bär tal i databasen som
+  // aldrig hämtats ur ortens egen prislista, och just de talen får inte
+  // stå i det Google visar — se lib/liftkortspriser.js. Därför lovar
+  // titeln inte heller ett liftkortspris för de orterna.
+  const prisAttVisa = harPris(resort)
+  const valutan = resort.lift_pass_currency || 'EUR'
+  const dagspass = prisAttVisa ? pris(resort.lift_pass_day_eur, valutan, kurser) : null
+  const veckopass = prisAttVisa ? pris(resort.lift_pass_week_eur, valutan, kurser) : null
+
+  const title = prisAttVisa
+    ? `${place} — fallhöjd, pist och liftkortspris | Alpkoll`
+    : `${place} — fallhöjd, pist och snö | Alpkoll`
+
+  const fallhojd = resort.altitude_top - resort.altitude_base
+  const liftkortet = [
+    dagspass ? `${dagspass.kr}/dag` : null,
+    veckopass ? `${veckopass.kr} för sex dagar` : null,
+  ].filter(Boolean).join(', ')
+
+  const description = `${resort.name}: ${fallhojd} m fallhöjd, ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar.${liftkortet ? ` Liftkort ${liftkortet}.` : ''} ${resort.altitude_base}–${resort.altitude_top} m, flygplats ${resort.nearest_airport}.`
 
   const path = `/resort/${resort.slug}`
 
@@ -189,6 +215,22 @@ export default async function ResortPage({ params }) {
     fontWeight: 500, color: '#f0ece4',
   }
 
+  const erbjudanden = harPris(resort)
+    ? [
+        { namn: 'Dagskort', belopp: resort.lift_pass_day_eur },
+        { namn: 'Liftkort sex dagar', belopp: resort.lift_pass_week_eur },
+      ]
+        .filter((p) => Number.isFinite(p.belopp))
+        .map((p) => ({
+          '@type': 'Offer',
+          name: p.namn,
+          price: p.belopp,
+          priceCurrency: valuta,
+          category: 'Liftkort',
+          url: `${SITE_URL}/resort/${resort.slug}`,
+        }))
+    : []
+
   // Strukturerad data för Google. Medvetet utan aggregateRating —
   // poängen är vår egen redaktionella bedömning, inte användarbetyg,
   // och att presentera den som betyg vore missvisande.
@@ -216,6 +258,16 @@ export default async function ResortPage({ params }) {
             elevation: resort.altitude_base,
           }
         : undefined,
+    // Liftkortet i maskinläsbar form. Beloppen står i ortens egen valuta
+    // och med källans exakta tal — kronorpriset på sidan är en omräkning
+    // som dessutom avrundas till närmaste femtio för alporterna, och ett
+    // avrundat tal hör inte hemma i data som läses som fakta. Sidan visar
+    // originalet inom parentes, så talen går att känna igen.
+    //
+    // Samma spärr som beskrivningen: bara priser vi kan belägga. De sju
+    // orter som saknar hämtat pris får ingen Offer alls hellre än en med
+    // ett tal ur databasen som ingen prislista stöder.
+    makesOffer: erbjudanden.length ? erbjudanden : undefined,
   }
 
   return (
@@ -585,7 +637,17 @@ export default async function ResortPage({ params }) {
 
             {/* What it costs */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionTitle}>Vad det kostar</h2>
+              {/*
+                Rubriken hette "Vad det kostar" och innehöll varken ordet
+                liftkort eller ortens namn. Frågorna som når sidan gör
+                det: "liftkort sälen pris", "vad kostar liftkort i sälen",
+                "liftkort hemsedal pris", "sälen skipass pris". En rubrik
+                som bär samma ord som frågan är det ortsidan har och som
+                den generella prislistan aldrig kan få — den sidan har
+                noll exponeringar på sex månader just för att den svarar
+                på en fråga ingen ställer.
+              */}
+              <h2 style={sectionTitle}>Liftkort och priser i {resort.name}</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                   {[

@@ -5,16 +5,17 @@ import Valjaren from './Valjaren'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { pris, VALUTA_VECKOKOSTNAD } from '../../lib/pris'
+import { pris } from '../../lib/pris'
 import { hamtaKurser } from '../../lib/valuta'
 import { farOptimeras } from '../../lib/images'
 import { arNordisk, LANKADE_PAR, parSlugsFor } from '../../lib/jamfor'
+import { harPris } from '../../lib/liftkortspriser'
 
 export const revalidate = 3600
 
 const titel = 'Jämför skidorter — Alperna och Norden | Alpkoll'
 const beskrivning =
-  'Välj två skidorter och ställ dem mot varandra: storlek, vad veckan kostar, fallhöjd och resan från Sverige. Samma källa för båda orterna.'
+  'Välj två skidorter och ställ dem mot varandra: storlek, liftkortspris, fallhöjd och resan från Sverige. Samma källa för båda orterna.'
 
 export const metadata = {
   title: titel,
@@ -54,9 +55,15 @@ export default async function JamforIndex() {
     bild: ort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
     optimeras: farOptimeras(ort.image_url),
     pist: ort.total_pistes_km,
-    // Kortet visar bara kronbeloppet. Originalvalutan hör hemma där man
-    // fattar beslutet, inte i ett rutnät man ögnar igenom.
-    vecka: pris(ort.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr || null,
+    // Kortet visade förut en veckokostnad ur est_weekly_cost_eur, ett tal
+    // som aldrig hämtats någonstans ifrån. Kvar står liftkortet, som är
+    // hämtat ur ortens egen prislista — och bara för de orter vi kan stå
+    // för det, samma spärr som /liftkortspriser. Kortet visar bara
+    // kronbeloppet; originalvalutan hör hemma där man fattar beslutet,
+    // inte i ett rutnät man ögnar igenom.
+    liftkort: harPris(ort)
+      ? pris(ort.lift_pass_week_eur, ort.lift_pass_currency || 'EUR', kurser)?.kr || null
+      : null,
   }))
 
   const namn = new Map(orter.map((ort) => [ort.slug, ort.name]))
@@ -74,7 +81,7 @@ export default async function JamforIndex() {
           Välj två orter
         </h1>
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '16px 0 30px', maxWidth: 560 }}>
-          Storlek, vad veckan kostar, fallhöjd och resan från Sverige — sida vid
+          Storlek, liftkortspris, fallhöjd och resan från Sverige — sida vid
           sida, ur samma källa för båda orterna. Det sista går inte att läsa sig
           till på ortens egen webbplats.
         </p>

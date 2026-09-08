@@ -286,9 +286,9 @@ export default function Valjaren({ orter }) {
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
                     <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.pist}</b> km pist
                   </span>
-                  {ort.vecka && (
+                  {ort.liftkort && (
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
-                      <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.vecka}</b>/v
+                      <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.liftkort}</b> liftkort
                     </span>
                   )}
                 </div>

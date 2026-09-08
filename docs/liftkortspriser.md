@@ -236,8 +236,20 @@ den två olika produkter mot varandra.
 
 ### Blockerade av årstid — nu med datum
 
-- **geilo** — skigeilo.no/skipass säljer säsongskort men märker skipass
-  "I salg fra september!". Vår 25/26-rad står kvar till dess.
+- **geilo** — **omkontrollerad 2026-09-08, fortfarande blockerad.**
+  Augustinoteringen sade "I salg fra september!", och september kom utan
+  att flerdagarskorten släpptes. Prislistan ligger inte på skigeilo.no utan
+  i butiken, `geilo.skiperformance.com/no/support/prices`, och där står två
+  tabeller under varandra: **Sesongkort 26/27** (vuxen 8 730, earlybird) och
+  **Skipass 25/26** med 1 dag 693 och 6–8 dagar 2 871 — exakt de tal vi
+  redan bär. Säsongskortet har alltså bytt år medan flerdagarskorten inte
+  har det. Ta om vid oktoberrundan.
+
+  Vägen dit, för nästa gång: skigeilo.no/skipass har ingen prislista alls,
+  bara länkar vidare. Följ "Kjøp her" till butiken, och därifrån
+  "Skipasspriser". Butikens startsida visar bara säsongskort och gåvokort,
+  vilket är lätt att läsa som att inget pris finns — men `support/prices`
+  listar även produkter som inte är i försäljning just nu.
 - **ruka** — oförändrat: "lift tickets will be available when the winter
   season begins on October 2nd". Enda orten som anger exakt datum.
 - **st-anton** — Ski Arlberg har byggt om sajten sedan augusti. Vinterns

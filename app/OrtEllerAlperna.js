@@ -160,11 +160,6 @@ export default async function OrtEllerAlperna({ slug }) {
               alper={`Alperna: ${rundat(j.liftkort.alper.lag)}–${rundat(j.liftkort.alper.hog)}, median ${rundat(j.liftkort.alper.median)}. ${j.billigare === 0 ? 'Ingen är billigare än' : `${storVersal(avAntal(j.billigare, j.antal))} är billigare än`} ${ort.name}.`}
             />
             <Tal
-              etikett="Veckan totalt"
-              ort={rundat(j.vecka.ort)}
-              alper={`Alperna: ${rundat(j.vecka.alper.lag)}–${rundat(j.vecka.alper.hog)}, median ${rundat(j.vecka.alper.median)}. Resa, boende och liftkort per person.`}
-            />
-            <Tal
               etikett="Säsongens längd"
               ort={j.sasong.ort} enhet="dagar"
               alper={`Alperna: ${j.sasong.alper.lag}–${j.sasong.alper.hog} dagar, median ${j.sasong.alper.median}.`}

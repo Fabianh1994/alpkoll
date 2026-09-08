@@ -9,7 +9,7 @@ import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { bookingUrl } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
-import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
+import { pris } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
 import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
@@ -125,21 +125,22 @@ export default async function ResortPage({ params }) {
   const bookingHrefStay = bookingUrl(bookingDestination, { lang, label: `resort-stay-${resort.slug}` })
   const bookingHrefSidebar = bookingUrl(bookingDestination, { lang, label: `resort-sidebar-${resort.slug}` })
 
-  // Veckokostnaden räknades tidigare fram som veckokortet plus 400 till
-  // 900 euro — samma påslag för Sälen som för Zermatt, oavsett om man
-  // flyger eller kör. Formeln träffade det researchade
-  // est_weekly_cost_eur för två av 32 orter och låg systematiskt lågt:
-  // Courchevel visade 750–1 250 € där fältet säger 2 000 €.
   // Priserna visas i kronor med ortens eget belopp inom parentes — sajten
   // är svensk och läsaren ska slippa räkna om i huvudet. Omräkningen sker
   // mot ECB:s dagskurs, se lib/valuta.js.
+  //
+  // Här stod förut också en veckokostnad ur est_weekly_cost_eur. Den är
+  // borta ur hela sajten: fältet var aldrig hämtat någonstans ifrån. Alla
+  // trettio värdena var delbara med femtio, trettio orter delade på sexton
+  // tal, och fyra orter bar en veckokostnad utan att ha något känt
+  // liftkortspris alls. Se migration 024 för hela underlaget.
   const kurser = await hamtaKurser()
-  // Valutan gäller liftkortet och bara det. Veckokostnaden är euro oavsett
-  // vad orten tar betalt för sitt kort — se VALUTA_VECKOKOSTNAD i lib/pris.js.
   const valuta = resort.lift_pass_currency || 'EUR'
   const dagskort = pris(resort.lift_pass_day_eur, valuta, kurser)
   const veckokort = pris(resort.lift_pass_week_eur, valuta, kurser)
-  const veckokostnadPris = pris(resort.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)
+
+  /** Sant när kronbeloppet är omräknat ur en annan valuta och alltså avrundat. */
+  const omraknat = Boolean(dagskort?.ursprung || veckokort?.ursprung)
 
   /** "ca 5 150 kr (469 €)" som ren sträng, för rutor utan egen styling. */
   const rakt = (p) => (p ? (p.ursprung ? `${p.kr} (${p.ursprung})` : p.kr) : '—')
@@ -672,9 +673,11 @@ export default async function ResortPage({ params }) {
                 </div>
                 <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
-                    {veckokostnadPris
-                      ? <>En vecka i {resort.name} kostar uppskattningsvis <span style={{ color: '#D4A574', fontWeight: 500 }}>{veckokostnadPris.kr}</span>{veckokostnadPris.ursprung ? <> ({veckokostnadPris.ursprung})</> : null} per person med resa, boende och liftkort. Kronbeloppet är omräknat mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundat till närmaste femtio. Priset varierar med vecka och boende — kontrollera hos arrangören innan du bokar.</>
-                      : <>Liftkortspriserna ovan är hämtade från orten. Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.</>}
+                    Liftkortspriserna ovan är hämtade från orten.{' '}
+                    {omraknat
+                      ? <>Kronbeloppen är omräknade mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)} och avrundade till närmaste femtio.{' '}</>
+                      : null}
+                    Vad resa och boende kostar varierar för mycket med vecka och arrangör för att vi ska sätta en siffra på det.
                   </div>
                 </div>
               </div>
@@ -726,9 +729,7 @@ export default async function ResortPage({ params }) {
                           </div>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
                             {annan.total_pistes_km} km pist
-                            {pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr
-                              ? ` · ${pris(annan.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser).kr}/vecka`
-                              : ''}
+                            {' · '}{annan.altitude_top - annan.altitude_base} m fallhöjd
                           </div>
                         </Link>
                       ))}

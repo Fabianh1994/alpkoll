@@ -9,7 +9,6 @@ import { land } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
-import { pris, VALUTA_VECKOKOSTNAD } from '../../../lib/pris'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -53,10 +52,15 @@ export async function generateMetadata({ params }) {
   const [a, b] = par.kanonisk ? par.orter : [...par.orter].reverse()
 
   const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
-  const kurser = await hamtaKurser()
-  const vecka = (r) => pris(r.est_weekly_cost_eur, VALUTA_VECKOKOSTNAD, kurser)?.kr
 
-  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}${vecka(a) && vecka(b) ? `, veckan kostar ${vecka(a)} mot ${vecka(b)}` : ''}. Samma källa för båda orterna.`
+  // Beskrivningen bar förut "veckan kostar X mot Y" ur est_weekly_cost_eur,
+  // ett tal som aldrig hämtats någonstans ifrån — det stod alltså i Googles
+  // sökresultat för 83 sidor. Kvar står fallhöjden, som räknas ur höjderna
+  // och dessutom är det de söker på: fallhöjdsfrågor gav 59 exponeringar i
+  // Search Console 8 september 2026.
+  const fallhojd = (r) => r.altitude_top - r.altitude_base
+
+  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}. Samma källa för båda orterna.`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
 
   return {
@@ -308,8 +312,7 @@ export default async function JamforPage({ params }) {
             })}
           </div>
           <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
-            Veckan är en uppskattning per ort med resa, boende och liftkort —
-            inte ett pris vi hämtat, och den varierar med vecka och arrangör.
+            Liftkortspriserna är hämtade ur varje orts egen prislista.
             Kronbeloppen är omräknade från ortens egen valuta{' '}
             {kurser.farsk
               ? <>mot Europeiska centralbankens kurs den {skrivDatum(kurser.datum)}</>

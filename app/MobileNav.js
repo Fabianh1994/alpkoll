@@ -11,7 +11,7 @@ export default function MobileNav() {
       label: 'Skidorter',
       href: '/#resorts',
       icon: (active) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <path d="M8 3l4 8 5-5 5 15H2L8 3z" />
         </svg>
       ),
@@ -21,7 +21,7 @@ export default function MobileNav() {
       label: 'Jämför',
       href: '/jamfor',
       icon: (active) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="7" height="16" rx="1" />
           <rect x="14" y="4" width="7" height="16" rx="1" />
         </svg>
@@ -32,7 +32,7 @@ export default function MobileNav() {
       label: 'Om oss',
       href: '/about',
       icon: (active) => (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10" />
           <line x1="12" y1="16" x2="12" y2="12" />
           <line x1="12" y1="8" x2="12.01" y2="8" />
@@ -84,7 +84,7 @@ export default function MobileNav() {
               fontSize: 10,
               fontWeight: 500,
               letterSpacing: '0.04em',
-              color: tab.isActive ? '#D4A574' : 'rgba(255,255,255,0.35)',
+              color: tab.isActive ? '#D4A574' : 'rgba(255,255,255,0.57)',
               textTransform: 'uppercase',
             }}>{tab.label}</span>
           </Link>

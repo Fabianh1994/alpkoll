@@ -141,7 +141,7 @@ export default function Valjaren({ orter }) {
           align-items: center;
           flex-wrap: wrap;
         }
-        .valj-sok input::placeholder { color: rgba(255,255,255,0.28); }
+        .valj-sok input::placeholder { color: rgba(255,255,255,0.52); }
         .valj-sok input:focus { border-color: ${ACCENT}; }
         @media (max-width: 640px) {
           .valj-sok > div:first-child { flex-basis: 100%; }
@@ -162,10 +162,10 @@ export default function Valjaren({ orter }) {
             borderRadius: 8, padding: '10px 12px', minHeight: 46,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
           }}>
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {i === 0 ? 'Första orten' : 'Andra orten'}
             </span>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: valda[i] ? '#f0ece4' : 'rgba(255,255,255,0.2)', letterSpacing: '0.03em', marginTop: 2 }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: valda[i] ? '#f0ece4' : 'rgba(255,255,255,0.45)', letterSpacing: '0.03em', marginTop: 2 }}>
               {valda[i] ? namn(valda[i]) : 'välj nedan'}
             </span>
           </div>
@@ -183,7 +183,7 @@ export default function Valjaren({ orter }) {
           <span style={{
             fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600,
             letterSpacing: '0.06em', textTransform: 'uppercase',
-            color: 'rgba(255,255,255,0.22)', border: '1px solid rgba(255,255,255,0.08)',
+            color: 'rgba(255,255,255,0.47)', border: '1px solid rgba(255,255,255,0.08)',
             borderRadius: 8, padding: '13px 22px', textAlign: 'center', whiteSpace: 'nowrap',
           }}>Jämför →</span>
         )}
@@ -242,7 +242,7 @@ export default function Valjaren({ orter }) {
           Bild plus de två tal som skiljer orterna mest, så skillnaden
           syns redan medan man väljer. */}
       {synliga.length === 0 && (
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '4px 0 0' }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.61)', lineHeight: 1.7, margin: '4px 0 0' }}>
           Ingen ort heter något i den stilen — åtminstone ingen av de {orter.length} vi har.
           {urval !== 'alla' && ' Prova "Alla" om du filtrerat bort halva listan.'}
         </p>
@@ -281,7 +281,7 @@ export default function Valjaren({ orter }) {
 
               <div style={{ padding: '11px 13px 13px' }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', lineHeight: 1.1 }}>{ort.name}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 10.5, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>{ort.land}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 10.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>{ort.land}</div>
                 <div style={{ display: 'flex', gap: 14, marginTop: 10 }}>
                   <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.5)' }}>
                     <b style={{ color: '#f0ece4', fontWeight: 600 }}>{ort.pist}</b> km pist

@@ -42,11 +42,11 @@ export default function SiteFooter() {
       }}>
         <span style={{
           fontFamily: 'var(--font-heading)', fontSize: 20,
-          color: 'rgba(255,255,255,0.2)', letterSpacing: '0.06em',
+          color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
         }}>ALPKOLL</span>
         <span style={{
           fontFamily: 'var(--font-body)', fontSize: 12,
-          color: 'rgba(255,255,255,0.15)',
+          color: 'rgba(255,255,255,0.45)',
         }}>© 2026 — Jämför berg, hitta ditt.</span>
       </div>
 
@@ -64,7 +64,7 @@ export default function SiteFooter() {
         {LANKAR.map(link => (
           <Link key={link.href} href={link.href} className="site-footer-link" style={{
             fontFamily: 'var(--font-body)', fontSize: 12,
-            color: 'rgba(255,255,255,0.25)', textDecoration: 'none',
+            color: 'rgba(255,255,255,0.5)', textDecoration: 'none',
           }}>{link.label}</Link>
         ))}
         {/* Språkväxlaren är borttagen: alpkoll.com redirectar till .se,

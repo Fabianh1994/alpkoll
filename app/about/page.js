@@ -149,7 +149,7 @@ export default async function AboutPage() {
               }}>{step.title}</h3>
               <p style={{
                 fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 300,
-                color: 'rgba(255,255,255,0.4)', lineHeight: 1.7,
+                color: 'rgba(255,255,255,0.61)', lineHeight: 1.7,
               }}>{step.text}</p>
             </div>
           ))}
@@ -235,7 +235,7 @@ export default async function AboutPage() {
                 }}>{item.label}</h3>
                 <p style={{
                   fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 300,
-                  color: 'rgba(255,255,255,0.4)', lineHeight: 1.65,
+                  color: 'rgba(255,255,255,0.61)', lineHeight: 1.65,
                 }}>{item.desc}</p>
               </div>
             </div>

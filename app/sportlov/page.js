@@ -38,7 +38,7 @@ const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
 const etikett = {
   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-  color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase',
+  color: 'rgba(255,255,255,0.52)', letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 const brod = {
   fontFamily: 'var(--font-body)', fontSize: 16, lineHeight: 1.75,
@@ -150,14 +150,14 @@ function Veckan({ v, tagetGar }) {
                 </p>
               </div>
             ) : (
-              <p style={{ ...brod, fontSize: 14.5, margin: '14px 0 0', color: 'rgba(255,255,255,0.42)' }}>
+              <p style={{ ...brod, fontSize: 14.5, margin: '14px 0 0', color: 'rgba(255,255,255,0.62)' }}>
                 Tåget från Stockholm går bara {SVERIGE.stockholmsavgang.datum}, alltså
                 inte den här veckan. Härifrån gäller {SVERIGE.avgangsstation}, med
                 anslutning från {SVERIGE.anslutningar.slice(0, -1).join(', ')} och{' '}
                 {SVERIGE.anslutningar[SVERIGE.anslutningar.length - 1]}.
               </p>
             )}
-            <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
+            <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>
               Kitzbühel når du utan byte. Till Sölden, Ischgl, St. Anton och Mayrhofen
               går transferbuss från stationen. Vilken hållplats som gäller står i{' '}
               <Link href="/nattaget-till-alperna" style={{ color: ACCENT }}>nattågsguiden</Link>.
@@ -195,7 +195,7 @@ function Veckan({ v, tagetGar }) {
           priset efter vilken dag du startar. Talen på sajten gäller veckan som börjar
           1 mars, så för en annan vecka kan de stämma dåligt.
         </p>
-        <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
+        <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>
           Liftkortspriserna ort för ort står i{' '}
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>prislistan</Link>.
         </p>
@@ -259,7 +259,7 @@ function Veckan({ v, tagetGar }) {
           Till Sälen går det på lördagar via Mora, med buss sista biten.
           {salenViaGoteborg && ' Den här veckan går det via Göteborg både ut och hem.'}
         </p>
-        <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
+        <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>
           Biltiderna är körtid utan trafik, raster och vinterväglag, räknade med samma
           ruttmotor för alla orter så att de går att jämföra. Räkna med mer i februari.
           Tågtiderna kan ändras av banarbeten, och Sälenlinjens är preliminära tills
@@ -305,7 +305,7 @@ export default function SportlovSida() {
           Sportlovet ligger i vecka 7, 8, 9 eller 10. Vilken du har bestämmer vilken
           fredag nattåget går. Liftkortet kostar lika mycket oavsett.
         </p>
-        <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px', color: 'rgba(255,255,255,0.42)' }}>
+        <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px', color: 'rgba(255,255,255,0.62)' }}>
           Göteborg har vecka 7, Malmö och Uppsala vecka 8, Stockholm vecka 9. Hittar du
           inte din kommun i listorna nedan står veckan på kommunens egen sida.
         </p>
@@ -321,12 +321,12 @@ export default function SportlovSida() {
           <Veckovaljaren veckor={veckor} barn={barn} />
         )}
 
-        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: '30px 0 8px' }}>
+        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: '30px 0 8px' }}>
           Veckorna räknas måndag till söndag. Kommunuppgifterna är hämtade från{' '}
           {KOMMUNER.length} kommuners egna sidor den {skrivDatum(HAMTAD)}. Sportlovet
           bestäms av varje kommun och kan flyttas, så kolla mot din egen innan du bokar.
         </p>
-        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
+        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: 0 }}>
           Ska det bli Sverige eller Alperna finns{' '}
           <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link>{' '}
           och <Link href="/are-eller-alperna" style={{ color: ACCENT }}>Åre eller Alperna</Link>.

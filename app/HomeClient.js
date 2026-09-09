@@ -122,10 +122,10 @@ function ResortCard({ resort, t }) {
           </div>
         </div>
         <div style={{ padding: '16px 18px 24px' }}>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>{resort.region}</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.54)', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>{resort.region}</div>
           <h3 style={{ fontSize: 24, fontFamily: 'var(--font-heading)', fontWeight: 400, color: '#f0ece4', margin: '0 0 10px', lineHeight: 1.1, letterSpacing: '0.03em' }}>{resort.name}</h3>
           {resort.notes && (
-            <p style={{ fontSize: 13, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.4)', fontWeight: 300, margin: 0, lineHeight: 1.6 }}>{resort.notes}</p>
+            <p style={{ fontSize: 13, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.61)', fontWeight: 300, margin: 0, lineHeight: 1.6 }}>{resort.notes}</p>
           )}
         </div>
       </div>
@@ -212,9 +212,9 @@ export default function HomeClient({ resorts }) {
 
       <section style={{ padding: '60px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.28)', lineHeight: 1.75, marginBottom: 22 }}>{t.mission.intro}</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.52)', lineHeight: 1.75, marginBottom: 22 }}>{t.mission.intro}</p>
           <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px,5.5vw,68px)', fontWeight: 400, color: '#f0ece4', lineHeight: 1, marginBottom: 22 }}>{t.mission.title1}<br />{t.mission.title2} <span style={{ color: '#D4A574' }}>{t.mission.title3}</span></h2>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(13px,1.3vw,15px)', fontWeight: 300, color: 'rgba(255,255,255,0.38)', lineHeight: 1.75, maxWidth: 480, margin: '0 auto' }}>{t.mission.description}</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(13px,1.3vw,15px)', fontWeight: 300, color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, maxWidth: 480, margin: '0 auto' }}>{t.mission.description}</p>
         </div>
       </section>
 
@@ -222,20 +222,20 @@ export default function HomeClient({ resorts }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 24, marginBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: 24 }}>
           <div>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 38, fontWeight: 400, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>{t.resorts.title}</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>{filtered.length} {filtered.length !== 1 ? t.resorts.destinations : t.resorts.destination}</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.54)' }}>{filtered.length} {filtered.length !== 1 ? t.resorts.destinations : t.resorts.destination}</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 10, marginBottom: 40, flexWrap: 'wrap', alignItems: 'center' }}>
           <input type="text" placeholder={t.resorts.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 13, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
           <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
             {countries.map(c => (
-              <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.3)', transition: 'background 0.2s, color 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
+              <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.54)', transition: 'background 0.2s, color 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
             ))}
           </div>
         </div>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '80px 20px', fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.25)' }}>
-            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.15)', letterSpacing: '0.04em', marginBottom: 8 }}>{t.resorts.noResults}</p>
+          <div style={{ textAlign: 'center', padding: '80px 20px', fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.5)' }}>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em', marginBottom: 8 }}>{t.resorts.noResults}</p>
             <p style={{ fontSize: 14 }}>{t.resorts.noResultsHint}</p>
           </div>
         ) : (

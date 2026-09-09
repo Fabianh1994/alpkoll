@@ -4,8 +4,9 @@ import SiteFooter from '../SiteFooter'
 import Veckovaljaren from './Veckovaljaren'
 import { skrivDatum } from '../../lib/valuta'
 import { SITE_URL } from '../../lib/lang'
-import { AR, HAMTAD, KOMMUNER, VECKOR, kommunerMed, nattagsresa, soldenLage, sportlovetSlut } from '../../lib/sportlov'
+import { AR, HAMTAD, KOMMUNER, VECKOR, kommunerMed, nattagsresa, skidveckan, soldenLage, sportlovetSlut } from '../../lib/sportlov'
 import { SVERIGE, sasongenSlut } from '../../lib/nattaget'
+import { STADER, TAGLINJER, bilresa, timmar } from '../../lib/restider'
 
 // Samma intervall som ortsidorna. Betyder också att sidan märker att
 // sportlovet passerat inom en timme, utan deploy.
@@ -74,8 +75,32 @@ function dag(iso) {
  * Byggs ur VECKOR och nattagsresa() i stället för att skrivas fyra gånger,
  * så att ingen vecka kan få en avgång som inte följer av tidtabellen.
  */
+/**
+ * Målen i restidstabellen.
+ *
+ * Tre nordiska och en alport, inte trettio: tabellen ska gå att läsa i ett
+ * ögonkast på en telefon. Sälen, Trysil och Åre är de mest sökta orterna i
+ * Search Console, och Kitzbühel är den enda alport nattåget når utan byte.
+ */
+const RESMAL = [
+  { slug: 'salen', namn: 'Sälen' },
+  { slug: 'trysil', namn: 'Trysil' },
+  { slug: 'are', namn: 'Åre' },
+  { slug: 'kitzbuehel', namn: 'Kitzbühel' },
+]
+
 function Veckan({ v, tagetGar }) {
   const resa = nattagsresa(v.nr)
+  // Sälentåget går via Göteborg fyra lördagar, och två av dem bär en
+  // sportlovsvecka. Jämförs mot skidveckans egna lördagar i stället för
+  // mot veckonummer, så att en ändrad tidtabell flyttar svaret själv.
+  const skidvecka = skidveckan(v.nr)
+  const salen = TAGLINJER.find((t) => t.id === 'salen-mora')
+  const salenViaGoteborg = Boolean(
+    skidvecka
+    && salen?.viaGoteborgUt.includes(skidvecka.start)
+    && salen?.viaGoteborgHem.includes(skidvecka.slut)
+  )
   // Jämför mot Snälltågets publicerade datum i stället för mot ett
   // veckonummer skrivet för hand. Ändrar Snälltåget avgången i höst
   // flyttar markeringen med den, i stället för att bli kvar på fel vecka.
@@ -173,6 +198,72 @@ function Veckan({ v, tagetGar }) {
         <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
           Liftkortspriserna ort för ort står i{' '}
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>prislistan</Link>.
+        </p>
+      </div>
+
+      {/* ── Resan hemifrån ──
+          Restiden folk faktiskt söker på. transfer_minutes i databasen är
+          sista biten från flygplatsen och svarar inte på frågan; talen här
+          är hela sträckan, räknade med en och samma ruttmotor. */}
+      <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
+        <div style={{ ...etikett, marginBottom: 12 }}>Så lång tid tar resan</div>
+        <div style={{ overflowX: 'auto', margin: '0 0 16px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 420 }}>
+            <thead>
+              <tr>
+                <th style={{ ...etikett, textAlign: 'left', padding: '0 12px 12px 0' }}>Med bil från</th>
+                {RESMAL.map((r) => (
+                  <th key={r.slug} style={{ ...etikett, textAlign: 'right', padding: '0 0 12px 12px', whiteSpace: 'nowrap' }}>
+                    {r.namn}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {STADER.map((s) => (
+                <tr key={s.nyckel} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                  <td style={{
+                    fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
+                    color: '#f0ece4', padding: '13px 12px 13px 0', whiteSpace: 'nowrap',
+                  }}>{s.namn}</td>
+                  {RESMAL.map((r) => {
+                    const resa = bilresa(r.slug, s.nyckel)
+                    // Kortaste restiden från just den staden markeras, så att
+                    // raden går att läsa utan att jämföra fyra tal i huvudet.
+                    const kortast = RESMAL
+                      .map((x) => bilresa(x.slug, s.nyckel)?.minuter)
+                      .filter(Boolean)
+                      .sort((a, b) => a - b)[0]
+                    return (
+                      <td key={r.slug} style={{
+                        fontFamily: 'var(--font-body)', fontSize: 14,
+                        color: resa && resa.minuter === kortast ? ACCENT : 'rgba(255,255,255,0.55)',
+                        padding: '13px 0 13px 12px', textAlign: 'right', whiteSpace: 'nowrap',
+                      }}>{resa ? timmar(resa.minuter) : '—'}</td>
+                    )
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p style={{ ...brod, fontSize: 15, margin: 0 }}>
+          Bor du i Malmö är Kitzbühel närmare än Åre. Det är en och en halv timme
+          kortare med bil, och skillnaden mot Trysil är knappt fem timmar. Från
+          Stockholm ser det helt annorlunda ut: dit är Sälen sex timmar och Alperna
+          över tjugo.
+        </p>
+        <p style={{ ...brod, fontSize: 14.5, margin: '14px 0 0' }}>
+          Med tåg går Snälltåget till Åre {TAGLINJER[0].dagar}, från Stockholm{' '}
+          {TAGLINJER[0].fran[0].avgang} och framme {TAGLINJER[0].framme.split(',')[0]}.
+          Till Sälen går det på lördagar via Mora, med buss sista biten.
+          {salenViaGoteborg && ' Den här veckan går det via Göteborg både ut och hem.'}
+        </p>
+        <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
+          Biltiderna är körtid utan trafik, raster och vinterväglag, räknade med samma
+          ruttmotor för alla orter så att de går att jämföra. Räkna med mer i februari.
+          Tågtiderna kan ändras av banarbeten, och Sälenlinjens är preliminära tills
+          Snälltåget fastställer tidtabellen i höst.
         </p>
       </div>
 

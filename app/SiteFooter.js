@@ -8,8 +8,22 @@
 
 import Link from 'next/link';
 
+// Innehållssidorna först, de juridiska sist.
+//
+// Jämför, Liftkortspriser, Nattåget och Sportlov låg tidigare bara i
+// menyraden, och den döljs under 600 px. På mobil fanns alltså ingen väg
+// alls till tre av sajtens fyra innehållssidor — sidfoten listade bara
+// Skidorter, Om oss och de juridiska. Uppmätt på alpkoll.se 2026-09-09:
+// vid 390 px syntes varken Nattåget, Liftkortspriser eller Sportlov.
+//
+// Det är inte bara en väg för läsaren. Internlänkade sidor genomsöks
+// oftare — mätningen 2026-08-25 gav 62 procent mot 21 för de olänkade.
 const LANKAR = [
   { href: '/', label: 'Skidorter' },
+  { href: '/jamfor', label: 'Jämför' },
+  { href: '/liftkortspriser', label: 'Liftkortspriser' },
+  { href: '/nattaget-till-alperna', label: 'Nattåget' },
+  { href: '/sportlov', label: 'Sportlov' },
   { href: '/about', label: 'Om oss' },
   { href: '/privacy', label: 'Integritetspolicy' },
   { href: '/terms', label: 'Användarvillkor' },

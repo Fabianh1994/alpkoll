@@ -140,6 +140,39 @@ element i DOM:en, ett per kort.
 
 **Detta rörde ingen data och ingen migration.** Inget behöver köras i Supabase.
 
+**Sportlovssidan byggd — men inte den som stod i planen (#PR).** Punkt 4 utgick från att
+sidan skulle svara på vilken ort som är billigast just din sportlovsvecka. Prisdatan säger
+att frågan inte har något intressant svar för Alperna: Ischgl tar ett pris hela säsongen,
+och Alpe d'Huez, Les Arcs, Livigno och Kitzbühel har prisband som täcker hela sportlovs-
+perioden i ett stycke. Sölden är enda undantaget, 478,50 € till och med 26 februari mot
+469 € efter. Där veckan avgör priset är det SkiStar-orterna, och deras veckopriser finns
+inte i basen förrän i oktober.
+
+`/sportlov` frågar därför besökaren vilken vecka hen har, och svarar med det som faktiskt
+skiljer veckorna åt: vilken fredag Snälltåget går, och om säsongens enda Stockholmsavgång
+träffar just den veckan. Datumen räknas fram ur veckans måndag, och uträkningen går att
+kontrollera — för vecka 9 ger den 26 februari ut och 6 mars hem, exakt den avgång
+Snälltåget publicerat. Alla fyra veckor ligger i markup:en; väljaren visar en.
+
+**Kommunregistret byggs medvetet inte klart.** Trettiofem kommuner är lästa på kommunens
+egen sida och ligger i `lib/sportlov.js` som orientering. De 255 som återstår hämtas inte,
+därför att sidan inte behöver dem — besökaren väljer själv. Metoden och skälen står i
+`docs/sportlovsveckor.md`. **Ingen sammanställning duger som genväg:** SkiStar placerar
+Luleå i vecka 10 där kommunen säger vecka 9, och Skolportens PDF finns i två marsversioner
+där 26 kommuner har olika vecka, därför att tabellen är radförskjuten vid textextraktion.
+
+**Copyn omskriven där sajten talar om sig själv (#PR).** Startsidan lovade "vi matchar
+berget med skidåkaren" och räknade upp snösäkerhet, terräng, bykänsla, budget och restid —
+en beskrivning av reseplaneraren, som är avstängd. Hjälten frågar nu var du ska åka i
+vinter och säger att orterna är mätta på samma sätt; missionen skriver ut nackdelarna i
+stället för att lova en matchning. Ingressen nämner inga enskilda fält, så den överlever
+att sajten byggs ut.
+
+Tre drag städades bort och är värda att känna igen nästa gång: parallella meningar av samma
+längd, tankstreck som bär en slutkläm, och formuleringar som förklarar arbetssättet i
+stället för att svara. Två utkast underkändes på vägen — det första för att det var torrt,
+det andra för att det lät maskinskrivet.
+
 ## Vad som väntar
 
 ### Kvar ur genomgången 8 september
@@ -206,14 +239,11 @@ Ortsidan tog över de ortspecifika frågorna i #29. Vad prislistesidan ska vara 
 obesvarat. **Massproducerade `/liftkortspriser/<ort>` är fel väg** — det är precis de
 mallsidor som motverkar målet.
 
-**4. Sportlovssidan — nästa sida att bygga.** Vilken skidort är billigast just ditt läns
-sportlovsvecka? Svenskt sportlov ligger v.7–v.10 beroende på län, och frågan har inget svar
-någonstans på internet. Kräver svensk skolkalender krossad mot ortens prislista — två
-datamängder ingen utom en svensk sajt sätter ihop.
-
-Halva underlaget finns: v9 är referensvecka i prisdatan, och Snälltågets enda
-Stockholmsavgång går 26 februari 2027, som är Stockholms sportlov. Det som saknas är länens
-veckor och pris för fler veckor än v9 — det senare hämtas ändå i oktober.
+**4. Sportlovssidan är byggd — det som återstår är priserna.** `/sportlov` svarar på
+veckan och nattåget. Prisdelen väntar på oktoberinsamlingen, och den ska då riktas mot
+SkiStar-orternas veckopriser: Åre, Sälen, Hemsedal och Trysil sätter priset efter
+startdatum, och basen bär bara veckan som börjar 1 mars. Fler alporter tillför ingenting
+här, eftersom deras pris inte ändras med veckan.
 
 **5. Tre orter där frågan är vilket kort som motsvarar orten.** Chamonix Le Pass ger 110 km
 mot vårt tal på 170. Grandvaliras flerdagarskort ger 308 mot vårt 215. Sälen är samma sak.

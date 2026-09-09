@@ -61,8 +61,8 @@ export default function ResortNotFound() {
             marginBottom: 36,
           }}
         >
-          Skidorten du letar efter finns inte hos oss — än. Bläddra bland de
-          orter vi har, eller låt planeraren föreslå en som passar dig.
+          Skidorten du letar efter finns inte hos oss. Bläddra bland dem som
+          gör det, eller jämför två mot varandra.
         </p>
 
         <div
@@ -92,7 +92,7 @@ export default function ResortNotFound() {
           </Link>
 
           <Link
-            href="/plan"
+            href="/jamfor"
             style={{
               fontFamily: 'var(--font-body)',
               fontSize: 13,
@@ -106,7 +106,7 @@ export default function ResortNotFound() {
               textDecoration: 'none',
             }}
           >
-            Planera en resa
+            Jämför orter
           </Link>
         </div>
       </div>

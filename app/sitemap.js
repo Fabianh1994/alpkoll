@@ -30,6 +30,10 @@ export default async function sitemap() {
     // yearly trots att tidtabellen byts en gång om året — sidan byter
     // innehåll när säsongen tar slut, och den ändringen ska hämtas.
     { path: '/nattaget-till-alperna', changeFrequency: 'monthly', priority: 0.9 },
+    // Sportlovssidan ligger lika högt av samma skäl: veckan är svensk, och
+    // vilken fredag nattåget går just den veckan står ingen annanstans.
+    // Sidan tystnar av sig själv när sista sportlovsveckan passerats.
+    { path: '/sportlov', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },

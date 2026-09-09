@@ -98,6 +98,7 @@ buss. Fyra orter berörda.
 
 | PR | Vad |
 |---|---|
+| #33 | Rörelsen respekterar systeminställningen; transition: all borta |
 | #30 | Geilo omkontrollerad i september — priset finns inte än |
 | #29 | Priser på samma villkor överallt, och ny text under dem |
 | #28 | Veckokostnaden borttagen ur sex ytor |
@@ -110,7 +111,7 @@ ur datan — ingen text skrivs per ort.
 
 ## Vad som gjordes 9 september
 
-**Rörelsen respekterar systeminställningen (#PR).** Sajten hade noll regler för
+**Rörelsen respekterar systeminställningen (#33).** Sajten hade noll regler för
 `prefers-reduced-motion` och 88 element med övergångar. Regeln ligger nu i
 `app/globals.css` med `!important` — det krävs, eftersom sajten formges med inline
 style-objekt och en vanlig CSS-regel förlorar mot inline style oavsett specificitet.
@@ -124,12 +125,12 @@ knappen slutar dras mot muspekaren. Verifierat genom att tillfälligt byta medie
 mot en som alltid är sann: med den på stod parallaxen still vid scroll till 400 px,
 med den av flyttade sig hjältebilden −39,75 px vid 500 px scroll.
 
-**`transition-property: all` borttagen (#PR).** Fjorton element bevakade varje
+**`transition-property: all` borttagen (#33).** Fjorton element bevakade varje
 egenskap; nu är det noll, mätt i webbläsaren och i den byggda HTML:en. Varje ställe
 listar de egenskaper som faktiskt byter värde. Landsknapparna är exemplet på varför
 det spelar roll: `all` lät även `font-weight` glida mellan 400 och 600.
 
-**Ortskortens hover går på transform och opacity (#PR).** Kortet bytte förut
+**Ortskortens hover går på transform och opacity (#33).** Kortet bytte förut
 `box-shadow` och `border-color` i en övergång, och ingen av dem går på grafikkortet.
 Lyftet ligger nu på länken, och skuggan och den varma kanten sitter på ett eget lager
 som tonas in med `opacity`. Utseendet är oförändrat — samma 3 px lyft, samma

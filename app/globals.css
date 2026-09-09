@@ -26,3 +26,30 @@ body {
      kvar som reserv om typsnittet inte hinner laddas. */
   font-family: var(--font-body), Arial, Helvetica, sans-serif;
 }
+
+/* Minskad rörelse.
+ *
+ * Sajten formges med inline style-objekt, och en vanlig CSS-regel förlorar
+ * mot inline style oavsett hur specifik den är. Bara !important vinner över
+ * den — därför står det här och ingen annanstans.
+ *
+ * Längden nollas i stället för att sättas till noll: en övergång som tar
+ * 0,01 ms hinner inte synas, men den avfyrar fortfarande transitionend,
+ * som kod kan vänta på.
+ *
+ * Fördröjningen måste med. Hjältetexten glider in med delay 0,3–0,9 s och
+ * skulle annars stå osynlig lika länge som förut, bara utan glidningen.
+ *
+ * Rörelse som räknas fram i JavaScript ser CSS inte — parallaxen och den
+ * magnetiska knappen stängs av i lib/rorelse.js. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

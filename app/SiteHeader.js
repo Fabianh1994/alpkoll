@@ -60,7 +60,11 @@ export default function SiteHeader({ genomskinligOverst = false }) {
         WebkitBackdropFilter: tat ? 'blur(20px)' : 'blur(6px)',
         border: `1px solid ${tat ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.04)'}`,
         borderRadius: 50,
-        transition: 'all 0.6s cubic-bezier(0.16,1,0.3,1)',
+        // Bara de tre egenskaper som faktiskt byter värde när menyn blir
+        // tät. 'all' fick webbläsaren att bevaka varje egenskap på
+        // elementet, transform och border-radius inräknade, fast de står
+        // stilla hela tiden.
+        transition: 'background 0.6s cubic-bezier(0.16,1,0.3,1), backdrop-filter 0.6s cubic-bezier(0.16,1,0.3,1), border-color 0.6s cubic-bezier(0.16,1,0.3,1)',
       }}>
         <Link href="/" style={{
           fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4',

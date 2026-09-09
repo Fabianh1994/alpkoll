@@ -1,6 +1,7 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026 för att kunna öppna en ny session utan att läsa om historiken.
+Skriven 8 september 2026, uppdaterad den 9:e, för att kunna öppna en ny session utan
+att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
 ---
@@ -97,6 +98,7 @@ buss. Fyra orter berörda.
 
 | PR | Vad |
 |---|---|
+| #33 | Rörelsen respekterar systeminställningen; transition: all borta |
 | #30 | Geilo omkontrollerad i september — priset finns inte än |
 | #29 | Priser på samma villkor överallt, och ny text under dem |
 | #28 | Veckokostnaden borttagen ur sex ytor |
@@ -107,23 +109,44 @@ Sitemapen ligger på 64 adresser. `OrtEllerAlperna.js` är samma komponent för 
 alpsidorna; ett tillägg är en routfil plus en slug i `HAR_ALPSIDA`. Meningarna härleds
 ur datan — ingen text skrivs per ort.
 
+## Vad som gjordes 9 september
+
+**Rörelsen respekterar systeminställningen (#33).** Sajten hade noll regler för
+`prefers-reduced-motion` och 88 element med övergångar. Regeln ligger nu i
+`app/globals.css` med `!important` — det krävs, eftersom sajten formges med inline
+style-objekt och en vanlig CSS-regel förlorar mot inline style oavsett specificitet.
+Uppmätt i webbläsaren: en övergång på 0,35 s blir 0,00001 s och en fördröjning på
+0,5 s blir 0 s när regeln slår till.
+
+Rörelse som räknas fram i JavaScript ser CSS inte, och den fångas i stället av
+`lib/rorelse.js`. Hjältebildens parallax står still, och hjältetexten visas direkt i
+stället för att vänta 200 ms på en inglidning som ändå inte syns. Den magnetiska
+knappen slutar dras mot muspekaren. Verifierat genom att tillfälligt byta mediefrågan
+mot en som alltid är sann: med den på stod parallaxen still vid scroll till 400 px,
+med den av flyttade sig hjältebilden −39,75 px vid 500 px scroll.
+
+**`transition-property: all` borttagen (#33).** Fjorton element bevakade varje
+egenskap; nu är det noll, mätt i webbläsaren och i den byggda HTML:en. Varje ställe
+listar de egenskaper som faktiskt byter värde. Landsknapparna är exemplet på varför
+det spelar roll: `all` lät även `font-weight` glida mellan 400 och 600.
+
+**Ortskortens hover går på transform och opacity (#33).** Kortet bytte förut
+`box-shadow` och `border-color` i en övergång, och ingen av dem går på grafikkortet.
+Lyftet ligger nu på länken, och skuggan och den varma kanten sitter på ett eget lager
+som tonas in med `opacity`. Utseendet är oförändrat — samma 3 px lyft, samma
+`rgba(212,165,116,0.2)`, samma skugga. På hela startsidan gick `box-shadow` i
+övergång från 31 element till 1 och `border-color` från 30 till 1. Priset är 30 nya
+element i DOM:en, ett per kort.
+
+**Detta rörde ingen data och ingen migration.** Inget behöver köras i Supabase.
+
 ## Vad som väntar
 
-### Nästa session: rörelse och prestanda
+### Kvar ur genomgången 8 september
 
-Beslutat 8 september. Två fynd ur en genomgång av sajten mot tasteskills regeluppsättning
-— en öppen `SKILL.md` på github.com/Leonxlnx/taste-skill som vi **inte** installerade och
-inte tänker installera; vi plockade bara ut fynden. Allt nedan är mätt live på alpkoll.se
-den 8 september, inte läst ur koden.
-
-**Ingen `prefers-reduced-motion` någonstans.** Startsidan har 88 element med övergångar och
-noll CSS-regler som respekterar systeminställningen för minskad rörelse. Det är den enda
-riktiga bristen av de fem fynden, och den är billig att åtgärda.
-
-**`transition-property: all` på 14 element**, plus `border-color, transform, box-shadow` på
-de trettio ortskorten. `all` får webbläsaren att bevaka varje egenskap; `box-shadow` och
-`border-color` går inte på GPU:n utan tvingar omritning. Ska ner till `transform` och
-`opacity`.
+Fynden kom ur en genomgång mot tasteskills regeluppsättning — en öppen `SKILL.md` på
+github.com/Leonxlnx/taste-skill som vi **inte** installerade och inte tänker installera;
+vi plockade bara ut fynden. De två som gällde rörelse är avklarade 9 september.
 
 **Tre fynd ur samma genomgång tas medvetet inte:**
 
@@ -297,6 +320,24 @@ sida. Nya mönstret är `skiresort.com/en/ski-resort/<slug>/`, och slugen är tr
 `tandaadalen-hundfjaellet-saelen`). Hitta rätt slug via landslistan,
 `/en/ski-resorts/sweden/`, gissa den inte. Underlagssidorna per ort är `/night-skiing/`,
 `/innovations/` och `/ski-lifts/`.
+
+**En dold webbläsarpanel ljuger om allt.** Ligger panelen dold rapporterar sidan
+`innerWidth` och `innerHeight` som 0, `document.hidden` som true, mediefrågor som
+`(min-width: 1px)` som falska, och `setTimeout` stryps så att tillstånd som sätts
+efter en fördröjning aldrig hinner fram. Skärmdumpen kommer tillbaka helvit fast
+sidan har innehåll. Mät `innerWidth` först — är den 0 är varje annan avläsning i
+samma vända värdelös.
+
+**`window.scrollTo` avfyrar inga scroll-event i panelen.** Positionen ändras, så
+`window.scrollY` ser rätt ut, men lyssnarna vaknar inte och allt som hänger på dem
+står still. Uppmätt 9 september: noll event efter två `scrollTo`. Använd
+webbläsarverktygets egen `scroll` i stället — den ger riktiga händelser, och med den
+flyttade sig hjältebildens parallax som den skulle.
+
+**Dev-servern kompilerar inte alltid om CSS som ändrats utanför editorn.** En regel
+skriven till `globals.css` med ett skalkommando saknades i den serverade CSS-filen
+tills filen rördes en gång till. Slutsatsen "regeln finns inte" var falsk — den låg
+på disk hela tiden. Kontrollera mot filen innan du felsöker koden.
 
 **`document.body.innerText` ljuger i webbläsarpanelen.** Den gav tomt för ett element som
 låg i DOM:en, var synligt och 153 pixlar högt. Kontrollera med `fetch` av adressen eller

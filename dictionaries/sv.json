@@ -5,20 +5,20 @@
     "planTrip": "Planera resa"
   },
   "hero": {
-    "tagline": "För skidåkare som gör sin hemläxa",
-    "title1": "Varje berg",
-    "title2": "berättar en egen",
-    "title3": "historia.",
-    "description": "Vi jämför snö, terräng, pris och karaktär för {count} skidorter i Alperna och Norden — så att du hittar den som verkligen passar dig.",
+    "tagline": "Trettio orter, samma måttstock",
+    "title1": "Siffror du kan",
+    "title2": "ställa bredvid",
+    "title3": "varandra.",
+    "description": "Pist, fallhöjd, liftkortspris och uppmätt restid från Sverige — en källa för alla {count} orter, så att talen går att jämföra rakt av.",
     "browseResorts": "Utforska skidorter ↓",
     "planTrip": "Planera en resa"
   },
   "mission": {
     "intro": "De flesta skidsajter radar upp orter och hoppas att du klarar resten själv.",
-    "title1": "Vi matchar berget",
-    "title2": "med",
-    "title3": "skidåkaren.",
-    "description": "Snösäkerhet, terräng, bykänsla, budget och restid — vi väger allt, så att du lägger mindre tid på att leta och mer på att åka."
+    "title1": "Det som skaver",
+    "title2": "står också",
+    "title3": "här.",
+    "description": "Zermatt är dyrt. Val Thorens är ingen vykortsby. Kitzbühel lutar sig mot konstsnö. En jämförelse som bara berömmer hjälper ingen att välja."
   },
   "resorts": {
     "title": "Skidorter",
@@ -81,12 +81,30 @@
       "statusPartial": "{n} valda — välj {remaining} till eller fortsätt",
       "statusFull": "3 valda — klicka på någon för att ångra",
       "priorities": {
-        "snow": { "label": "Bäst snö", "hint": "Pålitligt snötäcke, hög höjd" },
-        "terrain": { "label": "Stor terräng", "hint": "Pistkilometer, offpist, fallhöjd" },
-        "value": { "label": "Prisvärt", "hint": "Liftkort och boende" },
-        "access": { "label": "Lättillgänglig", "hint": "Kort restid från flygplatsen" },
-        "family": { "label": "Familj", "hint": "Skidskola, lätta pister" },
-        "apres": { "label": "Afterski", "hint": "Barer, nattliv, stämning" }
+        "snow": {
+          "label": "Bäst snö",
+          "hint": "Pålitligt snötäcke, hög höjd"
+        },
+        "terrain": {
+          "label": "Stor terräng",
+          "hint": "Pistkilometer, offpist, fallhöjd"
+        },
+        "value": {
+          "label": "Prisvärt",
+          "hint": "Liftkort och boende"
+        },
+        "access": {
+          "label": "Lättillgänglig",
+          "hint": "Kort restid från flygplatsen"
+        },
+        "family": {
+          "label": "Familj",
+          "hint": "Skidskola, lätta pister"
+        },
+        "apres": {
+          "label": "Afterski",
+          "hint": "Barer, nattliv, stämning"
+        }
       }
     },
     "step1b": {

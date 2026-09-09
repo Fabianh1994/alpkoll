@@ -4,7 +4,7 @@ import SiteFooter from '../SiteFooter'
 import Veckovaljaren from './Veckovaljaren'
 import { skrivDatum } from '../../lib/valuta'
 import { SITE_URL } from '../../lib/lang'
-import { AR, HAMTAD, KOMMUNER, VECKOR, kommunerMed, nattagsresa, sportlovetSlut } from '../../lib/sportlov'
+import { AR, HAMTAD, KOMMUNER, VECKOR, kommunerMed, nattagsresa, soldenLage, sportlovetSlut } from '../../lib/sportlov'
 import { SVERIGE, sasongenSlut } from '../../lib/nattaget'
 
 // Samma intervall som ortsidorna. Betyder också att sidan märker att
@@ -13,9 +13,9 @@ export const revalidate = 3600
 
 const titel = `Sportlov ${AR} — vecka 7, 8, 9 eller 10 i backen | Alpkoll`
 const beskrivning =
-  `Sportlovet ${AR} ligger i vecka 7 till 10 beroende på kommun. Välj din vecka ` +
-  'och se när nattåget går, om avgången från Stockholm gäller just den veckan, ' +
-  'och vad veckan gör med liftkortspriset.'
+  `Vecka 7, 8, 9 eller 10 — sportlovet ${AR} ligger olika beroende på var du bor. ` +
+  'Välj din vecka: vilken fredag nattåget går, om avgången från Stockholm gäller ' +
+  'just då, och varför liftkortet i Alperna kostar lika mycket oavsett vecka.'
 
 export const metadata = {
   title: titel,
@@ -100,12 +100,12 @@ function Veckan({ v, tagetGar }) {
         {tagetGar ? (
           <>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
-              Skidveckan är lördag till lördag, så tåget du vill ha går{' '}
+              Skidveckan är lördag till lördag. Tåget du vill ha går{' '}
               <strong style={{ color: '#f0ece4', fontWeight: 500 }}>
                 {SVERIGE.avgangsdag} {dag(resa.ut)}
               </strong>{' '}
-              från {SVERIGE.avgangsstation}, {SVERIGE.avgang}. Du sover ombord och
-              är framme på lördagsmorgonen. Hemtåget lämnar Österrike{' '}
+              från {SVERIGE.avgangsstation}, {SVERIGE.avgang} — du sover ombord och
+              står i backen på lördagsmorgonen. Hem lämnar du Österrike{' '}
               {dag(resa.hemFranAlperna)} på kvällen och är i Sverige{' '}
               {SVERIGE.hemkomstdag} {dag(resa.hemma)}, {SVERIGE.hemkomst}.
             </p>
@@ -115,29 +115,27 @@ function Veckan({ v, tagetGar }) {
                 background: 'rgba(212,165,116,0.07)', border: '1px solid rgba(212,165,116,0.22)',
               }}>
                 <div style={{ ...etikett, color: ACCENT, marginBottom: 8 }}>
-                  Den här veckan går tåget från Stockholm
+                  Den här veckan slipper du ta dig till Malmö
                 </div>
                 <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
-                  {SVERIGE.stockholmsavgang.datum} går Snälltåget hela vägen från
-                  Stockholm, avgång {SVERIGE.stockholmsavgang.avgang}. Det är enda
-                  gången på hela säsongen, och skälet Snälltåget själva anger är{' '}
-                  {SVERIGE.stockholmsavgang.anledning}. Hemresan lämnar Österrike{' '}
-                  {SVERIGE.stockholmsavgang.retur} och är i Stockholm{' '}
-                  {SVERIGE.hemkomstdag}en, {SVERIGE.stockholmsavgang.hemkomst}.
+                  {SVERIGE.stockholmsavgang.datum} går tåget hela vägen från Stockholm,{' '}
+                  {SVERIGE.stockholmsavgang.avgang}. Det händer en gång per säsong, och
+                  det är den här veckan. Hem {SVERIGE.stockholmsavgang.retur}, i
+                  Stockholm {SVERIGE.hemkomstdag} {SVERIGE.stockholmsavgang.hemkomst}.
                 </p>
               </div>
             ) : (
               <p style={{ ...brod, fontSize: 14.5, margin: '14px 0 0', color: 'rgba(255,255,255,0.42)' }}>
                 Säsongens enda avgång från Stockholm går{' '}
-                {SVERIGE.stockholmsavgang.datum} och träffar alltså inte den här
-                veckan. Härifrån gäller {SVERIGE.avgangsstation}, med anslutning från{' '}
+                {SVERIGE.stockholmsavgang.datum} och gäller alltså inte den här veckan.
+                Härifrån blir det {SVERIGE.avgangsstation}, med anslutning från{' '}
                 {SVERIGE.anslutningar.slice(0, -1).join(', ')} och{' '}
                 {SVERIGE.anslutningar[SVERIGE.anslutningar.length - 1]}.
               </p>
             )}
             <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
-              Tåget stannar i Kitzbühel utan byte. Sölden, Ischgl, St. Anton och
-              Mayrhofen nås med transferbuss — hela linjen och alla hållplatser står i{' '}
+              Kitzbühel når du utan byte. Sölden, Ischgl, St. Anton och Mayrhofen
+              kräver transferbuss från stationen — hållplats för hållplats står i{' '}
               <Link href="/nattaget-till-alperna" style={{ color: ACCENT }}>nattågsguiden</Link>.
             </p>
           </>
@@ -156,22 +154,23 @@ function Veckan({ v, tagetGar }) {
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
         <div style={{ ...etikett, marginBottom: 12 }}>Vad veckan gör med priset</div>
         <p style={{ ...brod, fontSize: 15, margin: 0 }}>
-          I Alperna: ingenting. Av de prislistor vi läst tar de flesta orter ett och
-          samma pris över hela sportlovsperioden. Ischgl har ett pris hela säsongen,
-          och Alpe d&apos;Huez, Les Arcs, Livigno och Kitzbühel har prisband som
-          täcker vecka 7 till 10 i ett stycke. Att flytta resan en vecka sänker inte
-          liftkortet.
+          I Alperna: ingenting. Ischgl tar samma pris hela säsongen, och Alpe
+          d&apos;Huez, Les Arcs, Livigno och Kitzbühel har prisband som täcker hela
+          sportlovet i ett stycke. Att flytta resan en vecka gör liftkortet varken
+          billigare eller dyrare.
         </p>
         <p style={{ ...brod, fontSize: 15, margin: '14px 0 0' }}>
-          Undantaget är Sölden, som tar 478,50 € till och med 26 februari och 469 €
-          därefter. Vecka {v.nr} ligger{' '}
-          {v.nr <= 8 ? 'i den dyrare delen' : 'efter prissänkningen'}.
+          Sölden är undantaget: 478,50 € till och med 26 februari, 469 € därefter.
+          {' '}{{
+            fore: `Vecka ${v.nr} ligger helt i det dyrare bandet.`,
+            over: `Vecka ${v.nr} spänner över gränsen — sänkningen kommer på veckans sista dag.`,
+            efter: `Vecka ${v.nr} ligger helt efter sänkningen.`,
+          }[soldenLage(v.nr)]}
         </p>
         <p style={{ ...brod, fontSize: 15, margin: '14px 0 0' }}>
-          I Sverige och Norge är det annorlunda. Åre, Sälen, Hemsedal och Trysil
-          prissätts per startdatum, och våra tal gäller veckan som börjar 1 mars. För
-          en annan vecka kan priset skilja sig, och vi visar hellre inget tal än ett
-          tal som gäller någon annans vecka.
+          I Sverige och Norge gäller motsatsen. Åre, Sälen, Hemsedal och Trysil sätter
+          priset per startdatum. Våra tal gäller veckan som börjar 1 mars — för en
+          annan vecka kan de vara fel, och då visar vi dem hellre inte.
         </p>
         <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.35)' }}>
           Liftkortspriserna ort för ort står i{' '}
@@ -184,7 +183,7 @@ function Veckan({ v, tagetGar }) {
       {kommuner.length > 0 && (
         <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)' }}>
           <div style={{ ...etikett, marginBottom: 10 }}>
-            Kommuner vi läst som har vecka {v.nr}
+            Kommuner med vecka {v.nr}
           </div>
           <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
             {kommuner.map((k) => k.kommun).join(', ')}.
@@ -214,15 +213,13 @@ export default function SportlovSida() {
         </h1>
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
-          Sportlovet ligger i vecka 7, 8, 9 eller 10 beroende på var i landet du bor —
-          kommunen bestämmer, inte staten. Välj din vecka så står resten här: vilken
-          fredag nattåget går, om säsongens enda avgång från Stockholm träffar just den
-          veckan, och vad veckan gör med liftkortspriset.
+          Sportlovet ligger i vecka 7 till 10. Vilken du har avgör vilken fredag
+          nattåget går — men inte vad liftkortet kostar. Välj din vecka.
         </p>
         <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px', color: 'rgba(255,255,255,0.42)' }}>
-          Vet du inte vilken vecka du har står den på din kommuns sida om läsårstider.
-          Bland de största: Göteborg har vecka 7, Malmö och Uppsala vecka 8, Stockholm
-          vecka 9.
+          Göteborg har vecka 7. Malmö och Uppsala vecka 8. Stockholm vecka 9. Står din
+          kommun inte i listorna nedan hittar du veckan på kommunens sida om
+          läsårstider.
         </p>
 
         {passerat ? (
@@ -237,10 +234,10 @@ export default function SportlovSida() {
         )}
 
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: '30px 0 8px' }}>
-          Veckornas datum är ISO-veckor, måndag till söndag. Kommunuppgifterna är lästa
-          på {KOMMUNER.length} kommuners egna sidor den {skrivDatum(HAMTAD)}. Vi för
-          inget register över alla 290 kommuner: sportlovet beslutas av kommunen, ingen
-          myndighet samlar besluten, och en felaktig rad vore värre än ingen rad alls.
+          Veckorna är ISO-veckor, måndag till söndag. Kommunuppgifterna är hämtade från
+          {' '}{KOMMUNER.length} kommuners egna sidor om läsårstider den{' '}
+          {skrivDatum(HAMTAD)}. Sportlovet beslutas av varje kommun för sig och kan
+          flyttas — kontrollera mot din egen innan du bokar.
         </p>
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
           Ska det bli Sverige eller Alperna finns{' '}

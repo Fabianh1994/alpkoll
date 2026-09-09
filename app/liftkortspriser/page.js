@@ -39,7 +39,7 @@ const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
 const etikett = {
   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-  color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase',
+  color: 'rgba(255,255,255,0.52)', letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 
 export default async function Liftkortspriser() {
@@ -131,7 +131,7 @@ export default async function Liftkortspriser() {
               {rader.map((rad, i) => (
                 <tr key={rad.ort.slug} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <td style={{
-                    fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.22)',
+                    fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.47)',
                     padding: '14px 8px 14px 16px', textAlign: 'right', width: 34,
                   }}>{i + 1}</td>
 
@@ -140,7 +140,7 @@ export default async function Liftkortspriser() {
                       fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
                       color: '#f0ece4', textDecoration: 'none',
                     }}>{rad.ort.name}</Link>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
                       {land(rad.ort.country)} · {rad.ort.total_pistes_km} km pist
                     </div>
                   </td>
@@ -150,7 +150,7 @@ export default async function Liftkortspriser() {
                       {rad.pris.kr}
                     </div>
                     {rad.pris.ursprung && (
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.3)', marginTop: 3 }}>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
                         {rad.pris.ursprung}
                       </div>
                     )}
@@ -168,7 +168,7 @@ export default async function Liftkortspriser() {
                       fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
                       padding: '4px 9px', borderRadius: 4,
                       background: rad.meta.sasong === '26/27' ? 'rgba(212,165,116,0.12)' : 'rgba(255,255,255,0.05)',
-                      color: rad.meta.sasong === '26/27' ? ACCENT : 'rgba(255,255,255,0.4)',
+                      color: rad.meta.sasong === '26/27' ? ACCENT : 'rgba(255,255,255,0.61)',
                     }}>{rad.meta.sasong}</span>
                   </td>
                 </tr>
@@ -179,7 +179,7 @@ export default async function Liftkortspriser() {
 
         <p style={{
           fontFamily: 'var(--font-body)', fontSize: 12.5, lineHeight: 1.7,
-          color: 'rgba(255,255,255,0.35)', margin: '0 0 60px',
+          color: 'rgba(255,255,255,0.57)', margin: '0 0 60px',
         }}>
           Kronbeloppet är omräknat mot Europeiska centralbankens kurs den{' '}
           {skrivDatum(kurser.datum)} och avrundat till närmaste femtio. Ortens eget

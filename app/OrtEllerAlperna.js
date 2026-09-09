@@ -12,7 +12,7 @@ const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
 const etikett = {
   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-  color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase',
+  color: 'rgba(255,255,255,0.52)', letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 const brod = {
   fontFamily: 'var(--font-body)', fontSize: 16, lineHeight: 1.8,
@@ -46,11 +46,11 @@ function Tal({ etikett: e, ort, alper, enhet = '' }) {
       <div style={{ ...etikett, marginBottom: 12 }}>{e}</div>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
         <span style={{ fontFamily: 'var(--font-heading)', fontSize: 30, color: ACCENT, letterSpacing: '0.02em' }}>
-          {ort}{enhet && <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.4)' }}> {enhet}</span>}
+          {ort}{enhet && <span style={{ fontSize: 15, color: 'rgba(255,255,255,0.61)' }}> {enhet}</span>}
         </span>
       </div>
       <div style={{
-        fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.42)',
+        fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.62)',
         marginTop: 8, lineHeight: 1.6,
       }}>{alper}</div>
     </div>
@@ -167,7 +167,7 @@ export default async function OrtEllerAlperna({ slug }) {
           </div>
           <p style={{
             fontFamily: 'var(--font-body)', fontSize: 12.5, lineHeight: 1.7,
-            color: 'rgba(255,255,255,0.33)', margin: '14px 0 0',
+            color: 'rgba(255,255,255,0.55)', margin: '14px 0 0',
           }}>
             Pist, liftar och höjder kommer från skiresort.com för samtliga orter, så
             att talen är jämförbara. Priser är hämtade från varje orts egen prislista
@@ -229,7 +229,7 @@ export default async function OrtEllerAlperna({ slug }) {
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>
                       {r.name}
                     </div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.57)', marginTop: 4 }}>
                       {r.total_pistes_km} km pist · {fallhojd(r)} m fallhöjd
                     </div>
                     {/* Hur man tar sig dit, ort för ort. Det är den
@@ -263,9 +263,9 @@ export default async function OrtEllerAlperna({ slug }) {
               {alppar.map(({ par, annan }) => (
                 <Link key={par} href={`/jamfor/${par}`} style={{ ...kort, padding: '12px 15px', textDecoration: 'none', display: 'block' }}>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.3)' }}>mot</span> {annan.name}
+                    <span style={{ color: 'rgba(255,255,255,0.54)' }}>mot</span> {annan.name}
                   </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                     {annan.total_pistes_km} km pist
                   </div>
                 </Link>

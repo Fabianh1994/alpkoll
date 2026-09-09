@@ -100,7 +100,7 @@ export default async function JamforIndex() {
                     color: 'rgba(255,255,255,0.55)', textDecoration: 'none',
                     border: '1px solid rgba(255,255,255,0.1)', borderRadius: 40,
                     padding: '9px 16px',
-                  }}>{namn.get(x)} <span style={{ color: 'rgba(255,255,255,0.25)' }}>eller</span> {namn.get(y)}</Link>
+                  }}>{namn.get(x)} <span style={{ color: 'rgba(255,255,255,0.5)' }}>eller</span> {namn.get(y)}</Link>
                 )
               })}
             </div>

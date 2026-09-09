@@ -45,7 +45,7 @@ export default function JuridiskSida({ titel, uppdaterad, children }) {
           <p style={{
             fontFamily: 'var(--font-body)',
             fontSize: 14,
-            color: 'rgba(255,255,255,0.3)',
+            color: 'rgba(255,255,255,0.54)',
             marginBottom: 48,
           }}>
             Senast uppdaterad: {uppdaterad}

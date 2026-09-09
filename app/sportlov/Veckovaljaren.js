@@ -48,7 +48,7 @@ export default function Veckovaljaren({ veckor, barn }) {
               }}>Vecka {v.nr}</div>
               <div style={{
                 fontFamily: 'var(--font-body)', fontSize: 12.5, marginTop: 7,
-                color: pa ? 'rgba(212,165,116,0.75)' : 'rgba(255,255,255,0.38)',
+                color: pa ? 'rgba(212,165,116,0.75)' : 'rgba(255,255,255,0.6)',
               }}>{v.text}</div>
             </button>
           )

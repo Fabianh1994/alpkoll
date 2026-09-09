@@ -38,7 +38,7 @@ const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
 const etikett = {
   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-  color: 'rgba(255,255,255,0.28)', letterSpacing: '0.12em', textTransform: 'uppercase',
+  color: 'rgba(255,255,255,0.52)', letterSpacing: '0.12em', textTransform: 'uppercase',
 }
 const brod = {
   fontFamily: 'var(--font-body)', fontSize: 16, lineHeight: 1.75,
@@ -204,7 +204,7 @@ export default async function NattagetTillAlperna() {
                 position: absolute; top: 0; left: 16px; white-space: nowrap;
                 font-family: var(--font-body); font-size: 10px; font-weight: 500;
                 letter-spacing: 0.12em; text-transform: uppercase;
-                color: rgba(255,255,255,0.28);
+                color: rgba(255,255,255,0.52);
               }
               /* Under 720 px läses resan uppifrån och ner i stället. Etiketten
                  släpper sin absoluta placering och hamnar efter sitt stopp,
@@ -251,7 +251,7 @@ export default async function NattagetTillAlperna() {
                         fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 400,
                         color: '#f0ece4', letterSpacing: '0.02em',
                       }}>{n.ort.name}</span>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.3)' }}>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)' }}>
                         {n.ort.total_pistes_km} km pist · {n.ort.total_lifts} liftar
                       </span>
                     </div>
@@ -267,10 +267,10 @@ export default async function NattagetTillAlperna() {
                         <div className="nt-steg" key={i}>
                           <div style={{
                             fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
-                            color: p.svag ? 'rgba(255,255,255,0.42)' : '#f0ece4',
+                            color: p.svag ? 'rgba(255,255,255,0.62)' : '#f0ece4',
                           }}>{p.plats}</div>
                           {p.tid && (
-                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.42)', marginTop: 3 }}>
+                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.62)', marginTop: 3 }}>
                               {p.tid}
                             </div>
                           )}
@@ -284,7 +284,7 @@ export default async function NattagetTillAlperna() {
 
                     {n.not && (
                       <div style={{
-                        fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.3)',
+                        fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)',
                         marginTop: 16, lineHeight: 1.55,
                       }}>{n.not}</div>
                     )}
@@ -449,7 +449,7 @@ export default async function NattagetTillAlperna() {
                 <div key={r.label} style={{ ...kort, padding: '14px 16px' }}>
                   <div style={etikett}>{r.label}</div>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#f0ece4', margin: '6px 0 4px' }}>{r.value}</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>{r.not}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>{r.not}</div>
                 </div>
               ))}
             </div>
@@ -469,14 +469,14 @@ export default async function NattagetTillAlperna() {
           </>
         )}
 
-        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: '0 0 8px' }}>
+        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: '0 0 8px' }}>
           Tider och villkor är hämtade från Snälltåget den {skrivDatum(HAMTAD)}.
           Biljetter bokas hos{' '}
           <a href="https://www.snalltaget.se/tag-till-osterrike-vinter" rel="noopener noreferrer" target="_blank" style={{ color: ACCENT }}>
             Snälltåget
           </a>. Alpkoll säljer inga resor och tar ingen ersättning för den här sidan.
         </p>
-        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.35)', margin: 0 }}>
+        <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: 0 }}>
           Vill du ställa tåget mot att flyga finns{' '}
           <Link href="/are-eller-alperna" style={{ color: ACCENT }}>Åre eller Alperna</Link>{' '}
           och <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link>,

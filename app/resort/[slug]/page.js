@@ -233,7 +233,7 @@ export default async function ResortPage({ params }) {
 
   const fieldLabel = {
     fontFamily: 'var(--font-body)', fontSize: 10,
-    color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase',
+    color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase',
     letterSpacing: '0.08em', marginBottom: 5,
   }
 
@@ -389,7 +389,7 @@ export default async function ResortPage({ params }) {
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(18,17,16,0.75)', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '8px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', lineHeight: 1 }}>{s.value}</span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>{s.label}</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.54)', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: 3 }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -474,15 +474,15 @@ export default async function ResortPage({ params }) {
                       <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${Math.min(resort.altitude_base / 40, 100)}%`, background: 'rgba(255,255,255,0.2)', borderRadius: 3 }} />
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)', minWidth: 48 }}>{resort.altitude_base}m</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 48 }}>{resort.altitude_base}m</span>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: '#60a5fa', lineHeight: 1 }}>{verticalDrop}m</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.25)', marginTop: 3 }}>fallhöjd</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>fallhöjd</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.5 }}>
+                <div style={{ marginTop: 12, fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>
                   {resort.altitude_top >= 3000
                     ? `Med ${resort.altitude_top} m på toppen är snön pålitlig hela säsongen, och det finns åkning på glaciär.`
                     : resort.altitude_top >= 2000
@@ -501,7 +501,7 @@ export default async function ResortPage({ params }) {
               {resort.ski_area && (
                 <p style={{
                   fontFamily: 'var(--font-body)', fontSize: 12,
-                  color: 'rgba(255,255,255,0.35)', lineHeight: 1.6,
+                  color: 'rgba(255,255,255,0.57)', lineHeight: 1.6,
                   margin: '-12px 0 18px',
                 }}>
                   Pist, liftar och höjder avser hela{' '}
@@ -523,7 +523,7 @@ export default async function ResortPage({ params }) {
                 ].map(t => (
                   <div key={t.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <div style={{ width: 10, height: 10, borderRadius: 2, background: t.color, flexShrink: 0 }} />
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{t.label}</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)' }}>{t.label}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4' }}>{t.pct}%</span>
                   </div>
                 ))}
@@ -557,7 +557,7 @@ export default async function ResortPage({ params }) {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>Pistkarta</div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.5, margin: '0 0 12px' }}>Se hela pistkartan för {resort.name} — alla nedfarter, liftar och fjällrestauranger på ortens officiella karta.</p>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.57)', lineHeight: 1.5, margin: '0 0 12px' }}>Se hela pistkartan för {resort.name} — alla nedfarter, liftar och fjällrestauranger på ortens officiella karta.</p>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', letterSpacing: '0.04em' }}>Öppna pistkartan →</span>
                   </div>
                 </div>
@@ -571,7 +571,7 @@ export default async function ResortPage({ params }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {scores.map(s => (
                     <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)', minWidth: 170 }}>{s.label}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 170 }}>{s.label}</span>
                       <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
                         <div style={{ height: '100%', borderRadius: 2, width: `${(s.value || 0) * 10}%`, background: s.color }} />
                       </div>
@@ -583,7 +583,7 @@ export default async function ResortPage({ params }) {
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, color: resort.crowd_score >= 7 ? '#4ade80' : resort.crowd_score >= 5 ? '#fbbf24' : '#fb923c', lineHeight: 1 }}>{resort.crowd_score}/10</div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', marginBottom: 2 }}>Gott om plats</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.54)', lineHeight: 1.4 }}>
                       {resort.crowd_score >= 8 ? 'Gott om plats — korta liftköer och vidöppna pister.' : resort.crowd_score >= 6 ? 'Måttlig trängsel — mest folk under högsäsong och helger.' : 'Populär ort — räkna med köer under högsäsong och skollov.'}
                     </div>
                   </div>
@@ -637,7 +637,7 @@ export default async function ResortPage({ params }) {
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
+                  <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
                 </div>
               </div>
               <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
@@ -704,7 +704,7 @@ export default async function ResortPage({ params }) {
                   </div>
                 ) : null}
                 <div style={{ background: 'rgba(212,165,116,0.05)', border: '1px solid rgba(212,165,116,0.1)', borderRadius: 8, padding: '12px 16px' }}>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.57)', lineHeight: 1.6 }}>
                     {prisAttVisa ? (
                       <>
                         {sasongen ? <>{sasongen}{' '}</> : null}
@@ -746,7 +746,7 @@ export default async function ResortPage({ params }) {
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 600, color: '#D4A574' }}>
                     {resort.name} eller Alperna? →
                   </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.42)', marginTop: 5, lineHeight: 1.6 }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.62)', marginTop: 5, lineHeight: 1.6 }}>
                     Storlek, pris i kronor och hur lång resan är — inklusive alporterna du når med nattåg.
                   </div>
                 </Link>
@@ -758,7 +758,7 @@ export default async function ResortPage({ params }) {
                   att laga. Väljaren tar vilka två orter som helst, så det
                   finns någonstans att skicka dem. */}
               {jamforGrupper.length === 0 && (
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '0 0 14px' }}>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.61)', lineHeight: 1.7, margin: '0 0 14px' }}>
                   Vi har ingen färdig jämförelse för {resort.name} ännu, men du
                   kan ställa orten mot vilken som helst av de andra.
                 </p>
@@ -773,9 +773,9 @@ export default async function ResortPage({ params }) {
                       {grupp.par.map(({ par, annan }) => (
                         <Link key={par} href={`/jamfor/${par}`} style={{ ...card, padding: '12px 14px', textDecoration: 'none', display: 'block' }}>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
-                            <span style={{ color: 'rgba(255,255,255,0.3)' }}>mot</span> {annan.name}
+                            <span style={{ color: 'rgba(255,255,255,0.54)' }}>mot</span> {annan.name}
                           </div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                             {annan.total_pistes_km} km pist
                             {' · '}{annan.altitude_top - annan.altitude_base} m fallhöjd
                           </div>
@@ -802,7 +802,7 @@ export default async function ResortPage({ params }) {
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
                       {annan.name}
                     </div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.32)', marginTop: 5 }}>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                       {land(annan.country)} · {annan.total_pistes_km} km pist
                     </div>
                   </Link>
@@ -818,15 +818,15 @@ export default async function ResortPage({ params }) {
               <div style={{ background: 'rgba(212,165,116,0.07)', border: '1px solid rgba(212,165,116,0.2)', borderRadius: 12, padding: '22px', marginBottom: 12 }}>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: '#D4A574', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 6 }}>Redo att åka?</p>
                 <p style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 8 }}>{resort.name}</p>
-                <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.35)', lineHeight: 1.6, marginBottom: 18 }}>Använd reseplaneraren för att se hur orten står sig mot din nivå, budget och månad.</p>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.57)', lineHeight: 1.6, marginBottom: 18 }}>Använd reseplaneraren för att se hur orten står sig mot din nivå, budget och månad.</p>
                 <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Planera resan →</Link>
               </div>
             )}
             <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
-            <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Ortens officiella webbplats →</a>
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Visa på Google Maps →</a>
+            <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Ortens officiella webbplats →</a>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Visa på Google Maps →</a>
             <div style={{ ...card, padding: '20px' }}>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.25)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>I korthet</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>I korthet</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
                   { label: 'Lägsta',         value: `${resort.altitude_base} m` },
@@ -847,7 +847,7 @@ export default async function ResortPage({ params }) {
                   { label: 'Restid',         value: estimatedTransferMins },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>{row.label}</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.52)' }}>{row.label}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4' }}>{row.value}</span>
                   </div>
                 ))}

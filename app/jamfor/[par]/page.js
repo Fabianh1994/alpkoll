@@ -124,7 +124,7 @@ const rubrik = {
 const etikett = {
   fontFamily: 'var(--font-body)',
   fontSize: 10,
-  color: 'rgba(255,255,255,0.25)',
+  color: 'rgba(255,255,255,0.5)',
   textTransform: 'uppercase',
   letterSpacing: '0.08em',
 }
@@ -305,13 +305,13 @@ export default async function JamforPage({ params }) {
                   ))}
                   <div style={{ order: 1, textAlign: 'center' }}>
                     <div style={{ ...etikett, lineHeight: 1.35 }}>{punkt.etikett}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, color: 'rgba(255,255,255,0.18)', marginTop: 2 }}>{punkt.enhet}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, color: 'rgba(255,255,255,0.46)', marginTop: 2 }}>{punkt.enhet}</div>
                   </div>
                 </div>
               )
             })}
           </div>
-          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.54)' }}>
             Liftkortspriserna är hämtade ur varje orts egen prislista.
             Kronbeloppen är omräknade från ortens egen valuta{' '}
             {kurser.farsk
@@ -334,18 +334,18 @@ export default async function JamforPage({ params }) {
                   const vinner = varde > orter.find((o) => o !== ort)?.[rad.falt]
                   return (
                     <div key={ort.slug} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.4)', minWidth: 84, flexShrink: 0 }}>{ort.name}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.61)', minWidth: 84, flexShrink: 0 }}>{ort.name}</span>
                       <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', borderRadius: 3, width: `${(varde || 0) * 10}%`, background: vinner ? ACCENT : 'rgba(255,255,255,0.22)' }} />
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, fontWeight: 500, color: vinner ? ACCENT : 'rgba(255,255,255,0.45)', minWidth: 16, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{varde ?? '—'}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, fontWeight: 500, color: vinner ? ACCENT : 'rgba(255,255,255,0.46)', minWidth: 16, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{varde ?? '—'}</span>
                     </div>
                   )
                 })}
               </div>
             ))}
           </div>
-          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+          <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.54)' }}>
             De fyra är redaktionella omdömen på en skala 1–10, inte mätvärden.
             Vad varje steg betyder står i poängskalan.
           </p>
@@ -376,7 +376,7 @@ export default async function JamforPage({ params }) {
           </div>
 
           {korsPar && (
-            <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.3)' }}>
+            <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.54)' }}>
               Sista biten mäter bara sträckan från flygplatsen och går inte att
               ställa mot varandra över gränsen mellan Norden och Alperna — den
               nordiska orten nås ofta med bil eller nattåg utan att man flyger
@@ -417,18 +417,18 @@ export default async function JamforPage({ params }) {
             {orter.map((ort) => (
               <Link key={ort.slug} href={`/resort/${ort.slug}`} style={{ ...kort, padding: '16px 18px', textDecoration: 'none', display: 'block' }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 3 }}>{ort.name}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.35)', marginBottom: 10 }}>{ort.region} · {land(ort.country)}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.57)', marginBottom: 10 }}>{ort.region} · {land(ort.country)}</div>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: ACCENT, letterSpacing: '0.04em' }}>Hela sidan om {ort.name} →</span>
               </Link>
             ))}
           </div>
           <div style={{ marginTop: 12 }}>
-            <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase' }}>← Välj två andra orter</Link>
+            <Link href="/jamfor" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', textDecoration: 'none', letterSpacing: '0.06em', textTransform: 'uppercase' }}>← Välj två andra orter</Link>
           </div>
         </section>
 
         {/* Källan står på sidan som bär siffrorna, inte bara på about. */}
-        <p style={{ ...brodtext, fontSize: 11.5, marginTop: 44, color: 'rgba(255,255,255,0.28)' }}>
+        <p style={{ ...brodtext, fontSize: 11.5, marginTop: 44, color: 'rgba(255,255,255,0.52)' }}>
           Pist, liftar, höjder och liftkortspriser är hämtade från
           skiresort.com för båda orterna — blandade källor gör orter
           ojämförbara. Talen avser hela det sammankopplade skidområdet, det
@@ -455,7 +455,7 @@ function Fragmentgrupp({ grupp, orter, kurser }) {
         const basta = bastaVardet(falt, orter)
         return (
           <tr key={falt.etikett}>
-            <td style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{falt.etikett}</td>
+            <td style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)' }}>{falt.etikett}</td>
             {orter.map((ort) => {
               const vinnare = basta !== null && falt.varde(ort) === basta
               return (

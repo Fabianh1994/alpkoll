@@ -170,7 +170,7 @@ const cardStyle = {
 
 const labelStyle = {
   fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500,
-  color: 'rgba(255,255,255,0.35)', letterSpacing: '0.12em',
+  color: 'rgba(255,255,255,0.57)', letterSpacing: '0.12em',
   textTransform: 'uppercase', marginBottom: 8, display: 'block',
 };
 
@@ -189,7 +189,7 @@ function PillGroup({ label, options, value, onChange, multi = false, maxSelect =
               padding: '7px 15px', borderRadius: 20,
               border: isOn ? '1px solid #D4A574' : '1px solid rgba(255,255,255,0.1)',
               background: isOn ? 'rgba(212,165,116,0.1)' : 'rgba(255,255,255,0.02)',
-              color: isOn ? '#D4A574' : isDisabled ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.45)',
+              color: isOn ? '#D4A574' : isDisabled ? 'rgba(255,255,255,0.46)' : 'rgba(255,255,255,0.46)',
               cursor: isDisabled ? 'not-allowed' : 'pointer',
               transition: 'background 0.18s, border-color 0.18s, color 0.18s',
             }}>
@@ -301,10 +301,10 @@ export default function PlanPage() {
           background: active ? T.accent : done ? 'rgba(212,165,116,0.25)' : 'rgba(255,255,255,0.06)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, fontWeight: 600,
-          color: active ? '#121110' : done ? T.accent : 'rgba(255,255,255,0.2)',
+          color: active ? '#121110' : done ? T.accent : 'rgba(255,255,255,0.46)',
           transition: 'background 0.3s, color 0.3s',
         }}>{done ? '✓' : n}</div>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.2)' }}>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.46)' }}>
           {t.plan.stepLabels[n]}
         </span>
       </div>
@@ -332,7 +332,7 @@ export default function PlanPage() {
   const backLink = {
     background: 'none', border: 'none', cursor: 'pointer',
     fontFamily: 'var(--font-body)', fontSize: 12,
-    color: 'rgba(255,255,255,0.25)', textDecoration: 'underline',
+    color: 'rgba(255,255,255,0.5)', textDecoration: 'underline',
     marginTop: 12, padding: 0,
   };
 
@@ -364,7 +364,7 @@ export default function PlanPage() {
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 6vw, 68px)', fontWeight: 400, lineHeight: 0.95, color: T.text, marginBottom: 14, letterSpacing: '0.02em' }}>
           {t.plan.headline1}<br /><span style={{ color: T.accent }}>{t.plan.headline2}</span>
         </h1>
-        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.4)', lineHeight: 1.6, marginBottom: 48, maxWidth: 480 }}>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 300, color: 'rgba(255,255,255,0.61)', lineHeight: 1.6, marginBottom: 48, maxWidth: 480 }}>
           {t.plan.intro}
         </p>
 
@@ -385,7 +385,7 @@ export default function PlanPage() {
             <div style={{ marginBottom: 8 }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step1.label}</p>
               <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step1.title}</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step1.subtitle}</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.57)', marginBottom: 24 }}>{t.plan.step1.subtitle}</p>
             </div>
 
             <div style={cardStyle}>
@@ -399,9 +399,9 @@ export default function PlanPage() {
                 <div>
                   <div style={{ ...labelStyle, display: 'block', marginBottom: 4 }}>
                     {t.plan.step1.prioritiesLabel}
-                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.2)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>{t.plan.step1.prioritiesHint}</span>
+                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.46)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>{t.plan.step1.prioritiesHint}</span>
                   </div>
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.25)', marginBottom: 10 }}>
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
                     {priorities.length === 0 && t.plan.step1.statusEmpty}
                     {priorities.length > 0 && priorities.length < 3 && t.plan.step1.statusPartial.replace('{n}', priorities.length).replace('{remaining}', 3 - priorities.length)}
                     {priorities.length === 3 && t.plan.step1.statusFull}
@@ -434,7 +434,7 @@ export default function PlanPage() {
                           )}
                           <div style={{ fontSize: 16, marginBottom: 6 }}>{icon}</div>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: T.text, marginBottom: 2 }}>{label}</div>
-                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.3)', lineHeight: 1.4 }}>{hint}</div>
+                          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.54)', lineHeight: 1.4 }}>{hint}</div>
                         </div>
                       );
                     })}
@@ -446,7 +446,7 @@ export default function PlanPage() {
             <div style={{ marginBottom: 8 }}>
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step1b.label}</p>
               <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step1b.title}</h2>
-              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step1b.subtitle}</p>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.57)', marginBottom: 24 }}>{t.plan.step1b.subtitle}</p>
             </div>
 
             <div style={cardStyle}>
@@ -456,12 +456,12 @@ export default function PlanPage() {
                 <div>
                   <div style={{ ...labelStyle, display: 'block', marginBottom: 12 }}>{t.plan.step1b.budgetLabel}</div>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginBottom: 14 }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(255,255,255,0.3)' }}>€</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 18, color: 'rgba(255,255,255,0.54)' }}>€</span>
                     <span style={{ fontFamily: 'var(--font-heading)', fontSize: 52, color: T.text, lineHeight: 1, letterSpacing: '-0.01em' }}>{budget.toLocaleString('de-DE')}</span>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.3)', marginLeft: 6 }}>{t.plan.step1b.perPerson}</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.54)', marginLeft: 6 }}>{t.plan.step1b.perPerson}</span>
                   </div>
                   <input type="range" min={400} max={5000} step={50} value={budget} onChange={e => setBudget(parseInt(e.target.value))} style={{ width: '100%', height: 4, borderRadius: 2, outline: 'none', cursor: 'pointer', marginBottom: 6, appearance: 'none', background: `linear-gradient(to right, #D4A574 ${(budget - 400) / 4600 * 100}%, rgba(255,255,255,0.1) ${(budget - 400) / 4600 * 100}%)` }} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.2)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.46)' }}>
                     <span>€400</span><span>€5,000</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 16 }}>
@@ -471,9 +471,9 @@ export default function PlanPage() {
                       { cat: t.plan.step1b.onMountain, val: `€${onMtn}`, note: t.plan.step1b.passFood.replace('{n}', days) },
                     ].map(b => (
                       <div key={b.cat} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{b.cat}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.54)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{b.cat}</div>
                         <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: T.text }}>{b.val}</div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.2)', marginTop: 2 }}>{b.note}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.46)', marginTop: 2 }}>{b.note}</div>
                       </div>
                     ))}
                   </div>
@@ -489,7 +489,7 @@ export default function PlanPage() {
           <div style={{ animation: 'fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step2.label}</p>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step2.title}</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>{t.plan.step2.subtitle}</p>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.57)', marginBottom: 24 }}>{t.plan.step2.subtitle}</p>
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 24 }}>
               {[
@@ -500,12 +500,12 @@ export default function PlanPage() {
                 `€${budget.toLocaleString('de-DE')}`,
                 t.plan.step2.daysChip.replace('{n}', days),
               ].map(chip => (
-                <span key={chip} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)' }}>{chip}</span>
+                <span key={chip} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.46)' }}>{chip}</span>
               ))}
             </div>
 
             {rankedResorts.length === 0 ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.25)', fontFamily: 'var(--font-body)' }}>{t.plan.step2.noResults}</div>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.5)', fontFamily: 'var(--font-body)' }}>{t.plan.step2.noResults}</div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {rankedResorts.map((resort, i) => (
@@ -513,14 +513,14 @@ export default function PlanPage() {
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,165,116,0.3)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = i === 0 ? 'rgba(212,165,116,0.2)' : T.border; e.currentTarget.style.transform = 'none'; }}
                   >
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.2)', minWidth: 20 }}>#{i + 1}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.46)', minWidth: 20 }}>#{i + 1}</div>
                     <img src={resort.image_url} alt={resort.name} style={{ width: 60, height: 44, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
                         <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: T.text, letterSpacing: '0.03em' }}>{resort.name}</span>
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>{resort.country}</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>{resort.country}</span>
                       </div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.45 }}>{resort.why}</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', lineHeight: 1.45 }}>{resort.why}</div>
                       <div style={{ display: 'flex', gap: 6, marginTop: 7, flexWrap: 'wrap' }}>
                         {resort.snow_guarantee_score >= 8 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.12)', color: '#1D9E75' }}>{t.plan.step2.snowBadge.replace('{n}', resort.snow_guarantee_score)}</span>}
                         {resort.total_pistes_km >= 200 && <span style={{ fontSize: 10, fontWeight: 500, padding: '2px 8px', borderRadius: 8, background: 'rgba(83,74,183,0.12)', color: '#534AB7' }}>{t.plan.step2.kmBadge.replace('{n}', resort.total_pistes_km)}</span>}
@@ -529,8 +529,8 @@ export default function PlanPage() {
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 34, color: i === 0 ? T.accent : 'rgba(255,255,255,0.4)', lineHeight: 1 }}>{resort.score}</div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.2)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>/100</div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 34, color: i === 0 ? T.accent : 'rgba(255,255,255,0.61)', lineHeight: 1 }}>{resort.score}</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.46)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>/100</div>
                     </div>
                   </div>
                 ))}
@@ -545,7 +545,7 @@ export default function PlanPage() {
           <div style={{ animation: 'fadeUp 0.4s cubic-bezier(0.16,1,0.3,1)' }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: T.accent, letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 4 }}>{t.plan.step3.label}</p>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, color: T.text, letterSpacing: '0.04em', marginBottom: 4 }}>{t.plan.step3.title}</h2>
-            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.35)', marginBottom: 24 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.57)', marginBottom: 24 }}>
               {t.plan.step3.resortLabel} <span style={{ color: T.accent }}>{selectedResort.name}</span>{' '}{t.plan.step3.airportLabel} <span style={{ color: T.text }}>{selectedResort.nearest_airport}</span>{' '}· {t.plan.step3.transferText.replace('{n}', selectedResort.airport_distance_km)}
             </p>
 
@@ -576,7 +576,7 @@ export default function PlanPage() {
                 </div>
               </div>
               <a href={getFlightLink()} target="_blank" rel="noopener noreferrer" style={ctaStyle(!travelDates.from || !travelDates.to)}>{t.plan.step3.searchFlights}</a>
-              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.08)' }}>{t.plan.step3.findHotels}</a>
+              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.46)', border: '1px solid rgba(255,255,255,0.08)' }}>{t.plan.step3.findHotels}</a>
             </div>
 
             <div style={{ background: 'rgba(212,165,116,0.05)', borderRadius: 10, border: '1px solid rgba(212,165,116,0.12)', padding: '22px 24px', marginBottom: 20 }}>
@@ -592,14 +592,14 @@ export default function PlanPage() {
                   { label: t.plan.step3.summary.budget, value: t.plan.step3.budgetPerPerson.replace('{n}', budget.toLocaleString('de-DE')) },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
-                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.25)', textTransform: 'uppercase', letterSpacing: '0.08em', minWidth: 100 }}>{row.label}</span>
+                    <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.08em', minWidth: 100 }}>{row.label}</span>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: T.text }}>{row.value}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            <Link href={`/resort/${selectedResort.slug}`} style={{ display: 'block', textAlign: 'center', padding: '12px', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.35)', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t.plan.step3.viewDetails}</Link>
+            <Link href={`/resort/${selectedResort.slug}`} style={{ display: 'block', textAlign: 'center', padding: '12px', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.57)', textDecoration: 'none', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 6, marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{t.plan.step3.viewDetails}</Link>
 
             <div style={{ display: 'flex', gap: 20 }}>
               <button onClick={() => setStep(2)} style={backLink}>{t.plan.step3.backToResults}</button>

@@ -56,7 +56,7 @@ export default function ResortNotFound() {
             fontFamily: 'var(--font-body)',
             fontSize: 15,
             fontWeight: 300,
-            color: 'rgba(255,255,255,0.45)',
+            color: 'rgba(255,255,255,0.46)',
             lineHeight: 1.7,
             marginBottom: 36,
           }}

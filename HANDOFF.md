@@ -320,6 +320,24 @@ sida. Nya mönstret är `skiresort.com/en/ski-resort/<slug>/`, och slugen är tr
 `/en/ski-resorts/sweden/`, gissa den inte. Underlagssidorna per ort är `/night-skiing/`,
 `/innovations/` och `/ski-lifts/`.
 
+**En dold webbläsarpanel ljuger om allt.** Ligger panelen dold rapporterar sidan
+`innerWidth` och `innerHeight` som 0, `document.hidden` som true, mediefrågor som
+`(min-width: 1px)` som falska, och `setTimeout` stryps så att tillstånd som sätts
+efter en fördröjning aldrig hinner fram. Skärmdumpen kommer tillbaka helvit fast
+sidan har innehåll. Mät `innerWidth` först — är den 0 är varje annan avläsning i
+samma vända värdelös.
+
+**`window.scrollTo` avfyrar inga scroll-event i panelen.** Positionen ändras, så
+`window.scrollY` ser rätt ut, men lyssnarna vaknar inte och allt som hänger på dem
+står still. Uppmätt 9 september: noll event efter två `scrollTo`. Använd
+webbläsarverktygets egen `scroll` i stället — den ger riktiga händelser, och med den
+flyttade sig hjältebildens parallax som den skulle.
+
+**Dev-servern kompilerar inte alltid om CSS som ändrats utanför editorn.** En regel
+skriven till `globals.css` med ett skalkommando saknades i den serverade CSS-filen
+tills filen rördes en gång till. Slutsatsen "regeln finns inte" var falsk — den låg
+på disk hela tiden. Kontrollera mot filen innan du felsöker koden.
+
 **`document.body.innerText` ljuger i webbläsarpanelen.** Den gav tomt för ett element som
 låg i DOM:en, var synligt och 153 pixlar högt. Kontrollera med `fetch` av adressen eller
 `element.textContent` innan du tror på ett negativt utfall. En avläsning som säger "det

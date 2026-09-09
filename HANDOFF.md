@@ -98,6 +98,7 @@ buss. Fyra orter berörda.
 
 | PR | Vad |
 |---|---|
+| #34 | Sportlovssidan, och copyn där sajten talar om sig själv |
 | #33 | Rörelsen respekterar systeminställningen; transition: all borta |
 | #30 | Geilo omkontrollerad i september — priset finns inte än |
 | #29 | Priser på samma villkor överallt, och ny text under dem |
@@ -140,7 +141,7 @@ element i DOM:en, ett per kort.
 
 **Detta rörde ingen data och ingen migration.** Inget behöver köras i Supabase.
 
-**Sportlovssidan byggd — men inte den som stod i planen (#PR).** Punkt 4 utgick från att
+**Sportlovssidan byggd — men inte den som stod i planen (#34).** Punkt 4 utgick från att
 sidan skulle svara på vilken ort som är billigast just din sportlovsvecka. Prisdatan säger
 att frågan inte har något intressant svar för Alperna: Ischgl tar ett pris hela säsongen,
 och Alpe d'Huez, Les Arcs, Livigno och Kitzbühel har prisband som täcker hela sportlovs-
@@ -161,7 +162,7 @@ därför att sidan inte behöver dem — besökaren väljer själv. Metoden och 
 Luleå i vecka 10 där kommunen säger vecka 9, och Skolportens PDF finns i två marsversioner
 där 26 kommuner har olika vecka, därför att tabellen är radförskjuten vid textextraktion.
 
-**Copyn omskriven där sajten talar om sig själv (#PR).** Startsidan lovade "vi matchar
+**Copyn omskriven där sajten talar om sig själv (#34).** Startsidan lovade "vi matchar
 berget med skidåkaren" och räknade upp snösäkerhet, terräng, bykänsla, budget och restid —
 en beskrivning av reseplaneraren, som är avstängd. Hjälten frågar nu var du ska åka i
 vinter och säger att orterna är mätta på samma sätt; missionen skriver ut nackdelarna i

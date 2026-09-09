@@ -21,6 +21,10 @@ const LANKAR = [
   // Materialet fanns förut bara som ett kort en bit ner på två sidor som
   // själva inte låg i menyn — alltså osynligt för den som söker på det.
   { label: 'Nattåget', href: '/nattaget-till-alperna', match: (p) => p === '/nattaget-till-alperna' },
+  // Sportlovet står i menyn av samma skäl som nattåget: en sida som ingen
+  // länkar till blir inte genomsökt. Mätningen 2026-08-25 gav 62 procent
+  // genomsökta bland de länkade sidorna mot 21 bland de olänkade.
+  { label: 'Sportlov', href: '/sportlov', match: (p) => p === '/sportlov' },
   { label: 'Om oss', href: '/about', match: (p) => p === '/about' },
 ];
 

@@ -189,7 +189,7 @@ function PillGroup({ label, options, value, onChange, multi = false, maxSelect =
               padding: '7px 15px', borderRadius: 20,
               border: isOn ? '1px solid #D4A574' : '1px solid rgba(255,255,255,0.1)',
               background: isOn ? 'rgba(212,165,116,0.1)' : 'rgba(255,255,255,0.02)',
-              color: isOn ? '#D4A574' : isDisabled ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.45)',
+              color: isOn ? '#D4A574' : isDisabled ? 'rgba(255,255,255,0.46)' : 'rgba(255,255,255,0.46)',
               cursor: isDisabled ? 'not-allowed' : 'pointer',
               transition: 'background 0.18s, border-color 0.18s, color 0.18s',
             }}>
@@ -301,10 +301,10 @@ export default function PlanPage() {
           background: active ? T.accent : done ? 'rgba(212,165,116,0.25)' : 'rgba(255,255,255,0.06)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, fontWeight: 600,
-          color: active ? '#121110' : done ? T.accent : 'rgba(255,255,255,0.45)',
+          color: active ? '#121110' : done ? T.accent : 'rgba(255,255,255,0.46)',
           transition: 'background 0.3s, color 0.3s',
         }}>{done ? '✓' : n}</div>
-        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.45)' }}>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.46)' }}>
           {t.plan.stepLabels[n]}
         </span>
       </div>
@@ -399,7 +399,7 @@ export default function PlanPage() {
                 <div>
                   <div style={{ ...labelStyle, display: 'block', marginBottom: 4 }}>
                     {t.plan.step1.prioritiesLabel}
-                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.45)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>{t.plan.step1.prioritiesHint}</span>
+                    <span style={{ fontWeight: 400, color: 'rgba(255,255,255,0.46)', textTransform: 'none', letterSpacing: 0, marginLeft: 8 }}>{t.plan.step1.prioritiesHint}</span>
                   </div>
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 10 }}>
                     {priorities.length === 0 && t.plan.step1.statusEmpty}
@@ -461,7 +461,7 @@ export default function PlanPage() {
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.54)', marginLeft: 6 }}>{t.plan.step1b.perPerson}</span>
                   </div>
                   <input type="range" min={400} max={5000} step={50} value={budget} onChange={e => setBudget(parseInt(e.target.value))} style={{ width: '100%', height: 4, borderRadius: 2, outline: 'none', cursor: 'pointer', marginBottom: 6, appearance: 'none', background: `linear-gradient(to right, #D4A574 ${(budget - 400) / 4600 * 100}%, rgba(255,255,255,0.1) ${(budget - 400) / 4600 * 100}%)` }} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.45)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.46)' }}>
                     <span>€400</span><span>€5,000</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginTop: 16 }}>
@@ -473,7 +473,7 @@ export default function PlanPage() {
                       <div key={b.cat} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '10px 12px' }}>
                         <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.54)', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 5 }}>{b.cat}</div>
                         <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: T.text }}>{b.val}</div>
-                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>{b.note}</div>
+                        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.46)', marginTop: 2 }}>{b.note}</div>
                       </div>
                     ))}
                   </div>
@@ -500,7 +500,7 @@ export default function PlanPage() {
                 `€${budget.toLocaleString('de-DE')}`,
                 t.plan.step2.daysChip.replace('{n}', days),
               ].map(chip => (
-                <span key={chip} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.45)' }}>{chip}</span>
+                <span key={chip} style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, padding: '4px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.46)' }}>{chip}</span>
               ))}
             </div>
 
@@ -513,7 +513,7 @@ export default function PlanPage() {
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,165,116,0.3)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = i === 0 ? 'rgba(212,165,116,0.2)' : T.border; e.currentTarget.style.transform = 'none'; }}
                   >
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.45)', minWidth: 20 }}>#{i + 1}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.46)', minWidth: 20 }}>#{i + 1}</div>
                     <img src={resort.image_url} alt={resort.name} style={{ width: 60, height: 44, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }} />
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
@@ -530,7 +530,7 @@ export default function PlanPage() {
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
                       <div style={{ fontFamily: 'var(--font-heading)', fontSize: 34, color: i === 0 ? T.accent : 'rgba(255,255,255,0.61)', lineHeight: 1 }}>{resort.score}</div>
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.45)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>/100</div>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.46)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>/100</div>
                     </div>
                   </div>
                 ))}
@@ -576,7 +576,7 @@ export default function PlanPage() {
                 </div>
               </div>
               <a href={getFlightLink()} target="_blank" rel="noopener noreferrer" style={ctaStyle(!travelDates.from || !travelDates.to)}>{t.plan.step3.searchFlights}</a>
-              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.45)', border: '1px solid rgba(255,255,255,0.08)' }}>{t.plan.step3.findHotels}</a>
+              <a href={getBookingLink()} target="_blank" rel="noopener noreferrer" style={{ ...ctaStyle(!travelDates.from || !travelDates.to), marginTop: 10, background: 'transparent', color: travelDates.from && travelDates.to ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.46)', border: '1px solid rgba(255,255,255,0.08)' }}>{t.plan.step3.findHotels}</a>
             </div>
 
             <div style={{ background: 'rgba(212,165,116,0.05)', borderRadius: 10, border: '1px solid rgba(212,165,116,0.12)', padding: '22px 24px', marginBottom: 20 }}>

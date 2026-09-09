@@ -235,7 +235,7 @@ export default function HomeClient({ resorts }) {
         </div>
         {filtered.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 20px', fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.5)' }}>
-            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.04em', marginBottom: 8 }}>{t.resorts.noResults}</p>
+            <p style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: 'rgba(255,255,255,0.46)', letterSpacing: '0.04em', marginBottom: 8 }}>{t.resorts.noResults}</p>
             <p style={{ fontSize: 14 }}>{t.resorts.noResultsHint}</p>
           </div>
         ) : (

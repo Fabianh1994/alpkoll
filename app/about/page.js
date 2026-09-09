@@ -138,7 +138,9 @@ export default async function AboutPage() {
             }}>
               <span style={{
                 fontFamily: 'var(--font-heading)',
-                fontSize: 32, color: 'rgba(212,165,116,0.2)',
+                // Accenten på 0,2 gav 1,47 mot kortet. Trettiotvå pixlar
+                // räknas som stor text och har kravet 3; 0,6 ger 3,64.
+                fontSize: 32, color: 'rgba(212,165,116,0.6)',
                 letterSpacing: '0.02em',
                 display: 'block', marginBottom: 16,
               }}>{step.number}</span>
@@ -254,7 +256,7 @@ export default async function AboutPage() {
         <Rubrik>Frågor? Idéer? Hittat ett fel?</Rubrik>
         <p style={{
           fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 300,
-          color: 'rgba(255,255,255,0.45)', lineHeight: 1.75,
+          color: 'rgba(255,255,255,0.46)', lineHeight: 1.75,
           marginBottom: 32, maxWidth: 620,
         }}>
           Alpkoll är under uppbyggnad och blir bättre av synpunkter. Har du en
@@ -278,7 +280,7 @@ export default async function AboutPage() {
 
 const brodstil = {
   fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 300,
-  color: 'rgba(255,255,255,0.45)', lineHeight: 1.75,
+  color: 'rgba(255,255,255,0.46)', lineHeight: 1.75,
 };
 
 function Avdelare() {

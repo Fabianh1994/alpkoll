@@ -165,7 +165,7 @@ export default function Valjaren({ orter }) {
             <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
               {i === 0 ? 'Första orten' : 'Andra orten'}
             </span>
-            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: valda[i] ? '#f0ece4' : 'rgba(255,255,255,0.45)', letterSpacing: '0.03em', marginTop: 2 }}>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: valda[i] ? '#f0ece4' : 'rgba(255,255,255,0.46)', letterSpacing: '0.03em', marginTop: 2 }}>
               {valda[i] ? namn(valda[i]) : 'välj nedan'}
             </span>
           </div>
@@ -229,7 +229,7 @@ export default function Valjaren({ orter }) {
           <button key={v.id} onClick={() => setUrval(v.id)} style={{
             fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500,
             letterSpacing: '0.08em', textTransform: 'uppercase',
-            color: urval === v.id ? '#121110' : 'rgba(255,255,255,0.45)',
+            color: urval === v.id ? '#121110' : 'rgba(255,255,255,0.46)',
             background: urval === v.id ? ACCENT : 'transparent',
             border: `1px solid ${urval === v.id ? ACCENT : 'rgba(255,255,255,0.1)'}`,
             borderRadius: 40, padding: '7px 16px', cursor: 'pointer',

@@ -42,11 +42,11 @@ export default function SiteFooter() {
       }}>
         <span style={{
           fontFamily: 'var(--font-heading)', fontSize: 20,
-          color: 'rgba(255,255,255,0.45)', letterSpacing: '0.06em',
+          color: 'rgba(255,255,255,0.46)', letterSpacing: '0.06em',
         }}>ALPKOLL</span>
         <span style={{
           fontFamily: 'var(--font-body)', fontSize: 12,
-          color: 'rgba(255,255,255,0.45)',
+          color: 'rgba(255,255,255,0.46)',
         }}>© 2026 — Jämför berg, hitta ditt.</span>
       </div>
 

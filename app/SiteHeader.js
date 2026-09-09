@@ -79,7 +79,7 @@ export default function SiteHeader({ genomskinligOverst = false }) {
           {LANKAR.map(item => (
             <Link key={item.href} href={item.href} style={{
               fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500,
-              color: item.match(pathname) ? '#D4A574' : 'rgba(255,255,255,0.45)',
+              color: item.match(pathname) ? '#D4A574' : 'rgba(255,255,255,0.46)',
               textDecoration: 'none', letterSpacing: '0.04em',
               textTransform: 'uppercase', transition: 'color 0.25s',
             }}>{item.label}</Link>

@@ -305,7 +305,7 @@ export default async function JamforPage({ params }) {
                   ))}
                   <div style={{ order: 1, textAlign: 'center' }}>
                     <div style={{ ...etikett, lineHeight: 1.35 }}>{punkt.etikett}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, color: 'rgba(255,255,255,0.45)', marginTop: 2 }}>{punkt.enhet}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 9.5, color: 'rgba(255,255,255,0.46)', marginTop: 2 }}>{punkt.enhet}</div>
                   </div>
                 </div>
               )
@@ -338,7 +338,7 @@ export default async function JamforPage({ params }) {
                       <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', borderRadius: 3, width: `${(varde || 0) * 10}%`, background: vinner ? ACCENT : 'rgba(255,255,255,0.22)' }} />
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, fontWeight: 500, color: vinner ? ACCENT : 'rgba(255,255,255,0.45)', minWidth: 16, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{varde ?? '—'}</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, fontWeight: 500, color: vinner ? ACCENT : 'rgba(255,255,255,0.46)', minWidth: 16, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{varde ?? '—'}</span>
                     </div>
                   )
                 })}

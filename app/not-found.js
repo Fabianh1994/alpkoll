@@ -65,7 +65,7 @@ export default function NotFound() {
                 color: '#f0ece4', letterSpacing: '0.02em', marginBottom: 4,
               }}>{v.rubrik}</div>
               <div style={{
-                fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.45)',
+                fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.46)',
               }}>{v.text}</div>
             </Link>
           ))}

@@ -174,7 +174,69 @@ längd, tankstreck som bär en slutkläm, och formuleringar som förklarar arbet
 stället för att svara. Två utkast underkändes på vägen — det första för att det var torrt,
 det andra för att det lät maskinskrivet.
 
+**Restiden hemifrån är mätt (#36).** transfer_minutes är sista biten från flygplatsen
+och svarade inte på frågan folk söker på — sälen stockholm gav 20 exponeringar i augusti,
+resefrågorna 45 tillsammans. lib/restider.js bär nittio sträckor, trettio orter från
+Stockholm, Göteborg och Malmö, alla räknade med OSRM mot OpenStreetMaps vägnät så att de
+går att jämföra och räkna om. Talen i transport_info var inte mätta: Sälen stod som fyra
+och en halv timme från Stockholm, verkligheten är 5,9 på 397 kilometer.
+
+Det oväntade svaret ligger nu på sportlovssidan: **från Malmö är Kitzbühel närmare än
+Åre** (14,2 tim mot 15,5), medan samma jämförelse från Stockholm är 5,9 mot 21,1. Ju
+längre söderut man bor, desto mindre kostar Alperna i restid.
+
+Snälltågets två svenska vinterlinjer ligger i samma fil: Åre med nattåg ons, tors, lör och
+sön (Stockholm 22.55, Åre 07.35), och Sälen via Mora på lördagar. **Sälenlinjen går via
+Göteborg fyra lördagar**, varav 13 februari och 6 mars bär en sportlovsvecka — och Göteborg
+har vecka 7. Sidan skriver ut det genom att jämföra skidveckans lördagar mot Snälltågets
+datumlista. Tiderna är preliminära tills operatören fastställer tidtabellen i höst.
+
+**Sidfoten bär innehållssidorna (#35).** Jämför, Liftkortspriser, Nattåget och Sportlov låg
+bara i menyraden, som döljs under 600 px. Uppmätt vid 390 px syntes ingen av dem någonstans
+på sajten — mobilmenyn har tre flikar och sidfoten listade bara Skidorter, Om oss och de
+juridiska. Det gällde alltså den trafik sajten faktiskt har: 593 mobilexponeringar mot 472
+på desktop.
+
+**Egen 404 på svenska (#37).** Varje adress utom ortsidornas fick Next inbyggda sida på
+engelska, utan meny och utan sidfot. Ortsidans 404 hade dessutom en knapp till
+reseplaneraren, som är avstängd och noindex — det enda stället på sajten som länkade förbi
+PLANERAREN_SYNLIG.
+
+**Kontrasten når WCAG AA (#38, #39).** Sekundärtexten var vit med låg opacitet och nådde
+inte kravet: 74 av 147 textelement på startsidan låg under, och sidfoten var värst med
+länkar på 0,25 och årtalsraden på 0,15. Golvet är nu 0,46, som håller även mot kortens
+ljusare bakgrund. Stegen under lyftes men behöll sin ordning, så hierarkin finns kvar men
+är mindre brant. Bara textfärg ändrades — kanter och bakgrunder på 0,02 till 0,08 bär inget
+innehåll och står kvar. Uppmätt över tolv sidor: 1 274 element, noll under kravet.
+
 ## Vad som väntar
+
+### Checklistan: sexton av tjugo var redan i ordning
+
+Genomgången 9 september av privacy, terms, CTA, FAQ, robots, sitemap, 404, alt-texter,
+analytics, meta, social share, favicon, canonical, cookie consent, mobil, tillgänglighet,
+formulär, brutna länkar och prestanda.
+
+**Klart och kontrollerat:** robots pekar rätt, sitemapens 65 adresser svarar alla 200,
+9 av 9 bilder har alt, alla sidor har titel, beskrivning och canonical, og- och
+twitter-taggar finns med bild i 1200×630, favicon i fem format, analytics kör.
+**Noll brutna länkar** av 86 interna och 9 externa.
+
+**Cookie consent behövs inte.** Sajten sätter noll cookies och noll localStorage — mätt i
+webbläsaren, inte antaget. Vercel Analytics är cookielöst. Skulle något ändras är det den
+mätningen som ska göras om först.
+
+**Två punkter kvar, båda små:**
+
+*Sportlovssidan har bara h1 och inga h2.* Blocken är div-rubriker med etikett. Övriga sidor
+har rätt struktur.
+
+*Ingen FAQ.* Prisfrågor står för de flesta sökningarna utan att ha strukturerade svar.
+Om den byggs: den ska svara på det som faktiskt söks, inte på påhittade frågor.
+
+**Falsklarm värda att känna igen:** snalltaget.se ger 403 på HEAD utan user-agent men 200
+på GET — länken är hel. Och sidor med HTML-entiteter (&#xD6;sterrike) hittas inte av en
+grep på "österrike".
 
 ### Kvar ur genomgången 8 september
 

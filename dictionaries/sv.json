@@ -5,20 +5,20 @@
     "planTrip": "Planera resa"
   },
   "hero": {
-    "tagline": "Trettio orter, samma måttstock",
-    "title1": "Siffror du kan",
-    "title2": "ställa bredvid",
-    "title3": "varandra.",
-    "description": "Pist, fallhöjd, liftkortspris och uppmätt restid från Sverige — en källa för alla {count} orter, så att talen går att jämföra rakt av.",
+    "tagline": "Alperna och Norden",
+    "title1": "Var ska du",
+    "title2": "åka i",
+    "title3": "vinter?",
+    "description": "{count} skidorter med samma siffror på alla: pist, fallhöjd, vad liftkortet kostar och hur lång tid det tar att komma dit.",
     "browseResorts": "Utforska skidorter ↓",
     "planTrip": "Planera en resa"
   },
   "mission": {
     "intro": "De flesta skidsajter radar upp orter och hoppas att du klarar resten själv.",
-    "title1": "Det som skaver",
+    "title1": "Nackdelarna",
     "title2": "står också",
     "title3": "här.",
-    "description": "Zermatt är dyrt. Val Thorens är ingen vykortsby. Kitzbühel lutar sig mot konstsnö. En jämförelse som bara berömmer hjälper ingen att välja."
+    "description": "Zermatt är dyrt. Val Thorens är ingen vykortsby. Kitzbühel lutar sig mot konstsnö. En sajt som bara berömmer hjälper ingen att välja."
   },
   "resorts": {
     "title": "Skidorter",

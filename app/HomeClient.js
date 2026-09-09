@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useDictionary } from '../lib/useDictionary';
 import { farOptimeras } from '../lib/images';
 import { PLANERAREN_SYNLIG } from '../lib/features';
+import { useMinskadRorelse } from '../lib/rorelse';
 import { land, ALLA_LANDER } from '../lib/countries';
 import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
@@ -26,11 +27,16 @@ function MagBtn({ children, href, primary = false, pill = false }) {
   const ref = useRef(null);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [hover, setHover] = useState(false);
+  const minskadRorelse = useMinskadRorelse();
   const onMove = useCallback((e) => {
+    // Knappen dras mot muspekaren. Den som valt minskad rörelse ska ha en
+    // knapp som ligger still; skalningen vid hover får vara kvar, den är
+    // ett tillstånd och inte en rörelse som pågår av sig själv.
+    if (minskadRorelse) return;
     const r = ref.current?.getBoundingClientRect();
     if (!r) return;
     setOffset({ x: (e.clientX - r.left - r.width / 2) * 0.14, y: (e.clientY - r.top - r.height / 2) * 0.14 });
-  }, []);
+  }, [minskadRorelse]);
   const style = {
     fontFamily: 'var(--font-body)', fontSize: pill ? 11 : 13, fontWeight: primary ? 600 : 500,
     letterSpacing: '0.1em', textTransform: 'uppercase', textDecoration: 'none', display: 'inline-block',
@@ -63,13 +69,29 @@ function ResortCard({ resort, t }) {
     'Finland': '🇫🇮', 'Italy': '🇮🇹', 'Andorra': '🇦🇩', 'New Zealand': '🇳🇿', 'Bulgaria': '🇧🇬',
   };
   return (
-    <Link href={`/resort/${resort.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-      <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
-        borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#1c1a17',
-        border: '1px solid rgba(255,255,255,0.04)', transition: 'border-color 0.35s, transform 0.35s, box-shadow 0.35s',
-        borderColor: hover ? 'rgba(212,165,116,0.2)' : 'rgba(255,255,255,0.04)',
+    <Link href={`/resort/${resort.slug}`}
+      onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+      style={{
+        textDecoration: 'none', color: 'inherit', display: 'block', position: 'relative',
+        // Lyftet ligger på länken och inte på kortet, så att markeringen
+        // nedan följer med i stället för att bli kvar tre pixlar ned.
         transform: hover ? 'translateY(-3px)' : 'none',
-        boxShadow: hover ? '0 12px 36px rgba(0,0,0,0.32)' : 'none',
+        transition: 'transform 0.35s',
+      }}>
+      {/* Skuggan och den varma kanten tonas in med opacity i stället för att
+          övergå i box-shadow och border-color. De två går inte på grafik-
+          kortet utan tvingar en omritning av hela kortet under hela den
+          tredjedels sekund övergången varar. Utseendet är detsamma. */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none', borderRadius: 6,
+        border: '1px solid rgba(212,165,116,0.2)',
+        boxShadow: '0 12px 36px rgba(0,0,0,0.32)',
+        opacity: hover ? 1 : 0,
+        transition: 'opacity 0.35s',
+      }} />
+      <div style={{
+        borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#1c1a17',
+        border: '1px solid rgba(255,255,255,0.04)',
       }}>
         <div style={{ position: 'relative', height: 200, overflow: 'hidden', background: '#141210' }}>
           {/* 32 kort i full originalstorlek är sidans tyngsta post.
@@ -122,18 +144,28 @@ export default function HomeClient({ resorts }) {
   // Sentinel, inte den översatta etiketten — se lib/countries.js.
   const [country, setCountry] = useState(ALLA_LANDER);
   const [scrollY, setScrollY] = useState(0);
-  const [heroVisible, setHeroVisible] = useState(false);
+  const [inglidningKlar, setInglidningKlar] = useState(false);
+  const minskadRorelse = useMinskadRorelse();
+  // Hjälten väntar 200 ms på sin inglidning. Den som valt minskad rörelse
+  // ser ingen glidning och skulle bara få en tom hjältebild lika länge,
+  // så synligheten härleds i stället för att sättas i effekten nedan.
+  const heroVisible = inglidningKlar || minskadRorelse;
 
   useEffect(() => {
     // Menyns egen scrollyta ligger numera i SiteHeader. Här behövs bara
-    // positionen till hjältebildens parallax.
+    // positionen till hjältebildens parallax — och den ska inte räknas
+    // alls vid minskad rörelse.
+    if (minskadRorelse) return;
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', onScroll, { passive: true });
-    setTimeout(() => setHeroVisible(true), 200);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+    const visaHjalten = setTimeout(() => setInglidningKlar(true), 200);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      clearTimeout(visaHjalten);
+    };
+  }, [minskadRorelse]);
 
-  const parallaxY = scrollY * 0.3;
+  const parallaxY = minskadRorelse ? 0 : scrollY * 0.3;
   // Knapparna bär landets engelska värde men visar det svenska namnet,
   // så filtret jämför mot databasen och läsaren ser "Österrike".
   const countries = [
@@ -164,14 +196,14 @@ export default function HomeClient({ resorts }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.3) 0%, rgba(18,17,16,0.5) 40%, rgba(18,17,16,0.85) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
         <div style={{ position: 'relative', maxWidth: 750 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>{t.hero.tagline}</p>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(52px, 8vw, 100px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', marginBottom: 24, letterSpacing: '0.02em', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(26px)', transition: 'all 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>{t.hero.tagline}</p>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(52px, 8vw, 100px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', marginBottom: 24, letterSpacing: '0.02em', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(26px)', transition: 'opacity 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s, transform 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s' }}>
             {t.hero.title1}<br />{t.hero.title2}<br /><span style={{ color: '#D4A574' }}>{t.hero.title3}</span>
           </h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 300, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, marginBottom: 40, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(22px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 300, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, marginBottom: 40, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(22px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s' }}>
             {t.hero.description.replace('{count}', resorts.length)}
           </p>
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'all 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s' }}>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s' }}>
             <MagBtn href="#resorts" primary>{t.hero.browseResorts}</MagBtn>
             {PLANERAREN_SYNLIG && <MagBtn href="/plan">{t.hero.planTrip}</MagBtn>}
           </div>
@@ -197,7 +229,7 @@ export default function HomeClient({ resorts }) {
           <input type="text" placeholder={t.resorts.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 13, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
           <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
             {countries.map(c => (
-              <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.3)', transition: 'all 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
+              <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.3)', transition: 'background 0.2s, color 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
             ))}
           </div>
         </div>

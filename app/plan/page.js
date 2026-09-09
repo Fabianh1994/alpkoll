@@ -191,7 +191,7 @@ function PillGroup({ label, options, value, onChange, multi = false, maxSelect =
               background: isOn ? 'rgba(212,165,116,0.1)' : 'rgba(255,255,255,0.02)',
               color: isOn ? '#D4A574' : isDisabled ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.45)',
               cursor: isDisabled ? 'not-allowed' : 'pointer',
-              transition: 'all 0.18s',
+              transition: 'background 0.18s, border-color 0.18s, color 0.18s',
             }}>
               {multi && isOn && selected.indexOf(val) >= 0 && <span style={{ marginRight: 5, fontSize: 10 }}>{selected.indexOf(val) + 1}</span>}
               {opt.label !== undefined ? opt.label : opt}
@@ -302,7 +302,7 @@ export default function PlanPage() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 11, fontWeight: 600,
           color: active ? '#121110' : done ? T.accent : 'rgba(255,255,255,0.2)',
-          transition: 'all 0.3s',
+          transition: 'background 0.3s, color 0.3s',
         }}>{done ? '✓' : n}</div>
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.08em', textTransform: 'uppercase', color: active ? T.text : 'rgba(255,255,255,0.2)' }}>
           {t.plan.stepLabels[n]}
@@ -427,7 +427,7 @@ export default function PlanPage() {
                           background: isOn ? 'rgba(212,165,116,0.07)' : 'rgba(255,255,255,0.02)',
                           cursor: isDisabled ? 'not-allowed' : 'pointer',
                           opacity: isDisabled ? 0.3 : 1,
-                          position: 'relative', transition: 'all 0.18s', userSelect: 'none',
+                          position: 'relative', transition: 'background 0.18s, border-color 0.18s, opacity 0.18s', userSelect: 'none',
                         }}>
                           {isOn && (
                             <div style={{ position: 'absolute', top: 7, right: 9, width: 16, height: 16, borderRadius: '50%', background: T.accent, color: '#121110', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{rank + 1}</div>
@@ -509,7 +509,7 @@ export default function PlanPage() {
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {rankedResorts.map((resort, i) => (
-                  <div key={resort.slug} onClick={() => selectResort(resort)} style={{ background: T.card, borderRadius: 10, border: `1px solid ${i === 0 ? 'rgba(212,165,116,0.2)' : T.border}`, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', transition: 'all 0.2s' }}
+                  <div key={resort.slug} onClick={() => selectResort(resort)} style={{ background: T.card, borderRadius: 10, border: `1px solid ${i === 0 ? 'rgba(212,165,116,0.2)' : T.border}`, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 16, cursor: 'pointer', transition: 'background 0.2s, border-color 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(212,165,116,0.3)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={e => { e.currentTarget.style.borderColor = i === 0 ? 'rgba(212,165,116,0.2)' : T.border; e.currentTarget.style.transform = 'none'; }}
                   >

@@ -94,10 +94,20 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8 september:
+`main` är i fas med `origin/main`. Mergat 8–11 september:
 
 | PR | Vad |
 |---|---|
+| #45 | Delningsbilden på svenska med alpkoll.se, ritad ur kod |
+| #44 | Bildtexterna omskrivna (migration 026) |
+| #43 | Galleriets bilder laddar snabbare: cache i 31 dagar, färre bredder |
+| #42 | Bildgalleri och kreditering på ortsidan, `/bildkallor` (migration 025) |
+| #41 | Vanliga frågor på ortsidan |
+| #40 | Handoff 9 september |
+| #38, #39 | Kontrasten når WCAG AA |
+| #37 | Egen 404 på svenska |
+| #36 | Restiden hemifrån, mätt för trettio orter |
+| #35 | Sidfoten bär innehållssidorna |
 | #34 | Sportlovssidan, och copyn där sajten talar om sig själv |
 | #33 | Rörelsen respekterar systeminställningen; transition: all borta |
 | #30 | Geilo omkontrollerad i september — priset finns inte än |
@@ -231,9 +241,7 @@ snödjup, namngivna backar och liftar ("väggen sälen", "la gondola åre") och 
 Två följdändringar. Snälltågets svenska linjer i `lib/restider.js` har fått `ort` och `slut`,
 och `linjeFor` slutar returnera linjen efter sista trafikdagen. Uträkningen per skiddag
 flyttade till `perSkiddag` i `lib/pris.js`, så att `/liftkortspriser` och ortsidan inte kan
-räkna olika — kolumnen visar samma tal som före flytten.
-
-**Ingen migration.** Inget behöver köras i Supabase.
+räkna olika — kolumnen visar samma tal som före flytten. FAQ:n rörde ingen migration.
 
 **Ortsidan har ett bildgalleri (migration 025, körd och verifierad).** Fabian valde
 hjältebild och galleri för alla orter bland 610 fria kandidater från Wikimedia Commons och
@@ -270,7 +278,39 @@ hämtning räknades om, med `age=0`. Tre orsaker: Next sparar en optimerad bild 
 timmar som standard, retinaskärmar begärde hjälte och förstoring i 3840 px (200–900 kB),
 och förstoringen stod svart tills den stora bilden kom. Rättat med `minimumCacheTTL` på
 31 dagar, `deviceSizes` utan 2048 och 3840, sizes som motsvarar den bredd bilderna
-faktiskt visas i, och en förstoring som visar rutans redan hämtade bild direkt.
+faktiskt visas i, och en förstoring som visar rutans redan hämtade bild direkt (#43).
+
+Efter deployen värmdes cachen: alla bilder hämtades i de bredder webbläsare väljer — 828,
+1200, 1920 och 2560 för hjältebilden, 640, 750, 1080, 1200 och 1920 för galleriet. 721
+hämtningar utan fel, i snitt 653 ms styck, vilket är vad den första besökaren annars hade
+väntat. Mätt igen efteråt på Tignes, Hemsedal och Zermatt: `HIT` på alla 48 hämtningar,
+median 19 ms, långsammast 58 ms. Några poster bär fortfarande `max-age=14400` eftersom de
+cachades före deployen; de räknas om en gång och får sedan 31 dagar.
+
+**Bildtexterna omskrivna (#44, migration 026, körd och verifierad).** Texterna från 025
+visas som bildtext i förstoringen och på `/bildkallor`, och Fabian sa rakt ut att ingen
+människa skriver så. Han hade rätt: nästan alla följde mallen ort, ljus eller väder, "med X
+och Y bakom", och staplade samma ord — snöklädda toppar, snötyngd, orörd, vinterskrud. De
+nya är korta och bär platsnamnet där källan har ett: "Val Thorens från Boismint en
+januarimorgon", "Solterrassen på Idalp", "Toppstationen för E8-an på Hundfjället".
+Platsnamnen kom ur Commons filnamn och beskrivningar och ur Unsplash-fotografens egen
+platsangivelse. Snittlängd 56 → 31 tecken. Gamla texter står som kommentar i 026.
+
+Värt att känna igen nästa gång en text skrivs i mängd: samma meningsbyggnad rad efter rad,
+stämningsadjektiv i stället för namn, och en bildtext som beskriver ljuset när den kunde
+säga var bilden är tagen.
+
+**Delningsbilden var engelsk (#45).** När Fabian skickade alpkoll.se till vänner stod
+förhandsvisningen på engelska med alpkoll.com. Taggarna — `og:title`, `og:url`,
+`og:locale` — var svenska sedan länge; det var bilden `og-image.png` som hade "Compare ski
+resorts. Plan your trip." och alpkoll.com inritat. Checklistan 9 september godkände den
+eftersom den kontrollerade att bilden fanns och var 1200×630, inte vad den föreställde.
+
+Nu ritas bilden ur kod i `app/og-image.png/route.js` med Bebas Neue och Barlow, på samma
+adress, och byggs statiskt vid deploy. Kontrollerat live: 42 390 byte, den nya bilden.
+Chattappar sparar förhandsvisningar länge — en länk som redan delats kan visa den gamla ett
+tag. Messenger uppdateras via Facebooks Sharing Debugger; för iMessage och WhatsApp räknas
+`alpkoll.se/?` som en ny länk.
 
 ## Vad som väntar
 
@@ -281,8 +321,10 @@ analytics, meta, social share, favicon, canonical, cookie consent, mobil, tillg�
 formulär, brutna länkar och prestanda.
 
 **Klart och kontrollerat:** robots pekar rätt, sitemapens 65 adresser svarar alla 200,
-9 av 9 bilder har alt, alla sidor har titel, beskrivning och canonical, og- och
-twitter-taggar finns med bild i 1200×630, favicon i fem format, analytics kör.
+9 av 9 bilder har alt (sedan 11 september har även galleriets 150 bilder det), alla sidor
+har titel, beskrivning och canonical, og- och twitter-taggar finns med bild i 1200×630,
+favicon i fem format, analytics kör. **Delningsbilden var dock engelsk** — kontrollen såg
+att den fanns, inte vad den visade. Rättad 11 september, se ovan.
 **Noll brutna länkar** av 86 interna och 9 externa.
 
 **Cookie consent behövs inte.** Sajten sätter noll cookies och noll localStorage — mätt i
@@ -406,10 +448,16 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 24 filer i `supabase/migrations/`, alla körda och verifierade till och med
-**024**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
-den räcker för att läsa hela `resorts` och `lift_pass_prices`, vilket är hur granskningarna
-görs.
+**Migrationer:** 26 filer i `supabase/migrations/`, alla körda och verifierade till och med
+**026**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
+hur granskningarna görs.
+
+**Bildcachen värms efter varje ändring av bilder eller bildinställningar.** Vercel räknar om
+en bild första gången en viss bredd begärs, och det tar 0,5–1,3 s. Hämta
+`/_next/image?url=<kodad adress>&w=<bredd>&q=75` för varje bild i de bredder som står i
+avsnittet om 11 september, efter deployen — gjort före deployen sparas resultatet med de
+gamla inställningarna. Bredderna måste finnas i `deviceSizes` i `next.config.mjs`.
 
 **En migration i repot är inte en körd migration.** 023 låg okörd i åtta dagar medan koden
 som förutsatte den var live, och Ischgl-sidan sade emot sig själv under tiden. Git bevarar
@@ -494,6 +542,16 @@ låg i DOM:en, var synligt och 153 pixlar högt. Kontrollera med `fetch` av adre
 finns inte" är den som ska misstänkas först — samma sak gäller skalkommandon: en
 kontrollslinga rapporterade 8 september att sju ortsidor fortfarande visade priser, och
 felet låg i testet, inte på sidorna.
+
+**Skärmdumpar i Chrome på retinaskärm kan fånga bara ett hörn av sidan.** 11 september, med
+`devicePixelRatio` 2, gav `screenshot` övre vänstra delen uppförstorad. `zoom` med hela
+fönstret som region gav rätt bild. Skärmdumpar tog också ibland för lång tid och avbröts;
+DOM:en går att läsa ändå.
+
+**En dold Chrome-flik laddar inga lata bilder.** `document.visibilityState` var `hidden`,
+och galleriets `loading="lazy"`-bilder hämtades aldrig trots scroll. Laddningstider går då
+inte att mäta i webbläsaren; mät adresserna direkt med `fetch` och de bredder en webbläsare
+skulle välja.
 
 **Kör inte `next build` medan `next dev` är igång** — de delar `.next`, och dev-servern
 började servera gammal utdata efteråt. Bygget hade rätt, dev-servern fel. Läs byggets egen

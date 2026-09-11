@@ -18,6 +18,9 @@ import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 import { vanligaFragor } from '../../../lib/vanligaFragor'
+import { getOrtbilder } from '../../../lib/ortbilder'
+import { kreditering } from '../../../lib/kreditering'
+import Bildgalleri from './Bildgalleri'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -120,6 +123,14 @@ export default async function ResortPage({ params }) {
   // placering som faktiskt konverterar.
   const heroImageUrl = resort.image_url
     || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'
+
+  // Bilderna ur resort_images: position 0 är hjältebilden, resten galleriet.
+  // Migration 025 satte image_url till samma adress som position 0, men
+  // krediteringen läggs bara på hjältebilden när adresserna faktiskt är
+  // desamma — annars hade en fotograf kunnat stå under någon annans bild.
+  const bilder = await getOrtbilder(resort.slug)
+  const hjalte = bilder[0]?.position === 0 && bilder[0].url === resort.image_url ? bilder[0] : null
+  const galleri = bilder.filter((b) => b.position > 0)
 
   const bookingDestination = resort.accommodation_zone || resort.name
   const bookingHrefMobile = bookingUrl(bookingDestination, { lang, label: `resort-mobile-${resort.slug}` })
@@ -272,7 +283,7 @@ export default async function ResortPage({ params }) {
     name: resort.name,
     description: resort.notes || undefined,
     url: `${SITE_URL}/resort/${resort.slug}`,
-    image: resort.image_url || undefined,
+    image: bilder.length ? bilder.map((b) => b.url) : resort.image_url || undefined,
     sameAs: resort.resort_url || undefined,
     address: {
       '@type': 'PostalAddress',
@@ -374,7 +385,7 @@ export default async function ResortPage({ params }) {
         {farOptimeras(heroImageUrl) ? (
           <Image
             src={heroImageUrl}
-            alt={resort.name}
+            alt={hjalte?.alt || resort.name}
             fill
             priority
             sizes="100vw"
@@ -383,7 +394,7 @@ export default async function ResortPage({ params }) {
         ) : (
           <img
             src={heroImageUrl}
-            alt={resort.name}
+            alt={hjalte?.alt || resort.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
           />
         )}
@@ -393,6 +404,15 @@ export default async function ResortPage({ params }) {
         <div style={{ position: 'absolute', top: 80, left: 'clamp(24px, 4vw, 64px)' }}>
           <Link href="/" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.5)', textDecoration: 'none', letterSpacing: '0.08em', textTransform: 'uppercase' }}>← Alla skidorter</Link>
         </div>
+
+        {/* Hjältebildens kreditering, uppe till höger där den inte krockar
+            med sifferrutorna. Licenser som CC BY kräver att fotografen
+            namnges där bilden visas. */}
+        {hjalte && (
+          <a href={hjalte.source_page} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', top: 84, right: 'clamp(24px, 4vw, 64px)', maxWidth: '45%', textAlign: 'right', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)', textDecoration: 'none', textShadow: '0 1px 6px rgba(0,0,0,0.6)' }}>
+            {kreditering(hjalte)}
+          </a>
+        )}
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 clamp(24px, 4vw, 64px) 48px' }}>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{resort.region} · {land(resort.country)}</p>
@@ -446,6 +466,11 @@ export default async function ResortPage({ params }) {
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.6)', lineHeight: 1.7, margin: 0 }}>{resort.notes}</p>
               </div>
             )}
+
+            {/* ── Bilder ──
+                Direkt efter beskrivningen: det är där känslan av platsen
+                hör hemma, före siffrorna. Se Bildgalleri.js. */}
+            <Bildgalleri bilder={galleri} ortnamn={resort.name} />
 
             {/* Snow & conditions */}
             <div style={{ marginBottom: 48 }}>

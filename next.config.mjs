@@ -18,12 +18,11 @@ const nextConfig = {
   },
 
   images: {
-    // Bara källor vi får använda. Fyra ortbilder hotlänkas i dag från
-    // andra företags servrar — igluski.com, snowfinders.co.uk,
-    // skiresort.info och en squarespace-sajt. De står medvetet INTE här:
-    // att optimera dem skulle innebära att Alpkoll serverar kopior från
-    // sin egen domän, vilket är sämre än att bara länka. De renderas som
-    // vanliga img-taggar tills bilderna byts ut. Se lib/images.js.
+    // Bara källor vi får använda. Myrkdalens bild hotlänkas fortfarande
+    // från skiresort.info och står medvetet INTE här: att optimera den
+    // skulle innebära att Alpkoll serverar en kopia från sin egen domän,
+    // vilket är sämre än att bara länka. Se lib/images.js. Bilderna i
+    // resort_images (migration 025) kommer alla från de två första nedan.
     remotePatterns: [
       {
         protocol: 'https',

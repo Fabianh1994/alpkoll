@@ -235,6 +235,35 @@ räkna olika — kolumnen visar samma tal som före flytten.
 
 **Ingen migration.** Inget behöver köras i Supabase.
 
+**Ortsidan har ett bildgalleri (migration 025, körd och verifierad).** Fabian valde
+hjältebild och galleri för alla orter bland 610 fria kandidater från Wikimedia Commons och
+Unsplash, i artefakten "Alpkoll bildurval". 150 bilder ligger i `resort_images`, en rad per
+bild med källa, licens, fotograf och alt-text, varav 39 kräver kreditering. `image_url`
+följer radens position 0, så startsidan, jämförelserna och ortsidan visar samma
+hjältebild. Uppmätt med anon-nyckeln: 150 rader, `image_url` stämmer för alla 29 orter som
+har rader, och ingen rad som kräver kreditering saknar fotograf eller licenslänk.
+
+Galleriet står efter beskrivningen: en stor bild och upp till fyra små på desktop, en
+svepbar rad under 700 px, och förstoring med fotograf, licens och källa. Hjältebilden
+krediteras uppe till höger. `/bildkallor` listar alla bilder och är länkad från sidfoten —
+det täcker startsidans kort, där ingen bildtext får plats. Sidan står som noindex.
+
+Trysil och Riksgränsen har inget galleri men behåller sin bild, nu med licens och
+fotograf. Myrkdalen har ingen rad; se nedan.
+
+**Tre saker som kostade tid och är värda att veta:**
+
+*Wikimedias API lägger `?utm_source=...` på bildadresserna.* Inbyggt i en tumnagelsökväg
+ger det 400. Ta bort frågesträngen först.
+
+*Tumnaglar finns bara i standardbredder.* 1920 och 3840 fungerar, 2560 ger 400, och 3840
+stryps med 429 när Wikimedia måste skapa den. Adresserna i tabellen är 1920. Går enstaka
+Commons-bilder bort i drift är nästa steg egen lagring, inte en annan bredd.
+
+*Unsplash sökgränssnitt svarar 401 på skript* men fungerar när anropet görs från
+unsplash.com i webbläsaren. Fotografens platsangivelse är deras egen och kontrollerades
+bara mot avståndet till orten — en bild märkt Abisko föll bort på den kontrollen.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -346,24 +375,11 @@ research, inte kod.
 
 ### Väntar på ditt beslut
 
-**Bilderna.** Två skilda problem, båda mätta 8 september.
-
-*Fyra bilder ligger på andra företags servrar* — Voss hos content.igluski.com, Geilo hos
-snowfinders.co.uk, Myrkdalen hos skiresort.info, Grandvalira hos squarespace-cdn.com. Alla
-fyra svarar och visas i dag. Problemet är att vi saknar rätt att använda dem och att de
-företagen betalar bandbredden. `lib/images.js` vägrar optimera dem, så Alpkoll serverar
-aldrig en kopia — det är en dämpning, inte en lösning.
-
-*Krediteringen saknas.* 26 av 30 orter använder Wikimedia. Licensfördelningen: 14 CC BY-SA,
-5 CC BY, 1 GFDL — alltså **20 som kräver att fotografen namnges** — mot 4 Public domain,
-1 CC0 och 1 "Copyrighted free use" som inte gör det.
-
-Att i stället byta till kreditfria bilder låter billigare än det är: Commons-sökningar för
-de fyra hotlänkade gav bara en användbar Public domain-bild (Geilo, från
-Nasjonalbiblioteket), och **Myrkdalen finns inte på Commons alls**. Rekommendationen är att
-bygga krediteringen — ett fält plus ett block, en gång — och därmed få tillgång till hela
-Commons i stället för en bråkdel. **Verbiers bild ligger på GFDL och bör bytas oavsett**,
-eftersom licensen kräver att hela licenstexten följer med.
+**Bilderna — lösta 11 september, utom Myrkdalen.** Hotlänkningen, den saknade
+krediteringen och Verbiers GFDL-bild är borta; se ovan. Myrkdalens hjältebild är
+fortfarande hotlänkad från skiresort.info och saknar belagd licens. Det finns inga
+vinterbilder av orten på vare sig Commons eller Unsplash, så nästa steg är ortens egen
+pressbank eller Fjord Norway — med villkoren lästa innan något används.
 
 **Mobilmenyn** är en flikrad med tre ikoner — Skidorter, Jämför, Om oss. Där saknas både
 Nattåget och Liftkortspriser. En fjärde flik är ett designval, inte en rättning.

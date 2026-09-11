@@ -17,6 +17,7 @@ import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/na
 import { restid } from '../../../lib/travel'
 import { land } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
+import { vanligaFragor } from '../../../lib/vanligaFragor'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -202,6 +203,10 @@ export default async function ResortPage({ params }) {
   // påstående om ett tåg som inte går — se lib/nattaget.js.
   const nattag = sasongenSlut() ? null : nattagFor(resort.slug)
 
+  // Frågorna som når sidan i Search Console, besvarade ur samma fält som
+  // sifferrutorna — se lib/vanligaFragor.js.
+  const fragor = vanligaFragor(resort, allaOrter, kurser)
+
   const scores = [
     // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
     // pengarna tillbaka om snön uteblir. Poängen är en bedömning av
@@ -297,6 +302,20 @@ export default async function ResortPage({ params }) {
     makesOffer: erbjudanden.length ? erbjudanden : undefined,
   }
 
+  // Frågorna i maskinläsbar form, med exakt samma svarstext som syns på
+  // sidan. Länkarna står bara i den synliga versionen.
+  const fragorLd = fragor.length
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: fragor.map((f) => ({
+          '@type': 'Question',
+          name: f.fraga,
+          acceptedAnswer: { '@type': 'Answer', text: f.svar },
+        })),
+      }
+    : null
+
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
 
@@ -304,6 +323,12 @@ export default async function ResortPage({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      {fragorLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(fragorLd) }}
+        />
+      )}
 
       <style>{`
         .resort-grid {
@@ -730,6 +755,30 @@ export default async function ResortPage({ params }) {
                 </div>
               </div>
             </div>
+
+            {/* ── Vanliga frågor ──
+                Direkt efter priserna, eftersom prisfrågan är den som söks
+                mest. Utfällda och inte hopfällda: svaret är det besökaren
+                kom för, och en fråga man måste klicka på för att läsa
+                svaret är en omväg. */}
+            {fragor.length > 0 && (
+              <div style={{ marginBottom: 48 }}>
+                <h2 style={sectionTitle}>Vanliga frågor om {resort.name}</h2>
+                <div style={{ ...card, padding: '0 24px' }}>
+                  {fragor.map((f, i) => (
+                    <div key={f.fraga} style={{ padding: '20px 0', borderTop: i === 0 ? 'none' : '1px solid rgba(255,255,255,0.06)' }}>
+                      <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: '#f0ece4', lineHeight: 1.4, margin: '0 0 8px' }}>
+                        {f.fraga}
+                      </h3>
+                      <p style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: 'rgba(255,255,255,0.62)', lineHeight: 1.7, margin: 0 }}>
+                        {f.svar}
+                        {f.lank ? <>{' '}<Link href={f.lank.href} style={{ color: '#D4A574', textDecoration: 'none' }}>{f.lank.text}</Link></> : null}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* ── Jämförelser ──
                 Ortsidan var en återvändsgränd: ingen väg härifrån till

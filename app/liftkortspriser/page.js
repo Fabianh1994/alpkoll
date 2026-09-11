@@ -4,7 +4,7 @@ import SiteFooter from '../SiteFooter'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { pris, kronorTal } from '../../lib/pris'
+import { pris, kronorTal, perSkiddag } from '../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../lib/valuta'
 import { DEFINITION, VERIFIERADE, UTAN_PRIS, harPris } from '../../lib/liftkortspriser'
 
@@ -57,7 +57,7 @@ export default async function Liftkortspriser() {
         meta: VERIFIERADE[ort.slug],
         pris: pris(ort.lift_pass_week_eur, valuta, kurser),
         tal,
-        perDag: tal === null ? null : Math.round(tal / 6 / 10) * 10,
+        perDag: perSkiddag(tal),
       }
     })
     .filter((r) => r.pris && Number.isFinite(r.tal))

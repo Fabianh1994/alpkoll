@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e och 11:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -209,6 +209,32 @@ ljusare bakgrund. Stegen under lyftes men behöll sin ordning, så hierarkin fin
 är mindre brant. Bara textfärg ändrades — kanter och bakgrunder på 0,02 till 0,08 bär inget
 innehåll och står kvar. Uppmätt över tolv sidor: 1 274 element, noll under kravet.
 
+## Vad som gjordes 11 september
+
+**Ortsidan har vanliga frågor.** Fyra per ort: pris, fallhöjd, resan dit och höjd över
+havet. Frågorna är valda ur Search Console, inte påhittade. Hämtat direkt i Search Console
+11 september, tre månader bakåt: till `/resort/salen` gick 104 exponeringar på prisfrågor,
+49 på fallhöjd och 32 på Stockholmsfrågor, i snitt på position 18 till 28 och utan ett
+klick. Samma ämnen bär Hemsedal, Åre, Trysil och St. Anton. Sajten totalt: 1 540
+exponeringar, 7 klick, snittposition 23,3.
+
+**Svaret på Stockholmsfrågan fanns redan, på fel sida.** De uppmätta bilrestiderna i
+`lib/restider.js` användes bara på `/sportlov`. Sälens ortsida, dit Google skickade
+"sälen stockholm", visade flygplatsen.
+
+Svaren härleds ur datan i `lib/vanligaFragor.js`, och ingen text skrivs per ort. Rangordningen
+sker inom landet när det har minst tre orter, annars inom Norden respektive resten. Frågorna
+ligger även som `FAQPage` i strukturerad data med exakt den text som syns — kontrollerat för
+sex orter. Om Google visar dem som utdrag är inte kontrollerat. Sökt men medvetet utelämnat:
+snödjup, namngivna backar och liftar ("väggen sälen", "la gondola åre") och säsongsstart.
+
+Två följdändringar. Snälltågets svenska linjer i `lib/restider.js` har fått `ort` och `slut`,
+och `linjeFor` slutar returnera linjen efter sista trafikdagen. Uträkningen per skiddag
+flyttade till `perSkiddag` i `lib/pris.js`, så att `/liftkortspriser` och ortsidan inte kan
+räkna olika — kolumnen visar samma tal som före flytten.
+
+**Ingen migration.** Inget behöver köras i Supabase.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -226,13 +252,12 @@ twitter-taggar finns med bild i 1200×630, favicon i fem format, analytics kör.
 webbläsaren, inte antaget. Vercel Analytics är cookielöst. Skulle något ändras är det den
 mätningen som ska göras om först.
 
-**Två punkter kvar, båda små:**
+**En punkt kvar, liten:**
 
 *Sportlovssidan har bara h1 och inga h2.* Blocken är div-rubriker med etikett. Övriga sidor
 har rätt struktur.
 
-*Ingen FAQ.* Prisfrågor står för de flesta sökningarna utan att ha strukturerade svar.
-Om den byggs: den ska svara på det som faktiskt söks, inte på påhittade frågor.
+FAQ-punkten är avklarad 11 september, se ovan.
 
 **Falsklarm värda att känna igen:** snalltaget.se ger 403 på HEAD utan user-agent men 200
 på GET — länken är hel. Och sidor med HTML-entiteter (&#xD6;sterrike) hittas inte av en
@@ -405,6 +430,13 @@ bättre".
 **Läs Coverage-exporten före drilldownen i Search Console.** Drilldownen visar bara den
 värsta hinken; att läsa den som hela sajten ger slutsatsen att Google aldrig hämtat något,
 vilket är fel.
+
+**Search Console går att läsa direkt via Claude i Chrome**, utan export. Filtren står i
+adressen: `&query=*pris` betyder "frågan innehåller pris" (chipet visar "+pris"),
+`&page=*%2Fresort%2Fsalen` detsamma för sidan, och `&breakdown=query` eller `page` byter
+tabell. Sätt "Rader per sida" till 500 och läs raderna med JavaScript i bitar om 65 —
+ett långt svar kapas. Tillägget kan vara installerat utan att vara anslutet; ett nytt
+försök räckte 11 september.
 
 **skiresort.info heter skiresort.com sedan sommaren 2026.** Gamla djuplänkar leder till
 startsidan i stället för att ge 404, så en hämtning ser ut att lyckas medan den ger fel

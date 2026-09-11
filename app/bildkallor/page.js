@@ -37,8 +37,6 @@ export default async function Bildkallor() {
     .map((o) => ({ ort: o, bilder: bilder.filter((b) => b.resort_slug === o.slug) }))
     .filter((x) => x.bilder.length > 0)
 
-  const antalKredit = bilder.filter((b) => b.attribution_required).length
-
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
       <SiteHeader />
@@ -49,9 +47,8 @@ export default async function Bildkallor() {
             Bildkällor
           </h1>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 15, lineHeight: 1.75, color: 'rgba(255,255,255,0.65)', margin: '0 0 44px', maxWidth: 640 }}>
-            Bilderna på Alpkoll kommer från Wikimedia Commons och Unsplash. {bilder.length} bilder,
-            varav {antalKredit} under licenser som kräver att fotografen namnges. Här står fotograf,
-            licens och källa för varje bild, ort för ort.
+            Alla bilder på Alpkoll kommer från Wikimedia Commons eller Unsplash. Här står vem som
+            tog dem, under vilken licens, och var originalet finns.
           </p>
 
           {perOrt.map(({ ort, bilder: lista }) => (

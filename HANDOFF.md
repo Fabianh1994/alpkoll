@@ -264,6 +264,14 @@ Commons-bilder bort i drift är nästa steg egen lagring, inte en annan bredd.
 unsplash.com i webbläsaren. Fotografens platsangivelse är deras egen och kontrollerades
 bara mot avståndet till orten — en bild märkt Abisko föll bort på den kontrollen.
 
+**Bilderna laddade långsamt direkt efter lanseringen.** Uppmätt på alpkoll.se: 0,35–1,3 s
+per bild när Vercel räknade om den, 0,2–0,5 s när den redan fanns — och nästan varje
+hämtning räknades om, med `age=0`. Tre orsaker: Next sparar en optimerad bild i fyra
+timmar som standard, retinaskärmar begärde hjälte och förstoring i 3840 px (200–900 kB),
+och förstoringen stod svart tills den stora bilden kom. Rättat med `minimumCacheTTL` på
+31 dagar, `deviceSizes` utan 2048 och 3840, sizes som motsvarar den bredd bilderna
+faktiskt visas i, och en förstoring som visar rutans redan hämtade bild direkt.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning

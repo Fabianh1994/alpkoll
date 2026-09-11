@@ -18,11 +18,24 @@ import { kreditering } from '../../../lib/kreditering'
 
 const ACCENT = '#D4A574'
 
+// Bredden bilderna faktiskt visas i, så att webbläsaren inte hämtar mer än
+// den ritar. Den stora rutan är 316 px och de små 160 px i vänsterspalten på
+// 652 px; sizes sade förut 520 och 260, vilket gav 1080 och 640 px breda
+// bilder på en retinaskärm.
+const STOR_RUTA = '(max-width: 700px) 84vw, 330px'
+const LITEN_RUTA = '(max-width: 700px) 84vw, 170px'
+
+// Förstoringen begränsas av höjden, 76vh: på en laptop blir bilden runt 870 px
+// bred. sizes sade förut 94vw, vilket gav 3840 px — upp till 900 kB per klick.
+const FORSTORING = '(max-width: 960px) 94vw, 900px'
+
 export default function Bildgalleri({ bilder, ortnamn }) {
   const [oppen, setOppen] = useState(null)
+  const [skarp, setSkarp] = useState(false)
   const dialog = useRef(null)
 
   const visa = useCallback((index) => {
+    setSkarp(false)
     setOppen(index)
     dialog.current?.showModal()
   }, [])
@@ -32,6 +45,7 @@ export default function Bildgalleri({ bilder, ortnamn }) {
   }, [])
 
   const bladdra = useCallback((steg) => {
+    setSkarp(false)
     setOppen((i) => (i === null ? i : (i + steg + bilder.length) % bilder.length))
   }, [bilder.length])
 
@@ -55,6 +69,12 @@ export default function Bildgalleri({ bilder, ortnamn }) {
 
   const aktuell = oppen === null ? null : bilder[oppen]
   const antal = Math.min(bilder.length, 5)
+  const rutstorlek = (i) => (i === 0 ? STOR_RUTA : LITEN_RUTA)
+
+  // Grannbilderna i förstoringen, så att pilarna visar en färdig bild.
+  const grannar = oppen === null || bilder.length < 2
+    ? []
+    : [...new Set([(oppen + 1) % bilder.length, (oppen - 1 + bilder.length) % bilder.length])].filter((i) => i !== oppen)
 
   // Krediteringen under mosaiken: varje fotograf en gång, med licensen där
   // den är ett villkor. Samma uppgifter står i förstoringen och på /bildkallor.
@@ -103,6 +123,7 @@ export default function Bildgalleri({ bilder, ortnamn }) {
           border: 0; border-radius: 10px; background: #121110; color: #f0ece4;
         }
         .ortgalleri-dialog::backdrop { background: rgba(8,7,6,0.88); }
+        .ortgalleri-skarp { transition: opacity 0.25s ease; }
         .ortgalleri-knapp {
           font-family: var(--font-body); font-size: 13px; font-weight: 600; color: #f0ece4;
           background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
@@ -129,7 +150,7 @@ export default function Bildgalleri({ bilder, ortnamn }) {
               src={b.url}
               alt={b.alt}
               fill
-              sizes={i === 0 ? '(max-width: 700px) 84vw, 520px' : '(max-width: 700px) 84vw, 260px'}
+              sizes={rutstorlek(i)}
               style={{ objectFit: 'cover' }}
             />
           </button>
@@ -145,15 +166,40 @@ export default function Bildgalleri({ bilder, ortnamn }) {
         {aktuell && (
           <figure style={{ margin: 0 }}>
             <div style={{ position: 'relative', width: '100%', height: 'min(76vh, 900px)', background: '#0b0a09' }}>
+              {/* Rutans bild först, med exakt samma adress som i mosaiken — den
+                  ligger redan i webbläsarens cache och syns direkt. Den skarpa
+                  versionen tonas in ovanpå när den är hämtad, i stället för att
+                  förstoringen står svart under tiden. */}
+              {oppen < 5 && (
+                <Image
+                  key={`ruta-${aktuell.id}`}
+                  src={aktuell.url}
+                  alt=""
+                  aria-hidden
+                  fill
+                  sizes={rutstorlek(oppen)}
+                  style={{ objectFit: 'contain', filter: skarp ? 'none' : 'blur(2px)' }}
+                />
+              )}
               <Image
                 key={aktuell.id}
+                className="ortgalleri-skarp"
                 src={aktuell.url}
                 alt={aktuell.alt}
                 fill
-                sizes="94vw"
-                style={{ objectFit: 'contain' }}
+                sizes={FORSTORING}
+                onLoad={() => setSkarp(true)}
+                style={{ objectFit: 'contain', opacity: skarp ? 1 : 0 }}
               />
             </div>
+
+            {/* Grannbilderna hämtas i förväg i förstoringens storlek. */}
+            <div aria-hidden style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', opacity: 0, pointerEvents: 'none' }}>
+              {grannar.map((i) => (
+                <Image key={`granne-${bilder[i].id}`} src={bilder[i].url} alt="" width={900} height={600} sizes={FORSTORING} loading="eager" fetchPriority="low" />
+              ))}
+            </div>
+
             <figcaption style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: '10px 20px', padding: '14px 18px' }}>
               <div style={{ minWidth: 0, flex: '1 1 320px' }}>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#f0ece4', margin: '0 0 4px', lineHeight: 1.5 }}>{aktuell.alt}</p>

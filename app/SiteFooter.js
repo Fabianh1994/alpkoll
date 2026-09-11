@@ -28,6 +28,10 @@ const LANKAR = [
   { href: '/privacy', label: 'Integritetspolicy' },
   { href: '/terms', label: 'Användarvillkor' },
   { href: '/affiliate-disclosure', label: 'Affiliateinformation' },
+  // Krediteringen för bilder med Creative Commons-licens. Hjältebilden syns
+  // på startsidans kort där ingen bildtext får plats, så länken står här,
+  // på varje sida. Se app/bildkallor/page.js.
+  { href: '/bildkallor', label: 'Bildkällor' },
 ];
 
 export default function SiteFooter() {

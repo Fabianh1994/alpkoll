@@ -42,6 +42,8 @@ Palett: `#121110` bakgrund, `#1c1a17` kort, `#D4A574` accent, `#f0ece4` text. Ty
 
 **Datan hämtas på servern.** `lib/resorts.js` filtrerar på `published` på ett ställe, så startsida, ortsidor, planerare och sitemap inte kan visa olika urval.
 
-**Bilder optimeras bara när vi får kopiera dem** — se `lib/images.js`. Fyra ortbilder hotlänkas från andra företag och ska bytas.
+**Bilder optimeras bara när vi får kopiera dem** — se `lib/images.js`. Myrkdalens bild hotlänkas från skiresort.info och ska bytas.
+
+**Varje ortbild har licens och fotograf.** Bilderna ligger i `resort_images`, en rad per bild; position 0 är hjältebilden och `resorts.image_url` följer den. En ny bild utan känd licens läggs inte in — krediteringen på ortsidan och `/bildkallor` förutsätter att raden är komplett.
 
 Utgående partnerlänkar har `rel="sponsored"` och byggs i `lib/booking.js`, som är overksam tills `NEXT_PUBLIC_BOOKING_AID` är satt.

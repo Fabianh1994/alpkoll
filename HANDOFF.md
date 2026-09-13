@@ -317,8 +317,8 @@ tag. Messenger uppdateras via Facebooks Sharing Debugger; för iMessage och What
 **SJ:s nattåg till Åre står på sajten.** Trafikverket meddelade 9 september att SJ:s nattåg
 Stockholm–Duved är upphandlat 13 december 2026 till 13 juni 2027, med ett tåg i varje riktning
 per dygn. Linjen ligger i `TAGLINJER` i `lib/restider.js`, bredvid Snälltågets, och visas på
-Åres ortsida under "Ta sig dit" och i frågan om resan, på `/are-eller-alperna` och på
-`/sportlov`. Den faller bort efter 13 juni 2027, och beskedet om biljettsläppet efter 31 oktober.
+Åres ortsida under "Ta sig dit" och i frågan om resan, på `/are-eller-alperna`, på
+jämförelsesidorna och på `/sportlov`. Den faller bort efter 13 juni 2027, och beskedet om biljettsläppet efter 31 oktober.
 
 **Åre hade två nattåg som beskrevs som ett.** `transport_info` sade att nattåget tar sju timmar
 och syftade på SJ. Svaret om resan lade Snälltågets tider direkt efter: fyra dagar i veckan,

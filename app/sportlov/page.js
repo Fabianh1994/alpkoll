@@ -96,6 +96,11 @@ function Veckan({ v, tagetGar }) {
   // mot veckonummer, så att en ändrad tidtabell flyttar svaret själv.
   const skidvecka = skidveckan(v.nr)
   const salen = TAGLINJER.find((t) => t.id === 'salen-mora')
+  const snall = TAGLINJER.find((t) => t.id === 'fjallen-jamtland')
+  // SJ:s klockslag visas bara när de gäller vintern. Höstens tider har ett
+  // slutdatum i december och säger ingenting om ett tåg i februari.
+  const sj = TAGLINJER.find((t) => t.id === 'sj-jamtland')
+  const sjAvgang = sj && !sj.tiderGallerTill ? sj.fran.find((f) => f.stad === 'Stockholm')?.avgang : null
   const salenViaGoteborg = Boolean(
     skidvecka
     && salen?.viaGoteborgUt.includes(skidvecka.start)
@@ -253,9 +258,13 @@ function Veckan({ v, tagetGar }) {
           Stockholm ser det helt annorlunda ut: dit är Sälen sex timmar och Alperna
           över tjugo.
         </p>
+        {/* Åre har två nattåg från Stockholm. Linjerna hämtas per id och inte
+            per plats i listan: meningen läste förut TAGLINJER[0], som slutade
+            vara Snälltåget när SJ lades först. */}
         <p style={{ ...brod, fontSize: 14.5, margin: '14px 0 0' }}>
-          Med tåg går Snälltåget till Åre {TAGLINJER[0].dagar}, från Stockholm{' '}
-          {TAGLINJER[0].fran[0].avgang} och framme {TAGLINJER[0].framme.split(',')[0]}.
+          Till Åre går två nattåg från Stockholm. SJ kör varje dag
+          {sjAvgang ? `, med avgång ${sjAvgang}` : ', men har inte publicerat vinterns tider än'}.
+          Snälltåget kör {snall.dagar}, med avgång {snall.fran[0].avgang} och framme {snall.framme.split(',')[0]}.
           Till Sälen går det på lördagar via Mora, med buss sista biten.
           {salenViaGoteborg && ' Den här veckan går det via Göteborg både ut och hem.'}
         </p>

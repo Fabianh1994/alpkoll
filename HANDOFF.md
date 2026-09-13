@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e och 11:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e och 13:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -312,6 +312,33 @@ Chattappar sparar förhandsvisningar länge — en länk som redan delats kan vi
 tag. Messenger uppdateras via Facebooks Sharing Debugger; för iMessage och WhatsApp räknas
 `alpkoll.se/?` som en ny länk.
 
+## Vad som gjordes 13 september
+
+**SJ:s nattåg till Åre står på sajten.** Trafikverket meddelade 9 september att SJ:s nattåg
+Stockholm–Duved är upphandlat 13 december 2026 till 13 juni 2027, med ett tåg i varje riktning
+per dygn. Linjen ligger i `TAGLINJER` i `lib/restider.js`, bredvid Snälltågets, och visas på
+Åres ortsida under "Ta sig dit" och i frågan om resan, på `/are-eller-alperna`, på
+jämförelsesidorna och på `/sportlov`. Den faller bort efter 13 juni 2027, och beskedet om biljettsläppet efter 31 oktober.
+
+**Åre hade två nattåg som beskrevs som ett.** `transport_info` sade att nattåget tar sju timmar
+och syftade på SJ. Svaret om resan lade Snälltågets tider direkt efter: fyra dagar i veckan,
+8 timmar och 40 minuter. Migration 027 tar bort meningen, och resten av texten står kvar ord för
+ord. Sju timmar var fel för nattåget: SJ:s bokning visar 22.40–07.59, alltså 9 tim 19 min.
+Dagtåget tar 6 tim 50 min, och det är troligen därifrån talet kom.
+
+**Kör 027 före merge.** Mergas koden först står databasmeningen och SJ-uppgiften i samma kort
+tills SQL:en körts.
+
+Sälens ortsida fick samtidigt en tågruta, eftersom rutan visas för varje ort som har en linje.
+Uppgifterna är desamma som svaret om resan redan hade. `/sportlov` läste förut `TAGLINJER[0]`
+och hämtar nu linjerna per id.
+
+**SJ:s tider är höstens.** Tidtabellen från 13 december var inte publicerad. Ortsidan visar
+22.40–07.59 med en not om att tiderna gäller i höst, och klockslagen försvinner efter 12
+december (`tiderGallerTill`). `/sportlov` visar dem inte alls, eftersom den handlar om
+februari. Byt till vinterns tider när biljetterna släpps i slutet av oktober, och ta bort
+`tiderGallerTill`, `tidNot` och `utanTider`.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -387,8 +414,8 @@ liksom skäl och metod per ort. **Riksgränsen och Levi har vi fortfarande inte 
 prislista för.**
 
 **2. Nattågets tidtabell — klar för i år, nästa gång hösten 2027.** Tidtabellen hämtades
-30 augusti och beskriver säsongen 18 december 2026–14 mars 2027. Hela höstpunkten är alltså
-avklarad; det som återstår av höstarbetet är priserna.
+30 augusti och beskriver säsongen 18 december 2026–14 mars 2027. Det som återstår av
+höstarbetet är priserna, och SJ:s tider till Åre när biljetterna släpps i slutet av oktober.
 
 Allt som åldras ligger i `lib/nattaget.js`, med checklistan överst i filen. Sidan skyddar
 sig själv: efter `SASONG_SLUT` slutar den visa tidtabellen och säger att nästa säsong inte
@@ -448,8 +475,8 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 26 filer i `supabase/migrations/`, alla körda och verifierade till och med
-**026**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+**Migrationer:** 27 filer i `supabase/migrations/`, körda och verifierade till och med
+**026**. **027 är skriven 13 september och inte körd.** Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
 den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
 hur granskningarna görs.
 

@@ -49,11 +49,11 @@ export default function AffiliateDisclosurePage() {
 
       <Avsnitt titel="Påverkar det vad ni rekommenderar?">
         <p>
-          <Stark>Nej.</Stark> Hur orterna presenteras och rangordnas bygger på
-          data — snösäkerhet, terräng, pris, restid och andra mätbara fält,
-          hämtade ur samma källa för alla orter. Ingen ort hamnar högre upp för
-          att det finns ett affiliate-avtal, och ingen ort kan betala för
-          placering.
+          <Stark>Nej.</Stark> Ingen ort hamnar högre upp för att det finns ett
+          affiliate-avtal, och ingen ort kan betala för placering. Pist, liftar
+          och höjder kommer från samma källa för alla orter, och priserna från
+          varje orts egen prislista. Poängen är våra egna omdömen, satta efter
+          samma skala för alla orter.
         </p>
         <p style={{ marginTop: 12 }}>
           Öppenhet är hela poängen med sajten. Undrar du hur siffrorna tas fram

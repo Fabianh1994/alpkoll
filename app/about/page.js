@@ -106,7 +106,9 @@ export default async function AboutPage() {
         padding: 'clamp(60px, 8vh, 100px) clamp(24px, 4vw, 64px)',
       }}>
         <Etikett>Så fungerar det</Etikett>
-        <Rubrik marginBottom={40}>Data, inte tyckande.</Rubrik>
+        {/* Rubriken sade "Data, inte tyckande." Poängen på sajten är
+            redaktionella omdömen, och jämförelsesidorna skriver ut det. */}
+        <Rubrik marginBottom={40}>Så tas talen fram.</Rubrik>
 
         <div style={{
           display: 'grid',
@@ -122,7 +124,7 @@ export default async function AboutPage() {
             {
               number: '02',
               title: 'Mätt, inte gissat',
-              text: 'Restiden från flygplatsen är uppmätt ort för ort. Tidigare räknades den fram ur avståndet, vilket gav en biltransfer till bilfria Zermatt. Där bil eller nattåg är den verkliga vägen står det i texten i stället.',
+              text: 'Restiden är uppmätt ort för ort: bilresan från Stockholm, Göteborg och Malmö, och sista biten från flygplatsen. Tidigare räknades sista biten fram ur avståndet, och då fick bilfria Zermatt en biltransfer.',
             },
             {
               number: '03',
@@ -206,10 +208,6 @@ export default async function AboutPage() {
                   label: 'Reseplanerare',
                   desc: 'Berätta vad du vill ha och vad det får kosta, så rangordnas orterna efter dina önskemål. Fungerar, men är avstängd tills varje förklaringstext och poäng är genomgången.',
                 }]),
-            {
-              label: 'Jämför två orter sida vid sida',
-              desc: 'I dag är varje ortssida en egen ö. Nästa steg är att kunna ställa två orter mot varandra, rad för rad.',
-            },
             {
               label: 'Fler nordiska orter',
               desc: 'Vemdalen, Idre Fjäll, Branäs, Romme och Kungsberget saknas — orter många svenskar faktiskt åker till.',

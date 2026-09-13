@@ -433,12 +433,16 @@ export default async function JamforPage({ params }) {
           </div>
         </section>
 
-        {/* Källan står på sidan som bär siffrorna, inte bara på about. */}
+        {/* Källan står på sidan som bär siffrorna, inte bara på about.
+            Stycket sade förut att även liftkortspriserna kom från
+            skiresort.com, medan prisrutan längre upp på samma sida säger
+            ortens egen prislista. Det senare stämmer. */}
         <p style={{ ...brodtext, fontSize: 11.5, marginTop: 44, color: 'rgba(255,255,255,0.52)' }}>
-          Pist, liftar, höjder och liftkortspriser är hämtade från
-          skiresort.com för båda orterna — blandade källor gör orter
-          ojämförbara. Talen avser hela det sammankopplade skidområdet, det
-          liftkortet ger tillgång till, inte bara byns egen sektor.
+          Pist, liftar och höjder är hämtade från skiresort.com för båda
+          orterna, eftersom blandade källor gör orter ojämförbara. Talen avser
+          hela det sammankopplade skidområdet som liftkortet ger tillgång till,
+          inte bara byns egen sektor. Liftkortspriserna kommer från varje orts
+          egen prislista.
         </p>
 
       </div>

@@ -61,9 +61,10 @@ ger ingen klickdata för AI-ytor, så vi vet bara att sidorna visas.
 `/salen-eller-alperna` ligger på 1,7 med 33 % CTR, `/jamfor/are-vs-val-thorens` på 5
 med 17 %. Modellen fungerar; positionen saknas.
 
-Riktningen är oförändrad: **inte fler orter, inte fler poäng på tiogradig skala.** Det som
-byggs ska vara sådant en svensk faktiskt söker på och som varken skiresort.com eller en
-språkmodell kan svara på.
+Riktningen: **inte fler poäng på tiogradig skala.** Fler svenska orter ska in, men de är inte
+högsta prioritet (Fabian 13 september, efter att målgruppen omprövats). Det som byggs ska vara
+sådant en svensk faktiskt söker på och som varken skiresort.com eller en språkmodell kan svara
+på.
 
 **Affiliate-ID:t är medvetet uppskjutet.** Fabians beslut 8 september: trafik först, intäkt
 sedan. `NEXT_PUBLIC_BOOKING_AID` är tom, länkarna byggs utan `aid`, och klick ger noll
@@ -562,8 +563,9 @@ Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
 **6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
 Filter och sortering ingår där.
 
-**7. Fler nordiska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. Kräver din
-research, inte kod.
+**7. Fler svenska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. De ska in, men är
+inte högsta prioritet (13 september). De ger också topplistorna på startsidan mer variation.
+Kräver research, inte kod.
 
 **8. Vandring**, med datamodellen delad i plats och aktivitet först.
 

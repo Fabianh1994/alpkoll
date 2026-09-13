@@ -312,7 +312,8 @@ export default function SportlovSida() {
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
           Sportlovet ligger i vecka 7, 8, 9 eller 10. Vilken du har bestämmer vilken
-          fredag nattåget går. Liftkortet kostar lika mycket oavsett.
+          fredag nattåget går. I Alperna kostar liftkortet i stort sett lika mycket
+          oavsett vecka.
         </p>
         <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px', color: 'rgba(255,255,255,0.62)' }}>
           Göteborg har vecka 7, Malmö och Uppsala vecka 8, Stockholm vecka 9. Hittar du

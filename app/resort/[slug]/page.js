@@ -517,7 +517,7 @@ export default async function ResortPage({ params }) {
                 ))}
               </div>
               <div style={{ ...card, padding: '18px 20px' }}>
-                <div style={fieldLabel}>Höjd och snösäkerhet</div>
+                <div style={fieldLabel}>Höjd och fallhöjd</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 8 }}>
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -538,13 +538,15 @@ export default async function ResortPage({ params }) {
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>fallhöjd</div>
                   </div>
                 </div>
-                <div style={{ marginTop: 12, fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>
-                  {resort.altitude_top >= 3000
-                    ? `Med ${resort.altitude_top} m på toppen är snön pålitlig hela säsongen, och det finns åkning på glaciär.`
-                    : resort.altitude_top >= 2000
-                    ? `Toppen på ${resort.altitude_top} m ger god snösäkerhet mitt i säsongen.`
-                    : `Lägre belägen ort — kom i januari eller februari för säkrast snö.`}
-                </div>
+                {/* Här stod en mening som räknades fram ur toppens höjd, och
+                    den sade emot sidan på fyra sätt. Kitzbühel (2 000 m) fick
+                    "god snösäkerhet" medan ortstexten säger att snön är osäker.
+                    Alpe d'Huez fick "pålitlig hela säsongen" medan texten säger
+                    opålitlig i mars. Riksgränsen fick "kom i januari" fast orten
+                    öppnar i februari. Och alla elva orter över 3 000 m fick
+                    "åkning på glaciär", även Courchevel och Méribel. Toppens
+                    höjd säger inte hur snön är i byn. Stapeln visar talen;
+                    snösäkerheten står som poäng längre ner. */}
               </div>
             </div>
 

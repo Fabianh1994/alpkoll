@@ -326,8 +326,8 @@ och syftade på SJ. Svaret om resan lade Snälltågets tider direkt efter: fyra 
 ord. Sju timmar var fel för nattåget: SJ:s bokning visar 22.40–07.59, alltså 9 tim 19 min.
 Dagtåget tar 6 tim 50 min, och det är troligen därifrån talet kom.
 
-**Kör 027 före merge.** Mergas koden först står databasmeningen och SJ-uppgiften i samma kort
-tills SQL:en körts.
+**PR #47 mergades innan 027 kördes.** Tills SQL:en körs står databasmeningen om sju timmar
+ovanför SJ:s riktiga tider på Åres sida.
 
 Sälens ortsida fick samtidigt en tågruta, eftersom rutan visas för varje ort som har en linje.
 Uppgifterna är desamma som svaret om resan redan hade. `/sportlov` läste förut `TAGLINJER[0]`
@@ -338,6 +338,31 @@ och hämtar nu linjerna per id.
 december (`tiderGallerTill`). `/sportlov` visar dem inte alls, eftersom den handlar om
 februari. Byt till vinterns tider när biljetterna släpps i slutet av oktober, och ta bort
 `tiderGallerTill`, `tidNot` och `utanTider`.
+
+**All copy på sajten är inventerad.** Artefakten "Alpkoll copygranskning" samlar 16 fel i sak,
+AI-mönstren med antal, mallmeningarna, alla 30 ortstexter och en jämförelse med hur Vagabond
+skriver. Två beslut fattades samma dag. Ortstexterna skrivs i du-form utan synlig avsändare,
+"vi" används bara om sajtens egna beslut och "jag" bara på Om oss. En text får säga rakt ut att
+en ort är fel val, när vem, varför och en annan ort att välja står med. Reglerna står i
+`docs/copy.md`, som har en egen PR.
+
+**Felen i sak är rättade (migration 028 och kod).** Handskrivna biltider i `transport_info` för
+Hemsedal, Sälen, Trysil, Hemavan och Åre stämde inte med den uppmätta restiden på samma sida.
+Hemsedal sade sju timmar från Stockholm, uppmätt är 10,3. Karlstad och Umeå mättes samma dag med
+OSRM, efter att servern gett exakt samma tal som `lib/restider.js` för två lagrade sträckor.
+Grandvaliras obelagda prisjämförelse mot Zermatt är borttagen, och 210 km blev 215. Geilo och
+Hemsedal ligger i Buskerud, inte Viken.
+
+Höjdmeningen under stapeln på ortsidan är borttagen. Den räknades fram ur toppens höjd och gav
+Kitzbühel "god snösäkerhet" mot ortstexten, Riksgränsen "kom i januari" fast orten öppnar i
+februari, och glaciäråkning till Courchevel och Méribel. Jämförelsesidornas källmening sade att
+priserna kom från skiresort.com. Sportlovsingressen sade att liftkortet kostar lika mycket
+oavsett vecka. Om oss hade jämförelsen som "nästa steg" och rubriken "Data, inte tyckande", och
+affiliatesidan kallade poängen data. Allt är rättat.
+
+**Kvar ur granskningen.** Riksgränsens "ett drygt dygn" med nattåget är obelagt. alpkoll.com har
+MX-poster hos ImprovMX, så adressen tar emot post, men vart den vidarebefordras går inte att se
+härifrån. Regionnamnen på engelska och resten av AI-mönstren tas i copyomskrivningen.
 
 ## Vad som väntar
 
@@ -475,8 +500,9 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 27 filer i `supabase/migrations/`, körda och verifierade till och med
-**026**. **027 är skriven 13 september och inte körd.** Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+**Migrationer:** 28 filer i `supabase/migrations/`, körda och verifierade till och med
+**026**. **027 och 028 är skrivna 13 september och inte körda.** De går att köra i vilken
+ordning som helst, eftersom 028 använder `replace()`. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
 den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
 hur granskningarna görs.
 

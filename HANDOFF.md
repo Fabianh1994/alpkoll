@@ -386,10 +386,13 @@ ur `lib/restider.js`, eftersom den i dag bara står i texten där. Två uppgifte
 inte att belägga och är strukna: Skarsnuten Fjellandsby på 1 000 meter och "fyra kilometer" till
 Hemsedal sentrum.
 
-**Om oss väntar på Fabians svar.** Sidan ska bli kort och i jag-form, och går inte att skriva
-utan fem uppgifter som bara han har: hur länge han åkt och var han började, vilka orter han åkt
-själv, vilken resa som fick honom att börja bygga, vad han retade sig på när han letade, och vem
-sajten ska hjälpa. Metoden flyttas till sidorna där talen står.
+**Om oss har fått Fabians egna uppgifter.** Sidan ska bli kort och i jag-form. Han har åkt
+skidor i Sverige och Alperna i över 25 år, och han har åkt i Sälen, Romme, Åre, Dolomiterna,
+Bad Gastein, Zell am See och Mayrhofen. Om varför han byggde sajten sa han: "Har letat så många
+timmar med olika flikar om alla skidområden." Sajten ska hjälpa, med hans ord, "svensken som
+ska välja resa i Sverige, Norden eller mellan olika alpbyar". Det är bredare än den låsta
+målgruppen överst, som sätter Alperna först. Skriv inget om honom utöver det han sagt. Metoden flyttas till
+sidorna där talen står.
 
 **Startsidan byggs om, och det finns en skiss.** Fabian pekade på Aftonbladet för upplägget och
 Filmstaden för att välja stad först. Två styrningar: sidan ska inte vara en landningssida med

@@ -15,6 +15,7 @@ import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
 import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
 import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
+import { linjeMeningar, linjerFor } from '../../../lib/restider'
 import { land } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 import { vanligaFragor } from '../../../lib/vanligaFragor'
@@ -213,6 +214,11 @@ export default async function ResortPage({ params }) {
   // under säsongen. Efter 14 mars vore en tidtabell på en ortsida ett
   // påstående om ett tåg som inte går — se lib/nattaget.js.
   const nattag = sasongenSlut() ? null : nattagFor(resort.slug)
+
+  // Tågen till de svenska orterna, med operatören utskriven. Åre har två
+  // nattåg från Stockholm, och sidan beskrev dem förut som ett — se
+  // lib/restider.js. Linjerna faller bort när deras sista dag passerat.
+  const taglinjer = linjerFor(resort.slug)
 
   // Frågorna som når sidan i Search Console, besvarade ur samma fält som
   // sifferrutorna — se lib/vanligaFragor.js.
@@ -665,6 +671,17 @@ export default async function ResortPage({ params }) {
                   <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
                     <div style={fieldLabel}>Med tåg och flyg</div>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>{resort.transport_info}</p>
+                  </div>
+                )}
+                {taglinjer.length > 0 && (
+                  <div style={{ background: 'rgba(212,165,116,0.06)', border: '1px solid rgba(212,165,116,0.16)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
+                    <div style={{ ...fieldLabel, color: '#D4A574' }}>Med tåg</div>
+                    {taglinjer.map((linje, i) => (
+                      <p key={linje.id} style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: i === 0 ? '4px 0 0' : '10px 0 0' }}>
+                        {linjeMeningar(linje).join(' ')}{' '}
+                        <a href={linje.kalla} target="_blank" rel="noopener noreferrer" style={{ color: '#D4A574', textDecoration: 'none' }}>{linje.kallnamn} →</a>
+                      </p>
+                    ))}
                   </div>
                 )}
                 {/* Nattåget, för de fem orter det faktiskt går till.

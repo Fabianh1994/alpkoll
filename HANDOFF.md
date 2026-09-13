@@ -94,10 +94,14 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–11 september:
+`main` är i fas med `origin/main`. Mergat 8–13 september:
 
 | PR | Vad |
 |---|---|
+| #49 | Skrivregler i `docs/copy.md` |
+| #48 | Sakfelen från copygranskningen (migration 028) |
+| #47 | SJ:s nattåg till Åre (migration 027) |
+| #46 | Handoff 11 september |
 | #45 | Delningsbilden på svenska med alpkoll.se, ritad ur kod |
 | #44 | Bildtexterna omskrivna (migration 026) |
 | #43 | Galleriets bilder laddar snabbare: cache i 31 dagar, färre bredder |
@@ -326,8 +330,10 @@ och syftade på SJ. Svaret om resan lade Snälltågets tider direkt efter: fyra 
 ord. Sju timmar var fel för nattåget: SJ:s bokning visar 22.40–07.59, alltså 9 tim 19 min.
 Dagtåget tar 6 tim 50 min, och det är troligen därifrån talet kom.
 
-**PR #47 mergades innan 027 kördes.** Tills SQL:en körs står databasmeningen om sju timmar
-ovanför SJ:s riktiga tider på Åres sida.
+**027 och 028 är körda och verifierade.** Fabian körde dem på kvällen 13 september, efter att
+koden redan var mergad. Alla nio ändringar stämmer mot databasen. Direkt efteråt visade
+livesidorna fortfarande de gamla texterna, eftersom de är förrenderade och räknas om inom en
+timme.
 
 Sälens ortsida fick samtidigt en tågruta, eftersom rutan visas för varje ort som har en linje.
 Uppgifterna är desamma som svaret om resan redan hade. `/sportlov` läste förut `TAGLINJER[0]`
@@ -344,7 +350,8 @@ AI-mönstren med antal, mallmeningarna, alla 30 ortstexter och en jämförelse m
 skriver. Två beslut fattades samma dag. Ortstexterna skrivs i du-form utan synlig avsändare,
 "vi" används bara om sajtens egna beslut och "jag" bara på Om oss. En text får säga rakt ut att
 en ort är fel val, när vem, varför och en annan ort att välja står med. Reglerna står i
-`docs/copy.md`, som har en egen PR.
+`docs/copy.md` (#49). Granskningen ligger i artefakten
+https://claude.ai/code/artifact/c4ecda97-2dc7-4498-9ec9-b115bd53ac43.
 
 **Felen i sak är rättade (migration 028 och kod).** Handskrivna biltider i `transport_info` för
 Hemsedal, Sälen, Trysil, Hemavan och Åre stämde inte med den uppmätta restiden på samma sida.
@@ -363,6 +370,62 @@ affiliatesidan kallade poängen data. Allt är rättat.
 **Kvar ur granskningen.** Riksgränsens "ett drygt dygn" med nattåget är obelagt. alpkoll.com har
 MX-poster hos ImprovMX, så adressen tar emot post, men vart den vidarebefordras går inte att se
 härifrån. Regionnamnen på engelska och resten av AI-mönstren tas i copyomskrivningen.
+`docs/poangskala.md` använder fortfarande "nattåg sju timmar" och "Sälen fyra och en halv
+timme" som ankare för skalan om resan från Sverige.
+
+**Provomgången: rösten i ortstexterna är godkänd.** Åre, Chamonix och Hemsedal skrevs om efter
+`docs/copy.md`, med dagens text bredvid och källa för varje nytt påstående, i artefakten
+https://claude.ai/code/artifact/ad226e6c-9699-40f9-9667-7d7fe3ea0862. Fabian gillade rösten i
+ortstexterna. Utkasten till startsidan och Om oss underkändes eftersom de fortfarande lät som AI.
+Texterna finns bara i artefakten, inte i repot.
+
+**Nästa steg för ortstexterna:** skriv om alla 30 (`notes`, `where_to_stay`, `transport_info`) i
+samma röst och lägg dem i en migration, med källan för varje nytt namn i kommentaren.
+Handskrivna restider ska bort ur `transport_info`, och då måste jämförelsesidorna visa bilresan
+ur `lib/restider.js`, eftersom den i dag bara står i texten där. Två uppgifter ur utkasten gick
+inte att belägga och är strukna: Skarsnuten Fjellandsby på 1 000 meter och "fyra kilometer" till
+Hemsedal sentrum.
+
+**Om oss väntar på Fabians svar.** Sidan ska bli kort och i jag-form, och går inte att skriva
+utan fem uppgifter som bara han har: hur länge han åkt och var han började, vilka orter han åkt
+själv, vilken resa som fick honom att börja bygga, vad han retade sig på när han letade, och vem
+sajten ska hjälpa. Metoden flyttas till sidorna där talen står.
+
+**Startsidan byggs om, och det finns en skiss.** Fabian pekade på Aftonbladet för upplägget och
+Filmstaden för att välja stad först. Två styrningar: sidan ska inte vara en landningssida med
+budskap, och inte heller nyheter, eftersom han inte kommer att skriva nytt ofta. Den ska vara
+innehåll som räknas fram. Första försöket med nyhetspuffar och en vinterkalender underkändes
+av det skälet.
+
+Skissen ligger på grenen **`startsida-skiss`, committad lokalt (8b110ce) men inte pushad**, på
+`/skiss-startsida`, som är noindex och inte länkad:
+
+- **Du åker från:** fem städer (den största i vart och ett av de fem största länen), "Fler
+  städer" med den största staden i varje övrigt län från norr till söder, och sök bland alla
+  100. 21 knappar från början var för många enligt Fabian.
+- **Innehållet:** topp 5 närmast från staden som stora kort, fyra moduler (Närmast i Alperna,
+  Mest fallhöjd inom tio timmar, Billigast per skiddag, Med tåg), fyra guider (Nattåget,
+  Sportlov, Åre eller Alperna, Liftkortspriser) och alla orter sorterade på restid.
+- **Kontrollerat:** stadsbyte med knapp och sök, ingen horisontell scroll vid 571, 430 och
+  375 px, ESLint utan fel.
+
+**Restiden från 100 städer ligger i `lib/avresestader.js`.** Städerna är SCB:s 100 största
+tätorter 2023, med SCB:s namn, så en heter "Sundsvall och Timrå". Koordinaten kommer från
+Wikidata, matchad på folkmängden eftersom SCB:s nya tätortskoder inte finns där. Stockholm,
+Göteborg och Malmö behåller koordinaten i `lib/restider.js`. 3 000 sträckor är mätta med OSRM,
+och de 90 som redan fanns stämde alla på kilometern och minuten. Skripten ligger i `scripts/`
+och tar underlagsfilerna som argument. Filen är 90 kB och skickas hel till webbläsaren i
+skissen. I den riktiga versionen bör varje stad få en egen adress, till exempel `/fran/umea`,
+som också kan synas på "skidorter nära Umeå".
+
+**Öppen fråga: vad som ska stå överst.** Fabian påpekade att "närmast" nästan alltid blir Sälen.
+Uppmätt på alla 100 städer är Sälen etta från 64 och Trysil från 26, och det finns bara 15
+olika topp 5-listor. "Närmast i Alperna" blir St. Anton från alla 100 och "mest pist per
+restimme" Méribel från 93, så de modulerna säger inget heller. Orsaken är att sajten bara har
+elva nordiska orter. Förslaget som väntar på svar: topp 5 efter vad du vill ha, på uppmätta tal
+(Störst, Brantast, Billigast, Högst upp, Utan flyg), med restiden från staden på varje kort och
+"Kortast resa" som ett av valen. Poäng används inte, eftersom poängskalan själv säger att
+mittfältet inte går att jämföra.
 
 ## Vad som väntar
 
@@ -468,7 +531,8 @@ här, eftersom deras pris inte ändras med veckan.
 mot vårt tal på 170. Grandvaliras flerdagarskort ger 308 mot vårt 215. Sälen är samma sak.
 Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
 
-**6. Startsidans filter och sortering** på samma fält som jämförelsesidorna använder.
+**6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
+Filter och sortering ingår där.
 
 **7. Fler nordiska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. Kräver din
 research, inte kod.
@@ -476,6 +540,8 @@ research, inte kod.
 **8. Vandring**, med datamodellen delad i plats och aktivitet först.
 
 ### Väntar på ditt beslut
+
+**Toppen på startsidan, och svaren till Om oss.** Båda frågorna står under 13 september.
 
 **Bilderna — lösta 11 september, utom Myrkdalen.** Hotlänkningen, den saknade
 krediteringen och Verbiers GFDL-bild är borta; se ovan. Myrkdalens hjältebild är
@@ -500,9 +566,8 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 28 filer i `supabase/migrations/`, körda och verifierade till och med
-**026**. **027 och 028 är skrivna 13 september och inte körda.** De går att köra i vilken
-ordning som helst, eftersom 028 använder `replace()`. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+**Migrationer:** 28 filer i `supabase/migrations/`, alla körda och verifierade till och med
+**028**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
 den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
 hur granskningarna görs.
 
@@ -609,3 +674,32 @@ skulle välja.
 **Kör inte `next build` medan `next dev` är igång** — de delar `.next`, och dev-servern
 började servera gammal utdata efteråt. Bygget hade rätt, dev-servern fel. Läs byggets egen
 HTML i `.next/server/app/` när de två säger emot varandra.
+
+**PowerShell tar bort dubbla citattecken i `node -e`.** Ett skript i en here-string kom fram till
+Node utan dem och gav syntaxfel. Skriv skriptet till en fil och kör filen.
+
+**OSRM:s table-API räcker för tusentals sträckor.**
+`router.project-osrm.org/table/v1/driving/<koordinater>?sources=…&destinations=…&annotations=duration,distance`,
+med tio källor och trettio mål per anrop. Det gav samma tal som route-API:t för alla 90 lagrade
+sträckor.
+
+**SCB:s tätortskoder bytte format 2023.** PxWeb-tabellen
+`api.scb.se/OV0104/v1/doris/sv/ssd/MI/MI0810/MI0810A/LandarealTatortN` (folkmängd är
+`000003F7`) använder koder som `0180TC101`, medan Wikidata bär de gamla (`T0336`). Matcha på
+folkmängd, inte kod. Wikidata har dessutom tätorter med befolkningstal från 1965–2010, så
+rangordna aldrig på Wikidata.
+
+**SkiStars adresser har bytt mönster.** `skistar.com/sv/skidorter/are/` ger 404. Nuvarande
+mönster är `/sv/vara-skidorter/are/vinter-i-are/skidomraden/<område>/`. Chamonix turistbyrås
+sidor ligger under `en.chamonix.com/activities/winter/skiing-in-chamonix-mont-blanc-valley/`, och
+några har flyttat till `/things-to-see-and-do/`.
+
+**Sammanfattande webbhämtningar kan återge fel.** En hämtning av Vagabonds Schweizguide påstod
+att ingen ort avråddes, och ett stickprov visade att Disentis gjorde det. Kontrollera enskilda
+påståenden innan de citeras.
+
+**Testa brytpunkter i en iframe.** Lägg sidan i en iframe med `width:430px` och `375px` i samma
+flik och mät `scrollWidth` där. Så hittades horisontell scroll i skissen 13 september.
+
+**Wikimedia svarar 429 när dev-servern laddar om många bilder i rad.** Det är bildoptimeringen
+som hämtar originalen igen, inte ett fel i koden. En ny laddning efter en stund gav noll fel.

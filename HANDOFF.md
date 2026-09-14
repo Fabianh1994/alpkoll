@@ -21,8 +21,17 @@ urval. Båda har komplett data — Davos har 320 km pist, näst mest av alla ort
 den som funderar på att publicera dem behöver inte hämta något, bara ändra flaggan. Det är
 ett redaktionellt beslut, inte en lucka.
 
-Målgruppen är låst: **svensken som ska åka till Alperna, plus jämförelse av orterna i
-Norden.** Konventionerna för data och språk står i `CLAUDE.md`.
+**Målgruppen, omprövad 13 september:** svensken som ska bestämma var vinterns skidvecka blir,
+i Sverige, i Norden eller i Alperna, och som inte har bestämt sig än. Oftast en familj eller ett
+kompisgäng. Valet avgörs av priset i kronor, restiden hemifrån, lovveckan och om orten passar
+sällskapet. Den förra formuleringen satte Alperna först och Norden som jämförelse, men trafiken
+säger annat: sökningarna gäller Sälen, Hemsedal och Trysil, och sidan som rankar bäst är
+"Sälen eller Alperna?". Fabians eget svar var "svensken som ska välja resa i Sverige, Norden
+eller mellan olika alpbyar".
+
+Den andra gruppen har redan valt Alperna och jämför byar, och den får jämförelsesidorna.
+**Pistkartor och bokning ska byggas senare**, enligt Fabian 13 september. Konventionerna för
+data och språk står i `CLAUDE.md`.
 
 ## Läget: trafiken har vänt
 
@@ -52,9 +61,10 @@ ger ingen klickdata för AI-ytor, så vi vet bara att sidorna visas.
 `/salen-eller-alperna` ligger på 1,7 med 33 % CTR, `/jamfor/are-vs-val-thorens` på 5
 med 17 %. Modellen fungerar; positionen saknas.
 
-Riktningen är oförändrad: **inte fler orter, inte fler poäng på tiogradig skala.** Det som
-byggs ska vara sådant en svensk faktiskt söker på och som varken skiresort.com eller en
-språkmodell kan svara på.
+Riktningen: **inte fler poäng på tiogradig skala.** Fler svenska orter ska in, men de är inte
+högsta prioritet (Fabian 13 september, efter att målgruppen omprövats). Det som byggs ska vara
+sådant en svensk faktiskt söker på och som varken skiresort.com eller en språkmodell kan svara
+på.
 
 **Affiliate-ID:t är medvetet uppskjutet.** Fabians beslut 8 september: trafik först, intäkt
 sedan. `NEXT_PUBLIC_BOOKING_AID` är tom, länkarna byggs utan `aid`, och klick ger noll
@@ -368,8 +378,7 @@ oavsett vecka. Om oss hade jämförelsen som "nästa steg" och rubriken "Data, i
 affiliatesidan kallade poängen data. Allt är rättat.
 
 **Kvar ur granskningen.** Riksgränsens "ett drygt dygn" med nattåget är obelagt. alpkoll.com har
-MX-poster hos ImprovMX, så adressen tar emot post, men vart den vidarebefordras går inte att se
-härifrån. Regionnamnen på engelska och resten av AI-mönstren tas i copyomskrivningen.
+MX-poster hos ImprovMX, och Fabian bekräftade samma kväll att han läser adressen. Regionnamnen på engelska och resten av AI-mönstren tas i copyomskrivningen.
 `docs/poangskala.md` använder fortfarande "nattåg sju timmar" och "Sälen fyra och en halv
 timme" som ankare för skalan om resan från Sverige.
 
@@ -386,10 +395,30 @@ ur `lib/restider.js`, eftersom den i dag bara står i texten där. Två uppgifte
 inte att belägga och är strukna: Skarsnuten Fjellandsby på 1 000 meter och "fyra kilometer" till
 Hemsedal sentrum.
 
-**Om oss väntar på Fabians svar.** Sidan ska bli kort och i jag-form, och går inte att skriva
-utan fem uppgifter som bara han har: hur länge han åkt och var han började, vilka orter han åkt
-själv, vilken resa som fick honom att börja bygga, vad han retade sig på när han letade, och vem
-sajten ska hjälpa. Metoden flyttas till sidorna där talen står.
+**Om oss har fått Fabians egna uppgifter.** Sidan ska bli kort och i jag-form. Han har åkt
+skidor i Sverige och Alperna i över 25 år, och han har åkt i Sälen, Romme, Åre, Dolomiterna,
+Bad Gastein, Zell am See och Mayrhofen. Om varför han byggde sajten sa han: "Har letat så många
+timmar med olika flikar om alla skidområden." Sajten ska hjälpa, med hans ord, "svensken som
+ska välja resa i Sverige, Norden eller mellan olika alpbyar". Målgruppen överst är
+omskriven efter det. På sidan står bara förnamnet Fabian, inget mer, och han läser
+hello@alpkoll.com. Skriv inget om honom utöver det han sagt. Metoden flyttas till sidorna där
+talen står.
+
+Utkastet som byggts av hans svar, inte godkänt än:
+
+> **Om Alpkoll**
+>
+> Jag heter Fabian och har åkt skidor i över 25 år, i Sverige och i Alperna. Här hemma har det
+> blivit Sälen, Romme och Åre, och i Alperna Dolomiterna, Bad Gastein, Zell am See och Mayrhofen.
+>
+> Inför resorna har jag letat i många timmar, med flik efter flik om olika skidområden. Alpkoll
+> samlar orterna på ett ställe, med pist och fallhöjd ur samma källa, liftkortet i kronor och
+> restiden från svenska städer.
+>
+> Sajten är för dig som ska bestämma var vinterns skidvecka blir, i Sverige, i Norden eller i
+> Alperna.
+>
+> Hittar du en siffra som inte stämmer, skriv till mig på hello@alpkoll.com.
 
 **Startsidan byggs om, och det finns en skiss.** Fabian pekade på Aftonbladet för upplägget och
 Filmstaden för att välja stad först. Två styrningar: sidan ska inte vara en landningssida med
@@ -534,14 +563,15 @@ Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
 **6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
 Filter och sortering ingår där.
 
-**7. Fler nordiska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. Kräver din
-research, inte kod.
+**7. Fler svenska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. De ska in, men är
+inte högsta prioritet (13 september). De ger också topplistorna på startsidan mer variation.
+Kräver research, inte kod.
 
 **8. Vandring**, med datamodellen delad i plats och aktivitet först.
 
 ### Väntar på ditt beslut
 
-**Toppen på startsidan, och svaren till Om oss.** Båda frågorna står under 13 september.
+**Toppen på startsidan, och utkastet till Om oss.** Båda står under 13 september.
 
 **Bilderna — lösta 11 september, utom Myrkdalen.** Hotlänkningen, den saknade
 krediteringen och Verbiers GFDL-bild är borta; se ovan. Myrkdalens hjältebild är
@@ -553,8 +583,8 @@ pressbank eller Fjord Norway — med villkoren lästa innan något används.
 Nattåget och Liftkortspriser. En fjärde flik är ett designval, inte en rättning.
 
 **Kräver dig, inte kod:** redaktionella poäng för nya orter, affiliate-ID när trafiken
-bär. Obekräftat i integritetspolicyn: att Supabase-projektet ligger i eu-north-1, och att
-brevlådan `hello@alpkoll.com` finns.
+bär. Obekräftat i integritetspolicyn: att Supabase-projektet ligger i eu-north-1. Brevlådan
+`hello@alpkoll.com` är bekräftad: Fabian läser den (13 september).
 
 ## Praktiskt
 

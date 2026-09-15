@@ -7,7 +7,7 @@ import { hamtaKurser } from '../lib/valuta'
 import { parFor, motparten } from '../lib/jamfor'
 import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
 import { restidText, sasongenSlut, stationFor, SVERIGE } from '../lib/nattaget'
-import { linjeMeningar, linjerFor } from '../lib/restider'
+import { bilMening, linjeMeningar, linjerFor } from '../lib/restider'
 
 const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
@@ -84,6 +84,7 @@ export default async function OrtEllerAlperna({ slug }) {
   // transport_info, som varken sade vilket av de två tågen den gällde eller
   // tystnade när trafiken upphör. Se lib/restider.js och migration 027.
   const taglinjer = linjerFor(ort.slug)
+  const bil = bilMening(ort.slug)
 
   // Nattågsorterna delas på hur man faktiskt kommer fram. Skillnaden är
   // hela poängen med avsnittet: en ort tåget stannar i är en annan resa
@@ -193,7 +194,10 @@ export default async function OrtEllerAlperna({ slug }) {
 
           <div style={{ ...kort, padding: 'clamp(20px, 4vw, 28px)', marginBottom: 10 }}>
             <div style={{ ...etikett, color: ACCENT, marginBottom: 10 }}>Till {ort.name}</div>
-            <p style={{ ...brod, fontSize: 15, margin: 0 }}>{ort.transport_info}</p>
+            {/* Bilresan räknas fram. Den stod förut som handskriven tid i
+                transport_info — se bilMening i lib/restider.js. */}
+            {bil && <p style={{ ...brod, fontSize: 15, margin: 0 }}>{bil}</p>}
+            {ort.transport_info && <p style={{ ...brod, fontSize: 15, margin: bil ? '12px 0 0' : 0 }}>{ort.transport_info}</p>}
             {taglinjer.map((linje) => (
               <p key={linje.id} style={{ ...brod, fontSize: 15, margin: '12px 0 0' }}>
                 {linjeMeningar(linje).join(' ')}

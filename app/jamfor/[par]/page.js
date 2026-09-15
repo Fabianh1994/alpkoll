@@ -7,7 +7,7 @@ import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { SITE_URL } from '../../../lib/lang'
 import { land } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
-import { linjeMeningar, linjerFor } from '../../../lib/restider'
+import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import {
@@ -358,10 +358,15 @@ export default async function JamforPage({ params }) {
         <section style={{ marginTop: 48 }}>
           <h2 style={rubrik}>Resan från Sverige</h2>
           <div className="jamfor-tva">
-            {orter.map((ort) => (
+            {orter.map((ort) => {
+              // Bilresan stod förut bara i transport_info, som handskriven
+              // tid. Den räknas nu fram — se bilMening i lib/restider.js.
+              const bil = bilMening(ort.slug, arNordisk(ort) ? undefined : ['Malmo'])
+              const linjer = linjerFor(ort.slug)
+              return (
               <div key={ort.slug} style={{ ...kort, padding: '16px 18px' }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 12 }}>{ort.name}</div>
-                <div style={{ display: 'flex', gap: 20, marginBottom: ort.transport_info || linjerFor(ort.slug).length ? 12 : 0 }}>
+                <div style={{ display: 'flex', gap: 20, marginBottom: bil || ort.transport_info || linjer.length ? 12 : 0 }}>
                   <div>
                     <div style={{ ...etikett, marginBottom: 4 }}>Flyg till</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{ort.nearest_airport || '—'}</div>
@@ -371,14 +376,16 @@ export default async function JamforPage({ params }) {
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{restid(ort)}</div>
                   </div>
                 </div>
-                {ort.transport_info && <p style={{ ...brodtext, fontSize: 12 }}>{ort.transport_info}</p>}
+                {bil && <p style={{ ...brodtext, fontSize: 12 }}>{bil}</p>}
+                {ort.transport_info && <p style={{ ...brodtext, fontSize: 12, marginTop: bil ? 8 : 0 }}>{ort.transport_info}</p>}
                 {/* Tågen till Åre och Sälen, ur samma data som ortsidan. Åres
                     nattåg stod förut bara i transport_info — se migration 027. */}
-                {linjerFor(ort.slug).map((linje) => (
+                {linjer.map((linje) => (
                   <p key={linje.id} style={{ ...brodtext, fontSize: 12, marginTop: 8 }}>{linjeMeningar(linje).join(' ')}</p>
                 ))}
               </div>
-            ))}
+              )
+            })}
           </div>
 
           {korsPar && (

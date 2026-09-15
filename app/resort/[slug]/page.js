@@ -671,7 +671,10 @@ export default async function ResortPage({ params }) {
                 </div>
                 {resort.transport_info && (
                   <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
-                    <div style={fieldLabel}>Med tåg och flyg</div>
+                    {/* "Med tåg och flyg" stod över texter som mest handlade
+                        om bilen. Sedan migration 029 säger texten hur man
+                        reser, och bilens tider står i frågorna längre ner. */}
+                    <div style={fieldLabel}>Resan dit</div>
                     <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: 0 }}>{resort.transport_info}</p>
                   </div>
                 )}

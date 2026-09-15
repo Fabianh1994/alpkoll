@@ -533,6 +533,56 @@ jämförelsesidornas nordiska andel som skäl. Fabian valde 15 september att beh
 för sex dagar" utan säsong, och enligt avsnittet om pristabellen under Praktiskt är Riksgränsens
 rad från 2025/2026. Vilken säsong beskrivningen läser är inte kontrollerat.
 
+## Vad som gjordes 15 september: ortstexterna
+
+**Alla 30 ortstexter är omskrivna, i migration 029 på grenen `ortstexter` (84a7e6f).
+Grenen är committad lokalt men inte pushad, och 029 är inte körd.** Fälten `notes`,
+`where_to_stay` och `transport_info` skrevs om för alla publicerade orter på en gång, i rösten
+från provomgången. Under varje ort i migrationen står källan för varje nytt namn, det som
+följt med ur den gamla texten utan omkontroll, och det som strukits. Före och efter står sida vid
+sida i artefakten https://claude.ai/artifact/ULrAHRGyScAY3gKk4LRZ7Y.
+
+**Uppmätt:** 66 mönster ur `docs/copy.md` i dagens texter, noll i de nya, räknat med `\p{L}`
+och flaggan `u` efter att uttrycket prövats mot fyra kända exempel. Noll handskrivna tider.
+Tre fanns i första utkastet (Sälens flygplats, Les Arcs bergbana, Zermatts pendeltåg) och
+ströks. Talen i texterna, alltså pist, fallhöjd, toppens höjd och andel blå, stämmer mot
+databasen för alla 30. Tio orter säger fel val, och varje omdöme har ett poängpar som stöder
+det.
+
+**De 24 uppgifter som följde med ur de gamla texterna är kontrollerade**, på Fabians begäran
+samma dag. Det som gick att belägga står kvar med källa, resten är struket. Sex var fel eller
+saknade stöd: Alpin Express i Saas-Fee går inte från "södra änden", Mayrhofens lift är
+Horbergbahn från Schwendau och inte "Hippachs egen lift", Foscagnopasset brukar vara öppet året
+runt, Méribels gondol Olympe börjar i Brides-les-Bains, Scandinavian Mountains Airport har nio
+destinationer och inte "ett fåtal linjer", och Altibus skriver inte att bussarna till Val Thorens
+möter tågen. Nio källor är tredjepartssidor och märkta så i migrationen. Kontrollskriptet
+avbryter bygget om ett mönster, en handskriven tid eller en okontrollerad uppgift finns kvar,
+och gav noll.
+
+**Ingen uppgift vilar på ett sökresultat.** Tolv källor hade bara setts som sammanfattning i
+WebSearch och öppnades i en tredje genomgång, tidtabellen från Trentino Trasporti med
+`pdftotext`. Två var fel: skidbussen i Paznaun är gratis med gästkortet, och gratis med liftkort
+bara för säsongskort; Horbergbahns dalstation ligger i Stockach. Tre detaljer ströks. Claude i
+Chrome var inte anslutet, och `m.ischgl.com` vägrade anslutning både från WebFetch och
+webbläsarpanelen.
+
+**Kod i samma commit.** `bilMening` i `lib/restider.js` skriver bilresan på jämförelsesidorna
+och alpsidorna. Nordiska orter får Stockholm, Göteborg och Malmö, alporterna bara Malmö, samma
+val som ortsidans vanliga frågor. Etiketten "Med tåg och flyg" på ortsidan heter "Resan dit".
+Verifierat i dev-servern: meningen syns på `/jamfor/salen-vs-trysil`, `/jamfor/are-vs-val-thorens`
+och båda alpsidorna med rätt tal, och serverloggen har inga fel. ESLint ger inga fel.
+
+**Merga före körning, tvärtom mot rådet under Praktiskt.** Körs 029 först står jämförelsesidorna
+utan bilresa tills deployen är klar, eftersom de handskrivna tiderna redan är borta ur texten.
+Efterkontrollerna står längst ner i migrationen: den första ska ge 30, den andra noll rader.
+
+**Tre fynd på vägen.** SJ:s nattåg norr om Boden drogs in i april 2026, och Trafikverket har
+upphandlat Stockholm–Narvik utan byte från december 2026 till december 2028. Riksgränsens
+"ett drygt dygn" är struket. Trysils text hade Turistsenteret på västsidan och Fageråsen som
+eget område; enligt SkiStar ligger Turistsenteret på södra sidan och Høyfjellssenteret i
+Fageråsen. Tignes har inte längre glaciäråkning året runt, och Val Thorens liftar på
+Péclet-glaciären togs bort 2002.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -684,8 +734,8 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 **Deploy går inte att köra härifrån i auto-läge.** `npx vercel --prod` blockeras av
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
-**Migrationer:** 28 filer i `supabase/migrations/`, alla körda och verifierade till och med
-**028**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+**Migrationer:** 29 filer i `supabase/migrations/`, alla körda och verifierade till och med
+**028**. **029 (ortstexterna) är skriven men inte körd**, och ligger bara på grenen `ortstexter`. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
 den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
 hur granskningarna görs.
 

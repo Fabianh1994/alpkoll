@@ -1,6 +1,6 @@
-// Kort och i jag-form, byggd enbart av Fabians egna svar (13 september 2026).
-// Skriv inget om honom utöver det han sagt. Metoden bakom talen står inte här
-// utan på sidorna där talen visas.
+// Kort och utan avsändare. Fabian ville inte ha sidan personlig (15 september
+// 2026): inget namn, inga skidår, inga orter han åkt. Metoden bakom talen står
+// inte här utan på sidorna där talen visas.
 
 import SiteHeader from '../SiteHeader';
 import SiteFooter from '../SiteFooter';
@@ -40,22 +40,16 @@ export default function AboutPage() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 620 }}>
           <p style={brodstil}>
-            Jag heter Fabian och har åkt skidor i över 25 år, i Sverige och i
-            Alperna. Här hemma har det blivit Sälen, Romme och Åre, och i Alperna
-            Dolomiterna, Bad Gastein, Zell am See och Mayrhofen.
+            Alpkoll samlar skidorterna i Sverige, Norden och Alperna på ett
+            ställe, med pist och fallhöjd ur samma källa, liftkortet i kronor och
+            restiden från svenska städer.
           </p>
           <p style={brodstil}>
-            Inför resorna har jag letat i många timmar, med flik efter flik om
-            olika skidområden. Alpkoll samlar orterna på ett ställe, med pist och
-            fallhöjd ur samma källa, liftkortet i kronor och restiden från svenska
-            städer.
+            Sajten är för dig som ska bestämma var vinterns skidvecka blir och
+            hellre jämför orterna sida vid sida än letar i flik efter flik.
           </p>
           <p style={brodstil}>
-            Sajten är för dig som ska bestämma var vinterns skidvecka blir, i
-            Sverige, i Norden eller i Alperna.
-          </p>
-          <p style={brodstil}>
-            Hittar du en siffra som inte stämmer, skriv till mig på{' '}
+            Hittar du en siffra som inte stämmer, skriv till{' '}
             <a href={`mailto:${KONTAKT}`} style={{
               color: '#D4A574', textDecoration: 'underline',
               textUnderlineOffset: 3,

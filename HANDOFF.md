@@ -411,9 +411,10 @@ omskriven efter det. På sidan står bara förnamnet Fabian, inget mer, och han 
 hello@alpkoll.com. Skriv inget om honom utöver det han sagt. Metoden flyttas till sidorna där
 talen står.
 
-Utkastet som byggts av hans svar. **Fabian godkände det 15 september**, och det står ordagrant
-på `/about` sedan PR:en från grenen `om-oss`. Metodkorten, "På gång" och meta-beskrivningen om
-"en skidåkare i Stockholm" är borta:
+**Ändrat 15 september: Fabian vill inte ha sidan så personlig.** Utkastet nedan byggdes och
+underkändes samma kväll. `/about` i #55 har i stället tre stycken utan namn, skidår, orter och
+jag-form: vad sajten samlar, vem den är för, och adressen för fel. Metodkorten, "På gång" och
+meta-beskrivningen om "en skidåkare i Stockholm" är också borta. Utkastet står kvar som underlag:
 
 > **Om Alpkoll**
 >
@@ -723,7 +724,7 @@ jämförelsesidornas 122 exponeringar gällde nordiska par. Avgjort — ta inte 
 
 ### Väntar på ditt beslut
 
-**Toppen på startsidan.** Frågan står under 13 september. Om oss är godkänd och byggd 15 september.
+**Toppen på startsidan.** Frågan står under 13 september. Om oss är omskriven utan personliga uppgifter i #55, 15 september.
 
 **Bilderna — lösta 11 september, utom Myrkdalen.** Hotlänkningen, den saknade
 krediteringen och Verbiers GFDL-bild är borta; se ovan. Myrkdalens hjältebild är

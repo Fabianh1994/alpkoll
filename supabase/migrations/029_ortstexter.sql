@@ -42,10 +42,10 @@ begin;
 --     hårnålskurvor på 13,8 km från Le Bourg-d'Oisans:
 --     en.wikipedia.org/wiki/Alpe_d'Huez
 --   · 250 km och 52 % röd: databasen
---   · DMC och Signal från Rond-Point des Pistes: alpedhuez.com (ortens sidor
---     om Rond-Point des Pistes, via sökning)
 --   · Linbanan Vaujany–Alpette: remontees-mecaniques.net och skiresort.com
 --     (tredje part)
+--   · DMC, Jeux och Signal från Rond-Point des Pistes:
+--     accommodation.alpedhuez.com/alpe-huez-winter/fun-slopes/
 -- Struket:
 --   · L'Île au Soleil och att snön blir opålitlig i mars, som ingen källa
 --     bar
@@ -128,19 +128,19 @@ where slug = 'cortina-d-ampezzo';
 --   · 600 km och 56 % blå: databasen, gäller hela Les 3 Vallées
 --   · Gondolen mellan Le Praz och Courchevels centrum:
 --     poma.net/realisation/praz-courchevel-telecabine/
---   · Grangettes mellan Courchevel Village och 1850, öppen på kvällen för
---     utelivet i 1850: poma.net/realisation/telecabine-des-grangettes/ (via
---     sökning) och skipass.com (tredje part)
+--   · Grangettes mellan Courchevel Village och 1850, i drift varje dag till
+--     klockan 23: poma.net/realisation/telecabine-des-grangettes/
 -- Struket:
 --   · "Frankrikes mest påkostade skidort"
 --   · "en av världens brantaste landningsbanor"
 --   · "Moriond är lugnare"
 --   · "egna liftar upp i samma område" för Village och Le Praz, ersatt med
 --     gondolernas namn
+--   · "har utelivet" om 1850: bara belagt av en tredjepartssida
 
 update resorts set
   notes = 'Courchevel är fyra byar på olika höjd i Les 3 Vallées, där pisten är 600 kilometer och över hälften blå. Byarna heter efter höjden: Le Praz på 1 300 meter, Courchevel Village på 1 550, Moriond på 1 650 och Courchevel 1850 högst upp. Ovanför 1850 ligger en flygplats för småplan, med en landningsbana på 525 meter och 18,5 procents lutning.',
-  where_to_stay = 'Courchevel 1850 har utelivet och flera restauranger med stjärnor i Guide Michelin. Från Le Praz går en gondol upp till 1850, och från Courchevel Village går gondolen Grangettes dit till sent på kvällen. I Le Praz står hoppbackarna från OS 1992.',
+  where_to_stay = 'I Courchevel 1850 finns flera restauranger med stjärnor i Guide Michelin. Från Le Praz går en gondol upp till 1850, och från Courchevel Village går gondolen Grangettes dit till sent på kvällen. I Le Praz står hoppbackarna från OS 1992.',
   transport_info = 'Flyg till Genève, Lyon eller Chambéry. Med tåg åker du till Moûtiers och tar buss upp.'
 where slug = 'courchevel';
 
@@ -202,18 +202,21 @@ where slug = 'grandvalira';
 --     hemavan.nu/en/accommodation-summer-and-autumn/
 --   · Tärnabys fem liftar, Ingemarbacken och Anjabacken som de mest
 --     krävande: hemavan.nu/en/skiing-2/lift-opening-times/tarnabys-lifts/
---   · Bussen Umeå–Lycksele–Storuman–Tärnaby–Hemavan: tabussen.nu
---     (Länstrafiken, via sökning) och hemavan.nu/en/getting-here/car-or-bus/
+--   · Linje 31 Hemavan–Umeå:
+--     tabussen.nu/lanstrafiken/planera-resa/lanets-busstationer/storuman-resecentrum/
+--     och hemavan.nu/en/getting-here/car-or-bus/
 -- Struket:
 --   · "åretruntdestination" och "utsikt över naturreservatet"
 --   · Handskrivna biltider från Umeå och Stockholm
 --   · "Det mesta i Hemavan ligger nära liftarna"
 --   · Tärnaby som "den större byn, med mer service"
+--   · "via Lycksele och Storuman": Länstrafikens sida anger bara
+--     ändpunkterna
 
 update resorts set
   notes = 'Hemavan passar dig som vill åka offpist och slippa köer i en liten ort. Pisten är 32 kilometer, och här börjar Kungsleden, som går 400 kilometer norrut till Abisko. Anja Pärson hade sina träningsbackar här, och Ingemar Stenmark växte upp i Tärnaby två mil bort.',
   where_to_stay = 'Boendet i Hemavan är stugor, lägenheter, hotell och vandrarhem. Tärnaby har ett eget skidområde med fem liftar, där Ingemarbacken och Anjabacken är de mest krävande nedfarterna.',
-  transport_info = 'Det går flyg från Arlanda till Hemavan Tärnaby Airport, och från flygplatsen går du till backarna. Länstrafiken i Västerbotten kör buss från Umeå via Lycksele och Storuman till Hemavan.'
+  transport_info = 'Det går flyg från Arlanda till Hemavan Tärnaby Airport, och från flygplatsen går du till backarna. Länstrafiken i Västerbotten kör linje 31 mellan Umeå och Hemavan.'
 where slug = 'hemavan';
 
 -- ── hemsedal ──────────────────────────────────────────────────────────
@@ -240,18 +243,22 @@ where slug = 'hemsedal';
 --     ischgl.com/en/plan-your-trip/ischgl-a-z/landeck-zams-bahnhof_infra_100001697
 --   · 21 % blå och 58 % röd, Kitzbühel 54 % blå: databasen. Omdömet stöds av
 --     poängen: nybörjare 5 mot Kitzbühels 6, afterski 10
---   · Skidbussen Landeck–See–Kappl–Ischgl–Galtür, gratis med giltigt
---     liftkort: m.ischgl.com (Skibus Paznaun, via sökning) och
+--   · Skidbussen mellan Galtür, Kappl, See och Ischgl, och bussarna
+--     Landeck-Zams–Galtür gratis med personligt gästkort:
 --     ischgl.com/en/winter/ski-bus
+--   · Gratis skidbuss med liftkortet gäller bara säsongskort:
+--     ischgl.com/en/winter/operating-times-prices/skipass-prices-silvretta
 -- Struket:
 --   · "Österrikes mest ökända partyort"
 --   · Klockslaget för afterskin, som ingen källa bar
 --   · "tullfritt, vilket märks på priserna i butikerna"
 --   · Mathon och Galtür "lugnare"
+--   · "gratis med liftkort": enligt ischgl.com gäller det bara säsongskort,
+--     medan gästkortet ger gratis buss
 
 update resorts set
   notes = 'Ischgl passar dig som vill åka mycket rött och gå på afterski. Silvretta Arena har 239 kilometer pist och går över gränsen till Samnaun, den enda tullfria zonen i Schweiz. Är du nybörjare är Ischgl fel val. Bara en femtedel av pisten är blå, och Kitzbühel har blå pist på över hälften.',
-  where_to_stay = 'Bo i Ischgl om du vill gå till liftarna. Tre gondoler går upp från byn: Silvrettabahn, Fimbabahn och Pardatschgratbahn. Från Galtür, Kappl och See går skidbussen till Ischgl, gratis med liftkort.',
+  where_to_stay = 'Bo i Ischgl om du vill gå till liftarna. Tre gondoler går upp från byn: Silvrettabahn, Fimbabahn och Pardatschgratbahn. Från Galtür, Kappl och See går skidbussen till Ischgl, gratis med gästkortet från ditt boende.',
   transport_info = 'Flyg till Innsbruck. Med tåg åker du till Landeck-Zams och tar bussen därifrån till Ischgl.'
 where slug = 'ischgl';
 
@@ -352,9 +359,9 @@ where slug = 'livigno';
 --   · 155 km: databasen
 --   · Centrum till stor del bilfritt, linbanan 5 Laghi nära centrum:
 --     locautorent.com (tredje part)
---   · Trentino Trasporti Trento–Sarche–Tione–Madonna di Campiglio,
---     vintertidtabellen 10 september 2025–26 juni 2026: campigliodolomiti.it
---     (PDF, via sökning)
+--   · Trentino Trasporti B201 Trento–Tione med anslutning
+--     Tione–Pinzolo–Madonna di Campiglio, tidtabellen 10 september 2025–26
+--     juni 2026: campigliodolomiti.it (PDF, läst med pdftotext)
 -- Struket:
 --   · "Elegant ort", "Alpernas mest dramatiska", "hit åker italienarna
 --     själva"
@@ -377,22 +384,21 @@ where slug = 'madonna-di-campiglio';
 --     nedfarter, Hintertux året runt, Zillertalbahn Jenbach–Mayrhofen:
 --     en.wikipedia.org/wiki/Mayrhofen
 --   · Poängen: avancerad 8, afterski 9
---   · Horbergbahn från Schwendau till Penken:
---     skiresort.com/en/ski-resort/mayrhofen-penken-ahorn-rastkogel-eggalm-mountopolis/ski-lifts/l1364/
---     och mayrhofen.at (via sökning)
 --   · Gratis skidbussar till Ahornbahn, Penkenbahn, Horbergbahn och Möslbahn
 --     i Mayrhofen-Hippach:
 --     mayrhofen.at/en/stories/skibus-mayrhofner-bergbahnen
+--   · Horbergbahn med dalstation i Stockach och bergstation Horberg:
+--     skiresort.com/en/ski-resort/mayrhofen-penken-ahorn-rastkogel-eggalm-mountopolis/ski-lifts/l1364/
 -- Struket:
 --   · "snön nere i dalen är opålitlig" som eget påstående; kvar står bara
 --     att åkningen sker uppe på bergen
 --   · Penkenbahn som "den lift du använder mest"
 --   · "Hippach är lugnare och har egen lift": liften heter Horbergbahn och
---     går från Schwendau
+--     går från Stockach
 
 update resorts set
   notes = 'Mayrhofen passar dig som vill åka brant och gå på afterski i byn. På Penken går Harakiri, som orten kallar Österrikes brantaste pist, med 78 procents lutning. Byn ligger på 630 meter, så åkningen sker uppe på Penken och Ahorn. Hintertuxer Gletscher längre in i Zillertal har åkning året runt.',
-  where_to_stay = 'Penkenbahn går från byn upp till Penken, och Ahornbahn till Ahorn, där nedfarterna mest är blå och röda. Från Schwendau går Horbergbahn upp i samma område. Gratis skidbussar går till dalstationerna i Mayrhofen och Hippach.',
+  where_to_stay = 'Penkenbahn går från byn upp till Penken, och Ahornbahn till Ahorn, där nedfarterna mest är blå och röda. Horbergbahn från Stockach går upp till Horberg i samma område. Gratis skidbussar går till dalstationerna i Mayrhofen och Hippach.',
   transport_info = 'Flyg till Innsbruck. Med tåg byter du i Jenbach till Zillertalbahn, som går ända in till Mayrhofen.'
 where slug = 'mayrhofen';
 
@@ -484,7 +490,8 @@ where slug = 'riksgransen';
 --   · Bilfri bykärna, lägenheter, hotellrum vid backarna och stugliknande
 --     boende, Kuusamo med mer service:
 --     ruka.fi/en/skiresort/accommodation/rukavillage
---   · Finnair Helsingfors–Kuusamo: finnair.com (via sökning)
+--   · Finnair Helsingfors–Kuusamo:
+--     finnair.com/en/flights/city-to-city/hel/kao/flights-from-Helsinki-to-Kuusamo
 -- Struket:
 --   · "under mörkertiden ingår norrskenet i paketet"
 --   · "räkna med två dagar från Stockholm", en handskriven restid
@@ -507,10 +514,11 @@ where slug = 'ruka';
 --   · 100 km, 20 % blå, topp 3 573 m: databasen. Poängen: snösäkerhet 9
 --   · Parkeringshuset vid infarten, eldrivna taxibilar, fem gratis
 --     elbusslinjer under högsäsong: de.wikivoyage.org/wiki/Saas-Fee
---   · Alpin Express från byn: seilbahninventar.ch (via sökning); Metro Alpin
---     från Felskinn: en.wikipedia.org/wiki/Metro_Alpin
 --   · Hohsaas i Saas-Grund och Furggstalden i Saas-Almagell:
 --     saastalbergbahnen.ch
+--   · Alpin Express från byns centrum med gångbro till parkeringshuset:
+--     seilbahninventar.ch/objekt.php?objid=40464
+--   · Metro Alpin från Felskinn: en.wikipedia.org/wiki/Metro_Alpin
 -- Struket:
 --   · "världens högsta bergbana under jord"
 --   · "snön hör till Alpernas säkraste"
@@ -520,7 +528,7 @@ where slug = 'ruka';
 
 update resorts set
   notes = 'Saas-Fee passar dig som vill ha säker snö och bo i en bilfri by. Skidområdet når 3 573 meter, och Metro Alpin, en bergbana i tunnel, går upp till Mittelallalin. Byn har varit bilfri sedan 1951 och är omgiven av 13 toppar över 4 000 meter. Pisten är 100 kilometer, och bara en femtedel av den är blå.',
-  where_to_stay = 'Bilen ställer du i parkeringshuset vid infarten. I byn går du, åker eldriven taxi eller tar någon av elbussarna, som är gratis under högsäsong. Alpin Express går från byn upp till Felskinn, där Metro Alpin börjar. Saas-Grund och Saas-Almagell i samma dal har egna skidområden, Hohsaas och Furggstalden.',
+  where_to_stay = 'Bilen ställer du i parkeringshuset vid infarten. I byn går du, åker eldriven taxi eller tar någon av elbussarna, som är gratis under högsäsong. Alpin Express går från byns centrum, med gångbro till parkeringshuset, upp mot Felskinn, där Metro Alpin börjar. Saas-Grund och Saas-Almagell i samma dal har egna skidområden, Hohsaas och Furggstalden.',
   transport_info = 'Flyg till Genève eller Zürich. Med tåg åker du till Visp eller Brig och tar postbussen upp.'
 where slug = 'saas-fee';
 
@@ -569,10 +577,10 @@ where slug = 'salen';
 --   · Poängen: snösäkerhet 9, afterski 9
 --   · Gaislachkoglbahn från Dorfstraße i Sölden: soelden.com
 --     (Gaislachkoglbahn I + II)
---   · Giggijochbahn från infarten till Sölden: tirol.at och soelden.com (via
---     sökning)
 --   · Hotellen i Hochsölden direkt vid pisten: hotelhochsoelden.at och
 --     skihotel-edelweiss.at (hotellens egna sidor)
+--   · Giggijochbahn, Giggijochstraße 18 i Sölden: soelden.com
+--     (Giggijochbahn)
 -- Struket:
 --   · "mer funktionell än vacker; hit åker man för snön, inte för vykorten"
 --   · "lika känd för sitt uteliv som för åkningen"
@@ -599,7 +607,7 @@ where slug = 'solden';
 --   · St. Christoph på 1 793 m med ett fyrtiotal invånare:
 --     stantonamarlberg.com (St. Christoph)
 --   · St. Christoph och Stuben i Ski Arlberg:
---     en.wikipedia.org/wiki/Ski_Arlberg (via sökning)
+--     en.wikipedia.org/wiki/Ski_Arlberg
 -- Struket:
 --   · "Österrikes största sammanhängande skidområde"
 --   · "har rykte om sig att vara brant"
@@ -754,10 +762,10 @@ where slug = 'voss';
 --   · 322 km, topp 3 899 m: databasen. Poängen: snösäkerhet 10, avancerad
 --     10, offpist 10
 --   · Bahnhofstrasse som huvudgata: en.wikipedia.org/wiki/Monte_Rosa_Hotel
---   · Matterhorn Express dalstation vid Schluhmatte i byns ände:
---     matterhornparadise.ch (nyheten om nya dalstationen, via sökning)
---   · Gornergratbanans station i Zermatt:
---     en.wikipedia.org/wiki/Zermatt_GGB_railway_station (via sökning)
+--   · Matterhorn Express dalstation på Schluhmattstrasse:
+--     matterhornparadise.ch/en/about/news/new-matterhorn-express-valley-station_news_3496913
+--   · Gornergratbanans station mitt emot Zermatts järnvägsstation:
+--     en.wikipedia.org/wiki/Zermatt_GGB_railway_station
 -- Struket:
 --   · "den säkraste snön i Alperna"
 --   · "en by som hör till de vackraste i Schweiz"
@@ -768,10 +776,12 @@ where slug = 'voss';
 --   · "har hotellen, butikerna och restaurangerna" om Bahnhofstrasse
 --   · "hotellens skjutsar"
 --   · "den längsta promenaden i pjäxor", ersatt med var liftarna går
+--   · "i byns ände" om Matterhorn Express: Zermatt Bergbahnens sidor anger
+--     bara gatan
 
 update resorts set
   notes = 'Zermatt passar dig som vill åka brant och offpist med säker snö. Matterhorn Ski Paradise har 322 kilometer pist och når 3 899 meter, och från Plateau Rosa åker du över gränsen till Cervinia i Italien. På glaciären bakom Klein Matterhorn går det att åka även under delar av sommaren.',
-  where_to_stay = 'Privatbilar får inte köras i Zermatt, så i byn går du till fots, och bagaget tar eldrivna taxibilar. Bahnhofstrasse är huvudgatan. Gornergratbanan går från stationen och Matterhorn Express från Schluhmatte i byns ände, så bo nära den du ska åka mest.',
+  where_to_stay = 'Privatbilar får inte köras i Zermatt, så i byn går du till fots, och bagaget tar eldrivna taxibilar. Bahnhofstrasse är huvudgatan. Gornergratbanan går från stationen och Matterhorn Express från Schluhmattstrasse, så bo nära den du ska åka mest.',
   transport_info = 'Flyg till Genève eller Zürich och ta tåget via Visp. Kör du ställer du bilen i Täsch och tar pendeltåget därifrån in till Zermatt.'
 where slug = 'zermatt';
 

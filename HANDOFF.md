@@ -555,9 +555,16 @@ saknade stöd: Alpin Express i Saas-Fee går inte från "södra änden", Mayrhof
 Horbergbahn från Schwendau och inte "Hippachs egen lift", Foscagnopasset brukar vara öppet året
 runt, Méribels gondol Olympe börjar i Brides-les-Bains, Scandinavian Mountains Airport har nio
 destinationer och inte "ett fåtal linjer", och Altibus skriver inte att bussarna till Val Thorens
-möter tågen. Tio källor är tredjepartssidor och märkta så i migrationen. Kontrollskriptet
+möter tågen. Nio källor är tredjepartssidor och märkta så i migrationen. Kontrollskriptet
 avbryter bygget om ett mönster, en handskriven tid eller en okontrollerad uppgift finns kvar,
 och gav noll.
+
+**Ingen uppgift vilar på ett sökresultat.** Tolv källor hade bara setts som sammanfattning i
+WebSearch och öppnades i en tredje genomgång, tidtabellen från Trentino Trasporti med
+`pdftotext`. Två var fel: skidbussen i Paznaun är gratis med gästkortet, och gratis med liftkort
+bara för säsongskort; Horbergbahns dalstation ligger i Stockach. Tre detaljer ströks. Claude i
+Chrome var inte anslutet, och `m.ischgl.com` vägrade anslutning både från WebFetch och
+webbläsarpanelen.
 
 **Kod i samma commit.** `bilMening` i `lib/restider.js` skriver bilresan på jämförelsesidorna
 och alpsidorna. Nordiska orter får Stockholm, Göteborg och Malmö, alporterna bara Malmö, samma

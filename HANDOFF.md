@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e och 13:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e och 15:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -65,6 +65,11 @@ Riktningen: **inte fler poäng på tiogradig skala.** Fler svenska orter ska in,
 högsta prioritet (Fabian 13 september, efter att målgruppen omprövats). Det som byggs ska vara
 sådant en svensk faktiskt söker på och som varken skiresort.com eller en språkmodell kan svara
 på.
+
+**15 september: 108 exponeringar om dagen och 7 klick på en vecka.** Siffrorna står under
+"Uppmätt 15 september" nedan. Kort sagt har ortsidorna 79 % av exponeringarna på snittposition
+22 och gav 2 klick, medan jämförelsesidorna ligger på 9,8 och gav 3. `/salen-eller-alperna`
+fick noll exponeringar den veckan; positionen 1,7 ovan vilade på en handfull.
 
 **Affiliate-ID:t är medvetet uppskjutet.** Fabians beslut 8 september: trafik först, intäkt
 sedan. `NEXT_PUBLIC_BOOKING_AID` är tom, länkarna byggs utan `aid`, och klick ger noll
@@ -456,6 +461,78 @@ elva nordiska orter. Förslaget som väntar på svar: topp 5 efter vad du vill h
 "Kortast resa" som ett av valen. Poäng används inte, eftersom poängskalan själv säger att
 mittfältet inte går att jämföra.
 
+## Uppmätt 15 september
+
+**Search Console-exporten för 7–13 september**: Coverage, sökresultat och AI-ytor, alla på
+"senaste 7 dagarna". Inget i koden eller databasen ändrades.
+
+| | 11–21 aug | 31 aug–6 sep | 8–13 sep |
+|---|---|---|---|
+| Exponeringar per dag | 20 | 75 | 108 |
+| Klick | 1 | 6 | 7 |
+
+Veckan gav 1 002 exponeringar och 7 klick. **7 september är en engångstopp:** 354 exponeringar
+på position 30,5, en tredjedel av veckan på en dag. Exporten delar inte upp frågorna per dag, så
+orsaken syns inte. Utan den dagen blir det 648 exponeringar, CTR 1,08 % och snittposition 14,1.
+Alla sju klicken kom 9–13 september, lika många som sajten fått totalt fram till 6 september.
+Sverige stod för 883 exponeringar och alla klick. Mobilen gav 6 klick på position 11,2, desktop
+1 klick på 26,9.
+
+**Ortsidorna har volymen, jämförelsesidorna får klicken.**
+
+| Sidtyp | Exponeringar | Klick | CTR | Position |
+|---|---|---|---|---|
+| Ortsidor (26) | 797 | 2 | 0,25 % | 22,0 |
+| Jämförelsesidor (15) | 122 | 3 | 2,5 % | 9,8 |
+| Nattåget, Åre eller Alperna | 56 | 2 | 3,6 % | 12,9 |
+
+Åre och Sälen, de två största sidorna, gav noll klick på position 24,9 och 23,6. Av
+jämförelsesidornas 122 exponeringar gällde 114 två nordiska orter, och alla tre klicken.
+
+**Frågorna.** Exporten redovisar bara 445 av 1 002 exponeringar och inget av klicken, så
+uppdelningen gäller under hälften av trafiken.
+
+| Ämne | Exponeringar | Position |
+|---|---|---|
+| Fallhöjd | 45 | 11,8 |
+| Pris och liftkort | 76 | 23,5 |
+| Resa och avstånd | 58 | 29,7 |
+| Höjd över havet | 26 | 33,8 |
+| "vs" och "eller" | 15 | 8,9 |
+
+Fallhöjden ligger precis under sidan 1: `fallhöjd åre` 10,5 och `fallhöjd sälen` 10,8, mot 18,7
+den 8 september räknat över en längre period. Riksgränsen syns på 31 frågor på snittposition 51
+och St. Anton på 22 frågor på 42. Namngivna backar, liftar och boenden — `la gondola åre`,
+`väggen sälen`, `meteorologen riksgränsen` — gav 29 exponeringar på position 40. Prisfrågor med
+"liftkort" eller "skipass" ligger på 26,9 och de utan på 16,1: `sälen priser` står på 12,6 och
+`liftkort sälen pris` på 59. Vilken sida Google visar för vilken fråga syns inte i exporten.
+Ingen fråga innehöll "nära", "närmast", "skidorter" eller "sportlov".
+
+**AI-ytorna gav 70 exponeringar på veckan**, mot 52 totalt fram till 6 september: ortsidor 45,
+jämförelsesidor 21 och guider 4. Jämförelsesidorna har alltså 30 % av AI-exponeringarna mot 12 %
+av sökningen. Störst är `/jamfor/salen-vs-trysil` med 8, Ruka med 7 och Zermatt med 6.
+
+**20 av sitemapens 65 adresser fick ingen exponering**, bland dem `/salen-eller-alperna`,
+`/liftkortspriser`, `/sportlov`, Hemavan, Myrkdalen, Tignes, Voss och nio jämförelsesidor.
+`/salen-eller-alperna` är kontrollerad live: 200, rätt canonical, ingen noindex och med i
+sitemapen. Det är inget tekniskt fel.
+
+**Coverage-exporten är oförändrad** och slutar 4 september: 52 indexerade, 34 noindex, 8
+upptäckta, 4 genomsökta och 1 omdirigering.
+
+**Vanliga frågor (11 september) och SJ:s nattåg (13 september) hann inte mätas.** Position 14,9
+den 8–10 september mot 13,2 den 11–13 bygger på tre dagar mot tre och säger inget om orsaken.
+Nästa export görs kring 26 september med Datum → Jämför, 28 augusti–10 september mot 11–24
+september. Då står båda perioderna på samma rad per fråga och sida.
+
+**Ordningen står kvar.** Genomgången föreslog att flytta upp fler svenska orter, med
+jämförelsesidornas nordiska andel som skäl. Fabian valde 15 september att behålla ordningen från
+13 september. Fler svenska orter tas senare, och frågan är avgjord.
+
+**Okontrollerat sidofynd.** Riksgränsens meta-beskrivning säger "Liftkort 520 kr/dag, 2 547 kr
+för sex dagar" utan säsong, och enligt avsnittet om pristabellen under Praktiskt är Riksgränsens
+rad från 2025/2026. Vilken säsong beskrivningen läser är inte kontrollerat.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -550,6 +627,13 @@ Ortsidan tog över de ortspecifika frågorna i #29. Vad prislistesidan ska vara 
 obesvarat. **Massproducerade `/liftkortspriser/<ort>` är fel väg** — det är precis de
 mallsidor som motverkar målet.
 
+Mätt 15 september: noll exponeringar igen. Prisfrågor med "liftkort" eller "skipass" ligger på
+position 26,9, de utan på 16,1. **Kontrollera först i Search Console vilken sida som visas** för
+`liftkort sälen pris` (`&query=*liftkort` och `&breakdown=page`), innan något ändras på ortsidan
+eller här. En sida om prisökningen passar principen, eftersom en språkmodell inte kan räkna ut
+den, men den kräver två uppmätta säsonger av samma kort. Efter oktober har troligen bara de fyra
+orterna med 25/26-rader det; om fler har ett äldre pris att hämta är inte kontrollerat.
+
 **4. Sportlovssidan är byggd — det som återstår är priserna.** `/sportlov` svarar på
 veckan och nattåget. Prisdelen väntar på oktoberinsamlingen, och den ska då riktas mot
 SkiStar-orternas veckopriser: Åre, Sälen, Hemsedal och Trysil sätter priset efter
@@ -561,11 +645,15 @@ mot vårt tal på 170. Grandvaliras flerdagarskort ger 308 mot vårt 215. Sälen
 Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
 
 **6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
-Filter och sortering ingår där.
+Filter och sortering ingår där. Mätt 15 september: startsidan hade 20 exponeringar på position
+20,6, och ingen fråga innehöll "nära", "närmast" eller "skidorter". Resefrågorna gäller en ort,
+som `sälen stockholm`, och besvaras på ortsidan. Datan ger alltså inget stöd än för en egen adress
+per stad; bygg startsidan för besökarna och räkna inte med söktrafik från den.
 
 **7. Fler svenska orter** — Vemdalen, Idre Fjäll, Branäs, Romme, Kungsberget. De ska in, men är
 inte högsta prioritet (13 september). De ger också topplistorna på startsidan mer variation.
-Kräver research, inte kod.
+Kräver research, inte kod. **Fabian 15 september: tas senare**, trots att 114 av
+jämförelsesidornas 122 exponeringar gällde nordiska par. Avgjort — ta inte upp det igen.
 
 **8. Vandring**, med datamodellen delad i plats och aktivitet först.
 
@@ -650,6 +738,14 @@ bättre".
 **Läs Coverage-exporten före drilldownen i Search Console.** Drilldownen visar bara den
 värsta hinken; att läsa den som hela sajten ger slutsatsen att Google aldrig hämtat något,
 vilket är fel.
+
+**Frågeexporten visar under hälften av trafiken.** 15 september redovisade `Frågor.csv` 445 av
+1 002 exponeringar och inget av de sju klicken; resten är frågor Google inte redovisar. En
+uppdelning på ämnen gäller bara den delen, och exporten kopplar inte frågor till sidor. Coverage-
+exporten släpar: hämtad 15 september slutade den 4 september.
+
+**Sitemapen skriver startsidan utan snedstreck**, `https://alpkoll.se`, medan Search Console
+skriver `https://alpkoll.se/`. En skriptad jämförelse mellan dem räknar startsidan som osedd.
 
 **Search Console går att läsa direkt via Claude i Chrome**, utan export. Filtren står i
 adressen: `&query=*pris` betyder "frågan innehåller pris" (chipet visar "+pris"),

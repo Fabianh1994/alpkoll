@@ -109,10 +109,12 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–13 september:
+`main` är i fas med `origin/main`. Mergat 8–15 september:
 
 | PR | Vad |
 |---|---|
+| #53 | Alla 30 ortstexter omskrivna (migration 029), bilresan på jämförelsesidorna |
+| #50, #51, #52 | Handoffar 13 och 15 september |
 | #49 | Skrivregler i `docs/copy.md` |
 | #48 | Sakfelen från copygranskningen (migration 028) |
 | #47 | SJ:s nattåg till Åre (migration 027) |
@@ -431,7 +433,7 @@ budskap, och inte heller nyheter, eftersom han inte kommer att skriva nytt ofta.
 innehåll som räknas fram. Första försöket med nyhetspuffar och en vinterkalender underkändes
 av det skälet.
 
-Skissen ligger på grenen **`startsida-skiss`, committad lokalt (8b110ce) men inte pushad**, på
+Skissen ligger på grenen **`startsida-skiss` (8b110ce), pushad till GitHub 15 september men utan PR**, på
 `/skiss-startsida`, som är noindex och inte länkad:
 
 - **Du åker från:** fem städer (den största i vart och ett av de fem största länen), "Fler
@@ -535,8 +537,8 @@ rad från 2025/2026. Vilken säsong beskrivningen läser är inte kontrollerat.
 
 ## Vad som gjordes 15 september: ortstexterna
 
-**Alla 30 ortstexter är omskrivna, i migration 029 på grenen `ortstexter` (84a7e6f).
-Grenen är committad lokalt men inte pushad, och 029 är inte körd.** Fälten `notes`,
+**Alla 30 ortstexter är omskrivna och live.** Migration 029 mergades i #53, kördes av Fabian
+kvällen 15 september och är verifierad, se nedan. Fälten `notes`,
 `where_to_stay` och `transport_info` skrevs om för alla publicerade orter på en gång, i rösten
 från provomgången. Under varje ort i migrationen står källan för varje nytt namn, det som
 följt med ur den gamla texten utan omkontroll, och det som strukits. Före och efter står sida vid
@@ -572,9 +574,19 @@ val som ortsidans vanliga frågor. Etiketten "Med tåg och flyg" på ortsidan he
 Verifierat i dev-servern: meningen syns på `/jamfor/salen-vs-trysil`, `/jamfor/are-vs-val-thorens`
 och båda alpsidorna med rätt tal, och serverloggen har inga fel. ESLint ger inga fel.
 
-**Merga före körning, tvärtom mot rådet under Praktiskt.** Körs 029 först står jämförelsesidorna
-utan bilresa tills deployen är klar, eftersom de handskrivna tiderna redan är borta ur texten.
-Efterkontrollerna står längst ner i migrationen: den första ska ge 30, den andra noll rader.
+**Körd och verifierad 15 september.** #53 mergades 19.37 UTC och 029 kördes efter merge.
+Uppmätt med anon-nyckeln: alla 30 orter stämmer tecken för tecken mot migrationen i alla tre
+fälten, efterkontroll 1 gav 30 och efterkontroll 2 noll rader. Livesidorna visade ändå de gamla
+texterna, eftersom produktionsbygget förrenderats innan SQL:en kördes. En omdeploy i Vercel,
+utan byggcache, löste det direkt: ortsidorna för Sälen, Ischgl och Zermatt, startsidan,
+`/jamfor/salen-vs-trysil` och `/salen-eller-alperna` visar de nya texterna och ingen av de
+gamla. Övriga ortsidor är inte öppnade live. Om byggcachen hade spelat roll är inte prövat.
+
+**Ordningen när en textmigration förutsätter ny kod:** merga, kör SQL:en, gör om deployen.
+Körs SQL:en först saknar sidorna det koden ska visa i stället, här bilresan på
+jämförelsesidorna. Det är tvärtom mot rådet under Praktiskt, som gäller migrationer utan
+kodberoende. Sajten har ingen `revalidatePath` eller `revalidateTag`, så omdeployen är enda
+sättet att slippa vänta en timme.
 
 **Tre fynd på vägen.** SJ:s nattåg norr om Boden drogs in i april 2026, och Trafikverket har
 upphandlat Stockholm–Narvik utan byte från december 2026 till december 2028. Riksgränsens
@@ -735,7 +747,7 @@ omdeploy och därmed omrendering, så kör hellre SQL:en först och mergar sedan
 auto-lägets klassificerare, vilket är en annan mekanism än behörighetslistan.
 
 **Migrationer:** 29 filer i `supabase/migrations/`, alla körda och verifierade till och med
-**028**. **029 (ortstexterna) är skriven men inte körd**, och ligger bara på grenen `ortstexter`. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
+**029**. Fabian kör dem själv i Supabase SQL Editor; sessionen har bara anon-nyckeln — men
 den räcker för att läsa hela `resorts`, `lift_pass_prices` och `resort_images`, vilket är
 hur granskningarna görs.
 

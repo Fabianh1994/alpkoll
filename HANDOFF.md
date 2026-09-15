@@ -549,9 +549,15 @@ ströks. Talen i texterna, alltså pist, fallhöjd, toppens höjd och andel blå
 databasen för alla 30. Tio orter säger fel val, och varje omdöme har ett poängpar som stöder
 det.
 
-**24 uppgifter följde med ur dagens text utan att kontrolleras om.** De står ort för ort i
-migrationen och artefakten, till exempel Rond-Point des Pistes och bussarna från Umeå till
-Hemavan. Fabian har inte tagit ställning till dem.
+**De 24 uppgifter som följde med ur de gamla texterna är kontrollerade**, på Fabians begäran
+samma dag. Det som gick att belägga står kvar med källa, resten är struket. Sex var fel eller
+saknade stöd: Alpin Express i Saas-Fee går inte från "södra änden", Mayrhofens lift är
+Horbergbahn från Schwendau och inte "Hippachs egen lift", Foscagnopasset brukar vara öppet året
+runt, Méribels gondol Olympe börjar i Brides-les-Bains, Scandinavian Mountains Airport har nio
+destinationer och inte "ett fåtal linjer", och Altibus skriver inte att bussarna till Val Thorens
+möter tågen. Tio källor är tredjepartssidor och märkta så i migrationen. Kontrollskriptet
+avbryter bygget om ett mönster, en handskriven tid eller en okontrollerad uppgift finns kvar,
+och gav noll.
 
 **Kod i samma commit.** `bilMening` i `lib/restider.js` skriver bilresan på jämförelsesidorna
 och alpsidorna. Nordiska orter får Stockholm, Göteborg och Malmö, alporterna bara Malmö, samma

@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e och 15:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e och 16:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -109,10 +109,14 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–15 september:
+`main` är i fas med `origin/main`. Mergat 8–16 september:
 
 | PR | Vad |
 |---|---|
+| #57 | Restiden på sportlovssidan blir staplar; tabellen fick inte plats på en telefon |
+| #56 | Sportlovssidans avsnitt blir riktiga rubriker (h2 och h3) |
+| #55 | Om oss omskriven utan personliga uppgifter |
+| #54 | Handoff: 029 körd och verifierad |
 | #53 | Alla 30 ortstexter omskrivna (migration 029), bilresan på jämförelsesidorna |
 | #50, #51, #52 | Handoffar 13 och 15 september |
 | #49 | Skrivregler i `docs/copy.md` |
@@ -598,6 +602,70 @@ eget område; enligt SkiStar ligger Turistsenteret på södra sidan och Høyfjel
 Fageråsen. Tignes har inte längre glaciäråkning året runt, och Val Thorens liftar på
 Péclet-glaciären togs bort 2002.
 
+## Vad som gjordes 16 september: sportlovssidan
+
+Två PR:ar, båda mergade av Fabian samma kväll och verifierade live efter deployen. Ingen
+migration — ren kod, så omdeployen räckte.
+
+**Sidans avsnitt är riktiga rubriker (#56).** `/sportlov` hade en enda rubriktagg,
+`<h1>Sportlov 2027</h1>`, och noll h2–h6 — kontrollerat mot live med `curl` innan något
+ändrades, inte övertaget ur den här filen. Avsnitten syntes som avsnitt men var `div`-ar.
+Veckans datumspann är nu `h2` och de fyra kortetiketterna `h3`.
+
+**Varför datumet och inte blocken blev h2:** väljaren skriver ut alla fyra veckorna i
+markupen och döljer tre med `display: none`, medvetet, så att innehållet finns i första
+HTML-svaret. En h2 per block hade gett fyra likadana rubriker i dokumentet. Datumen skiljer
+sig åt. De dolda veckorna faller ur tillgänglighetsträdet, så den som läser med skärmläsare
+möter h1, en h2 och fyra h3 för den vecka som visas. Två etiketter står kvar som `div`:
+"Sportlov vecka N" säger samma sak som h2:an strax under, och etiketten i Stockholmsrutan
+hör till ett avsnitt som redan har sin h3.
+
+**Uppmätt att ingenting flyttade sig:** före och efter i samma dev-server, med `git stash`
+emellan. Korten låg på samma pixel i båda körningarna (`454:142 | 608:357 | 976:314 |
+1303:534 | 1849:112`) och sidan var 2336 px hög. Beräknad stil identisk: h2 Bebas Neue
+38 px vikt 400, h3 Barlow 10 px vikt 500 versaler. Vikt och marginal står uttryckligen i
+inline-stilen i stället för att lita på att Tailwinds preflight nollar dem.
+
+**Restidstabellen blev staplar (#57).** Tabellen var tre städer gånger fyra orter med
+`minWidth: 420`. Vid 375 px fanns inte plats, så den fjärde orten låg utanför skärmen bakom
+systemets ljusa rullningslist, mitt i ett mörkt kort. Varje stad har nu en egen lista: ort
+till vänster, stapel i mitten, tiden i klartext till höger, kortaste resan i guld som förut.
+
+**Skalan är gemensam för alla tre städerna.** Med en skala per stad hade Sälen från
+Stockholm och Sälen från Malmö fått lika långa staplar trots fyra timmars skillnad, och
+stapeln sagt emot talet bredvid sig.
+
+**Uppmätt, före och efter i samma dev-server**, räknat som antal element vars innehåll är
+bredare än sin ruta:
+
+| Bredd | före | efter |
+|---|---|---|
+| 375 px | 1 — tabellens ruta, 420 px innehåll i 278 px | 0 |
+| 430 px | 1 — 420 px i 330 px | 0 |
+| 1440 px | 0 | 0 |
+
+De 142 pixlar som låg utanför vid 375 px var Kitzbühel — alltså precis den ort som är
+poängen med raden från Malmö, där Alperna är närmare än Åre. Antalet `<table>` i `main`
+gick från 4 till 0, fyra därför att alla fyra veckorna skrivs ut. Proportionerna stämmer
+mot talen: Sälen från Stockholm ritas 161 px av 578, och 5,9 av 21,1 timmar är 28 %.
+
+**Vad det kostade:** kortet växte från 534 till 944 px i den bredd som mättes. Tolv rader
+tar mer plats än tre. Bytet är sidled mot neråt.
+
+**Live verifierad efter merge:** `X-Vercel-Cache: PRERENDER` på första hämtningen, alltså
+en färsk sida och inte en ur cachen. Noll `<table>` och fyra h2 på `alpkoll.se/sportlov`.
+
+**Två fynd som inte är rättade, båda noterade i #57:**
+
+*Texten under restiden säger fel.* "Bor du i Malmö är Kitzbühel närmare än Åre. Det är en
+och en halv timme kortare med bil." Talen ger 15,5 mot 14,2 timmar, alltså 1 timme och
+17 minuter. "Knappt fem timmar" till Trysil stämmer exakt.
+
+*Samma sorts tabell finns på tre andra sidor.* `/liftkortspriser`,
+`/nattaget-till-alperna` och jämförelsesidorna har alla `overflowX: auto` utan att
+rullningslisten är formgiven. Om de har samma problem är **inte mätt** — mätningen är en
+rad JavaScript i en iframe med rätt bredd, se #57.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -617,12 +685,8 @@ att den fanns, inte vad den visade. Rättad 11 september, se ovan.
 webbläsaren, inte antaget. Vercel Analytics är cookielöst. Skulle något ändras är det den
 mätningen som ska göras om först.
 
-**En punkt kvar, liten:**
-
-*Sportlovssidan har bara h1 och inga h2.* Blocken är div-rubriker med etikett. Övriga sidor
-har rätt struktur.
-
-FAQ-punkten är avklarad 11 september, se ovan.
+**Checklistan är slut.** Den sista punkten — sportlovssidan hade bara h1 och inga h2 — är
+avklarad 16 september i #56, se nedan. FAQ-punkten är avklarad 11 september, se ovan.
 
 **Falsklarm värda att känna igen:** snalltaget.se ger 403 på HEAD utan user-agent men 200
 på GET — länken är hel. Och sidor med HTML-entiteter (&#xD6;sterrike) hittas inte av en
@@ -869,6 +933,15 @@ HTML i `.next/server/app/` när de två säger emot varandra.
 **PowerShell tar bort dubbla citattecken i `node -e`.** Ett skript i en here-string kom fram till
 Node utan dem och gav syntaxfel. Skriv skriptet till en fil och kör filen.
 
+**Python finns inte på maskinen**, och `python` öppnar Microsoft Store-genvägen i stället för
+att fela tydligt. Ett kommando som rör en fil med Python ser då ut att lyckas medan filen är
+orörd — kontrollera utfallet, inte exitkoden. Node finns.
+
+**`scripts/` ligger på grenen `startsida-skiss`, inte på `main`.** Skripten som mätte de
+3 000 sträckorna med OSRM följde med skissen och har aldrig mergats. En engångsfil som
+importerar ur `lib/` måste alltså läggas i en katalog som finns på grenen du står på, och
+den måste ligga inuti repot — en `.mjs` i `%TEMP%` hittar inte `../lib/restider.js`.
+
 **OSRM:s table-API räcker för tusentals sträckor.**
 `router.project-osrm.org/table/v1/driving/<koordinater>?sources=…&destinations=…&annotations=duration,distance`,
 med tio källor och trettio mål per anrop. Det gav samma tal som route-API:t för alla 90 lagrade
@@ -891,6 +964,13 @@ påståenden innan de citeras.
 
 **Testa brytpunkter i en iframe.** Lägg sidan i en iframe med `width:430px` och `375px` i samma
 flik och mät `scrollWidth` där. Så hittades horisontell scroll i skissen 13 september.
+
+**Peka ut vilket element som spiller över, inte bara att sidan gör det.** Sidans egen
+`scrollWidth` säger ingenting när överflödet ligger i en ruta med `overflowX: auto` — sidan
+ser hel ut medan innehållet är gömt inuti. Mät i stället varje element mot sin egen ruta:
+`[...d.querySelectorAll('main *')].filter(e => e.scrollWidth > e.clientWidth + 1)`. Det gav
+`DIV 420>278` på sportlovssidan 16 september, alltså 142 pixlar utanför skärmen, och noll
+efteråt. Kör den mot före-versionen också — `git show main:<fil> > <fil>`, mät, `git checkout <fil>`.
 
 **Wikimedia svarar 429 när dev-servern laddar om många bilder i rad.** Det är bildoptimeringen
 som hämtar originalen igen, inte ett fel i koden. En ny laddning efter en stund gav noll fel.

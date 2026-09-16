@@ -116,17 +116,24 @@ function Veckan({ v, tagetGar }) {
     <>
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
         <div style={etikett}>Sportlov vecka {v.nr}</div>
-        <div style={{
+        {/* Veckans datum är sidans avsnittsrubrik, inte etiketten ovanför.
+            Väljaren skriver ut alla fyra veckorna och döljer tre, så en h2
+            per block hade gett fyra likadana rubriker i dokumentet. Datumet
+            skiljer sig åt mellan veckorna och beskriver det som faktiskt är
+            ett eget avsnitt. fontWeight och margin står uttryckligen för att
+            rubriktaggen inte ska flytta något: preflight nollar dem redan,
+            men inline style vinner oavsett vad som ändras i CSS:en. */}
+        <h2 style={{
           fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px, 4vw, 38px)',
-          color: '#f0ece4', margin: '8px 0 0', letterSpacing: '0.02em',
-        }}>{spann(v.start, v.slut)} {AR}</div>
+          fontWeight: 400, color: '#f0ece4', margin: '8px 0 0', letterSpacing: '0.02em',
+        }}>{spann(v.start, v.slut)} {AR}</h2>
       </div>
 
       {/* ── Nattåget ──
           Sidans egentliga svar. Att veckan ligger där den ligger vet läsaren
           redan; vilken fredag tåget går den veckan står ingen annanstans. */}
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
-        <div style={{ ...etikett, marginBottom: 12 }}>Nattåget den här veckan</div>
+        <h3 style={{ ...etikett, margin: '0 0 12px' }}>Nattåget den här veckan</h3>
         {tagetGar ? (
           <>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
@@ -181,7 +188,7 @@ function Veckan({ v, tagetGar }) {
           här i stället för i prislistan, därför att det är just den vecka
           läsaren valde och just den vecka frågan gällde. */}
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
-        <div style={{ ...etikett, marginBottom: 12 }}>Vad veckan gör med priset</div>
+        <h3 style={{ ...etikett, margin: '0 0 12px' }}>Vad veckan gör med priset</h3>
         <p style={{ ...brod, fontSize: 15, margin: 0 }}>
           I Alperna: ingenting. Ischgl tar samma pris hela säsongen. Alpe d&apos;Huez,
           Les Arcs, Livigno och Kitzbühel har prisband som täcker hela sportlovet i ett
@@ -211,7 +218,7 @@ function Veckan({ v, tagetGar }) {
           sista biten från flygplatsen och svarar inte på frågan; talen här
           är hela sträckan, räknade med en och samma ruttmotor. */}
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
-        <div style={{ ...etikett, marginBottom: 12 }}>Så lång tid tar resan</div>
+        <h3 style={{ ...etikett, margin: '0 0 12px' }}>Så lång tid tar resan</h3>
         <div style={{ overflowX: 'auto', margin: '0 0 16px' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 420 }}>
             <thead>
@@ -280,9 +287,9 @@ function Veckan({ v, tagetGar }) {
           Orientering, uttryckligen inte facit. Se lib/sportlov.js. */}
       {kommuner.length > 0 && (
         <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)' }}>
-          <div style={{ ...etikett, marginBottom: 10 }}>
+          <h3 style={{ ...etikett, margin: '0 0 10px' }}>
             Kommuner med vecka {v.nr}
-          </div>
+          </h3>
           <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
             {kommuner.map((k) => k.kommun).join(', ')}.
           </p>

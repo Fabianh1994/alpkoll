@@ -89,6 +89,18 @@ const RESMAL = [
   { slug: 'kitzbuehel', namn: 'Kitzbühel' },
 ]
 
+/**
+ * Längsta sträckan i tabellen, räknad en gång.
+ *
+ * Skalan är gemensam för alla tre städerna i stället för att börja om per
+ * stad. Annars hade Sälen från Stockholm och Sälen från Malmö fått lika
+ * långa staplar trots fyra timmars skillnad, och stapeln sagt emot talet
+ * bredvid sig.
+ */
+const MAX_MINUTER = Math.max(
+  ...STADER.flatMap((s) => RESMAL.map((r) => bilresa(r.slug, s.nyckel)?.minuter || 0))
+)
+
 function Veckan({ v, tagetGar }) {
   const resa = nattagsresa(v.nr)
   // Sälentåget går via Göteborg fyra lördagar, och två av dem bär en
@@ -219,45 +231,59 @@ function Veckan({ v, tagetGar }) {
           är hela sträckan, räknade med en och samma ruttmotor. */}
       <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
         <h3 style={{ ...etikett, margin: '0 0 12px' }}>Så lång tid tar resan</h3>
-        <div style={{ overflowX: 'auto', margin: '0 0 16px' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 420 }}>
-            <thead>
-              <tr>
-                <th style={{ ...etikett, textAlign: 'left', padding: '0 12px 12px 0' }}>Med bil från</th>
-                {RESMAL.map((r) => (
-                  <th key={r.slug} style={{ ...etikett, textAlign: 'right', padding: '0 0 12px 12px', whiteSpace: 'nowrap' }}>
-                    {r.namn}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {STADER.map((s) => (
-                <tr key={s.nyckel} style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-                  <td style={{
-                    fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
-                    color: '#f0ece4', padding: '13px 12px 13px 0', whiteSpace: 'nowrap',
-                  }}>{s.namn}</td>
-                  {RESMAL.map((r) => {
-                    const resa = bilresa(r.slug, s.nyckel)
-                    // Kortaste restiden från just den staden markeras, så att
-                    // raden går att läsa utan att jämföra fyra tal i huvudet.
-                    const kortast = RESMAL
-                      .map((x) => bilresa(x.slug, s.nyckel)?.minuter)
-                      .filter(Boolean)
-                      .sort((a, b) => a - b)[0]
-                    return (
-                      <td key={r.slug} style={{
-                        fontFamily: 'var(--font-body)', fontSize: 14,
-                        color: resa && resa.minuter === kortast ? ACCENT : 'rgba(255,255,255,0.55)',
-                        padding: '13px 0 13px 12px', textAlign: 'right', whiteSpace: 'nowrap',
-                      }}>{resa ? timmar(resa.minuter) : '—'}</td>
-                    )
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Var en matris med fyra sifferkolumner och minWidth 420. Vid 375 px
+            fanns inte plats, så den fjärde orten låg utanför skärmen bakom
+            systemets egen ljusa rullningslist, mitt i ett mörkt kort.
+            Staplarna bär samma tal utan att något hamnar utanför, och visar
+            dessutom det matrisen dolde: från Stockholm är Kitzbühel 21,1
+            timmar mot Sälens 5,9, alltså en annan storleksordning och inte
+            en kolumn till. Talet står kvar i klartext till höger — stapeln
+            är en läshjälp, inte källan. */}
+        <div style={{ margin: '0 0 18px' }}>
+          {STADER.map((s) => {
+            const rader = RESMAL.map((r) => ({ ...r, minuter: bilresa(r.slug, s.nyckel)?.minuter }))
+            // Kortaste restiden från just den staden markeras, så att
+            // raden går att läsa utan att jämföra fyra tal i huvudet.
+            const kortast = Math.min(...rader.map((r) => r.minuter).filter(Boolean))
+            return (
+              <div key={s.nyckel} style={{ marginBottom: 20 }}>
+                <div style={{ ...etikett, marginBottom: 9 }}>Med bil från {s.namn}</div>
+                {rader.map((r) => {
+                  const ar = r.minuter === kortast
+                  return (
+                    <div key={r.slug} style={{
+                      display: 'grid', gridTemplateColumns: '78px 1fr 58px',
+                      alignItems: 'center', gap: 10, padding: '5px 0',
+                    }}>
+                      <span style={{
+                        fontFamily: 'var(--font-body)', fontSize: 13.5,
+                        fontWeight: ar ? 500 : 400,
+                        color: ar ? ACCENT : 'rgba(255,255,255,0.72)',
+                      }}>{r.namn}</span>
+                      <span style={{
+                        height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)',
+                        overflow: 'hidden',
+                      }}>
+                        {/* Golvet på 4 % är för att den kortaste sträckan ska
+                            synas som en stapel och inte som ingenting. Ingen
+                            rad ligger i dag i närheten av det. */}
+                        <span style={{
+                          display: 'block', height: '100%', borderRadius: 3,
+                          width: r.minuter ? `${Math.max(4, (r.minuter / MAX_MINUTER) * 100)}%` : 0,
+                          background: ar ? ACCENT : 'rgba(255,255,255,0.26)',
+                        }} />
+                      </span>
+                      <span style={{
+                        fontFamily: 'var(--font-body)', fontSize: 13,
+                        color: ar ? ACCENT : 'rgba(255,255,255,0.55)',
+                        textAlign: 'right', whiteSpace: 'nowrap',
+                      }}>{r.minuter ? timmar(r.minuter) : '—'}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
         </div>
         <p style={{ ...brod, fontSize: 15, margin: 0 }}>
           Bor du i Malmö är Kitzbühel närmare än Åre. Det är en och en halv timme

@@ -9,6 +9,7 @@ import { useMinskadRorelse } from '../lib/rorelse';
 import { land, ALLA_LANDER } from '../lib/countries';
 import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
+import Flagga from './Flagga';
 
 const heroImage = 'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg';
 
@@ -63,11 +64,6 @@ function MagBtn({ children, href, primary = false, pill = false }) {
 function ResortCard({ resort, t }) {
   const [hover, setHover] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const flags = {
-    'Switzerland': '🇨🇭', 'France': '🇫🇷', 'Austria': '🇦🇹', 'Japan': '🇯🇵',
-    'Canada': '🇨🇦', 'USA': '🇺🇸', 'Norway': '🇳🇴', 'Sweden': '🇸🇪',
-    'Finland': '🇫🇮', 'Italy': '🇮🇹', 'Andorra': '🇦🇩', 'New Zealand': '🇳🇿', 'Bulgaria': '🇧🇬',
-  };
   return (
     <Link href={`/resort/${resort.slug}`}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
@@ -75,6 +71,20 @@ function ResortCard({ resort, t }) {
         textDecoration: 'none', color: 'inherit', display: 'block', position: 'relative',
         // Lyftet ligger på länken och inte på kortet, så att markeringen
         // nedan följer med i stället för att bli kvar tre pixlar ned.
+        //
+        // Här satt förut en scale på bilden. Ett skalat element som klipps
+        // av en overflow: hidden får ett eget grafiklager, och klippkanten
+        // syntes som en ljus hårfin rad längs bildens underkant — på
+        // skärmen men inte i en skärmdump, eftersom den uppstår först när
+        // lagren sätts samman. Varken att täcka över raden eller att begära
+        // ett eget lager åt klippningen hjälpte; att ta bort skalningen
+        // gjorde det.
+        //
+        // Nästa försök var att skala hela kortet i stället. Det tog också
+        // bort raden, men lade en scale ovanför landsetiketten i trädet,
+        // och etikettens backdrop-filter slutade måla: flaggorna försvann.
+        // Lyftet ensamt är transform nog — det har alltid legat här utan
+        // att störa etiketten.
         transform: hover ? 'translateY(-3px)' : 'none',
         transition: 'transform 0.35s',
       }}>
@@ -89,11 +99,17 @@ function ResortCard({ resort, t }) {
         opacity: hover ? 1 : 0,
         transition: 'opacity 0.35s',
       }} />
+      {/* Kortrutan sträcks till radens höjd. Utan height: 100% omslöt den
+          bara sitt innehåll medan länken ovanför sträcktes av rutnätet, och
+          markeringen sitter på länken: på Alpe d'Huez skilde det 62 pixlar,
+          så den varma ramen ritades så långt under kortets synliga kant.
+          Att korten i en rad nu slutar i samma linje är samma ändring. */}
       <div style={{
         borderRadius: 6, overflow: 'hidden', cursor: 'pointer', background: '#1c1a17',
         border: '1px solid rgba(255,255,255,0.04)',
+        height: '100%', boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
       }}>
-        <div style={{ position: 'relative', height: 200, overflow: 'hidden', background: '#141210' }}>
+        <div style={{ position: 'relative', height: 200, flexShrink: 0, overflow: 'hidden', background: '#141210' }}>
           {/* 32 kort i full originalstorlek är sidans tyngsta post.
               Optimeras när källan får kopieras — se lib/images.js. */}
           {farOptimeras(resort.image_url) ? (
@@ -103,22 +119,18 @@ function ResortCard({ resort, t }) {
               fill
               sizes="(max-width: 700px) 100vw, 340px"
               onLoad={() => setLoaded(true)}
-              style={{
-                objectFit: 'cover', opacity: loaded ? 1 : 0,
-                transform: hover ? 'scale(1.06)' : 'scale(1)',
-                transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.4s',
-              }}
+              style={{ objectFit: 'cover', opacity: loaded ? 1 : 0, transition: 'opacity 0.4s' }}
             />
           ) : (
             <img src={resort.image_url} alt={resort.name} onLoad={() => setLoaded(true)} style={{
               width: '100%', height: '100%', objectFit: 'cover', opacity: loaded ? 1 : 0,
-              transform: hover ? 'scale(1.06)' : 'scale(1)',
-              transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 0.4s',
+              transition: 'opacity 0.4s',
             }} />
           )}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(transparent, #1c1a17)' }} />
-          <div style={{ position: 'absolute', top: 12, left: 12, fontSize: 11, fontWeight: 500, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.75)', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 4, letterSpacing: '0.03em' }}>
-            {flags[resort.country] || ''} {land(resort.country)}
+          <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 500, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.75)', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 4, letterSpacing: '0.03em' }}>
+            <Flagga country={resort.country} />
+            {land(resort.country)}
           </div>
         </div>
         <div style={{ padding: '16px 18px 24px' }}>

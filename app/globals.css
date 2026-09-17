@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+/* Sajten körs bara mörkt. Värdena var kvar från Next.js-mallen: vit
+   bakgrund, som byttes mot #0a0a0a först när systemet stod i mörkt läge —
+   två olika svarta beroende på läsarens systeminställning, på en sajt som
+   inte har något ljust läge. Omslaget i HomeClient målar #121110 över ytan,
+   så den vita body:n syntes inte som en yta, men den låg kvar under allt.
+   Paletten står i CLAUDE.md. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #121110;
+  --foreground: #f0ece4;
 }
 
 /* Sajten formges med inline style-objekt, inte Tailwind-klasser. Kartan
@@ -10,13 +16,6 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {

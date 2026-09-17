@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e och 16:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e och 17:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -665,6 +665,92 @@ och en halv timme kortare med bil." Talen ger 15,5 mot 14,2 timmar, alltså 1 ti
 `/nattaget-till-alperna` och jämförelsesidorna har alla `overflowX: auto` utan att
 rullningslisten är formgiven. Om de har samma problem är **inte mätt** — mätningen är en
 rad JavaScript i en iframe med rätt bredd, se #57.
+## Vad som gjordes 17 september: ortkorten på startsidan
+
+En PR (#59), mergad av Fabian och verifierad live efter deployen, som tog femton sekunder.
+Ingen migration. Utgångspunkten var en skärmbild av ortlistan och frågan "ser du problemet".
+
+**Ortlistan stod inte i svensk bokstavsordning.** `getResorts()` sorterade med
+`.order('name')`, alltså databasens kollation: å och ä föll in bland a, ö bland o. **Åre låg
+tvåa av trettio**, och Sälen och Sölden före St. Anton. Landsfiltret i samma vy sorterade
+redan med `localeCompare(..., 'sv')` och visade Österrike sist — det var motsägelsen i samma
+skärmbild som avslöjade felet.
+
+Sorteringen ligger nu i `lib/resorts.js`, på samma ställe som `published`-filtret. Mätt på de
+tre ytor som tar listan rakt av: startsidan och `/jamfor` hade Åre på plats 2 av 30,
+`/bildkallor` på 2 av 29. Alla tre har nu Åre sist. `/liftkortspriser`,
+`/nattaget-till-alperna` och `OrtEllerAlperna` sorterade redan om själva och var opåverkade.
+`naraOrter` väljer via en total ordning med `a.slug.localeCompare(b.slug)` som skiljetecken,
+så internlänkgrafen ändras inte — bara visningsordningen.
+
+**Dokumentets bakgrund var vit.** `--background: #ffffff` satt kvar från Next.js-mallen och
+byttes mot `#0a0a0a` först i mörkt systemläge — två olika svarta beroende på läsarens
+inställning, på en sajt som inte har något ljust läge. Nu `#121110` och `#f0ece4` utan
+mediefråga.
+
+**Hover-ramen ritades 62 pixlar under kortet.** Markeringen sitter på `<a>`, som rutnätet
+sträcker till radens höjd, medan kortrutan bara omslöt sitt innehåll. På Alpe d'Huez var
+`<a>` 486 px och kortrutan 424. Kortrutan sträcks nu med `height: 100%` och flex-kolumn;
+överhänget är mätt till 0 på samtliga 30 kort. Sidoeffekten är att korten i en rad slutar i
+samma linje i stället för där texten tar slut.
+
+### Den ljusa raden vid bildens underkant — och tre försök som inte hjälpte
+
+Symptomet: en ljus hårfin rad tvärs över hela kortets bredd, precis där fotot slutar, **bara
+vid hover**. Den gick inte att fånga med PrtScn.
+
+Det i sig var beskedet. **Ett fel som syns på skärmen men inte i en skärmdump uppstår när
+grafikkortet sätter samman lagren, inte i det sidan målar.** Mätningen bekräftade det: av
+alla element i kortet, `::before` och `::after` inräknade, ändrade exakt tre värden sig vid
+hover — `<a>`-ns transform, markeringens opacity och bildens `scale(1.06)`. Ingen bakgrund,
+ingen kant, ingen skugga. Alltså målade inget element raden.
+
+Orsaken är att ett skalat element som klipps av en `overflow: hidden` får ett eget
+grafiklager, och klippkanten kantutjämnas vid sammansättningen.
+
+**Tre försök som inte hjälpte, och som inte är värda att göra om:**
+
+1. *Mörk dokumentbakgrund.* Byggde på att den vita `body` lyste igenom springan. Raden var
+   lika vit efteråt. Ändringen står kvar, men på egen grund — se ovan.
+2. *Gradienten en pixel under klippkanten.* Återställd.
+3. *`will-change: transform` på en egen klippruta runt bilden.* Återställd.
+
+**Ett fjärde försök tog bort raden men bröt något annat.** Att skala hela kortet
+(`scale(1.01)`) i stället för bilden fungerade — men lade en `scale` ovanför landsetiketten i
+trädet, och dess `backdrop-filter` slutade måla. Flaggorna försvann. `translateY(-3px)` hade
+alltid legat där utan att störa etiketten; det är skalningen ovanför ett `backdrop-filter`
+som inte går.
+
+**Det som löste det:** bildens hover-zoom är borttagen helt. Hovringen lyfter kortet tre
+pixlar och tonar in den varma ramen och skuggan. Fotot zoomar inte längre — ett designbyte
+Fabian godkände.
+
+**Samma mönster finns kvar på ortsidorna.** `app/resort/[slug]/Bildgalleri.js:110` har
+`.ortgalleri-ruta:hover img { transform: scale(1.04); }` inuti en ruta med `overflow:
+hidden`. Om raden syns där också är **inte mätt** — det kräver ögon på skärmen.
+
+### Flaggorna var bokstäver på Windows
+
+Etiketten bar flaggemojin. 🇳🇴 är inte ett flaggtecken utan ett par regionsbokstäver, som
+typsnittet förväntas slå ihop, och Segoe UI Emoji har inga flaggsymboler alls. Chrome på
+Windows visade därför "NO Norge" och "FR Frankrike" — och etiketten såg olika ut beroende på
+vad besökaren satt vid. På Mac och iPhone blev samma tecken en flagga.
+
+`app/Flagga.js` ritar dem som SVG i stället: inga bildfiler, inga nätverksanrop, ingen
+licensfråga. Mätt i serverns HTML: 27 flaggor i 16×11 plus 3 kvadratiska Schweiz = 30, noll
+emoji kvar.
+
+Schweiz ritas kvadratisk, eftersom flaggan är det, och blir därmed smalare i etiketten.
+Andorras och Spaniens riksvapen är utelämnade — vid nio bildpunkters höjd blir de en oläslig
+klump. **Kanada, USA och Nya Zeeland saknar ritad flagga**; deras orter är dolda sedan
+migration 003, så det syns inte i dag, men publiceras Whistler eller Aspen visar etiketten
+bara landets namn.
+
+**Live verifierad efter merge:** ny stilmall `0324b3f60f876ee8.css`. Åre sist av 30, S-blocket
+Saas-Fee → St. Anton → Sälen → Sölden, `--background:#121110` utan mörkt-läge-block, 27+3
+flaggor och noll emoji. `scale(1.06)` finns kvar på precis ett ställe i sidan, och det är
+hjältebilden.
+
 
 ## Vad som väntar
 
@@ -974,3 +1060,20 @@ efteråt. Kör den mot före-versionen också — `git show main:<fil> > <fil>`,
 
 **Wikimedia svarar 429 när dev-servern laddar om många bilder i rad.** Det är bildoptimeringen
 som hämtar originalen igen, inte ett fel i koden. En ny laddning efter en stund gav noll fel.
+
+**Byggcachen serverar gammal CSS.** En ändring i `app/globals.css` slog inte igenom
+17 september: servern fortsatte leverera den gamla stilmallen under samma chunkhash. Varken
+`touch` på filen eller en omstart av dev-servern hjälpte — bara `rm -rf .next` och omstart.
+Ändringar i .js-filer hämtas om direkt; det är bara CSS:en som fastnar. Kontrollera vad
+servern faktiskt skickar innan något rapporteras som klart:
+`CSS=$(curl -s http://localhost:3000/ | grep -o '/_next/static/[^"]*\.css' | head -1)` och
+sedan `curl -s "http://localhost:3000$CSS" | grep -o -- "--background:[^;]*"`.
+
+**Webbläsarpanelens skärmbilder går inte att lita på.** De kommer tillbaka vita, svarta,
+pixelidentiska med föregående ruta trots att sidan ändrats, eller med "Screenshot timed out
+after 5s". Är panelen ihopfälld rapporterar sidan `innerWidth: 0` och varje bild blir tom.
+17 september drogs två felaktiga slutsatser ur bilder som inte visade det aktuella
+tillståndet — hover var bevisligen aktiv i DOM:en medan bilden visade det ohovrade läget.
+Mät i DOM:en i stället: `getBoundingClientRect`, beräknade stilar, `elementsFromPoint`, och
+diffa hela trädet med och utan hover. Hämta serverns HTML med `curl` när det gäller vad som
+levereras. Går felet inte att mäta — be Fabian om skärmbilden, han ser ytan.

@@ -10,6 +10,7 @@ import { restid } from '../../../lib/travel'
 import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
+import { fallhojd as fallhojdFor, summaMening } from '../../../lib/delomraden'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -59,7 +60,7 @@ export async function generateMetadata({ params }) {
   // sökresultat för 83 sidor. Kvar står fallhöjden, som räknas ur höjderna
   // och dessutom är det de söker på: fallhöjdsfrågor gav 59 exponeringar i
   // Search Console 8 september 2026.
-  const fallhojd = (r) => r.altitude_top - r.altitude_base
+  const fallhojd = (r) => fallhojdFor(r)
 
   const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}. Samma källa för båda orterna.`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
@@ -487,6 +488,19 @@ function Fragmentgrupp({ grupp, orter, kurser }) {
           </tr>
         )
       })}
+
+      {/* Ett pisttal som är hopslaget av flera områden jämförs annars rakt
+          av mot ett som hänger ihop: Chamonix 170 km ser större ut än Val
+          Thorens 150, fast ingen av delarna är över 56. Noten står under
+          Området och inte vid varje fält, så den syns en gång. */}
+      {grupp.rubrik === 'Området' && orter.map(summaMening).filter(Boolean).map((mening) => (
+        <tr key={mening}>
+          <td colSpan={orter.length + 1} style={{
+            fontFamily: 'var(--font-body)', fontSize: 11,
+            color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, paddingTop: 2,
+          }}>{mening}</td>
+        </tr>
+      ))}
     </>
   )
 }

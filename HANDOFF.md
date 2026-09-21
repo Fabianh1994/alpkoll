@@ -855,9 +855,22 @@ SkiStar-orternas veckopriser: Åre, Sälen, Hemsedal och Trysil sätter priset e
 startdatum, och basen bär bara veckan som börjar 1 mars. Fler alporter tillför ingenting
 här, eftersom deras pris inte ändras med veckan.
 
-**5. Tre orter där frågan är vilket kort som motsvarar orten.** Chamonix Le Pass ger 110 km
-mot vårt tal på 170. Grandvaliras flerdagarskort ger 308 mot vårt 215. Sälen är samma sak.
-Det är vad en `sub_areas`-kolumn finns för — kräver kod, inte data.
+**5. Delområdena — avklarat 21 september, utan migration.** Punkten sade att tre orter
+väntade på en `sub_areas`-kolumn. Kontrollen mot källan delade dem i två sorter i stället.
+
+Sälen och Chamonix är **hopslagningar**: våra tal är summan av flera poster på
+skiresort.com, och delarna hänger inte ihop med lift. Sälen är Lindvallen/Högfjället
+42 km och Tandådalen/Hundfjället 45 km; Chamonix är fyra områden med buss emellan.
+Grandvalira och Riksgränsen är **enkelposter** med exakt våra tal — deras fråga gäller
+bara vad liftkortet täcker, och den står redan i prisnoten. Kolumnen behövdes alltså
+inte alls; allt ligger i `lib/delomraden.js`.
+
+**Två fallhöjder var fel och är rättade.** Sajten räknar fallhöjd som högsta topp minus
+lägsta bas, vilket för en hopslagning korsar två fjäll. Sälen visade 315 m — Lindvallens
+topp minus Tandådalens bas — mot 308 m som är den största riktiga. Chamonix visade
+2 807 m, alltså Aiguille du Midi, en linbana med noll pist; störst pistad fallhöjd i dalen
+är Grands Montets 1 513 m. Följden på jämförelsesidorna är att Chamonix går från störst
+till minst fallhöjd av de sju franska orterna. Talen i databasen är orörda.
 
 **6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
 Filter och sortering ingår där. Mätt 15 september: startsidan hade 20 exponeringar på position

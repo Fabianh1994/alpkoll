@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e och 17:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e och 21:a, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -109,10 +109,13 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–16 september:
+`main` är i fas med `origin/main`. Mergat 8–21 september:
 
 | PR | Vad |
 |---|---|
+| #63 | Avsändaren i sidfoten, och kontaktadressen till `lib/kontakt.js` |
+| #62 | Annonsmärkning vid länken, `/sa-jamfor-vi`, CJ i integritetspolicyn |
+| #61 | Delområdena: Sälen och Chamonix är summor, två fallhöjder rättade |
 | #57 | Restiden på sportlovssidan blir staplar; tabellen fick inte plats på en telefon |
 | #56 | Sportlovssidans avsnitt blir riktiga rubriker (h2 och h3) |
 | #55 | Om oss omskriven utan personliga uppgifter |
@@ -752,6 +755,149 @@ flaggor och noll emoji. `scale(1.06)` finns kvar på precis ett ställe i sidan,
 hjältebilden.
 
 
+## Vad som gjordes 21 september: delområden och vägen till intäkter
+
+Tre PR:ar, alla mergade och verifierade live. Ingen migration — databasen är orörd
+hela dagen.
+
+### Delområdena var inte tre orter utan två (#61)
+
+Punkt 5 sade att Chamonix, Grandvalira och Sälen väntade på en `sub_areas`-kolumn.
+Kontrollen mot skiresort.com delar dem i två sorter, och ingen behöver en kolumn.
+
+**Sälen och Chamonix är hopslagningar.** Våra 87 km i Sälen är två källposter,
+Lindvallen/Högfjället 42 km och 58 liftar plus Tandådalen/Hundfjället 45 km och 48
+liftar. Summan stämmer på kilometern och på liften. Våra 170 km i Chamonix är fyra
+områden med buss emellan: Brévent–Flégère 56, Les Houches 55, Grands Montets 29,
+Balme/Le Tour 29 = 169.
+
+**Grandvalira och Riksgränsen är enkelposter** med exakt våra tal, 215 km och 75
+liftar respektive 21 km och 6 liftar. Deras fråga gäller bara vad liftkortet täcker,
+och den står redan i prisnoten. Beslutet från 25 augusti att inte ändra Grandvalira
+till 308 km står kvar.
+
+**Två fallhöjder som ingen backe har är rättade.** Sajten räknar fallhöjd som högsta
+topp minus lägsta bas, vilket för en hopslagning korsar två fjäll. Sälen visade 315 m,
+alltså Lindvallens topp minus Tandådalens bas, mot 308 som är den största riktiga.
+Chamonix visade 2 807 m, som är Aiguille du Midi — en linbana med noll kilometer pist.
+Störst pistad fallhöjd i dalen är Grands Montets 1 513 m. Följden på jämförelsesidorna
+är att Chamonix går från störst till minst fallhöjd av de sju franska orterna, vilket
+är rätt enligt definitionen: 2 130 m i Les 3 Vallées går att åka utan buss, 2 807 i
+Chamonix gör det inte.
+
+`fallhojd()` i `lib/delomraden.js` ersätter de nio ställen i fem filer som räknade topp
+minus bas. Samma spärr som `harPris`: används den inte överallt säger ortsidan ett tal
+och jämförelsesidan ett annat om samma ort. **Lägger du en ny yta som visar fallhöjd,
+använd den.**
+
+Listan ligger i kod och inte i databasen av samma skäl som `lib/liftkortspriser.js`:
+den beskriver hur vårt tal är hopsatt, inte en egenskap hos orten.
+
+**Rutan blev staplar efter att första utkastet underkändes.** Namnet till vänster och
+talen till höger bröt olika beroende på namnlängd — två av fyra rader la talen i
+vänsterkant. Nu är varje del en stapel som visar sin andel av ortens tal, vilket också
+bär poängen: största delen av Chamonix är en tredjedel av de 170 kilometrarna. Texten
+bröt tre regler i `docs/copy.md` (tankstreck som slutkläm, tal utan tusentalsmellanrum,
+"lagda ihop" i stället för namn) och skrevs om. Höjdtalen på ortsidan grupperar nu
+tusental på tolv ytor.
+
+**Rättat i `docs/liftkortspriser.md`:** där stod att källan behandlar Sälen som en post.
+Den har tre — Lindvallen/Högfjället, Tandådalen/Hundfjället och Näsfjället, som inte
+ingår eftersom anläggningen inte är SkiStars.
+
+### Sajten uppfyller nu tre krav den inte uppfyllde (#62, #63)
+
+**Annonsmärkning i direkt anslutning till länken.** Marknadsföringslagen och
+branschrekommendationen från IAB Sverige kräver att det framgår vid länken att den är
+kommersiell. `rel="sponsored"` är en signal till Google som aldrig syns för läsaren, och
+`/affiliate-disclosure` är inte i anslutning till någonting. Ordet Annons står nu vid
+alla tre Booking-länkarna på ortsidan.
+
+**Märkningen hänger på `hasAffiliateId`, inte på att länken går till Booking.** Samma
+rekommendation säger att länkar utan kommersiellt samarbete inte ska märkas, eftersom de
+inte är marknadsföring. Utan ID byggs en vanlig söklänk utan provision, och att kalla den
+Annons vore osant. Allt tänds i samma deploy som spårningen — inget att komma ihåg.
+
+**Rankningskriterierna går att nå.** Omnibusreglerna sedan 1 september 2022 kräver att
+den som låter konsumenter söka digitalt redovisar vad som avgör ordningen, i ett eget
+avsnitt direkt tillgängligt från resultaten. Underlaget låg i `docs/poangskala.md`, alltså
+i repot. Nu finns **`/sa-jamfor-vi`**, länkad från `/jamfor`, från varje jämförelsesida och
+från sidfoten. Den säger att listorna står i bokstavsordning och inte är en rangordning,
+att tabellens markering är mekanisk, var siffrorna kommer ifrån, och att ingen ort kan
+betala för placering. Den skriver också ut att poängen är jämförbara i topp och botten
+men att mittfältet inte är genomgånget — poängskalan säger det om sig själv.
+
+**Avsändaren står i sidfoten.** "Alpkoll drivs av Fabian Henningsson" plus mejladressen,
+på varje sida. Lagen om elektronisk handel kräver namn och kontaktuppgift, och
+marknadsföringslagen att avsändaren bakom marknadsföring går att identifiera. Uppgiften
+försvann i #55, men det som togs bort då var en personlig text — Om oss är fortfarande
+opersonlig. Adressen publiceras inte utan lämnas på begäran; skälet står i
+`lib/kontakt.js`, dit kontaktadressen flyttade från två ställen.
+
+**Integritetspolicyn** beskriver klicket när spårningen är på: att länken går via CJ,
+drivet av Epsilon International UK Ltd, att IP-adress, webbläsaruppgifter, tidpunkt och
+hänvisande sida skickas dit, att CJ själva är personuppgiftsansvariga, att behandlingen
+sker i USA under standardavtalsklausuler och att uppgifterna sparas i upp till sex år.
+Kakavsnittet säger att partnerlänkarna är vanliga länkar och att ingenting från partnern
+laddas medan besökaren är kvar. **Det är skälet till att sajten slipper kakruta även med
+affiliate inkopplat** — och det gäller bara så länge inget spårskript läggs på sidorna.
+
+### CJ-kontot är uppsatt och väntar på Booking
+
+**Booking.com går via CJ för nordiska partner**, inte via Partner Hub. Programmet heter
+"Nordics Affiliate Programme powered by CJ". Det spräcker förutsättningen i
+`lib/booking.js`, som bygger `?aid=`-länkar: **CJ spårar med egna länkar och koden måste
+skrivas om** när länkarna finns. Be om en färdig länk och läs formatet innan något ändras.
+
+Kontot är klart: namn, adress, SEK som kontovaluta, bankuppgifter och W-8BEN. Ansökan
+till Booking-programmet ligger hos dem.
+
+**Villkoren, lästa 21 september:**
+
+- **4 % på hotellbokningar.** En skidvecka för 15 000 kr ger omkring 600 kr.
+- **Referensperioden är ETT dygn**, inte trettio dagar. Bokar någon två dagar efter
+  klicket ger det noll. Det gör placeringen viktigare än volymen: länken gör mest nytta
+  där läsaren redan valt ort, alltså i "Var du bor"-kortet.
+- **EPC 9,05 EUR på tre månader**, alltså drygt en krona per klick vidare till Booking.
+  Med nuvarande trafik blir det tiokronor i månaden. Inte ett skäl att låta bli — ett
+  skäl att inte köpa trafik för att nå dit.
+- **Provision betalas bara för materialiserade bokningar**, alltså när gästen bott där.
+  En bokning i oktober för sportlovet betalas ut efter mars.
+- **Hyrbil ger 6 %, flygplatstaxi 4 %, attraktioner 4 %.** Hyrbil betalar alltså mer än
+  hotell. Restiden från flygplats till ort är redan uppmätt för alla trettio orterna, så
+  det är den mest uppenbara utbyggnaden efter hotellänkarna.
+- **Transparenskravet uppfylls redan** av `label`-parametern i `lib/booking.js`.
+- **Vilandeavgift på 10 dollar i månaden** efter sex sammanhängande månader utan
+  bokning, dragen ur saldot tills det når noll. Ett tomt konto kan inte gå minus.
+
+### Kontrollerat och avfärdat samma dag
+
+- **Skidhyra funkar inte i Norden.** Skiset täcker Andorra, Frankrike, Italien, Schweiz,
+  Spanien och Österrike — inga nordiska länder. I Sälen, Åre, Hemsedal och Trysil är
+  uthyrningen SkiStars egen.
+- **SkiStar har inget affiliateprogram.** Deras partnerskap är sponsring för 1,5–3
+  miljoner kronor om året per ort.
+- **Varken SJ eller Snälltåget har publikt program.** Omio betalar per omdirigering,
+  `affiliates@omio.com`, svar inom 14 arbetsdagar. Det är vägen för nattågssidan.
+- **Stripe behövs inte.** Sajten säljer ingenting.
+- **Supabase ligger i eu-north-1**, verifierat mot AWS egen IP-lista. Det var den enda
+  obekräftade uppgiften i integritetspolicyn, och den stämmer.
+- **`hello@alpkoll.com` tar emot men skickar troligen inte.** MX pekar på ImprovMX
+  (vidarebefordran), SPF finns, DMARC saknas. Utgående kräver deras betalplan eller
+  "skicka som" via deras SMTP. **`alpkoll.se` har inga MX-poster alls** — post dit studsar.
+
+### Meta-annonser: fråga Booking först
+
+Bookings villkor förbjuder annonsering på tredjepartsplattformar "connected to our
+affiliate product" och betald trafik som skickas direkt vidare. Att köpa Facebook-annonser
+till redaktionellt innehåll är sannolikt tillåtet, men gränsen är otydlig nog att det är
+värt ett mejl innan pengar läggs. Påföljden vid fel är att bokningar underkänns i efterhand.
+
+Kostnaden i övrigt: CPC 3–15 kr och CPM 40–150 kr enligt byråernas prisguider, lägsta
+vettiga dagsbudget 100–150 kr. Ett test på tre veckor landar kring 2 000–3 000 kr.
+**En Metapixel kostar dessutom sajtens cookiefrihet** — med pixel krävs kakruta, omskriven
+policy och ställningstagande om överföring till Meta.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -872,6 +1018,15 @@ topp minus Tandådalens bas — mot 308 m som är den största riktiga. Chamonix
 är Grands Montets 1 513 m. Följden på jämförelsesidorna är att Chamonix går från störst
 till minst fallhöjd av de sju franska orterna. Talen i databasen är orörda.
 
+**Booking-godkännandet, och sedan koden.** Ansökan ligger hos Booking via CJ. När den
+går igenom: be om en färdig spårlänk, läs formatet, och skriv om `lib/booking.js`. Den
+bygger `?aid=`-länkar som CJ inte använder. Samma deploy tänder annonsmärkningen och
+CJ-stycket i integritetspolicyn, eftersom båda hänger på `hasAffiliateId`.
+
+**Hyrbil och flygplatstaxi efter det.** Booking betalar 6 % på hyrbil och 4 % på
+flygplatstaxi, mot 4 % på hotell. Restiden från flygplats till ort är uppmätt för alla
+trettio orterna, så ytan finns redan — det som saknas är länkarna.
+
 **6. Startsidan byggs om.** Skissen och den öppna frågan om toppen står under 13 september.
 Filter och sortering ingår där. Mätt 15 september: startsidan hade 20 exponeringar på position
 20,6, och ingen fråga innehöll "nära", "närmast" eller "skidorter". Resefrågorna gäller en ort,
@@ -898,9 +1053,13 @@ pressbank eller Fjord Norway — med villkoren lästa innan något används.
 **Mobilmenyn** är en flikrad med tre ikoner — Skidorter, Jämför, Om oss. Där saknas både
 Nattåget och Liftkortspriser. En fjärde flik är ett designval, inte en rättning.
 
-**Kräver dig, inte kod:** redaktionella poäng för nya orter, affiliate-ID när trafiken
-bär. Obekräftat i integritetspolicyn: att Supabase-projektet ligger i eu-north-1. Brevlådan
-`hello@alpkoll.com` är bekräftad: Fabian läser den (13 september).
+**Kräver dig, inte kod:** redaktionella poäng för nya orter. Brevlådan
+`hello@alpkoll.com` tar emot via ImprovMX, men att SKICKA därifrån är oprövat — det
+behövs för mejlet till Omio.
+
+**Avklarat 21 september:** Supabase-regionen är verifierad mot AWS IP-lista och
+integritetspolicyns uppgift om eu-north-1 stämmer. Affiliate-ID:t är inte längre
+uppskjutet — CJ-kontot är uppsatt och ansökan ligger hos Booking.
 
 ## Praktiskt
 

@@ -98,5 +98,7 @@ export function Stark({ children }) {
   return <strong style={{ color: '#f0ece4' }}>{children}</strong>;
 }
 
-/** Kontaktadressen står på alla tre sidorna — en definition räcker. */
-export const KONTAKT = 'hello@alpkoll.com';
+/* Kontaktadressen bor i lib/kontakt.js sedan sidfoten också behövde
+   den. Re-exporten står kvar så att de fyra juridiska sidorna kan
+   fortsätta importera härifrån. */
+export { KONTAKT } from '../lib/kontakt';

@@ -7,6 +7,7 @@
 // Ingen hook här, så både server- och klientkomponenter kan rendera den.
 
 import Link from 'next/link';
+import { AVSANDARE, KONTAKT } from '../lib/kontakt';
 
 // Innehållssidorna först, de juridiska sist.
 //
@@ -75,6 +76,24 @@ export default function SiteFooter() {
         {/* Språkväxlaren är borttagen: alpkoll.com redirectar till .se,
             så länken hade bara skickat besökaren tillbaka hit. */}
       </div>
+
+      {/* Avsändaren. Lagen om elektronisk handel kräver namn och
+          kontaktuppgift för den som driver sajten, och
+          marknadsföringslagen att det framgår vem som svarar för
+          marknadsföringen — vilket affiliatelänkarna är. Raden står i
+          sidfoten och inte på en undersida, eftersom besökaren ska kunna
+          se det oavsett var hen landat. Den gick förlorad när Om oss
+          skrevs om utan personliga uppgifter i #55; det som togs bort då
+          var en personlig text, inte ansvarsuppgiften. */}
+      <p style={{
+        fontFamily: 'var(--font-body)', fontSize: 11,
+        color: 'rgba(255,255,255,0.38)', margin: '18px 0 0',
+      }}>
+        Alpkoll drivs av {AVSANDARE}.{' '}
+        <a href={`mailto:${KONTAKT}`} className="site-footer-link" style={{
+          color: 'rgba(255,255,255,0.38)', textDecoration: 'none',
+        }}>{KONTAKT}</a>
+      </p>
     </footer>
   );
 }

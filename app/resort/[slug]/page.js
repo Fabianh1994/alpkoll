@@ -19,6 +19,7 @@ import { linjeMeningar, linjerFor } from '../../../lib/restider'
 import { land } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 import { vanligaFragor } from '../../../lib/vanligaFragor'
+import { antalOrd, delomraden, fallhojd as fallhojdFor, pistadeDelar } from '../../../lib/delomraden'
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
 import Bildgalleri from './Bildgalleri'
@@ -72,7 +73,7 @@ export async function generateMetadata({ params }) {
     ? `${place} — fallhöjd, pist och liftkortspris | Alpkoll`
     : `${place} — fallhöjd, pist och snö | Alpkoll`
 
-  const fallhojd = resort.altitude_top - resort.altitude_base
+  const fallhojd = fallhojdFor(resort)
   const liftkortet = [
     dagspass ? `${dagspass.kr}/dag` : null,
     veckopass ? `${veckopass.kr} för sex dagar` : null,
@@ -115,7 +116,7 @@ export default async function ResortPage({ params }) {
   if (!resort) notFound()
 
   const lang = getLang()
-  const verticalDrop = resort.altitude_top - resort.altitude_base
+  const verticalDrop = fallhojdFor(resort)
   const estimatedTransferMins = restid(resort)
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
@@ -568,6 +569,55 @@ export default async function ResortPage({ params }) {
                 </p>
               )}
 
+              {/* Motsatsen till raden ovan. Där säger ski_area att talen
+                  avser ett större område som hänger ihop; här säger rutan
+                  att de är en summa av områden som inte gör det. Två orter
+                  berörs — se lib/delomraden.js. */}
+              {delomraden(resort) && (
+                <div style={{ ...card, padding: '16px 18px', margin: '-4px 0 20px' }}>
+                  <div style={fieldLabel}>Talen är en summa</div>
+                  <p style={{
+                    fontFamily: 'var(--font-body)', fontSize: 13,
+                    color: 'rgba(255,255,255,0.72)', lineHeight: 1.6,
+                    margin: '8px 0 14px',
+                  }}>
+                    {resort.total_pistes_km} km pist är {antalOrd(pistadeDelar(resort).length)} skilda
+                    områden lagda ihop. {delomraden(resort).forbindelse}
+                  </p>
+
+                  <div style={{ display: 'grid', gap: 1, background: 'rgba(255,255,255,0.07)' }}>
+                    {pistadeDelar(resort).map(d => (
+                      <div key={d.namn} style={{
+                        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
+                        alignItems: 'baseline', gap: '2px 12px',
+                        background: '#1c1a17', padding: '9px 2px',
+                      }}>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#f0ece4' }}>
+                          {d.namn}
+                        </span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)' }}>
+                          {d.pist_km} km · {d.liftar} liftar · {d.topp - d.bas} m fallhöjd
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Fallhöjden sajten visar är den största inom ett
+                      delområde. Högsta topp minus lägsta bas korsar två
+                      fjäll och ger ett tal ingen backe har: Sälen fick
+                      315 m, Chamonix 2 807. */}
+                  <p style={{
+                    fontFamily: 'var(--font-body)', fontSize: 12,
+                    color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: '12px 0 0',
+                  }}>
+                    Fallhöjden vi visar, {verticalDrop} m, är den största inom ett och samma
+                    område. Hela höjdspannet i {resort.name} är{' '}
+                    {`${resort.altitude_base}–${resort.altitude_top} m, `}
+                    men de metrarna ligger i olika backar.
+                  </p>
+                </div>
+              )}
+
               <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 12 }}>
                 <div style={{ width: `${resort.blue_percent}%`, background: '#3b82f6' }} />
                 <div style={{ width: `${resort.red_percent}%`, background: '#ef4444' }} />
@@ -873,7 +923,7 @@ export default async function ResortPage({ params }) {
                           </div>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                             {annan.total_pistes_km} km pist
-                            {' · '}{annan.altitude_top - annan.altitude_base} m fallhöjd
+                            {' · '}{fallhojdFor(annan)} m fallhöjd
                           </div>
                         </Link>
                       ))}

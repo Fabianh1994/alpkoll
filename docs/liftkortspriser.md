@@ -102,8 +102,10 @@ avser Riksgränsen ensamt. Till skillnad från Saalbach säljer orten inget
 kort som bara gäller den egna sidan — det finns ingen rätt produkt att
 välja i stället. Talet står i tabellen med den här reservationen. Frågan är
 inte vilket pris som ska hämtas utan om pisttalet borde avse båda
-anläggningarna; det är samma fråga som Sälens två delområden, och den
-väntar på `sub_areas`.
+anläggningarna. Kontrollen 2026-09-21: källan har en egen post för
+Riksgränsen med exakt våra 21 km och 6 liftar, så talet är rätt enligt
+enkällsregeln och det är bara kortet som täcker mer. Till skillnad från
+Sälen är det alltså ingen hopslagning — se rättelsen längre ner.
 
 **Grandvalira.** Flerdagarskortet (2 dagar och uppåt) gäller Grandvalira
 PLUS Ordino Arcalís PLUS Pal Arinsal — 308 km mot våra 215. Dagsbiljetten
@@ -292,13 +294,28 @@ som också ger Courmayeur och en dag i Verbier. Ingen av dem är 170 km.
 skiresort.com listar Grandvalira 215 km och Ordino Arcalís 30 km som skilda
 poster, och Pal Arinsal som en tredje. Enkällsregeln väger tyngre än att
 kortet råkar täcka alla tre, och "sammankopplat område" betyder
-liftförbundet — 93 av de 308 kilometrarna kräver buss. Skillnaden mot Sälen
-är att källan där behandlar orten som en post, alltså säger källa och
-liftkort samma sak. Regeln blir: när källan slår ihop gör vi det, när den
-delar gör vi det.
+liftförbundet — 93 av de 308 kilometrarna kräver buss. Regeln blir: när
+källan slår ihop gör vi det, när den delar gör vi det.
 
-Grandvalira, Chamonix och Sälen är därmed tre fall av samma sak, och det är
-vad `sub_areas` finns för.
+**Rättelse 2026-09-21.** Här stod att källan behandlar Sälen som en post,
+och att det var skillnaden mot Grandvalira. Det stämmer inte. Källan har
+tre poster i Sälen — Lindvallen/Högfjället 42 km och 58 liftar,
+Tandådalen/Hundfjället 45 km och 48 liftar, Näsfjället 10 km — och våra
+87 km och 106 liftar är summan av de två första. Näsfjället ingår inte,
+eftersom anläggningen inte är SkiStars och ligger utanför liftkortet.
+
+Kontrollen delar därmed de fyra orterna i två sorter, inte tre fall av
+samma sak:
+
+- **Sälen och Chamonix är hopslagningar.** Våra tal är summan av flera
+  källposter, och delarna hänger inte ihop med lift. Det bärs sedan
+  2026-09-21 av `lib/delomraden.js`, som listar delarna på ortsidan och
+  räknar fallhöjden inom ett och samma område i stället för över alla.
+- **Grandvalira och Riksgränsen är enkelposter.** Källan har en post för
+  var och en med exakt våra tal, 215 km och 75 liftar respektive 21 km och
+  6 liftar. Deras fråga gäller bara vad liftkortet täcker, och den
+  besvaras i prisnoten. Ingen `sub_areas`-kolumn behövs för dem — och
+  eftersom de två andra löstes i kod behövs kolumnen inte alls.
 
 ### Hittar fortfarande ingenting
 

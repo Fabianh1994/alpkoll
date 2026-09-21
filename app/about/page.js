@@ -1,9 +1,14 @@
 // Kort och utan avsändare. Fabian ville inte ha sidan personlig (15 september
 // 2026): inget namn, inga skidår, inga orter han åkt. Metoden bakom talen står
 // inte här utan på sidorna där talen visas.
+//
+// Ansvarsuppgiften som lagen kräver ligger i sidfoten och inte här — se
+// lib/kontakt.js. Att sidan är opersonlig är ett redaktionellt val, och det
+// valet påverkas inte av att avsändaren måste gå att identifiera.
 
 import SiteHeader from '../SiteHeader';
 import SiteFooter from '../SiteFooter';
+import { KONTAKT } from '../../lib/kontakt';
 
 export const metadata = {
   title: 'Om Alpkoll',
@@ -12,7 +17,6 @@ export const metadata = {
   alternates: { canonical: '/about' },
 };
 
-const KONTAKT = 'hello@alpkoll.com';
 
 export default function AboutPage() {
   return (

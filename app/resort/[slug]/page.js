@@ -23,6 +23,7 @@ import { delomraden, fallhojd as fallhojdFor, pistadeDelar, spannMening, summaTe
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
 import Bildgalleri from './Bildgalleri'
+import Annonsmarkning from '../../Annonsmarkning'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -460,6 +461,7 @@ export default async function ResortPage({ params }) {
               <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Planera resan →</Link>
             </div>
           )}
+          <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
           <a href={bookingHrefMobile} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
         </div>
 
@@ -792,6 +794,7 @@ export default async function ResortPage({ params }) {
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
               </div>
+              <Annonsmarkning style={{ margin: '0 0 8px' }} />
               <a href={bookingHrefStay} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#003580', borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
                 <div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Hitta boende nära {resort.name}</div>
@@ -981,6 +984,7 @@ export default async function ResortPage({ params }) {
                 <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Planera resan →</Link>
               </div>
             )}
+            <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
             <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
             <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Ortens officiella webbplats →</a>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Visa på Google Maps →</a>

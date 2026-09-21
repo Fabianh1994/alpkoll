@@ -450,7 +450,9 @@ export default async function JamforPage({ params }) {
           orterna, eftersom blandade källor gör orter ojämförbara. Talen avser
           hela det sammankopplade skidområdet som liftkortet ger tillgång till,
           inte bara byns egen sektor. Liftkortspriserna kommer från varje orts
-          egen prislista.
+          egen prislista.{' '}
+          <Link href="/sa-jamfor-vi" style={{ color: '#D4A574', textDecoration: 'none' }}>Så jämför vi</Link>
+          {' beskriver vad som avgör ordningen och hur poängen sätts.'}
         </p>
 
       </div>

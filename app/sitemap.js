@@ -35,6 +35,9 @@ export default async function sitemap() {
     // Sidan tystnar av sig själv när sista sportlovsveckan passerats.
     { path: '/sportlov', changeFrequency: 'monthly', priority: 0.9 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
+    // Rankningsinformationen enligt marknadsföringslagen. Ligger över de
+    // juridiska sidorna i prioritet eftersom den beskriver innehållet.
+    { path: '/sa-jamfor-vi', changeFrequency: 'monthly', priority: 0.4 },
     { path: '/privacy', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/terms', changeFrequency: 'yearly', priority: 0.1 },
     { path: '/affiliate-disclosure', changeFrequency: 'yearly', priority: 0.1 },

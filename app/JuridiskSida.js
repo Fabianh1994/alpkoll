@@ -12,7 +12,7 @@
 import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 
-export default function JuridiskSida({ titel, uppdaterad, children }) {
+export default function JuridiskSida({ titel, uppdaterad, etikett = 'Juridiskt', children }) {
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
       <SiteHeader />
@@ -30,7 +30,7 @@ export default function JuridiskSida({ titel, uppdaterad, children }) {
             textTransform: 'uppercase',
             marginBottom: 12,
           }}>
-            Juridiskt
+            {etikett}
           </p>
           <h1 style={{
             fontFamily: 'var(--font-heading)',

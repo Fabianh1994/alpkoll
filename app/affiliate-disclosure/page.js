@@ -1,5 +1,6 @@
 // app/affiliate-disclosure/page.js
 import JuridiskSida, { Avsnitt, Lank, Stark, KONTAKT } from '../JuridiskSida';
+import { hasAffiliateId } from '../../lib/booking';
 import { PLANERAREN_SYNLIG } from '../../lib/features';
 
 export const metadata = {
@@ -42,6 +43,22 @@ export default function AffiliateDisclosurePage() {
           länkar är märkta med <code>rel=&quot;sponsored&quot;</code>, som
           branschstandarden föreskriver.
         </p>
+        {hasAffiliateId && (
+          <p style={{ marginTop: 12 }}>
+            Samarbetet med Booking.com går via affiliatenätverket CJ, som sköter
+            mätning och utbetalning. Vad som skickas dit när du klickar står i
+            vår <Lank href="/privacy">integritetspolicy</Lank>.
+          </p>
+        )}
+
+        {hasAffiliateId && (
+          <p style={{ marginTop: 12 }}>
+            Varje sådan länk är märkt med ordet Annons där den står, så att du
+            ser vad den är innan du klickar och inte behöver leta reda på den
+            här sidan för att få veta det.
+          </p>
+        )}
+
         <p style={{ marginTop: 12 }}>
           Tillkommer fler partner uppdateras den här listan.
         </p>

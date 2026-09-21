@@ -25,6 +25,7 @@ const LANKAR = [
   { href: '/nattaget-till-alperna', label: 'Nattåget' },
   { href: '/sportlov', label: 'Sportlov' },
   { href: '/about', label: 'Om oss' },
+  { href: '/sa-jamfor-vi', label: 'Så jämför vi' },
   { href: '/privacy', label: 'Integritetspolicy' },
   { href: '/terms', label: 'Användarvillkor' },
   { href: '/affiliate-disclosure', label: 'Affiliateinformation' },

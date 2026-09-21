@@ -88,6 +88,11 @@ export default async function JamforIndex() {
 
         <Valjaren orter={forValjaren} />
 
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.5)', marginTop: 28 }}>
+          <Link href="/sa-jamfor-vi" style={{ color: '#D4A574', textDecoration: 'none' }}>Så jämför vi</Link>
+          {' — vad som avgör ordningen, var siffrorna kommer ifrån och hur poängen sätts.'}
+        </p>
+
         {utvalda.length > 0 && (
           <section style={{ marginTop: 56 }}>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 14 }}>Vanliga jämförelser</h2>

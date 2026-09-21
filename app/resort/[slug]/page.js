@@ -19,7 +19,7 @@ import { linjeMeningar, linjerFor } from '../../../lib/restider'
 import { land } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 import { vanligaFragor } from '../../../lib/vanligaFragor'
-import { antalOrd, delomraden, fallhojd as fallhojdFor, pistadeDelar } from '../../../lib/delomraden'
+import { delomraden, fallhojd as fallhojdFor, pistadeDelar, spannMening, summaText, tal } from '../../../lib/delomraden'
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
 import Bildgalleri from './Bildgalleri'
@@ -79,7 +79,7 @@ export async function generateMetadata({ params }) {
     veckopass ? `${veckopass.kr} för sex dagar` : null,
   ].filter(Boolean).join(', ')
 
-  const description = `${resort.name}: ${fallhojd} m fallhöjd, ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar.${liftkortet ? ` Liftkort ${liftkortet}.` : ''} ${resort.altitude_base}–${resort.altitude_top} m, flygplats ${resort.nearest_airport}.`
+  const description = `${resort.name}: ${tal(fallhojd)} m fallhöjd, ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar.${liftkortet ? ` Liftkort ${liftkortet}.` : ''} ${tal(resort.altitude_base)}–${tal(resort.altitude_top)} m, flygplats ${resort.nearest_airport}.`
 
   const path = `/resort/${resort.slug}`
 
@@ -427,9 +427,9 @@ export default async function ResortPage({ params }) {
 
           <div className="hero-stat-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {[
-              { label: 'Lägsta',     value: `${resort.altitude_base} m` },
-              { label: 'Högsta',     value: `${resort.altitude_top} m` },
-              { label: 'Fallhöjd',   value: `${verticalDrop} m` },
+              { label: 'Lägsta',     value: `${tal(resort.altitude_base)} m` },
+              { label: 'Högsta',     value: `${tal(resort.altitude_top)} m` },
+              { label: 'Fallhöjd',   value: `${tal(verticalDrop)} m` },
               { label: 'Pist',       value: `${resort.total_pistes_km} km` },
               { label: 'Liftar',     value: resort.total_lifts },
               // Prisrutorna faller bort helt för de orter vi inte har ett
@@ -525,17 +525,17 @@ export default async function ResortPage({ params }) {
                       <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${Math.min(resort.altitude_top / 40, 100)}%`, background: 'linear-gradient(90deg, #60a5fa, #a78bfa)', borderRadius: 3 }} />
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#f0ece4', minWidth: 48 }}>{resort.altitude_top}m</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#f0ece4', minWidth: 48 }}>{tal(resort.altitude_top)}m</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ height: '100%', width: `${Math.min(resort.altitude_base / 40, 100)}%`, background: 'rgba(255,255,255,0.2)', borderRadius: 3 }} />
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 48 }}>{resort.altitude_base}m</span>
+                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 48 }}>{tal(resort.altitude_base)}m</span>
                     </div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: '#60a5fa', lineHeight: 1 }}>{verticalDrop}m</div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: '#60a5fa', lineHeight: 1 }}>{tal(verticalDrop)}m</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>fallhöjd</div>
                   </div>
                 </div>
@@ -571,50 +571,63 @@ export default async function ResortPage({ params }) {
 
               {/* Motsatsen till raden ovan. Där säger ski_area att talen
                   avser ett större område som hänger ihop; här säger rutan
-                  att de är en summa av områden som inte gör det. Två orter
-                  berörs — se lib/delomraden.js. */}
+                  att de är en summa av områden som inte gör det.
+
+                  Staplar och inte en tabell: namnen är olika långa, och i
+                  en rad med namnet till vänster och talen till höger bröt
+                  de två längsta raderna medan de två korta inte gjorde
+                  det. Stapeln är dessutom det enda som visar själva
+                  poängen — att största delen är en tredjedel av talet
+                  ovanför. Samma grepp som restiden på sportlovssidan i
+                  #57, och samma stapelmått som höjdrutan här intill. */}
               {delomraden(resort) && (
                 <div style={{ ...card, padding: '16px 18px', margin: '-4px 0 20px' }}>
-                  <div style={fieldLabel}>Talen är en summa</div>
+                  <div style={fieldLabel}>Delområden</div>
                   <p style={{
                     fontFamily: 'var(--font-body)', fontSize: 13,
-                    color: 'rgba(255,255,255,0.72)', lineHeight: 1.6,
-                    margin: '8px 0 14px',
-                  }}>
-                    {resort.total_pistes_km} km pist är {antalOrd(pistadeDelar(resort).length)} skilda
-                    områden lagda ihop. {delomraden(resort).forbindelse}
-                  </p>
+                    color: 'rgba(255,255,255,0.72)', lineHeight: 1.65,
+                    margin: '8px 0 0',
+                  }}>{summaText(resort)}</p>
 
-                  <div style={{ display: 'grid', gap: 1, background: 'rgba(255,255,255,0.07)' }}>
-                    {pistadeDelar(resort).map(d => (
-                      <div key={d.namn} style={{
-                        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between',
-                        alignItems: 'baseline', gap: '2px 12px',
-                        background: '#1c1a17', padding: '9px 2px',
+                  {pistadeDelar(resort).map(d => (
+                    <div key={d.namn} style={{ marginTop: 16 }}>
+                      <div style={{
+                        display: 'flex', justifyContent: 'space-between',
+                        alignItems: 'baseline', gap: 12, marginBottom: 6,
                       }}>
                         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#f0ece4' }}>
                           {d.namn}
                         </span>
-                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)' }}>
-                          {d.pist_km} km · {d.liftar} liftar · {d.topp - d.bas} m fallhöjd
+                        <span style={{
+                          fontFamily: 'var(--font-body)', fontSize: 13, color: '#D4A574',
+                          fontVariantNumeric: 'tabular-nums', flexShrink: 0,
+                        }}>
+                          {d.pist_km} km
                         </span>
                       </div>
-                    ))}
-                  </div>
+                      <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                        <div style={{
+                          height: '100%',
+                          width: `${Math.round((d.pist_km / resort.total_pistes_km) * 100)}%`,
+                          background: '#D4A574', borderRadius: 3,
+                        }} />
+                      </div>
+                      <div style={{
+                        fontFamily: 'var(--font-body)', fontSize: 11,
+                        color: 'rgba(255,255,255,0.5)', marginTop: 5,
+                      }}>
+                        {d.liftar} liftar · {tal(d.topp - d.bas)} m fallhöjd
+                      </div>
+                    </div>
+                  ))}
 
-                  {/* Fallhöjden sajten visar är den största inom ett
-                      delområde. Högsta topp minus lägsta bas korsar två
-                      fjäll och ger ett tal ingen backe har: Sälen fick
-                      315 m, Chamonix 2 807. */}
+                  {/* Varför fallhöjden i rutnätet nedan inte är högsta
+                      topp minus lägsta bas. Sälen fick 315 m ur den
+                      uträkningen, Chamonix 2 807. */}
                   <p style={{
                     fontFamily: 'var(--font-body)', fontSize: 12,
-                    color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: '12px 0 0',
-                  }}>
-                    Fallhöjden vi visar, {verticalDrop} m, är den största inom ett och samma
-                    område. Hela höjdspannet i {resort.name} är{' '}
-                    {`${resort.altitude_base}–${resort.altitude_top} m, `}
-                    men de metrarna ligger i olika backar.
-                  </p>
+                    color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, margin: '18px 0 0',
+                  }}>{spannMening(resort)}</p>
                 </div>
               )}
 
@@ -639,7 +652,7 @@ export default async function ResortPage({ params }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 {[
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
-                  { label: 'Fallhöjd',       value: `${verticalDrop} m` },
+                  { label: 'Fallhöjd',       value: `${tal(verticalDrop)} m` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
                   { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
                   { label: 'Offpist',        value: `${resort.off_piste_score}/10` },
@@ -975,9 +988,9 @@ export default async function ResortPage({ params }) {
               <p style={{ fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 500, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 14 }}>I korthet</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {[
-                  { label: 'Lägsta',         value: `${resort.altitude_base} m` },
-                  { label: 'Högsta',         value: `${resort.altitude_top} m` },
-                  { label: 'Fallhöjd',       value: `${verticalDrop} m` },
+                  { label: 'Lägsta',         value: `${tal(resort.altitude_base)} m` },
+                  { label: 'Högsta',         value: `${tal(resort.altitude_top)} m` },
+                  { label: 'Fallhöjd',       value: `${tal(verticalDrop)} m` },
                   { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
                   { label: 'Antal liftar',   value: resort.total_lifts },
                   { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },

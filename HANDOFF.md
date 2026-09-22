@@ -930,8 +930,10 @@ Ett första test samma dag med en handklistrad adress registrerades som ett klic
 Program Overview. Den adressen bar Bookings `aid=304142` och säger inget om länken
 koden bygger.
 
-**Sidofynd, inte ändrat:** länken ber Booking visa priser i euro
-(`selected_currency: 'EUR'`), medan sajten visar kronor.
+**Priserna hos Booking visas i kronor** (`selected_currency: 'SEK'`, förut `'EUR'`), som
+på resten av sajten. Prövat med webbläsaren först ställd på euro: efter klicket via CJ stod
+hotellen i kronor och spårningen var densamma. Valutan överlever alltså omvägen, fast den inte
+står kvar i Bookings slutadress vid varje besök.
 
 ## Vad som väntar
 

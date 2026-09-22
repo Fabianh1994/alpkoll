@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e och 21:a, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a och 22:a, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -866,7 +866,8 @@ till Booking-programmet ligger hos dem.
 - **Hyrbil ger 6 %, flygplatstaxi 4 %, attraktioner 4 %.** Hyrbil betalar alltså mer än
   hotell. Restiden från flygplats till ort är redan uppmätt för alla trettio orterna, så
   det är den mest uppenbara utbyggnaden efter hotellänkarna.
-- **Transparenskravet uppfylls redan** av `label`-parametern i `lib/booking.js`.
+- **Transparenskravet uppfylls** av knappetiketten, som sedan 22 september går till CJ
+  som `sid` och kommer fram hos Booking i deras `label` (se 22 september).
 - **Vilandeavgift på 10 dollar i månaden** efter sex sammanhängande månader utan
   bokning, dragen ur saldot tills det når noll. Ett tomt konto kan inte gå minus.
 
@@ -897,6 +898,40 @@ Kostnaden i övrigt: CPC 3–15 kr och CPM 40–150 kr enligt byråernas prisgui
 vettiga dagsbudget 100–150 kr. Ett test på tre veckor landar kring 2 000–3 000 kr.
 **En Metapixel kostar dessutom sajtens cookiefrihet** — med pixel krävs kakruta, omskriven
 policy och ställningstagande om överföring till Meta.
+
+## Vad som gjordes 22 september: Booking-länkarna går via CJ
+
+**Booking-programmet är godkänt**, relationen står som Active i CJ. Utgivar-ID:t är
+101887836 och kontot 8078412.
+
+**`lib/booking.js` bygger CJ:s klicklänk** för "Evergreen Link for Booking.com Nordics"
+(link-ID 15734870): `https://www.jdoqocy.com/click-101887836-15734870?sid=<knapp>&url=<URL-kodad
+booking.com-sökning>`. Formatet är avläst i CJ:s GET CODE efter att Destination Url ändrats,
+och `sid` finns i widgetkoden i länkexporten. Bookings eget `aid` följer inte med — CJ
+sätter sitt. Knappetiketten (`resort-stay-are` osv.) som förut gick till Bookings `label`
+går nu till `sid`.
+
+**Brytaren heter `SPARNING`** och står överst i filen. Satt till `false` byggs samma vanliga
+söklänk som förut, och annonsmärkningen och CJ-styckena på `/privacy` och
+`/affiliate-disclosure` släcks, eftersom allt hänger på `hasAffiliateId`.
+`NEXT_PUBLIC_BOOKING_AID` används inte längre och kan tas bort i Vercel.
+
+**Uppmätt i dev-servern:** St. Anton, Åre, Sälen och Madonna di Campiglio har tre
+CJ-länkar var med rätt `sid`, noll länkar direkt till booking.com, noll `aid`, tre
+Annons och `rel="noopener noreferrer sponsored"`. CJ-styckena syns på båda juridiska sidorna.
+
+**Klicktestet** gjordes med Åres länk från "Var du bor", exakt som koden bygger den. Den
+landade på Bookings sökning "Åre, Duved", 105 boenden, med
+`label=affnetcj-15734870_pub-8078412_site-101887836_pname-Fabian Henningsson_clkid-resort-stay-are`
+och `aid=1522412`. **Booking ser alltså kontot, webbplatsen och knappen.** Att en bokning
+faktiskt ger provision går inte att visa utan en riktig bokning.
+
+Ett första test samma dag med en handklistrad adress registrerades som ett klick i
+Program Overview. Den adressen bar Bookings `aid=304142` och säger inget om länken
+koden bygger.
+
+**Sidofynd, inte ändrat:** länken ber Booking visa priser i euro
+(`selected_currency: 'EUR'`), medan sajten visar kronor.
 
 ## Vad som väntar
 
@@ -1018,10 +1053,8 @@ topp minus Tandådalens bas — mot 308 m som är den största riktiga. Chamonix
 är Grands Montets 1 513 m. Följden på jämförelsesidorna är att Chamonix går från störst
 till minst fallhöjd av de sju franska orterna. Talen i databasen är orörda.
 
-**Booking-godkännandet, och sedan koden.** Ansökan ligger hos Booking via CJ. När den
-går igenom: be om en färdig spårlänk, läs formatet, och skriv om `lib/booking.js`. Den
-bygger `?aid=`-länkar som CJ inte använder. Samma deploy tänder annonsmärkningen och
-CJ-stycket i integritetspolicyn, eftersom båda hänger på `hasAffiliateId`.
+**Booking-länkarna via CJ — skrivna 22 september**, se det avsnittet. Kvar är att se
+klicken med knappetikett i CJ:s rapporter efter merge.
 
 **Hyrbil och flygplatstaxi efter det.** Booking betalar 6 % på hyrbil och 4 % på
 flygplatstaxi, mot 4 % på hotell. Restiden från flygplats till ort är uppmätt för alla

@@ -46,4 +46,4 @@ Palett: `#121110` bakgrund, `#1c1a17` kort, `#D4A574` accent, `#f0ece4` text. Ty
 
 **Varje ortbild har licens och fotograf.** Bilderna ligger i `resort_images`, en rad per bild; position 0 är hjältebilden och `resorts.image_url` följer den. En ny bild utan känd licens läggs inte in — krediteringen på ortsidan och `/bildkallor` förutsätter att raden är komplett.
 
-Utgående partnerlänkar har `rel="sponsored"` och byggs i `lib/booking.js`, som är overksam tills `NEXT_PUBLIC_BOOKING_AID` är satt.
+Utgående partnerlänkar har `rel="sponsored"` och byggs i `lib/booking.js`. Booking spåras via CJ:s klicklänk, inte med `aid`. Brytaren `SPARNING` i samma fil styr länken, annonsmärkningen och CJ-stycket i integritetspolicyn tillsammans.

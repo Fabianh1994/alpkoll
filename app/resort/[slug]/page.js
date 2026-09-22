@@ -6,7 +6,7 @@ import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
 import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
-import { bookingUrl } from '../../../lib/booking'
+import { bookingUrl, BOOKING_BLA } from '../../../lib/booking'
 import { getLang, SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
 import { pris } from '../../../lib/pris'
@@ -462,7 +462,7 @@ export default async function ResortPage({ params }) {
             </div>
           )}
           <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
-          <a href={bookingHrefMobile} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
+          <a href={bookingHrefMobile} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
         </div>
 
         <div className="resort-grid">
@@ -795,12 +795,15 @@ export default async function ResortPage({ params }) {
                 )}
               </div>
               <Annonsmarkning style={{ margin: '0 0 8px' }} />
-              <a href={bookingHrefStay} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#003580', borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
+              {/* Bookings egen logga, oförändrad fil ur deras partnerkit. Reglerna
+                  (Brand Standards 2.1): minst 120 px bred, fritt utrymme runt om lika
+                  brett som ett "o" — 9,6 % av loggans bredd, alltså 13 px vid 132 px. */}
+              <a href={bookingHrefStay} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BOOKING_BLA, borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
                 <div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Hitta boende nära {resort.name}</div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Sök boende på Booking.com →</div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#fff', letterSpacing: '0.06em', flexShrink: 0, marginLeft: 16 }}>booking.com</div>
+                <Image src="/partner/booking-com-vit.png" alt="" width={132} height={22} unoptimized style={{ flexShrink: 0, marginLeft: 20, width: 132, height: 'auto' }} />
               </a>
             </div>
 
@@ -985,7 +988,7 @@ export default async function ResortPage({ params }) {
               </div>
             )}
             <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
-            <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: '#003580', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
+            <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
             <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Ortens officiella webbplats →</a>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Visa på Google Maps →</a>
             <div style={{ ...card, padding: '20px' }}>

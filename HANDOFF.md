@@ -935,6 +935,33 @@ på resten av sajten. Prövat med webbläsaren först ställd på euro: efter kl
 hotellen i kronor och spårningen var densamma. Valutan överlever alltså omvägen, fast den inte
 står kvar i Bookings slutadress vid varje besök.
 
+### Bookings riktiga logga i "Var du bor"-kortet
+
+Kortet visade "booking.com" satt i Bebas Neue, som bara har versaler, alltså en hemgjord
+kopia av loggan. Bookings Brand Standards 2.1 (december 2020) säger uttryckligen "Don't try
+to replicate with other font families". Nu står deras vita logga där, som oförändrad fil.
+
+**Källan:** mappen "Booking.com Logo" i Booking.com Asset & Resource Hub
+(`lion.app.box.com/s/0677aqd8nkav2zorz1jwdkj3m7sy97oy`). Dit länkar CJ-programmets
+Welcome Pack som programmets "Content Hub". Samma fil, byte för byte, ligger i Bookings kit
+för affiliatenätverk på partnerships.booking.com, tillsammans med Brand Standards.
+`public/partner/booking-com-vit.png` är den vita PNG:n med den genomskinliga kanten
+bortskuren; själva loggan är orörd.
+
+**Reglerna som styr måtten:** vit logga på Booking Blue är ett av två godkända
+huvudalternativ, minst 120 px bred på skärm, fritt utrymme runt om lika brett som
+ett "o" (9,6 % av loggans bredd, 13 px vid 132 px), och loggan till höger om texten är
+tillåten som avslutning i smala liggande banners. Booking Blue är `#003B95` — alla tre
+knapparna på ortsidan hade den äldre `#003580` och bär nu `BOOKING_BLA` ur `lib/booking.js`.
+`#003580` i `Flagga.js` är Finlands flagga och ska stå kvar.
+
+**Uppmätt i dev-servern** på Madonna di Campiglio, längsta ortnamnet: loggan 132×22 px i
+1440, 430 och 375 px bredd, fritt utrymme minst 20 px överallt, ingen horisontell scroll.
+Vid 375 px blir texten bredvid 125 px bred och bryts på flera rader.
+
+Welcome Pack säger ingenting om loggan, och inga uttryckliga användningsvillkor har hittats
+— tillståndet är att programmet delar ut filen till sina publicister.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning

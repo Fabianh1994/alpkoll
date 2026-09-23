@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a och 22:a, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a och 23:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -109,10 +109,13 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–21 september:
+`main` är i fas med `origin/main`. Mergat 8–22 september:
 
 | PR | Vad |
 |---|---|
+| #66 | Bookings riktiga logga i "Var du bor"-kortet, Booking Blue på alla tre knapparna |
+| #65 | Booking-länkarna går via CJ, knappnamn som `sid`, priser i kronor |
+| #64 | Handoff 21 september |
 | #63 | Avsändaren i sidfoten, och kontaktadressen till `lib/kontakt.js` |
 | #62 | Annonsmärkning vid länken, `/sa-jamfor-vi`, CJ i integritetspolicyn |
 | #61 | Delområdena: Sälen och Chamonix är summor, två fallhöjder rättade |
@@ -857,7 +860,9 @@ till Booking-programmet ligger hos dem.
 - **4 % på hotellbokningar.** En skidvecka för 15 000 kr ger omkring 600 kr.
 - **Referensperioden är ETT dygn**, inte trettio dagar. Bokar någon två dagar efter
   klicket ger det noll. Det gör placeringen viktigare än volymen: länken gör mest nytta
-  där läsaren redan valt ort, alltså i "Var du bor"-kortet.
+  där läsaren redan valt ort, alltså i "Var du bor"-kortet. **Motsägs av Welcome Pack**
+  (22 september), som säger att programmet är "session based": provision bara om bokningen
+  görs i samma webbläsarsession som klicket. Ofrågat hos `cj_booking@cj.com`.
 - **EPC 9,05 EUR på tre månader**, alltså drygt en krona per klick vidare till Booking.
   Med nuvarande trafik blir det tiokronor i månaden. Inte ett skäl att låta bli — ett
   skäl att inte köpa trafik för att nå dit.
@@ -898,6 +903,16 @@ Kostnaden i övrigt: CPC 3–15 kr och CPM 40–150 kr enligt byråernas prisgui
 vettiga dagsbudget 100–150 kr. Ett test på tre veckor landar kring 2 000–3 000 kr.
 **En Metapixel kostar dessutom sajtens cookiefrihet** — med pixel krävs kakruta, omskriven
 policy och ställningstagande om överföring till Meta.
+
+**Tillägg 22 september.** Welcome Pack förbjuder publicisttypen "media buyer", alltså den
+som köper klick och skickar dem mer eller mindre direkt till Booking. Annonser som för
+läsare till Alpkolls innehåll är troligen tillåtna; annonser som leder rakt till en
+Booking-länk, bär Bookings namn eller köper sökord med det är det troligen inte. **Som
+intäktskälla går annonser inte ihop:** ett klick kostar 3–15 kr och ett klick vidare till
+Booking ger i snitt drygt en krona, så varje annonskrona ger högst 7–35 öre tillbaka även
+om alla klickar vidare. Pixeln ändrar inte den ekvationen. Rådet till Fabian: ett litet
+tidsbegränsat test i oktober–december för att lära sig vad som fångar folk, utan pixel,
+mätt med märkta länkar — inte för provisionen.
 
 ## Vad som gjordes 22 september: Booking-länkarna går via CJ
 
@@ -961,6 +976,54 @@ Vid 375 px blir texten bredvid 125 px bred och bryts på flera rader.
 
 Welcome Pack säger ingenting om loggan, och inga uttryckliga användningsvillkor har hittats
 — tillståndet är att programmet delar ut filen till sina publicister.
+
+**Live verifierat efter båda mergarna:** alla 30 ortsidor har tre CJ-länkar med rätt `sid`,
+tre Annons, noll direktlänkar till booking.com, loggan, `#003B95` och ingen `#003580`.
+Fabian bekräftade själv att länkarna fungerar i en webbläsare utan annonsblockerare.
+
+### Welcome Pack och annonsblockerare
+
+**Welcome Pack** (24 sidor, "Booking.com Affiliate Program — CJ Affiliate", läst 22 september)
+bekräftar djuplänkningen: CJ:s automatiska djuplänksverktyg fungerar inte för Booking, bara
+Evergreen-länken går att djuplänka, adressen läggs på med `?url=` och egen spårning med
+`sid=…&url=…` — exakt det `lib/booking.js` gör. `sid` beskrivs som ett fritt valt värde för
+publicistens egen uppföljning. Programmet förbjuder webbläsartillägg, "media buyer", konton
+som bara finns i sociala medier, sökmotor/widget, cashback och kupong. Bookings sökwidget
+laddar ett skript från Booking och skulle kosta cookiefriheten — använd den inte.
+Kontakt: `cj_booking@cj.com`. Content Hub: `lion.app.box.com/s/0677aqd8nkav2zorz1jwdkj3m7sy97oy`.
+
+**Annonsblockerare stoppar CJ:s länkar.** uBlock Origin (EasyList och Peter Lowe's lista)
+blockerar `||jdoqocy.com^`, och alla CJ:s klickdomäner står i samma listor. Besökaren får en
+varningssida; "Fortsätt" går direkt till Booking utan spårning. Det är inget kodfel och det
+finns ingen CJ-domän som slipper. Fabians vanliga Firefox har uBlock — testa spårningen på
+mobilen eller i en annan webbläsare.
+
+## Vad som gjordes 22–23 september: underlag för svenskägda boenden
+
+Fabians idé: skriv om svenskägda hotell och B&B i Alperna och föreslå dem direktprovision
+via länk eller rabattkod. Underlaget, med källa per boende, ligger i artefakten
+https://claude.ai/artifact/MVNihjqVagrGUmZTsaVwZw. Inget är byggt i kod.
+
+- **Åtta fristående boenden där en namngiven källa säger att ägaren är svensk:** Valluga
+  (St. Anton), Hoheneck och Ski Lodge (Engelberg), The Lodge (Bad Gastein), Monterosa
+  (Alagna), Seehof (Zell am See), Skiers Lodge (La Grave), Maison du Bez (Serre Chevalier).
+- **Skandinaviskt drivna men inte uttryckligen svenska:** Millefiori (Valtournenche) och
+  La Chaumière (Chamonix). **Svenska arrangörer med egna hotell:** STS Alpresor (elva, i
+  Bad Gastein och Cervinia) och Langley (nio). Lion Alpin och Nortlander är danskägda.
+- **Fyndet:** bara Valluga ligger på en ort med ortsida. De svenska ägarna sitter i
+  Engelberg, Bad Gastein, Cervinia och Alagna, där Alpkoll inte har några orter.
+- **Efterfrågan** enligt Googles sökförslag: "svenskt/svenskägt hotell alperna" och ortnamnen
+  St. Anton, Chamonix, Cervinia, Alagna, Bad Gastein. Ingen volym är mätt.
+- **Råd som gavs:** innehållet först, hotellen sedan med siffror i hand. Ta med alla
+  svenskägda och märk de med avtal som annons, eftersom `/sa-jamfor-vi` lovar att ingen
+  kan betala för placering. Att fakturera hotell direkt kräver troligen firma med F-skatt.
+
+**Innehållsidéer i samma anda**, i rekommenderad ordning, med sökförslag som belägg: bil
+till Alperna med kostnad från din stad (sträckorna finns i `lib/avresestader.js` på
+`startsida-skiss`), direktflyg från Sverige plus transfer (hyrbil 6 %, taxi 4 %),
+sportlovskrocken med tyska, nederländska och brittiska lov, sidan om svenskägda boenden,
+svensk skidskola. Säsongsjobb har flest sökningar men fel målgrupp. "Vad kostar en öl" avråds:
+priset går inte att belägga per ort.
 
 ## Vad som väntar
 
@@ -1082,8 +1145,10 @@ topp minus Tandådalens bas — mot 308 m som är den största riktiga. Chamonix
 är Grands Montets 1 513 m. Följden på jämförelsesidorna är att Chamonix går från störst
 till minst fallhöjd av de sju franska orterna. Talen i databasen är orörda.
 
-**Booking-länkarna via CJ — skrivna 22 september**, se det avsnittet. Kvar är att se
-klicken med knappetikett i CJ:s rapporter efter merge.
+**Booking-länkarna via CJ — live sedan 22 september** (#65, #66), se det avsnittet. Kvar:
+se riktiga klick med knappnamn i CJ:s rapporter, fråga `cj_booking@cj.com` om
+referensperioden är en session eller ett dygn, och ta bort `NEXT_PUBLIC_BOOKING_AID` i
+Vercel (oanvänd, skadar inte).
 
 **Hyrbil och flygplatstaxi efter det.** Booking betalar 6 % på hyrbil och 4 % på
 flygplatstaxi, mot 4 % på hotell. Restiden från flygplats till ort är uppmätt för alla
@@ -1119,9 +1184,15 @@ Nattåget och Liftkortspriser. En fjärde flik är ett designval, inte en rättn
 `hello@alpkoll.com` tar emot via ImprovMX, men att SKICKA därifrån är oprövat — det
 behövs för mejlet till Omio.
 
+**Svenskägt i Alperna — vilken innehållsidé som byggs först.** Underlaget står under
+22–23 september. Om fler alporter ska in, där de svenskägda hotellen ligger, är en egen fråga.
+
 **Avklarat 21 september:** Supabase-regionen är verifierad mot AWS IP-lista och
 integritetspolicyns uppgift om eu-north-1 stämmer. Affiliate-ID:t är inte längre
 uppskjutet — CJ-kontot är uppsatt och ansökan ligger hos Booking.
+
+**Avklarat 22 september:** Booking-programmet godkänt och spårningen live på alla 30
+ortsidor.
 
 ## Praktiskt
 

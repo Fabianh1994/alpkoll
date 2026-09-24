@@ -4,6 +4,8 @@ Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
+**Underhållsläge från 24 september 2026.** `UNDERHALL = true` i `proxy.js` gör att varje adress svarar 503 med en kort stängd-sida. Projektet är pausat av personliga skäl. PR #68 (Booking-söksträngar och nya knappar) står öppen och bör mergas innan sajten öppnas: live skickar 18 av 30 ortsidor Booking-klicken fel. Öppna igen med `UNDERHALL = false`.
+
 ---
 
 ## Vad projektet är

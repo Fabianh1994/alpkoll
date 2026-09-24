@@ -26,7 +26,7 @@ const MEJL = 'hello@alpkoll.com'
 const HJALTE = encodeURIComponent(
   'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg'
 )
-const bild = (w) => `/_next/image?url=${HJALTE}&w=${w}&q=70`
+const bild = (w) => `/_next/image?url=${HJALTE}&w=${w}&q=75`
 
 const SIDA = `<!doctype html>
 <html lang="sv">

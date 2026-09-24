@@ -8,6 +8,8 @@ import { parFor, motparten } from '../lib/jamfor'
 import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
 import { restidText, sasongenSlut, stationFor, SVERIGE } from '../lib/nattaget'
 import { bilMening, linjeMeningar, linjerFor } from '../lib/restider'
+import { bookingSok, BOOKING_BLA } from '../lib/booking'
+import Partnerlank from './Partnerlank'
 
 const ACCENT = '#D4A574'
 const kort = { background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10 }
@@ -309,6 +311,30 @@ export default async function OrtEllerAlperna({ slug }) {
             Söker du kortare resa, färre restimmar med barn och ett liftkort på{' '}
             {ortKort ? ortKort.kr : '—'} är det inte självklart.
           </p>
+        </section>
+
+        {/* ── Vidare ──
+            Sidan slutade förut med omdömet. Den som valt den svenska orten
+            får boendet här; den som valt Alperna har paren ovanför och
+            nattåget nedanför, där köpknapparna sitter. */}
+        <section style={{ marginTop: 24, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12, alignItems: 'end' }}>
+          {bookingSok(ort) && (
+            <div>
+              <Partnerlank
+                sid={`eller-alperna-boende-${ort.slug}`}
+                sok={{ destination: bookingSok(ort) }}
+                markningStyle={{ marginBottom: 8 }}
+                style={{ display: 'block', background: BOOKING_BLA, borderRadius: 10, padding: '16px 18px', textDecoration: 'none' }}
+              >
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Boende i {ort.name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.72)' }}>Sök boende på Booking.com →</div>
+              </Partnerlank>
+            </div>
+          )}
+          <Link href="/nattaget-till-alperna" style={{ ...kort, display: 'block', padding: '16px 18px', textDecoration: 'none', border: '1px solid rgba(212,165,116,0.35)' }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600, color: '#D4A574', marginBottom: 3 }}>Till Alperna med nattåg</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.6)' }}>Orterna tåget når, med tider →</div>
+          </Link>
         </section>
 
       </main>

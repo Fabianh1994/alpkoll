@@ -3,6 +3,9 @@ import SiteHeader from '../SiteHeader'
 import SiteFooter from '../SiteFooter'
 import { getResorts } from '../../lib/resorts'
 import { skrivDatum } from '../../lib/valuta'
+import { bookingSok, BOOKING_BLA } from '../../lib/booking'
+import Partnerlank from '../Partnerlank'
+import Annonsmarkning from '../Annonsmarkning'
 import { SITE_URL } from '../../lib/lang'
 import {
   HAMTAD, KOMFORT, ORTER, PRAKTISKT, SASONG, SASONG_SLUT,
@@ -291,6 +294,29 @@ export default async function NattagetTillAlperna() {
                   </Link>
                 )
               })}
+            </div>
+
+            {/* ── Boende där tåget kommer fram ──
+                Egen rad under korten, eftersom varje kort redan är en länk
+                till ortsidan och en länk inte kan ligga i en annan. Inga
+                datum: sidan vet inte vilken fredag läsaren åker. */}
+            <div style={{ marginBottom: 40 }}>
+              <h3 style={{ ...etikett, margin: '0 0 10px' }}>Boende i orterna tåget når</h3>
+              <Annonsmarkning kompakt style={{ marginBottom: 10 }} />
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+                {nattagsorter.filter((n) => bookingSok(n.ort)).map((n) => (
+                  <Partnerlank
+                    key={n.slug}
+                    sid={`nattag-boende-${n.slug}`}
+                    sok={{ destination: bookingSok(n.ort) }}
+                    markning={null}
+                    style={{ display: 'block', background: BOOKING_BLA, borderRadius: 8, padding: '12px 14px', textDecoration: 'none' }}
+                  >
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600, color: '#fff' }}>{n.ort.name}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.72)', marginTop: 2 }}>Booking.com →</div>
+                  </Partnerlank>
+                ))}
+              </div>
             </div>
 
             {/* ── Sportlovsavgången ──

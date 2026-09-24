@@ -6,8 +6,8 @@ import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
 import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
-import { bookingUrl, BOOKING_BLA } from '../../../lib/booking'
-import { getLang, SITE_URL } from '../../../lib/lang'
+import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
+import { SITE_URL } from '../../../lib/lang'
 import { manadVersal } from '../../../lib/months'
 import { pris } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
@@ -23,7 +23,7 @@ import { delomraden, fallhojd as fallhojdFor, pistadeDelar, spannMening, summaTe
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
 import Bildgalleri from './Bildgalleri'
-import Annonsmarkning from '../../Annonsmarkning'
+import Partnerlank from '../../Partnerlank'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -116,14 +116,11 @@ export default async function ResortPage({ params }) {
 
   if (!resort) notFound()
 
-  const lang = getLang()
   const verticalDrop = fallhojdFor(resort)
   const estimatedTransferMins = restid(resort)
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
   const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
-  // Affiliate-länkar med separata labels så Partner Hub visar vilken
-  // placering som faktiskt konverterar.
   const heroImageUrl = resort.image_url
     || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'
 
@@ -135,10 +132,11 @@ export default async function ResortPage({ params }) {
   const hjalte = bilder[0]?.position === 0 && bilder[0].url === resort.image_url ? bilder[0] : null
   const galleri = bilder.filter((b) => b.position > 0)
 
-  const bookingDestination = resort.accommodation_zone || resort.name
-  const bookingHrefMobile = bookingUrl(bookingDestination, { lang, label: `resort-mobile-${resort.slug}` })
-  const bookingHrefStay = bookingUrl(bookingDestination, { lang, label: `resort-stay-${resort.slug}` })
-  const bookingHrefSidebar = bookingUrl(bookingDestination, { lang, label: `resort-sidebar-${resort.slug}` })
+  // Vad Booking söker på, eller null när orten saknar boenden där — då
+  // visas ingen av de tre knapparna. Se BOOKING_SOK i lib/booking.js.
+  // Varje knapp har ett eget spårningsnamn, så att CJ:s rapporter visar
+  // vilken placering som ger klick.
+  const bookingDestination = bookingSok(resort)
 
   // Priserna visas i kronor med ortens eget belopp inom parentes — sajten
   // är svensk och läsaren ska slippa räkna om i huvudet. Omräkningen sker
@@ -461,8 +459,9 @@ export default async function ResortPage({ params }) {
               <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Planera resan →</Link>
             </div>
           )}
-          <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
-          <a href={bookingHrefMobile} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
+          {bookingDestination && (
+            <Partnerlank sid={`resort-mobile-${resort.slug}`} sok={{ destination: bookingDestination }} markningStyle={{ marginBottom: 8, textAlign: 'center' }} style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</Partnerlank>
+          )}
         </div>
 
         <div className="resort-grid">
@@ -794,17 +793,18 @@ export default async function ResortPage({ params }) {
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
               </div>
-              <Annonsmarkning style={{ margin: '0 0 8px' }} />
               {/* Bookings egen logga, oförändrad fil ur deras partnerkit. Reglerna
                   (Brand Standards 2.1): minst 120 px bred, fritt utrymme runt om lika
                   brett som ett "o" — 9,6 % av loggans bredd, alltså 13 px vid 132 px. */}
-              <a href={bookingHrefStay} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BOOKING_BLA, borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Hitta boende nära {resort.name}</div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Sök boende på Booking.com →</div>
-                </div>
-                <Image src="/partner/booking-com-vit.png" alt="" width={132} height={22} unoptimized style={{ flexShrink: 0, marginLeft: 20, width: 132, height: 'auto' }} />
-              </a>
+              {bookingDestination && (
+                <Partnerlank sid={`resort-stay-${resort.slug}`} sok={{ destination: bookingDestination }} markning="full" markningStyle={{ margin: '0 0 8px' }} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: BOOKING_BLA, borderRadius: 10, padding: '18px 22px', textDecoration: 'none' }}>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 3 }}>Hitta boende nära {resort.name}</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>Sök boende på Booking.com →</div>
+                  </div>
+                  <Image src="/partner/booking-com-vit.png" alt="" width={132} height={22} unoptimized style={{ flexShrink: 0, marginLeft: 20, width: 132, height: 'auto' }} />
+                </Partnerlank>
+              )}
             </div>
 
             {/* What it costs */}
@@ -987,8 +987,9 @@ export default async function ResortPage({ params }) {
                 <Link href="/plan" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#121110', background: '#D4A574', borderRadius: 6, padding: '14px 24px', textDecoration: 'none' }}>Planera resan →</Link>
               </div>
             )}
-            <Annonsmarkning kompakt style={{ marginBottom: 8, textAlign: 'center' }} />
-            <a href={bookingHrefSidebar} target="_blank" rel="noopener noreferrer sponsored" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</a>
+            {bookingDestination && (
+              <Partnerlank sid={`resort-sidebar-${resort.slug}`} sok={{ destination: bookingDestination }} markningStyle={{ marginBottom: 8, textAlign: 'center' }} style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#fff', background: BOOKING_BLA, borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.04em' }}>Hitta boende på Booking.com →</Partnerlank>
+            )}
             <a href={resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 12, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Ortens officiella webbplats →</a>
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textAlign: 'center', fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '12px 24px', textDecoration: 'none', marginBottom: 16, letterSpacing: '0.06em', textTransform: 'uppercase' }}>Visa på Google Maps →</a>
             <div style={{ ...card, padding: '20px' }}>

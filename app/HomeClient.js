@@ -222,6 +222,25 @@ export default function HomeClient({ resorts }) {
         </div>
       </header>
 
+      {/* Tre frågor före ortlistan. Startsidan får nästan ingen söktrafik
+          (20 exponeringar i veckan, 15 september 2026), men den som landar
+          här vet sällan var hen ska börja. Länkarna går till sidorna som
+          svarar på en fråga folk faktiskt ställer, och som har knapparna. */}
+      <nav aria-label="Vanliga frågor" style={{ padding: '28px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ maxWidth: 1320, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
+          {[
+            { href: '/salen-eller-alperna', fraga: 'Sälen eller Alperna?', svar: 'Resan och fallhöjden jämförda' },
+            { href: '/sportlov', fraga: 'Vilken vecka har du sportlov?', svar: 'Tåget och priset vecka för vecka' },
+            { href: '/nattaget-till-alperna', fraga: 'Till Alperna med nattåg', svar: 'Orterna tåget når, med tider' },
+          ].map((l) => (
+            <Link key={l.href} href={l.href} style={{ display: 'block', padding: '16px 18px', borderRadius: 8, border: '1px solid rgba(212,165,116,0.3)', textDecoration: 'none' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: '#D4A574', marginBottom: 3 }}>{l.fraga} →</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.58)' }}>{l.svar}</div>
+            </Link>
+          ))}
+        </div>
+      </nav>
+
       <section style={{ padding: '60px clamp(24px, 4vw, 64px)', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', textAlign: 'center' }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(15px,1.5vw,17px)', fontWeight: 300, color: 'rgba(255,255,255,0.52)', lineHeight: 1.75, marginBottom: 22 }}>{t.mission.intro}</p>

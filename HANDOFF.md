@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a och 23:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a, 23:e och 24:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -1025,6 +1025,50 @@ sportlovskrocken med tyska, nederländska och brittiska lov, sidan om svenskägd
 svensk skidskola. Säsongsjobb har flest sökningar men fel målgrupp. "Vad kostar en öl" avråds:
 priset går inte att belägga per ort.
 
+## Vad som gjordes 23–24 september: knappar där besluten fattas
+
+**18 av 30 ortsidor skickade Booking-klicken fel, live sedan 22 september.** Knapparna
+sökte på `accommodation_zone`, som är skriven för läsaren. Provat i Bookings sökning
+24 september: åtta orter gav Bookings startsida med `errorc_searchstring_not_found`
+(Sälen, Chamonix, Hemsedal, Cortina, Myrkdalen, Les Arcs, Zermatt, Tignes) och nio fel
+plats — Riksgränsen landade på Kiruna centralstation, Ischgl på grannbyn Mathon, Trysil,
+Levi och Voss på ett enda boende. Nu söker knapparna på `BOOKING_SOK` i `lib/booking.js`,
+en provad sträng per ort med antalet träffar i kommentaren. **Hemavan får ingen knapp**:
+Booking har inga boenden där i någon stavning som provades. **Delområden faller**:
+"Lindvallen" gav ett boende och "Tandådalen" inget, mot 44 för "Sälen".
+
+**`app/Partnerlank.js` är den enda vägen ut till en partner.** Den bygger adressen, sätter
+`rel`, ny flik, märkningen och spårningsnamnet `<sidtyp>-<placering>-<ort>` som CJ:s
+`sid`. Ortsidans gamla namn (`resort-mobile-`, `resort-stay-`, `resort-sidebar-`) är
+oförändrade. Ett nytt program läggs till i `PARTNERS` i samma fil.
+
+**Knappar på fem nya sidtyper:**
+
+| Sida | Vad | sid |
+|---|---|---|
+| Jämförelsesidan | "Boende i X och Y" efter resan, en knapp per ort | `jamfor-boende-<ort>` |
+| Sälen/Åre eller Alperna | Boende i den svenska orten, plus länk till nattåget | `eller-alperna-boende-<ort>` |
+| Sportlov | Åre, Sälen, Hemsedal och Trysil med veckans datum, lördag till lördag (`skidveckan`) | `sportlov-v<nr>-<ort>` |
+| Nattåget | Boende i de fem orterna tåget når, under korten | `nattag-boende-<ort>` |
+| Startsidan | Tre länkar före ortlistan, ingen provision | — |
+
+**Klicktestat hela vägen:** `sportlov-v9-salen` via CJ landade på "Sälen: 44 boenden
+hittade", 27 februari–6 mars, priser i kronor, och Bookings `label` bar
+`clkid-sportlov-v9-salen`. **Vercel Analytics används inte för klicken** — egna händelser
+finns inte på Hobby och Pro tar två egenskaper per händelse. CJ ser redan varje klick.
+
+**Sökordsplaneraren i Google Ads** (Fabians konto, 23 september, utan annons igång, alltså
+avrundade volymer): boende per ort är störst (Sälen och Åre 1 000–10 000 per variant,
+"trysil boende" 1 000–10 000), liksom "skidort barn" och "sportlov 2027".
+Jämförelsesökningar som "sälen eller åre" ligger på 10–100 eller under. Prognosen för en
+annonskampanj gav 12,54 kr per klick — mer än tio gånger vad Booking betalar per klick.
+Annonser lönar sig alltså inte.
+
+**Partnerprogram att ansöka till**, enligt sökning 24 september: Sunweb via TradeTracker
+("Sunwebresor.se – Vintersemester"), Skiset via Awin (5 %), Alps2Alps via Adtraction,
+SnowTrex direkt, Kiwi.com via Travelpayouts (3 %), Omio via Impact eller Travelpayouts.
+Skilink, Slopestar, Nortlander, Lion Alpin, Alpy och CheckYeti: inget program hittat.
+
 ## Vad som väntar
 
 ### Checklistan: sexton av tjugo var redan i ordning
@@ -1145,7 +1189,8 @@ topp minus Tandådalens bas — mot 308 m som är den största riktiga. Chamonix
 är Grands Montets 1 513 m. Följden på jämförelsesidorna är att Chamonix går från störst
 till minst fallhöjd av de sju franska orterna. Talen i databasen är orörda.
 
-**Booking-länkarna via CJ — live sedan 22 september** (#65, #66), se det avsnittet. Kvar:
+**Booking-länkarna via CJ — live sedan 22 september** (#65, #66), söksträngarna rättade
+24 september, se de avsnitten. Kvar:
 se riktiga klick med knappnamn i CJ:s rapporter, fråga `cj_booking@cj.com` om
 referensperioden är en session eller ett dygn, och ta bort `NEXT_PUBLIC_BOOKING_AID` i
 Vercel (oanvänd, skadar inte).

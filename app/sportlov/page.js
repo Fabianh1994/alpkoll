@@ -7,6 +7,9 @@ import { SITE_URL } from '../../lib/lang'
 import { AR, HAMTAD, KOMMUNER, VECKOR, kommunerMed, nattagsresa, skidveckan, soldenLage, sportlovetSlut } from '../../lib/sportlov'
 import { SVERIGE, sasongenSlut } from '../../lib/nattaget'
 import { STADER, TAGLINJER, bilresa, timmar } from '../../lib/restider'
+import { bookingSok, BOOKING_BLA } from '../../lib/booking'
+import Partnerlank from '../Partnerlank'
+import Annonsmarkning from '../Annonsmarkning'
 
 // Samma intervall som ortsidorna. Betyder också att sidan märker att
 // sportlovet passerat inom en timme, utan deploy.
@@ -48,6 +51,16 @@ const rubrik = (storlek) => ({
   fontFamily: 'var(--font-heading)', fontSize: storlek, fontWeight: 400,
   letterSpacing: '0.03em', margin: '0 0 18px',
 })
+
+// Orterna som sätter priset efter startdagen, samma fyra som stycket om
+// priset nämner. För dem ändrar veckan vad boendet kostar, och där gör
+// datumen i sökningen nytta.
+const BOENDE_ORTER = [
+  { slug: 'are', name: 'Åre' },
+  { slug: 'salen', name: 'Sälen' },
+  { slug: 'hemsedal', name: 'Hemsedal' },
+  { slug: 'trysil', name: 'Trysil' },
+]
 
 const MANADER = [
   'januari', 'februari', 'mars', 'april', 'maj', 'juni',
@@ -224,6 +237,34 @@ function Veckan({ v, tagetGar }) {
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>prislistan</Link>.
         </p>
       </div>
+
+      {/* ── Boendet den veckan ──
+          Sidan vet redan vilken vecka läsaren valt, så sökningen öppnas med
+          in- och utcheckning satta: lördag till lördag, samma skidvecka som
+          nattåget och Sälentåget är byggda kring (skidveckan i lib/sportlov.js). */}
+      {skidvecka && (
+        <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
+          <h3 style={{ ...etikett, margin: '0 0 12px' }}>Boende vecka {v.nr}</h3>
+          <p style={{ ...brod, fontSize: 15, margin: '0 0 14px' }}>
+            Sökningen gäller lördag till lördag, {spann(skidvecka.start, skidvecka.slut)}.
+          </p>
+          <Annonsmarkning kompakt style={{ marginBottom: 10 }} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+            {BOENDE_ORTER.map((ort) => (
+              <Partnerlank
+                key={ort.slug}
+                sid={`sportlov-v${v.nr}-${ort.slug}`}
+                sok={{ destination: bookingSok(ort), checkin: skidvecka.start, checkout: skidvecka.slut }}
+                markning={null}
+                style={{ display: 'block', background: BOOKING_BLA, borderRadius: 8, padding: '12px 14px', textDecoration: 'none' }}
+              >
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600, color: '#fff' }}>{ort.name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.72)', marginTop: 2 }}>Booking.com →</div>
+              </Partnerlank>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ── Resan hemifrån ──
           Restiden folk faktiskt söker på. transfer_minutes i databasen är

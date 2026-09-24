@@ -4,7 +4,24 @@ Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
-**Underhållsläge från 24 september 2026.** `UNDERHALL = true` i `proxy.js` gör att varje adress svarar 503 med en kort stängd-sida. Projektet är pausat av personliga skäl. PR #68 (Booking-söksträngar och nya knappar) står öppen och bör mergas innan sajten öppnas: live skickar 18 av 30 ortsidor Booking-klicken fel. Öppna igen med `UNDERHALL = false`.
+## Läget 24 september: sajten är stängd
+
+**alpkoll.se visar en stängd-sida sedan 24 september 2026** (#69). Projektet är pausat av
+personliga skäl, på obestämd tid. Ta inte upp det förrän Fabian gör det själv.
+
+`UNDERHALL = true` i `proxy.js` gör att varje adress svarar **503** med
+`Retry-After: 86400` och sidan "Vi kommer tillbaka", med `hello@alpkoll.com` för den som
+vill höra av sig. Ingen person, partner eller annons nämns. Uppmätt live 24 september:
+`/`, en ortsida och `robots.txt` svarar 503 med sidan, typsnitten under `/underhall/` 200,
+och alpkoll.com vidarebefordras som förut.
+
+**Allt annat ligger kvar och är mergat.** Knapparna och de rättade Booking-söksträngarna
+(#68) gick ut samma kväll, men syns inte bakom stängd-sidan. De är alltså inte kontrollerade
+live — bara i dev-servern och med ett klicktest via CJ.
+
+**503 skyddar indexet i dagar, inte månader.** Blir pausen lång släpper Google sidor, och
+positionerna från augusti–september får arbetas tillbaka. Checklistan för att öppna står
+först under "Vad som väntar".
 
 ---
 
@@ -73,10 +90,9 @@ på.
 22 och gav 2 klick, medan jämförelsesidorna ligger på 9,8 och gav 3. `/salen-eller-alperna`
 fick noll exponeringar den veckan; positionen 1,7 ovan vilade på en handfull.
 
-**Affiliate-ID:t är medvetet uppskjutet.** Fabians beslut 8 september: trafik först, intäkt
-sedan. `NEXT_PUBLIC_BOOKING_AID` är tom, länkarna byggs utan `aid`, och klick ger noll
-provision. Det är känt och accepterat — fråga inte om det igen. Att fylla i den tar två
-minuter den dagen det finns något att tjäna.
+**Affiliate-ID:t var uppskjutet 8 september. Det gäller inte längre:** Booking spåras via CJ
+sedan 22 september och `NEXT_PUBLIC_BOOKING_AID` används inte. Se avsnitten från 21
+september och framåt.
 
 ## Vad som gjordes 8 september
 
@@ -111,10 +127,13 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–22 september:
+`main` är i fas med `origin/main`. Mergat 8–24 september:
 
 | PR | Vad |
 |---|---|
+| #69 | Underhållsläge: `proxy.js` och stängd-sidan |
+| #68 | `Partnerlank.js`, `BOOKING_SOK`, knappar på fem nya sidtyper |
+| #67 | Handoff 22–23 september |
 | #66 | Bookings riktiga logga i "Var du bor"-kortet, Booking Blue på alla tre knapparna |
 | #65 | Booking-länkarna går via CJ, knappnamn som `sid`, priser i kronor |
 | #64 | Handoff 21 september |
@@ -1071,7 +1090,59 @@ Annonser lönar sig alltså inte.
 SnowTrex direkt, Kiwi.com via Travelpayouts (3 %), Omio via Impact eller Travelpayouts.
 Skilink, Slopestar, Nortlander, Lion Alpin, Alpy och CheckYeti: inget program hittat.
 
+## Vad som gjordes 24 september: stängd-sidan
+
+**`proxy.js`** (Next 16:s namn på middleware) lägger sidan över varje adress utom
+`/_next/static`, `/_next/image` och `/underhall/`. Sidan är ren HTML i filen, i sajtens
+form: startsidans hjältebild genom bildoptimeringen, Bebas Neue och Barlow.
+
+**Typsnitten ligger i `public/underhall/`**, latin-delen ur next/font, så att sidan inte
+hämtar något från Google. Latin täcker å, ä och ö. Filerna behövs bara så länge
+underhållsläget används.
+
+**Bildoptimeringen godtar bara kvalitet 75 i produktion.** Sidan bad först om `q=70`, som
+fungerade i dev men gav `400 INVALID_IMAGE_OPTIMIZE_REQUEST` live — bakgrunden var tom.
+Next 16 har `images.qualities` satt till `[75]` som standard. Rättat till `q=75`, uppmätt
+live: 35 kB i 828 px, 63 kB i 1 200, 140 kB i 1 920. Originalet är 3 MB.
+
+**Mejlen.** `hello@alpkoll.com` tar emot via ImprovMX. Att skicka därifrån är fortfarande
+oprövat, så svar går troligen från Fabians privata adress. `lib/kontakt.js` säger att
+adressen lämnas på begäran och inte publiceras; stängd-sidan publicerar den, på Fabians
+uttryckliga begäran.
+
 ## Vad som väntar
+
+### När sajten öppnas igen
+
+1. Sätt `UNDERHALL = false` i `proxy.js` och deploya. Inget annat behöver ändras.
+2. **Kontrollera knapparna live**, eftersom de aldrig syntes bakom stängd-sidan: varje
+   ortsida ska söka på strängen i `BOOKING_SOK` (Sälen på `ss=Sälen`), Hemavan ska sakna
+   knapp, och jämförelsesidorna, sportlovet och nattåget ska ha sina. Mät `Age`-headern
+   först — sidorna revalideras varje timme.
+3. **Search Console:** se hur många sidor som föll ur indexet under stängningen, och skicka
+   in sitemapen på nytt.
+4. Ta bort `public/underhall/` om läget inte ska användas igen, eller låt den ligga.
+
+### Intäkterna, i den ordning de lades 23–24 september
+
+Underlag: exempelsidan https://claude.ai/artifact/4xe8j6UH7D8XHio4LTAtYN, Fabians plan
+https://claude.ai/artifact/57LcYvGdhdRXu44M5EtkBV och sökordsfilerna från Google Ads i
+`Downloads` ("Keyword Stats 2026-09-23 …"). Volymerna är avrundade intervall.
+
+1. **Ortsidorna högre på pris- och liftkortsfrågorna.** "liftkort sälen pris" och "liftkort
+   åre pris" ligger på 100–1 000 i månaden, ortsidorna på position runt 22. Där finns både
+   volymen och knapparna.
+2. **En sida om skidorter för barnfamiljer**, rangordnad på `family_friendly_score`.
+   "skidort barn" ligger på 1 000–10 000 i månaden.
+3. **Hyrbil och flygplatstaxi** via Booking/CJ (6 % och 4 %). Pröva först om Evergreen-länken
+   fungerar mot Bookings hyrbils- och taxisidor.
+4. **Partnerprogram Fabian kan ansöka till**, se tabellen under 23–24 september. Varje nytt
+   program läggs till i `PARTNERS` i `app/Partnerlank.js`.
+5. Fråga `cj_booking@cj.com` om referensperioden är en session eller ett dygn.
+
+**Avfärdat 23–24 september:** Google-annonser (12,54 kr per klick mot ca 1 kr tillbaka),
+knappar per delområde (Booking hittar inte Lindvallen), och fler sökordskörningar innan det
+som redan är känt är byggt.
 
 ### Checklistan: sexton av tjugo var redan i ordning
 

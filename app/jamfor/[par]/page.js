@@ -11,6 +11,9 @@ import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { fallhojd as fallhojdFor, summaMening } from '../../../lib/delomraden'
+import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
+import Partnerlank from '../../Partnerlank'
+import Annonsmarkning from '../../Annonsmarkning'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -209,6 +212,12 @@ export default async function JamforPage({ params }) {
 
   const korsPar = arNordisk(a) !== arNordisk(b)
 
+  // Orterna som har en Booking-sökning. Hemavan saknar boenden där och
+  // får ingen knapp — se BOOKING_SOK i lib/booking.js.
+  const medBoende = orter
+    .map((ort) => ({ ort, destination: bookingSok(ort) }))
+    .filter((o) => o.destination)
+
   // "Sverige" över båda bilderna säger ingenting när paret är Åre mot
   // Sälen. Landskapet skiljer dem åt; landet gör det bara när de ligger i
   // olika länder.
@@ -398,6 +407,32 @@ export default async function JamforPage({ params }) {
             </p>
           )}
         </section>
+
+        {/* ── Boende ──
+            Här har läsaren jämfört resan och valt. Knapparna stod förut
+            bara på ortsidorna, så den som bestämt sig fick klicka sig vidare
+            en gång till innan boendet syntes. En gemensam märkning ovanför
+            båda knapparna, eftersom de står i samma ruta. */}
+        {medBoende.length > 0 && (
+          <section style={{ marginTop: 48 }}>
+            <h2 style={rubrik}>Boende i {medBoende.map((o) => o.ort.name).join(' och ')}</h2>
+            <Annonsmarkning kompakt style={{ marginBottom: 10 }} />
+            <div className="jamfor-tva">
+              {medBoende.map(({ ort, destination }) => (
+                <Partnerlank
+                  key={ort.slug}
+                  sid={`jamfor-boende-${ort.slug}`}
+                  sok={{ destination }}
+                  markning={null}
+                  style={{ display: 'block', background: BOOKING_BLA, borderRadius: 10, padding: '16px 18px', textDecoration: 'none' }}
+                >
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#fff', letterSpacing: '0.03em', marginBottom: 3 }}>{ort.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.72)' }}>Sök boende på Booking.com →</div>
+                </Partnerlank>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ── Alla siffror ──
             Hopfälld. Den är för den som vill kontrollera, inte för den som

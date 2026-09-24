@@ -46,4 +46,6 @@ Palett: `#121110` bakgrund, `#1c1a17` kort, `#D4A574` accent, `#f0ece4` text. Ty
 
 **Varje ortbild har licens och fotograf.** Bilderna ligger i `resort_images`, en rad per bild; position 0 är hjältebilden och `resorts.image_url` följer den. En ny bild utan känd licens läggs inte in — krediteringen på ortsidan och `/bildkallor` förutsätter att raden är komplett.
 
-Utgående partnerlänkar har `rel="sponsored"` och byggs i `lib/booking.js`. Booking spåras via CJ:s klicklänk, inte med `aid`. Brytaren `SPARNING` i samma fil styr länken, annonsmärkningen och CJ-stycket i integritetspolicyn tillsammans.
+Utgående partnerlänkar går genom `app/Partnerlank.js`, som sätter adress, `rel="sponsored"`, ny flik, märkningen "Annons" och spårningsnamnet (`<sidtyp>-<placering>-<ort>`, CJ:s `sid`). Skriv aldrig en partnerlänk för hand. Booking-adressen byggs i `lib/booking.js` och spåras via CJ:s klicklänk, inte med `aid`. Brytaren `SPARNING` i samma fil styr länken, annonsmärkningen och CJ-stycket i integritetspolicyn tillsammans.
+
+**Booking söker på `BOOKING_SOK` i `lib/booking.js`, inte på `accommodation_zone`.** Fältet är skrivet för läsaren, och 18 av 30 orter landade fel när knapparna sökte på det. En ny ort får en provad söksträng där innan den publiceras.

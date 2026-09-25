@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a, 23:e och 24:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a, 23:e, 24:e och 25:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -22,6 +22,117 @@ live — bara i dev-servern och med ett klicktest via CJ.
 **503 skyddar indexet i dagar, inte månader.** Blir pausen lång släpper Google sidor, och
 positionerna från augusti–september får arbetas tillbaka. Checklistan för att öppna står
 först under "Vad som väntar".
+
+## Läget 25 september: riktningen framåt under pausen
+
+Inget i koden eller databasen ändrades 24–25 september. Sessionen gällde vart sajten ska,
+och mynnade ut i roadmapen https://claude.ai/artifact/PyDo9FbNhMGvWbC1qzvmtf.
+
+### Beslut Fabian fattade
+
+- **Trafiken först, intäkterna sedan.**
+- **Cookiefriheten överges.** Motiveringen: ska sajten dra in pengar framåt behövs cookies,
+  och mätserier och annonsmålgrupper går inte att samla i efterhand. Planen: en samtyckesruta
+  med fyra kategorier (nödvändiga, prestanda, funktionella, marknadsföring) där Neka är lika
+  lätt som Godkänn och inget laddas före svaret; integritets- och cookiemeddelandet omskrivna
+  i Filmstadens struktur, ett avsnitt per ändamål med syfte, uppgifter, mottagare, rättslig
+  grund och lagringstid, plus en cookielista; analys och Meta/Google-pixlar från start men
+  bara efter samtycke; annonser på sajten först när trafiken bär dem. Byggs före öppningen.
+  Filmstadens texter får inte kopieras, bara strukturen. Stycket om kakor i `/privacy` ("ingen
+  kakruta att klicka bort") gäller alltså inte längre som princip.
+- **Visionen breddas:** sajten där svenskar planerar resan till bergen, allt som
+  Banff-festivalen handlar om, inte bara skidorter. Motorn är densamma — restid från din
+  stad, nattåg eller bil, lovveckan, boende och pris i kronor — och aktiviteterna läggs på
+  en i taget.
+- **Öppen för nytt namn.** Lediga .se och .com 25 september (whois): `tillbergen`,
+  `uppibergen`, `bergsvecka`. `bergkoll.se`, `toppkoll.se` och `fjallkoll.se` är upptagna.
+  Varumärken hos PRV/EUIPO är inte kontrollerade. **Obesvarat:** Fabian sa att han inte
+  gillar namnet, men inte om det gällde förslagen eller Alpkoll. Ett byte kräver 301 från
+  alpkoll.se för alltid, adressbyte i Search Console och ny sajt i CJ-kontot; om Booking
+  måste godkänna domänen på nytt är inte kontrollerat. Billigast medan sajten är stängd.
+
+### Vad folk söker: den rättvisa jämförelsen
+
+De första summorna ur sökordsplaneraren var vinklade: olika urval per del, avrundade steg
+(50/500/5 000) som lades ihop, och varianter som räknades flera gånger. Omgjort 25 september
+med samma metod för alla delar: "Upptäck nya sökord" med neutrala startord, bara ord om en
+plats eller en resa, varianter sammanslagna, redovisat som antal sökningar per steg.
+
+| Del | 5 000 | 500 | 50 | Största |
+|---|---|---|---|---|
+| Skidor | 13 | 63 | 435 | skidort, österrike skidort, skidort barn, liftkort, liftkort Stöten/Idre/Branäs, skidresa alperna, Riksgränsen, Isaberg |
+| Evenemang | 5 | 5 | 104 | fjällmaraton, Idre fjällmaraton, Marcialonga, Cykelvasan |
+| Längdskidor | 1 | 8 | 61 | längdspår, sedan spår per ort |
+| Via ferrata | 1 | 1 | 47 | via ferrata |
+| Vandring | 0 | 15 | 131 | vandringsresa, vandring alperna, fjällvandring |
+| Cykel | 0 | 4 | 21 | nästan allt i filen var cykelhandel |
+
+Startorden styr idégeneratorn: *vandring i dolomiterna* och *kungsleden* gav 5 000 var i en
+riktad körning men kom inte med här. Google Trends (Sverige, 12 månader) bekräftar
+ordningen: *liftkort* snitt 7 mot *via ferrata* och *bike park* 1, och *kungsleden* och
+*dolomiterna* nära 0 bredvid *sälen* 7. Sälen och Åre söks på sommaren med ungefär halva
+vinternivån. **Skidorna är kärnan; sommaren kompletterar.** Filerna ligger i Hämtade filer
+(`Keyword Stats 2026-09-25 at 08_54_00` … `13_47_11`).
+
+**Det Alpkoll kan äga:** fallhöjd (position 10–13 redan 15 september), restid och avstånd
+hemifrån, tåg till Alperna, flygplats nära orten, jämförelser, priset jämfört mellan orter.
+**Inte:** boende (SkiStar, Booking, stuguthyrare), ortnamnet ensamt, väder, snö, pistkartor.
+
+### Beslut per del
+
+- **Skidor:** liftkortspriserna upp på sidan ett; var man bor i Sälen och Åre per område;
+  skidorter för barnfamiljer; `/fran/<stad>` för 100 städer (skissen på `startsida-skiss`);
+  sportlov per stad; en kostnadsräknare som bara bygger på uppmätta tal; nattåget norrut.
+  Liftkort per ort är ett stort ämne där flera av de största orterna (Stöten, Idre, Branäs,
+  Kungsberget) inte finns i basen.
+- **Evenemang:** jämförelse av resepaket till långlopp i Alperna (sex svenska arrangörer
+  säljer Marcialonga-paket: Vasasvahn, Global Runners, Sportivo, Stakcoachen, Odenresor, PWT
+  Travel); resan till Vasaloppet kopplad till Sälens ortsida (Vasaloppets egen boendeportal
+  ligger först på "boende vasaloppet sälen"); en kalender som går ut av sig själv.
+  Kebnekaise och Åre höstmarknad söks 5 000 var men ägs av STF respektive arrangören.
+- **Vandring:** Dolomiterna och Alperna på svenska, där toppen är Reddit, forum och bloggar;
+  sommarflik för Sälen, Åre och Trysil. **Kungsleden väntar** — STF har guider per sträcka,
+  och vandra.nu och gogo.se har kompletta guider med tåg och buss. Först måste en källa för
+  ledernas längd väljas (Alta Via 1 anges som både 120 och 155 km).
+- **Längdskidor:** fält och avsnitt på ortsidorna. skiresort.com anger spårlängd per ort, men
+  65 km för Lindvallen/Högfjället mot "över 250 km" hos Sälens Gods — vad som räknas måste
+  stå på sidan.
+- **Via ferrata:** en sida för Sverige och Norge med grad, säsong, guide och restid; resten
+  i Dolomitguiden och på sommarflikarna (Hemsedal har via ferrata på Skarsnuten).
+- **Cykel:** på sommarflikarna. SkiStar äger bike parkerna och toppar sökningarna.
+
+### Pengar framåt
+
+Idag bara Booking via CJ, ungefär en krona per klick. Program som finns att koppla på:
+hyrbil 6 % och taxi 4 % via CJ, Sunweb, SnowTrex, Alps2Alps, Kiwi, Omio, Skiset (bara
+Alperna), Outnorth (Awin) och Addnature (Adtraction) för utrustning, GetYourGuide, Viator.
+Där Fabian äger flödet: förfrågningar till arrangörer (STS har en "Partnership & Sales
+specialist" — första samtalet), gruppresor som återförsäljare, direktavtal med svenskägda
+boenden, märkta destinationsguider, sponsorer i nyhetsbrevet, annonser, ett betalt Alpkoll
+Plus, restidsdata till företag, egna vandringsguider. Sverige är inte bland Österrikes tio
+största gästländer, så destinationernas budget för svenskar är troligen liten.
+
+### Idéer på hyllan
+
+En AI-sökning där AI:n bara tolkar frågan och databasen svarar med uppmätta tal (en äldre
+reseplanerare ligger avstängd på `/plan` bakom `PLANERAREN_SYNLIG`; varför den stängdes är
+okänt). Dessutom: tiden från dörren till första åket, kompisgängets omröstning,
+trängselkalendern mot utländska lov, vad bil, tåg och flyg kostar, öppen data om de 3 000
+uppmätta restiderna, och en lovkarta.
+
+### Väntar på Fabian
+
+1. När sajten öppnar.
+2. Namnet.
+3. Nya länder: skidåkning i Bulgarien, Georgien, Polen, Slovenien och Japan söks 500 var.
+4. Fler svenska orter: beslutet från 15 september står, men sökningarna pekar på Idre,
+   Vemdalen, Stöten, Branäs och Kungsberget.
+
+### Inte kontrollerat
+
+Att SJ:s nattåg Stockholm–Narvik (dagligen dec 2026–dec 2028, Trafikverket 25 juni 2026)
+stannar i Abisko. Provisionerna hos Outnorth och Addnature. Om Booking måste godkänna en ny
+domän. Hur stor andel som kommer att godkänna cookies.
 
 ---
 

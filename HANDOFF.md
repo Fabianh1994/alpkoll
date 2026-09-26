@@ -1,6 +1,6 @@
 # Handoff — Alpkoll
 
-Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a, 23:e, 24:e och 25:e, för att kunna öppna en ny session utan
+Skriven 8 september 2026, uppdaterad den 9:e, 11:e, 13:e, 15:e, 16:e, 17:e, 21:a, 22:a, 23:e, 24:e, 25:e och 26:e, för att kunna öppna en ny session utan
 att läsa om historiken.
 Läs den här filen först, sedan `CLAUDE.md`. Allt annat går att härleda ur repot.
 
@@ -134,6 +134,125 @@ Att SJ:s nattåg Stockholm–Narvik (dagligen dec 2026–dec 2028, Trafikverket 
 stannar i Abisko. Provisionerna hos Outnorth och Addnature. Om Booking måste godkänna en ny
 domän. Hur stor andel som kommer att godkänna cookies.
 
+## Läget 26 september: pengarna, sommaren och samtalen
+
+Inget i koden eller databasen ändrades 25–26 september. Sessionerna gällde vad sajten kan tjäna
+och hur stor sommaren är. Allt står också i roadmapen, i avsnittet "Marknaden och pengarna":
+https://claude.ai/artifact/PyDo9FbNhMGvWbC1qzvmtf#pengarna
+
+### Nästa steg: tre samtal den 27 september
+
+Fabian tar dem själv. Syftet är att få veta om någon vill betala, vilket ingen kalkyl kan svara på.
+
+1. **STS Alpresor**, rollen "Partnership & Sales specialist". Betalar de för förfrågningar och
+   gruppresor, vinter och sommar, och till vilket pris?
+2. **En vandringsarrangör, till exempel Escape Travel eller EverTrek.** Samma fråga. De
+   annonserar redan på "vandringsresa alperna", där konkurrensindex i planeraren är 74.
+3. **Newsworthy.** De säljer datadrivna lokalnyheter per kommun. Vill de ha restid från varje
+   tätort till fjällen och Alperna, och Alpernas liftkortspriser i kronor? Deras eget underlag
+   är 169 nordiska anläggningar för 25/26, insamlat i januari 2026, utan Alperna.
+
+Fråga i varje samtal också vad de använder i dag. Svaret visar vad Alpkolls data måste slå.
+
+### Resten av listan, i ordning
+
+- **Fabians beslut:** när sajten öppnar, och namnet. Namnet är billigast att byta medan sajten är
+  stängd, och innan sommarsidorna byggs.
+- **Test utan bygge:** fråga Snälltåget om cykel får följa med på sommartåget. Fråga fem
+  stugägare i Sälen eller Åre vad de använder för uthyrning i dag och vad som stör dem.
+- **Mätning:** en fast lista för orterna i planeraren, "liftkort X", "skipass X" och "boende X"
+  per ort, med metoden nedan. Först då går orterna att rangordna.
+- **Bygge:** roadmapens ordning. Liftkortsrundan i oktober tar de sju orter som saknar pris och
+  de svenska orter mätningen pekar ut.
+
+### Pengarna: vad kalkylerna visar
+
+- **Affiliate:** Booking ger ungefär 1 kr per klick. Det är programmets snitt, EPC 9,05 EUR per
+  hundra klick, och ingen bokning har tillskrivits Alpkoll än. Med antagna klickandelar blir
+  det 0,25 kr per besök med bara Booking och 0,67 kr med paketresor, Skiset, hyrbil och taxi.
+- **Oktober–mars:** tre banor, alla antagna, utgår från september i Search Console: ungefär
+  3 200 visningar och 30 klick i månaden. Låg bana ~300 besök och 80–200 kr för hela perioden.
+  Mellan ~3 400 besök och 850–2 300 kr. Hög ~11 000 besök och 2 700–7 300 kr.
+- **När trafiken bär, 7 000 besök i månaden:** affiliate ~4 700 kr i månaden. Sponsorer och
+  direktavtal kan ge mer, men bara om någon vill betala.
+- **Det Alpkoll äger:** annonsörerna bjuder i snitt 4,40–17,50 kr per klick på Alpkolls
+  kärnsökningar, och Google Ads-prognosen 23 september gav 12,54 kr. En direktbokning med 10 % på
+  en vecka för 15 000 kr är värd lika mycket som 1 500 Booking-klick.
+- **Begränsningar:** bara åtta svenskägda hotell i Alperna är bekräftade, och bara Valluga ligger
+  på en ort Alpkoll har. Förfrågningarna till evenemangsresor söks ungefär 100 gånger i månaden.
+
+### Sökvolymerna: planeraren är inte en mätning av orterna
+
+**Förslagsläget ("Upptäck nya sökord") ger ett urval, inte en mätning.** För Branäs finns 30
+liftkortsord i filerna, för Åre ett enda och för Vemdalen inget. En rangordning av orterna ur
+filerna sade att Branäs söks mer än Åre, och det är fel. SkiStar kallar kortet SkiPass, så deras
+orter söks troligen som "skipass åre" eller "skistar liftkort". Det är inte kontrollerat.
+
+**Metoden framåt är en fast lista i läget "Få sökvolym och prognoser",** med samma ord för varje
+ort eller del. Fabian körde den första 26 september: 27 ord om sommaren i Alperna, i filen
+`Keyword Stats 2026-09-26 at 18_03_16`.
+
+| Steg | Sökord |
+|---|---|
+| 5 000 | vandring i dolomiterna, via ferrata (och ankarorden skidort, liftkort) |
+| 500 | tour du mont blanc, alta via 1, vandring i alperna, vandringsresa alperna, via ferrata dolomiterna, leogang (och skidresa, bike park, fjällvandring) |
+| 50 eller ingen siffra | allt om MTB, downhill och cykel i Alperna, hyddvandring, vandra på egen hand, snälltåget sommar, nattåg österrike |
+
+Toppbuden: via ferrata 30,47 kr, skidresa 21,49 kr, tour du mont blanc 21,43 kr, leogang 20,22 kr.
+
+### Säsongen, ur Google Trends
+
+Sverige, veckodata september 2023–september 2026. Skidresa i december–mars är satt till 100.
+
+| Sökord | Jan | Apr | Jun | Jul | Aug | Okt | Årssnitt |
+|---|---|---|---|---|---|---|---|
+| skidresa | 136 | 15 | 10 | 29 | 60 | 78 | 62 |
+| skidort | 137 | 57 | 52 | 60 | 69 | 78 | 82 |
+| kungsleden | 40 | 51 | 79 | 115 | 90 | 34 | 58 |
+| dolomiterna | 65 | 37 | 66 | 78 | 53 | 33 | 49 |
+| bike park | 6 | 32 | 45 | 75 | 48 | 24 | 26 |
+| via ferrata | 3 | 6 | 41 | 77 | 39 | 2 | 17 |
+| fjällvandring | 6 | 5 | 36 | 59 | 38 | 0 | 15 |
+
+- **Sommaren är större än roadmapen sa 25 september.** Påståendet att liftkort söks sju gånger
+  mer än bike park byggde på årssnitt mot det största skidordet. Mot "skidresa" är bike park på
+  sommaren ungefär hälften av skidresan på vintern.
+- **"Kungsleden" söks ungefär som "skidresa" över året**, och mer i juli än skidresa i januari.
+  Att den låg "nära noll" var fel, den jämfördes mot "sälen".
+- **När stigningen börjar:** bike park i mars–april, via ferrata i maj, vandringen i juni.
+  Sommarsidorna måste alltså ligga ute i mars.
+- **Planeraren och Trends är inte överens.** Planeraren sätter via ferrata tio gånger högre än
+  skidresa, Trends en fjärdedel. Planerarens steg överdriver skillnader runt 1 000, och Trends
+  sätter små veckor till noll. Orden ligger troligen inom en faktor fem från varandra.
+- **Vandring i Alperna är stort på svenska. Cykel i Alperna är litet.** Svenskar söker downhill i
+  Sverige: bike park åre, trysil, isaberg, gesunda och mtb sälen hade 500 var i de tidigare filerna.
+
+### Idéer som granskades
+
+- **Svenska liftkortspriser finns redan gratis:** Newsworthy 169 anläggningar, Pistat 46,
+  Freeride 42, Visit Fjällen 20. Ingen av dem jämför med förra året, och ingen ställer Alperna och
+  Norden på samma kort i kronor. Om 25/26-priserna går att hämta ur Internet Archive är inte
+  kontrollerat. Går det kan den första jämförelsen mot förra året göras i vinter.
+- **Datan som vara:** restiderna är räknade på OpenStreetMap, vars licens (ODbL) troligen kräver
+  att en tabell byggd på dem får delas vidare. Liftkortstabellen är Alpkolls egen insamling och
+  kan skyddas av databasrätten. Pist och fallhöjd kommer från skiresort.com och är inte Alpkolls
+  att sälja. Juridiken är inte kontrollerad.
+- **Förvaltning av fjällbostäder för ägare i Stockholm:** SkiStar Living och Guestit (i Åre sedan
+  december 2022) gör det redan. SkiStars andel, ungefär 30 %, kommer från en sökträff och är inte
+  bekräftad. Veckohyror i Sälen enligt Sälens Gods: 7 000–15 000 kr för 4–6 bäddar,
+  12 000–28 000 kr för 6–10 bäddar. "Hyra stuga sälen med hund" söks 500 gånger i månaden.
+- **Egna resor med Snälltåget:** Nortlander och Slopetrotter säljer redan tågpaketen, till exempel
+  16 243 kr per person för St. Anton vecka 52. Resegarantin hos Kammarkollegiet är minst 50 000 kr
+  plus 0,6 % av priset till fonden.
+- **Cykeltåget:** Snälltåget kör till Österrike fem fredagar i juli 2026, bland annat till Zell am
+  See. Om cykel får följa med står inte på deras sida. Ingen svensk arrangör säljer downhill i
+  Alperna med nattåget.
+- **Vandring och MTB i Alperna säljs redan på svenska:** STS, Escape Travel, EverTrek, Topo Travel
+  och GS Tours för vandring. Austria Travel, DBP Adventures, Lion Alpin, Alpebike och Adventure
+  Lovers för MTB. Ingen jämför dem, och där ligger Alpkolls lucka.
+- **Avfärdat:** egen buss till fjällen (Fjällexpressen, Säfflebussen från 340 kr, Härjedalingen och
+  SkiStars helgbussar finns redan) och en restidsaffisch (Fabian sa nej).
+
 ---
 
 ## Vad projektet är
@@ -238,10 +357,12 @@ buss. Fyra orter berörda.
 
 ## Git
 
-`main` är i fas med `origin/main`. Mergat 8–24 september:
+`main` är i fas med `origin/main`. Mergat 8–25 september:
 
 | PR | Vad |
 |---|---|
+| #71 | Handoff 25 september: riktningen framåt under pausen |
+| #70 | Handoff 24 september, och bakgrundsbilden på stängd-sidan (`q=75`) |
 | #69 | Underhållsläge: `proxy.js` och stängd-sidan |
 | #68 | `Partnerlank.js`, `BOOKING_SOK`, knappar på fem nya sidtyper |
 | #67 | Handoff 22–23 september |

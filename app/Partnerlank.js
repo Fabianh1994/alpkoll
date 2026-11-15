@@ -12,15 +12,18 @@
 // gamla namn (resort-mobile-, resort-stay-, resort-sidebar-) är oförändrade,
 // så att rapporterna från 22 september går att jämföra bakåt.
 //
-// Vercel Analytics används inte för klicken. Egna händelser finns inte på
-// gratisplanen och Pro tar två egenskaper per händelse — CJ ser redan varje
-// klick, med placeringen i namnet.
+// Klicken räknas på två ställen. CJ ser varje klick med placeringen i
+// namnet, men bara i CJ:s egna rapporter. PartnerKlick skickar dessutom
+// händelsen "partnerklick" till Vercel Analytics, så att klicken går att
+// läsa bredvid sidvisningarna. Egna händelser kräver Pro-planen; på
+// gratisplanen händer ingenting.
 //
 // Ett nytt partnerprogram läggs till i PARTNERS nedan: namnet, om länkarna
 // spåras, och hur adressen byggs.
 
 import { bookingUrl, hasAffiliateId as bookingSparas } from '../lib/booking'
 import Annonsmarkning from './Annonsmarkning'
+import PartnerKlick from './PartnerKlick'
 
 const PARTNERS = {
   booking: {
@@ -57,9 +60,9 @@ export default function Partnerlank({
   return (
     <>
       {markning && <Annonsmarkning kompakt={markning === 'kompakt'} style={markningStyle} />}
-      <a href={href} target="_blank" rel={rel} style={style}>
+      <PartnerKlick partner={partner} sid={sid} href={href} rel={rel} style={style}>
         {children}
-      </a>
+      </PartnerKlick>
     </>
   )
 }

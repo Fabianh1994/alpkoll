@@ -19,7 +19,7 @@
 // behöver ändras.
 import { NextResponse } from 'next/server'
 
-const UNDERHALL = false
+const UNDERHALL = true
 
 const MEJL = 'hello@alpkoll.com'
 

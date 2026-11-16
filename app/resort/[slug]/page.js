@@ -22,6 +22,7 @@ import { vanligaFragor } from '../../../lib/vanligaFragor'
 import { delomraden, fallhojd as fallhojdFor, pistadeDelar, spannMening, summaText, tal } from '../../../lib/delomraden'
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
+import { jamforOrdning, ortBeskrivning, ortTitel } from '../../../lib/sokresultat'
 import Bildgalleri from './Bildgalleri'
 import Partnerlank from '../../Partnerlank'
 
@@ -43,44 +44,43 @@ export async function generateMetadata({ params }) {
   }
 
   const baseUrl = SITE_URL
-  const place = `${resort.name}, ${land(resort.country)}`
 
-  // "Snögaranti" betyder i svensk resebransch pengarna tillbaka. Den
-  // synliga etiketten rättades tidigare, men beskrivningen — den text
-  // Google visar — missades och stod kvar på alla 32 ortsidor.
-  // Beskrivningen är det Google visar och ska tala samma språk som sidan.
-  // Veckopasset stod i euro medan sidan numera skriver kronor.
+  // Hur titeln och beskrivningen är byggda, och varför, står i
+  // lib/sokresultat.js. Två spärrar ligger kvar här:
   //
-  // Vad taggarna bär är uppmätt, inte antaget. Search Console 8 september
-  // 2026, sajtens första sex veckor i indexet: prisfrågor 151 exponeringar,
-  // fallhöjdsfrågor 59 — och noll klick på båda. Fallhöjden stod elva
-  // gånger på sidan och inte en gång i taggen, dagskortet inte alls, och
-  // "Snösäkerhet 6/10" avslutade beskrivningen utan att matcha en enda
-  // fråga. Beskrivningen väger inte på position, bara på om någon som
-  // redan ser sidan klickar. Titeln väger på båda — därför står sökorden
-  // där också.
-  const kurser = await hamtaKurser()
-
+  // "Snögaranti" betyder i svensk resebransch pengarna tillbaka och får
+  // inte stå i det Google visar.
+  //
   // Samma spärr som /liftkortspriser. Sju orter bär tal i databasen som
   // aldrig hämtats ur ortens egen prislista, och just de talen får inte
   // stå i det Google visar — se lib/liftkortspriser.js. Därför lovar
   // titeln inte heller ett liftkortspris för de orterna.
+  const kurser = await hamtaKurser()
   const prisAttVisa = harPris(resort)
   const valutan = resort.lift_pass_currency || 'EUR'
   const dagspass = prisAttVisa ? pris(resort.lift_pass_day_eur, valutan, kurser) : null
   const veckopass = prisAttVisa ? pris(resort.lift_pass_week_eur, valutan, kurser) : null
+  const sasong = prisAttVisa ? VERIFIERADE[resort.slug].sasong : null
 
-  const title = prisAttVisa
-    ? `${place} — fallhöjd, pist och liftkortspris | Alpkoll`
-    : `${place} — fallhöjd, pist och snö | Alpkoll`
+  // Beskrivningen nämner bara orter som sidan länkar en jämförelse till.
+  const allaOrter = await getResorts()
+  const motparter = parFor(resort.slug, allaOrter.map((r) => r.slug))
+    .map((par) => allaOrter.find((r) => r.slug === motparten(par, resort.slug)))
+    .filter(Boolean)
 
-  const fallhojd = fallhojdFor(resort)
-  const liftkortet = [
-    dagspass ? `${dagspass.kr}/dag` : null,
-    veckopass ? `${veckopass.kr} för sex dagar` : null,
-  ].filter(Boolean).join(', ')
-
-  const description = `${resort.name}: ${tal(fallhojd)} m fallhöjd, ${resort.total_pistes_km} km pist, ${resort.total_lifts} liftar.${liftkortet ? ` Liftkort ${liftkortet}.` : ''} ${tal(resort.altitude_base)}–${tal(resort.altitude_top)} m, flygplats ${resort.nearest_airport}.`
+  const title = ortTitel({ namn: resort.name, harPris: prisAttVisa, sasong })
+  const description = ortBeskrivning({
+    namn: resort.name,
+    fallhojd: tal(fallhojdFor(resort)),
+    pistKm: resort.total_pistes_km,
+    liftar: resort.total_lifts,
+    bas: tal(resort.altitude_base),
+    topp: tal(resort.altitude_top),
+    dagspass: dagspass?.kr,
+    veckopass: veckopass?.kr,
+    sasong,
+    jamforMed: jamforOrdning(motparter).map((r) => r.name),
+  })
 
   const path = `/resort/${resort.slug}`
 

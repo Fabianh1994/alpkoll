@@ -4,7 +4,7 @@ import SiteFooter from '../SiteFooter'
 import Valjaren from './Valjaren'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
-import { land } from '../../lib/countries'
+import { land, region } from '../../lib/countries'
 import { pris } from '../../lib/pris'
 import { hamtaKurser } from '../../lib/valuta'
 import { farOptimeras } from '../../lib/images'
@@ -50,7 +50,7 @@ export default async function JamforIndex() {
     land: land(ort.country),
     // Följer med för sökningen, inte för kortet: "jämtland" och "tyrolen"
     // är rimliga saker att skriva när man inte minns ortens namn.
-    region: ort.region,
+    region: region(ort.region),
     nordisk: arNordisk(ort),
     bild: ort.image_url || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800',
     optimeras: farOptimeras(ort.image_url),

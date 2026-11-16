@@ -5,7 +5,7 @@ import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { SITE_URL } from '../../../lib/lang'
-import { land } from '../../../lib/countries'
+import { land, region } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
 import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
@@ -222,7 +222,7 @@ export default async function JamforPage({ params }) {
   // Sälen. Landskapet skiljer dem åt; landet gör det bara när de ligger i
   // olika länder.
   const overskrift = (ort) =>
-    a.country === b.country ? ort.region : land(ort.country)
+    a.country === b.country ? region(ort.region) : land(ort.country)
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
@@ -466,7 +466,7 @@ export default async function JamforPage({ params }) {
             {orter.map((ort) => (
               <Link key={ort.slug} href={`/resort/${ort.slug}`} style={{ ...kort, padding: '16px 18px', textDecoration: 'none', display: 'block' }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, color: '#f0ece4', letterSpacing: '0.03em', marginBottom: 3 }}>{ort.name}</div>
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.57)', marginBottom: 10 }}>{ort.region} · {land(ort.country)}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.57)', marginBottom: 10 }}>{region(ort.region)} · {land(ort.country)}</div>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: ACCENT, letterSpacing: '0.04em' }}>Hela sidan om {ort.name} →</span>
               </Link>
             ))}

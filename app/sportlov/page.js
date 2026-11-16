@@ -131,6 +131,13 @@ function Veckan({ v, tagetGar }) {
     && salen?.viaGoteborgUt.includes(skidvecka.start)
     && salen?.viaGoteborgHem.includes(skidvecka.slut)
   )
+  // Två lördagar går Sälentåget via Alvesta, utan Stockholm och Göteborg.
+  // Den första är lördagen som startar skidveckan för vecka 8.
+  const salenUtanStockholm = Boolean(
+    skidvecka
+    && (salen?.utanStockholmUt?.includes(skidvecka.start)
+      || salen?.utanStockholmHem?.includes(skidvecka.slut))
+  )
   // Jämför mot Snälltågets publicerade datum i stället för mot ett
   // veckonummer skrivet för hand. Ändrar Snälltåget avgången i höst
   // flyttar markeringen med den, i stället för att bli kvar på fel vecka.
@@ -341,12 +348,13 @@ function Veckan({ v, tagetGar }) {
           Snälltåget kör {snall.dagar}, med avgång {snall.fran[0].avgang} och framme {snall.framme.split(',')[0]}.
           Till Sälen går det på lördagar via Mora, med buss sista biten.
           {salenViaGoteborg && ' Den här veckan går det via Göteborg både ut och hem.'}
+          {salenUtanStockholm && ' Den här veckan går det från Malmö utan att stanna i Stockholm eller Göteborg.'}
         </p>
         <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>
           Biltiderna är körtid utan trafik, raster och vinterväglag, räknade med samma
           ruttmotor för alla orter så att de går att jämföra. Räkna med mer i februari.
-          Tågtiderna kan ändras av banarbeten, och Sälenlinjens är preliminära tills
-          Snälltåget fastställer tidtabellen i höst.
+          Tågtiderna kan ändras av banarbeten, och Sälenlinjens kallar Snälltåget
+          fortfarande preliminära.
         </p>
       </div>
 

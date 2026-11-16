@@ -63,7 +63,7 @@ export default function SaJamforViPage() {
           <Stark>Priserna kommer ur varje orts egen prislista</Stark>, med
           säsongen utskriven intill beloppet. Ett pris vi inte kunnat hämta och
           kontrollera visas inte alls — ett tal vi inte kan belägga är sämre än
-          inget tal. Därför står sju orter utan pris i dag, med skälet utskrivet
+          inget tal. Därför står sex orter utan pris i dag, med skälet utskrivet
           på <Lank href="/liftkortspriser">prislistesidan</Lank>.
         </p>
         <p style={{ marginTop: 12 }}>

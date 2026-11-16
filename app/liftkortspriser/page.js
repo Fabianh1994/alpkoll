@@ -227,8 +227,8 @@ export default async function Liftkortspriser() {
               fontFamily: 'var(--font-body)', fontSize: 14.5, lineHeight: 1.7,
               color: 'rgba(255,255,255,0.5)', maxWidth: 660, margin: '0 0 20px',
             }}>
-              Vi publicerar hellre ingen siffra än en vi inte kan belägga. De flesta
-              av de här orterna har helt enkelt inte släppt vinterns priser ännu.
+              Vi publicerar hellre ingen siffra än en vi inte kan belägga. Skälet
+              står utskrivet för varje ort.
             </p>
             <div style={{ display: 'grid', gap: 8 }}>
               {utan.map(({ ort, skal, typ }) => (
@@ -239,7 +239,7 @@ export default async function Liftkortspriser() {
                       color: '#f0ece4', textDecoration: 'none',
                     }}>{ort.name}</Link>
                     <span style={{ ...etikett, fontSize: 9.5 }}>
-                      {typ === 'omrade' ? 'Frågan om området' : 'Inte publicerat än'}
+                      {typ === 'omrade' ? 'Frågan om området' : typ === 'kalla' ? 'Ingen prislista' : 'Inte publicerat än'}
                     </span>
                   </div>
                   <p style={{

@@ -6,7 +6,7 @@ import { useDictionary } from '../lib/useDictionary';
 import { farOptimeras } from '../lib/images';
 import { PLANERAREN_SYNLIG } from '../lib/features';
 import { useMinskadRorelse } from '../lib/rorelse';
-import { land, ALLA_LANDER } from '../lib/countries';
+import { land, region, ALLA_LANDER } from '../lib/countries';
 import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 import Flagga from './Flagga';
@@ -134,7 +134,7 @@ function ResortCard({ resort, t }) {
           </div>
         </div>
         <div style={{ padding: '16px 18px 24px' }}>
-          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.54)', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>{resort.region}</div>
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.54)', fontFamily: 'var(--font-body)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: 4 }}>{region(resort.region)}</div>
           <h3 style={{ fontSize: 24, fontFamily: 'var(--font-heading)', fontWeight: 400, color: '#f0ece4', margin: '0 0 10px', lineHeight: 1.1, letterSpacing: '0.03em' }}>{resort.name}</h3>
           {resort.notes && (
             <p style={{ fontSize: 13, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.61)', fontWeight: 300, margin: 0, lineHeight: 1.6 }}>{resort.notes}</p>
@@ -191,6 +191,7 @@ export default function HomeClient({ resorts }) {
     const matchText = !q
       || r.name?.toLowerCase().includes(q)
       || r.region?.toLowerCase().includes(q)
+      || region(r.region)?.toLowerCase().includes(q)
       || r.country?.toLowerCase().includes(q)
       || land(r.country)?.toLowerCase().includes(q)
       || r.notes?.toLowerCase().includes(q);

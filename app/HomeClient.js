@@ -238,6 +238,7 @@ export default function HomeClient({ resorts }) {
         <div style={{ maxWidth: 1320, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 10 }}>
           {[
             { href: '/salen-eller-alperna', fraga: 'Sälen eller Alperna?', svar: 'Resan och fallhöjden jämförda' },
+            { href: '/are-eller-alperna', fraga: 'Åre eller Alperna?', svar: 'Pris, pist och resväg sida vid sida' },
             { href: '/sportlov', fraga: 'Vilken vecka har du sportlov?', svar: 'Tåget och priset vecka för vecka' },
             { href: '/nattaget-till-alperna', fraga: 'Till Alperna med nattåg', svar: 'Orterna tåget når, med tider' },
           ].map((l) => (

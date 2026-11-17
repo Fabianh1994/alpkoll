@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
-import { getResort, getResortSlugs } from '../../../lib/resorts'
+import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { SITE_URL } from '../../../lib/lang'
 import { land, region } from '../../../lib/countries'
 import { restid } from '../../../lib/travel'
@@ -21,6 +21,8 @@ import {
   PASSAR,
   arNordisk,
   jamforelseMeningar,
+  motparten,
+  parFor,
   parSlugsFor,
   tolkaPar,
   vemPassarMening,
@@ -209,10 +211,28 @@ export default async function JamforPage({ params }) {
   // adresser som räknas.
   if (!par.kanonisk) permanentRedirect(`/jamfor/${par.kanoniskSlug}`)
 
-  const kurser = await hamtaKurser()
+  const [kurser, allaOrter] = await Promise.all([hamtaKurser(), getResorts()])
 
   const orter = par.orter
   const [a, b] = orter
+
+  // Fler par för var och en av orterna. Sidan slutade förut i "Välj två
+  // andra orter" — en återvändsgränd för den som kom från Google, och
+  // ingen internlänk till de 83 paren som släpptes fram i november 2026.
+  // Par av samma slag som det här kommer först: på Sälen mot Trysil vill
+  // läsaren se fler nordiska orter, på Åre mot Sölden fler alporter.
+  const namn = new Map(allaOrter.map((r) => [r.slug, r]))
+  const flerPar = orter.map((ort, i) => {
+    const andra = orter[1 - i]
+    const lika = (slug) => arNordisk(namn.get(slug)) === arNordisk(andra)
+    const par_ = parFor(ort.slug, [...namn.keys()])
+      .filter((p) => p !== par.kanoniskSlug)
+      .map((p) => ({ adress: p, mot: motparten(p, ort.slug) }))
+      .filter((p) => namn.has(p.mot))
+      .sort((x, y) => (lika(y.mot) - lika(x.mot)) || namn.get(x.mot).name.localeCompare(namn.get(y.mot).name, 'sv'))
+      .slice(0, 4)
+    return { ort, par: par_ }
+  }).filter((o) => o.par.length)
 
   // Tre meningar, inte alla. Resten av skillnaderna syns i talen ovanför
   // dem; en punktlista som upprepar tabellen är brus.
@@ -467,6 +487,28 @@ export default async function JamforPage({ params }) {
             </div>
           </details>
         </section>
+
+        {/* ── Fler jämförelser ── */}
+        {flerPar.length > 0 && (
+          <section style={{ marginTop: 48 }}>
+            <h2 style={{ ...rubrik, marginBottom: 14 }}>Fler jämförelser</h2>
+            <div className="jamfor-tva">
+              {flerPar.map(({ ort, par: lista }) => (
+                <div key={ort.slug} style={{ ...kort, padding: '16px 18px' }}>
+                  <div style={{ ...etikett, marginBottom: 8 }}>Med {ort.name}</div>
+                  {lista.map(({ adress, mot }) => (
+                    <Link key={adress} href={`/jamfor/${adress}`} style={{ display: 'block', padding: '9px 0', fontFamily: 'var(--font-body)', fontSize: 14, color: '#f0ece4', textDecoration: 'none', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                      {ort.name} eller {namn.get(mot).name}? <span style={{ color: ACCENT }}>→</span>
+                    </Link>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <Link href="/sportlov" style={{ ...kort, display: 'block', marginTop: 12, padding: '14px 18px', textDecoration: 'none', fontFamily: 'var(--font-body)', fontSize: 14, color: '#f0ece4' }}>
+              Vilken vecka har du sportlov? <span style={{ color: ACCENT }}>Tåget och priset vecka för vecka →</span>
+            </Link>
+          </section>
+        )}
 
         {/* ── Vidare ── */}
         <section style={{ marginTop: 48 }}>

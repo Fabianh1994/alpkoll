@@ -5,6 +5,7 @@ import { getResorts } from '../lib/resorts'
 import { pris } from '../lib/pris'
 import { hamtaKurser } from '../lib/valuta'
 import { parFor, motparten } from '../lib/jamfor'
+import { land } from '../lib/countries'
 import { alpjamforelse, arAlport, fallhojd, NATTAG_SASONG } from '../lib/ellerAlperna'
 import { restidText, sasongenSlut, stationFor, SVERIGE } from '../lib/nattaget'
 import { bilMening, linjeMeningar, linjerFor } from '../lib/restider'
@@ -100,6 +101,13 @@ export default async function OrtEllerAlperna({ slug }) {
   const alppar = parFor(ort.slug, publicerade)
     .map((par) => ({ par, annan: orter.find((r) => r.slug === motparten(par, ort.slug)) }))
     .filter((x) => x.annan && arAlport(x.annan))
+    .sort((a, b) => a.annan.name.localeCompare(b.annan.name, 'sv'))
+
+  // Paren mot andra nordiska orter. Den som tvekar mellan Sälen och
+  // Alperna tvekar ofta också om Norge, och sidan gav förut ingen väg dit.
+  const nordpar = parFor(ort.slug, publicerade)
+    .map((par) => ({ par, annan: orter.find((r) => r.slug === motparten(par, ort.slug)) }))
+    .filter((x) => x.annan && !arAlport(x.annan))
     .sort((a, b) => a.annan.name.localeCompare(b.annan.name, 'sv'))
 
   const ortKort = pris(ort.lift_pass_week_eur, ort.lift_pass_currency || 'EUR', kurser)
@@ -284,6 +292,32 @@ export default async function OrtEllerAlperna({ slug }) {
                   </div>
                   <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                     {annan.total_pistes_km} km pist
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Eller fjällen ── */}
+        {nordpar.length > 0 && (
+          <section style={{ marginBottom: 56 }}>
+            <h2 style={rubrik(28)}>Eller Norge och fjällen?</h2>
+            <p style={{ ...brod, fontSize: 15, margin: '0 0 18px' }}>
+              Behöver resan inte gå till Alperna går {ort.name} att ställa mot de
+              nordiska orterna på samma sätt. Allt om orten står på{' '}
+              <Link href={`/resort/${ort.slug}`} style={{ color: ACCENT }}>sidan om {ort.name}</Link>,
+              och vilken vecka tåget går står på{' '}
+              <Link href="/sportlov" style={{ color: ACCENT }}>sportlovssidan</Link>.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 8 }}>
+              {nordpar.map(({ par, annan }) => (
+                <Link key={par} href={`/jamfor/${par}`} style={{ ...kort, padding: '12px 15px', textDecoration: 'none', display: 'block' }}>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.54)' }}>mot</span> {annan.name}
+                  </div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
+                    {land(annan.country)} · {annan.total_pistes_km} km pist
                   </div>
                 </Link>
               ))}

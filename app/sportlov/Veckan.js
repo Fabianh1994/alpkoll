@@ -278,11 +278,15 @@ export function Veckan({ v, tagetGar }) {
                       display: 'grid', gridTemplateColumns: '78px 1fr 58px',
                       alignItems: 'center', gap: 10, padding: '5px 0',
                     }}>
-                      <span style={{
+                      {/* Ortnamnet är en länk till ortsidan. Sidan nämnde
+                          orterna utan att länka någon av dem, och /sportlov
+                          är den sida som växer mest fram till februari. */}
+                      <Link href={`/resort/${r.slug}`} style={{
                         fontFamily: 'var(--font-body)', fontSize: 13.5,
                         fontWeight: ar ? 500 : 400,
                         color: ar ? ACCENT : 'rgba(255,255,255,0.72)',
-                      }}>{r.namn}</span>
+                        textDecoration: 'underline', textDecorationColor: 'rgba(255,255,255,0.2)', textUnderlineOffset: 3,
+                      }}>{r.namn}</Link>
                       <span style={{
                         height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)',
                         overflow: 'hidden',
@@ -314,6 +318,12 @@ export function Veckan({ v, tagetGar }) {
           Stockholm ser det helt annorlunda ut: dit är Sälen sex timmar och Alperna
           över tjugo.
         </p>
+        <p style={{ ...brod, fontSize: 14.5, margin: '12px 0 0' }}>
+          Står valet mellan fjällen?{' '}
+          <Link href="/jamfor/salen-vs-trysil" style={{ color: ACCENT }}>Sälen eller Trysil</Link>
+          {' · '}
+          <Link href="/jamfor/are-vs-salen" style={{ color: ACCENT }}>Åre eller Sälen</Link>
+        </p>
         {/* Åre har två nattåg från Stockholm. Linjerna hämtas per id och inte
             per plats i listan: meningen läste förut TAGLINJER[0], som slutade
             vara Snälltåget när SJ lades först. */}
@@ -328,8 +338,8 @@ export function Veckan({ v, tagetGar }) {
         <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>
           Biltiderna är körtid utan trafik, raster och vinterväglag, räknade med samma
           ruttmotor för alla orter så att de går att jämföra. Räkna med mer i februari.
-          Tågtiderna kan ändras av banarbeten, och Sälenlinjens kallar Snälltåget
-          fortfarande preliminära.
+          Tågtiderna kan ändras av banarbeten, och Snälltåget kallar tiderna på
+          Sälenlinjen fortfarande preliminära.
         </p>
       </div>
 

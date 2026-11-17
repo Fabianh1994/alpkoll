@@ -2,6 +2,7 @@ import { getResortSlugs } from '../lib/resorts'
 import { SITE_URL } from '../lib/lang'
 import { PLANERAREN_SYNLIG } from '../lib/features'
 import { indexeradeParFor } from '../lib/jamfor'
+import { KOMMUNER, kommunSlug } from '../lib/sportlov'
 
 // Genereras om enligt samma intervall som ortsidorna, så nya orter i
 // Supabase dyker upp i sitemapen utan ny deploy.
@@ -49,6 +50,13 @@ export default async function sitemap() {
       lastModified: now,
       changeFrequency,
       priority,
+    })),
+    // En sida per kommun vi läst sportlovet för, se lib/sportlov.js.
+    ...KOMMUNER.map((k) => ({
+      url: `${SITE_URL}/sportlov/${kommunSlug(k.kommun)}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
     })),
     ...slugs.map((slug) => ({
       url: `${SITE_URL}/resort/${slug}`,

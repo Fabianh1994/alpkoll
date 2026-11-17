@@ -213,7 +213,8 @@ export default function VarBoISalen() {
           <Link href="/jamfor/are-vs-salen" style={{ color: ACCENT }}>Åre eller Sälen</Link>,{' '}
           <Link href="/jamfor/salen-vs-trysil" style={{ color: ACCENT }}>Sälen eller Trysil</Link>,{' '}
           <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link> och{' '}
-          <Link href="/sportlov" style={{ color: ACCENT }}>sportlovet</Link>.
+          <Link href="/sportlov" style={{ color: ACCENT }}>sportlovet</Link>. Andra orter
+          för barn står i <Link href="/skidorter-for-barnfamiljer" style={{ color: ACCENT }}>skidorter för barnfamiljer</Link>.
         </p>
         <p style={{ ...brod, fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: 0 }}>
           Pisttalen kommer från skiresort.com, samma källa som resten av sajten{' '}

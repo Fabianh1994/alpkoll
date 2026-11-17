@@ -37,6 +37,7 @@ export default async function sitemap() {
     { path: '/sportlov', changeFrequency: 'monthly', priority: 0.9 },
     // Den vanligaste forumfrågan om Sälen. Se app/var-bo-i-salen/page.js.
     { path: '/var-bo-i-salen', changeFrequency: 'monthly', priority: 0.8 },
+    { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     // Rankningsinformationen enligt marknadsföringslagen. Ligger över de
     // juridiska sidorna i prioritet eftersom den beskriver innehållet.

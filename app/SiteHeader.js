@@ -50,7 +50,9 @@ export default function SiteHeader({ genomskinligOverst = false }) {
   return (
     <>
       <style>{`
-        @media (max-width: 600px) {
+        /* Samma brytpunkt som bottenmenyn i MobileNav, så att aldrig
+           båda menyerna syns samtidigt. */
+        @media (max-width: 768px) {
           .site-nav-links { display: none !important; }
         }
       `}</style>

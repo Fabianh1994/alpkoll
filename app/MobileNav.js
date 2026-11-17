@@ -28,17 +28,46 @@ export default function MobileNav() {
       ),
       isActive: pathname.startsWith('/jamfor'),
     },
+    // Sportlov, Liftkortspriser och Nattåget stod förut bara i toppmenyn,
+    // som är dold på telefon. Det är sidorna som ska dra söktrafik, och en
+    // sida ingen länkar till blir sämre genomsökt (62 mot 21 procent,
+    // mätningen 2026-08-25). Om oss ligger kvar i sidfoten.
     {
-      label: 'Om oss',
-      href: '/about',
+      label: 'Sportlov',
+      href: '/sportlov',
       icon: (active) => (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <line x1="3" y1="10" x2="21" y2="10" />
+          <line x1="8" y1="3" x2="8" y2="7" />
+          <line x1="16" y1="3" x2="16" y2="7" />
         </svg>
       ),
-      isActive: pathname === '/about',
+      isActive: pathname.startsWith('/sportlov'),
+    },
+    {
+      label: 'Priser',
+      href: '/liftkortspriser',
+      icon: (active) => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+          <circle cx="7.5" cy="7.5" r="1.2" />
+        </svg>
+      ),
+      isActive: pathname === '/liftkortspriser',
+    },
+    {
+      label: 'Nattåg',
+      href: '/nattaget-till-alperna',
+      icon: (active) => (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="5" y="3" width="14" height="14" rx="3" />
+          <line x1="5" y1="11" x2="19" y2="11" />
+          <line x1="8" y1="21" x2="10" y2="17" />
+          <line x1="16" y1="21" x2="14" y2="17" />
+        </svg>
+      ),
+      isActive: pathname === '/nattaget-till-alperna',
     },
   ];
 
@@ -57,9 +86,10 @@ export default function MobileNav() {
         WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid rgba(255,255,255,0.06)',
         display: 'flex',
-        justifyContent: 'center',
-        gap: 64,
-        alignItems: 'center',
+        // Fem flikar delar bredden lika, så att de får plats på en smal
+        // telefon och var och en blir en ordentlig tryckyta.
+        justifyContent: 'space-around',
+        alignItems: 'stretch',
         paddingTop: 10,
         paddingBottom: 'env(safe-area-inset-bottom, 10px)',
         height: 'auto',
@@ -73,7 +103,10 @@ export default function MobileNav() {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 4,
+              flex: 1,
+              minHeight: 48,
               textDecoration: 'none',
               transition: 'opacity 0.2s',
             }}
@@ -81,7 +114,7 @@ export default function MobileNav() {
             {tab.icon(tab.isActive)}
             <span style={{
               fontFamily: 'var(--font-body)',
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 500,
               letterSpacing: '0.04em',
               color: tab.isActive ? '#D4A574' : 'rgba(255,255,255,0.57)',

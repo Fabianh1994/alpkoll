@@ -158,9 +158,10 @@ export default function HomeClient({ resorts }) {
   const [scrollY, setScrollY] = useState(0);
   const [inglidningKlar, setInglidningKlar] = useState(false);
   const minskadRorelse = useMinskadRorelse();
-  // Hjälten väntar 200 ms på sin inglidning. Den som valt minskad rörelse
-  // ser ingen glidning och skulle bara få en tom hjältebild lika länge,
-  // så synligheten härleds i stället för att sättas i effekten nedan.
+  // Hjältens text syns från första målningen och glider bara på plats.
+  // Förut tonade den in från osynlig och var klar först efter nästan två
+  // sekunder, vilket gav startsidan ett gult Speed Index på dator i
+  // PageSpeed (1,4 s, 2026-11-17). Minskad rörelse hoppar över glidningen.
   const heroVisible = inglidningKlar || minskadRorelse;
 
   useEffect(() => {
@@ -170,7 +171,7 @@ export default function HomeClient({ resorts }) {
     if (minskadRorelse) return;
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener('scroll', onScroll, { passive: true });
-    const visaHjalten = setTimeout(() => setInglidningKlar(true), 200);
+    const visaHjalten = setTimeout(() => setInglidningKlar(true), 50);
     return () => {
       window.removeEventListener('scroll', onScroll);
       clearTimeout(visaHjalten);
@@ -205,18 +206,24 @@ export default function HomeClient({ resorts }) {
       <SiteHeader genomskinligOverst />
 
       <header style={{ position: 'relative', height: '100vh', minHeight: 600, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: '0 clamp(24px, 4vw, 64px) clamp(60px, 10vh, 140px)', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: `url('${heroImage}')`, backgroundSize: 'cover', backgroundPosition: 'center 30%', transform: `scale(1.06) translateY(-${parallaxY * 0.25}px)`, willChange: 'transform' }} />
+        {/* Hjältebilden går genom Nexts bildoptimering. Som CSS-bakgrund
+            hämtades originalet på 3 MB även på en telefon, och PageSpeed
+            räknade med 450 kB att spara på dator (2026-11-17). priority
+            förladdar den, eftersom den är det första läsaren ser. */}
+        <div style={{ position: 'absolute', inset: 0, transform: `scale(1.06) translateY(-${parallaxY * 0.25}px)`, willChange: 'transform' }}>
+          <Image src={heroImage} alt="" fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center 30%' }} />
+        </div>
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.3) 0%, rgba(18,17,16,0.5) 40%, rgba(18,17,16,0.85) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
         <div style={{ position: 'relative', maxWidth: 750 }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.3s' }}>{t.hero.tagline}</p>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(52px, 8vw, 100px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', marginBottom: 24, letterSpacing: '0.02em', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(26px)', transition: 'opacity 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s, transform 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 20, transform: heroVisible ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1)' }}>{t.hero.tagline}</p>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(52px, 8vw, 100px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', marginBottom: 24, letterSpacing: '0.02em', transform: heroVisible ? 'translateY(0)' : 'translateY(14px)', transition: 'transform 0.7s cubic-bezier(0.16,1,0.3,1) 0.05s' }}>
             {t.hero.title1}<br />{t.hero.title2}<br /><span style={{ color: '#D4A574' }}>{t.hero.title3}</span>
           </h1>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 300, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, marginBottom: 40, opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(22px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.7s' }}>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 300, color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, marginBottom: 40, transform: heroVisible ? 'translateY(0)' : 'translateY(12px)', transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s' }}>
             {t.hero.description.replace('{count}', resorts.length)}
           </p>
-          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', opacity: heroVisible ? 1 : 0, transform: heroVisible ? 'translateY(0)' : 'translateY(18px)', transition: 'opacity 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s, transform 0.9s cubic-bezier(0.16,1,0.3,1) 0.9s' }}>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', transform: heroVisible ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s' }}>
             <MagBtn href="#resorts" primary>{t.hero.browseResorts}</MagBtn>
             {PLANERAREN_SYNLIG && <MagBtn href="/plan">{t.hero.planTrip}</MagBtn>}
           </div>

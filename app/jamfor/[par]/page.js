@@ -12,6 +12,7 @@ import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { fallhojd as fallhojdFor, summaMening } from '../../../lib/delomraden'
 import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
+import { harPris } from '../../../lib/liftkortspriser'
 import Partnerlank from '../../Partnerlank'
 import Annonsmarkning from '../../Annonsmarkning'
 import {
@@ -22,6 +23,7 @@ import {
   jamforelseMeningar,
   parSlugsFor,
   tolkaPar,
+  vemPassarMening,
 } from '../../../lib/jamfor'
 
 // Samma intervall som ortsidorna. En rättad siffra i Supabase slår
@@ -65,7 +67,14 @@ export async function generateMetadata({ params }) {
   // Search Console 8 september 2026.
   const fallhojd = (r) => fallhojdFor(r)
 
-  const description = `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}. Samma källa för båda orterna.`
+  // Vem orterna passar först, se vemPassarMening i lib/jamfor.js.
+  const vem = vemPassarMening(a, b)
+  const sidaVidSida = harPris(a) && harPris(b)
+    ? 'Restid, liftkort och boende sida vid sida.'
+    : 'Restid och boende sida vid sida.'
+  const description = vem
+    ? `${vem} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}, ${a.total_pistes_km} km pist mot ${b.total_pistes_km}. ${sidaVidSida}`
+    : `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}. ${sidaVidSida}`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
 
   return {

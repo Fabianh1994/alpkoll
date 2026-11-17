@@ -70,6 +70,21 @@ export default async function JamforIndex() {
   const kuraterade = new Set(parSlugsFor(orter.map((o) => o.slug)))
   const utvalda = UTVALDA.filter((par) => kuraterade.has(par))
 
+  // Alla kuraterade par, i två grupper. Varje indexerat par ska ha en
+  // länk härifrån: mätningen i augusti 2026 visade att Google hämtade 62 %
+  // av de länkade paren och 21 % av de olänkade. Ortsidorna länkar också,
+  // men en sida som når alla par i ett klick från menyn är kortare väg.
+  const nordiskOrt = new Map(orter.map((ort) => [ort.slug, arNordisk(ort)]))
+  const allaPar = [...kuraterade].sort((p, q) => {
+    const [a1, b1] = p.split('-vs-').map((s) => namn.get(s))
+    const [a2, b2] = q.split('-vs-').map((s) => namn.get(s))
+    return a1.localeCompare(a2, 'sv') || b1.localeCompare(b2, 'sv')
+  })
+  const grupper = [
+    { rubrik: 'Norden mot Norden', par: allaPar.filter((par) => par.split('-vs-').every((s) => nordiskOrt.get(s))) },
+    { rubrik: 'Åre eller Sälen mot Alperna', par: allaPar.filter((par) => !par.split('-vs-').every((s) => nordiskOrt.get(s))) },
+  ].filter((g) => g.par.length > 0)
+
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
       <SiteHeader />
@@ -111,6 +126,25 @@ export default async function JamforIndex() {
             </div>
           </section>
         )}
+
+        {grupper.map((grupp) => (
+          <section key={grupp.rubrik} style={{ marginTop: 48 }}>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 14 }}>{grupp.rubrik}</h2>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, columnWidth: 220, columnGap: 24 }}>
+              {grupp.par.map((par) => {
+                const [x, y] = par.split('-vs-')
+                return (
+                  <li key={par} style={{ breakInside: 'avoid', marginBottom: 8 }}>
+                    <Link href={`/jamfor/${par}`} style={{
+                      fontFamily: 'var(--font-body)', fontSize: 13.5,
+                      color: 'rgba(255,255,255,0.6)', textDecoration: 'none',
+                    }}>{namn.get(x)} <span style={{ color: 'rgba(255,255,255,0.5)' }}>eller</span> {namn.get(y)}</Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ))}
 
       </div>
 

@@ -61,8 +61,8 @@ export default async function sitemap() {
     // databasen; utan filtret hade en dold ort lagt en 404 i sitemapen.
     //
     // Sitemapen ska bara innehålla sidor vi faktiskt vill se indexerade.
-    // Alla 83 kuraterade par byggs och länkas fortfarande — se
-    // INDEXERADE_PAR i lib/jamfor.js för varför de inte alla ligger här.
+    // Sedan november 2026 är det alla kuraterade par — se INDEXERADE_PAR
+    // i lib/jamfor.js.
     ...indexeradeParFor(slugs).map((par) => ({
       url: `${SITE_URL}/jamfor/${par}`,
       lastModified: now,

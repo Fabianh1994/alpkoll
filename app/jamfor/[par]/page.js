@@ -72,11 +72,10 @@ export async function generateMetadata({ params }) {
     title,
     description,
     alternates: { canonical: url },
-    // Bara paren i INDEXERADE_PAR ber vi Google indexera. Övriga svarar
-    // för besökaren som valt dem i väljaren och behåller sina interna
-    // länkar — follow, så att länkkraften fortsätter till ortsidorna —
-    // men de ska inte tävla med våra egna sidor i sökresultaten, och de
-    // ska inte tränga undan ortsidorna i genomsökningskön.
+    // Bara paren i INDEXERADE_PAR — de kuraterade — ber vi Google
+    // indexera. Övriga, som alport mot alport, svarar för besökaren som
+    // valt dem i väljaren och behåller sina länkar (follow), men ska inte
+    // tävla i sökresultat vi inte kan vinna.
     robots: par.indexerat ? undefined : { index: false, follow: true },
     openGraph: {
       title,

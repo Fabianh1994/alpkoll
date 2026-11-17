@@ -18,6 +18,7 @@ import Annonsmarkning from '../../Annonsmarkning'
 import {
   GRUPPER,
   HUVUDPUNKTER,
+  LANKADE_PAR,
   PASSAR,
   arNordisk,
   jamforelseMeningar,
@@ -229,7 +230,13 @@ export default async function JamforPage({ params }) {
       .filter((p) => p !== par.kanoniskSlug)
       .map((p) => ({ adress: p, mot: motparten(p, ort.slug) }))
       .filter((p) => namn.has(p.mot))
-      .sort((x, y) => (lika(y.mot) - lika(x.mot)) || namn.get(x.mot).name.localeCompare(namn.get(y.mot).name, 'sv'))
+      // Inom samma slag går de utvalda paren först — de mest sökta, som
+      // Åre mot Sälen. Bara bokstavsordning lade Åre sist, och med fyra
+      // platser föll paret bort på Sälen mot Trysil.
+      .sort((x, y) =>
+        (lika(y.mot) - lika(x.mot))
+        || (LANKADE_PAR.includes(y.adress) - LANKADE_PAR.includes(x.adress))
+        || namn.get(x.mot).name.localeCompare(namn.get(y.mot).name, 'sv'))
       .slice(0, 4)
     return { ort, par: par_ }
   }).filter((o) => o.par.length)

@@ -792,6 +792,14 @@ export default async function ResortPage({ params }) {
                 {resort.where_to_stay && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
+                {/* Sälen har en egen sida om områdena, den vanligaste frågan
+                    om orten i forumen. Se app/var-bo-i-salen/page.js. */}
+                {resort.slug === 'salen' && (
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '12px 0 0' }}>
+                    Lindvallen, Hundfjället eller Stöten?{' '}
+                    <Link href="/var-bo-i-salen" style={{ color: '#D4A574' }}>Alla sex områden jämförda</Link>.
+                  </p>
+                )}
               </div>
               {/* Bookings egen logga, oförändrad fil ur deras partnerkit. Reglerna
                   (Brand Standards 2.1): minst 120 px bred, fritt utrymme runt om lika

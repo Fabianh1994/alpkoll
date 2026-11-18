@@ -388,3 +388,21 @@ gäller en vuxen med start i referensveckan. Se migration 034.
 **Dynamiska priser ska läsas för ett datum, inte för "säsongen".** Hemavans
 sexdagarskort kostar 2 690 kr med start före 19 februari och 2 955 kr
 därefter. Ange datumet i noten.
+
+## 2026-11-18 — Större kort och sorterbar tabell
+
+Önskemål av Fabian: liftkortspriser visar ortens kort och, där det finns,
+det större kortet på en rad under (`STORRE_KORT` i lib/liftkortspriser.js).
+Ortens kort styr ordning och index. Varje rad har dagskort, sex dagar, per
+dag, km och kronor per km, och tabellen går att sortera.
+
+- **cortina-d-ampezzo** — Dolomiti Superski 453 €, 1 200 km.
+- **chamonix** — Mont-Blanc Unlimited 104 / 499 €, 170 + 41 km (Courmayeur).
+- **les-arcs** — Paradiski, Essential Pass 78 / 412 € i högsäsong,
+  lesarcs-peiseyvallandry.com. 200 + 225 km.
+- **saas-fee** — Destination-kortet för hela Saastal, 428 CHF (fast pris),
+  saas-fee.ch. 101 + 26 + 15 + 1 km.
+- **madonna-di-campiglio** — Skirama Dolomiti Adamello Brenta finns, men
+  priset hittades inte på ortens sida. Kvar.
+- **solden** — sexdagarskortet gäller redan hela Ötztal (från tre dagar);
+  inget separat större kort.

@@ -6,7 +6,7 @@ import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
 import { pris, kronorTal, perSkiddag } from '../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../lib/valuta'
-import { DEFINITION, VERIFIERADE, UTAN_PRIS, harPris } from '../../lib/liftkortspriser'
+import { DEFINITION, VERIFIERADE, UTAN_PRIS, LIFTKORT, harPris } from '../../lib/liftkortspriser'
 
 // Samma intervall som ortsidorna. Ett rättat pris i Supabase slår igenom
 // här inom en timme, utan ny deploy.
@@ -141,7 +141,9 @@ export default async function Liftkortspriser() {
                       color: '#f0ece4', textDecoration: 'none',
                     }}>{rad.ort.name}</Link>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
-                      {land(rad.ort.country)} · {rad.ort.total_pistes_km} km pist
+                      {land(rad.ort.country)} · {LIFTKORT[rad.ort.slug]?.km
+                        ? `${LIFTKORT[rad.ort.slug].namn}, ${LIFTKORT[rad.ort.slug].km} km`
+                        : `${rad.ort.total_pistes_km} km pist`}
                     </div>
                   </td>
 

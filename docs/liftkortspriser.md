@@ -353,3 +353,16 @@ inte rabatt.
 - **hemavan** — fortfarande bara i bokningen. Freeride.se anger 2 685 kr
   för sex dagar i högsäsong; inte vår källa.
 - **geilo** och **riksgransen** — oförändrat 25/26.
+
+## 2026-11-18 — Priset följer veckokortet
+
+Beslut av Fabian: priset följer det kort man faktiskt köper för en vecka,
+även när kortet gäller mer än ortens egen pist. Varje ort har två tal: pist
+man når med lift (som förut) och vad kortet gäller (`LIFTKORT` i
+lib/liftkortspriser.js, bara där de skiljer sig). Pris per kilometer räknas
+på kortets kilometer.
+
+- **mayrhofen** — Zillertal Superskipass 399 €, 546 km. Se migration 033.
+- **riksgransen** — kortet gäller även Björkliden; km okänt, därför inte per km.
+- **chamonix**, **grandvalira**, **cortina-d-ampezzo** — kvar. Priserna är
+  dynamiska eller ligger i bokningsflöden och läses via webbläsare.

@@ -53,6 +53,12 @@ const OMRADEN = [
   { id: 'alperna', etikett: 'Alperna' },
 ]
 
+// Per dag och per km kommer som tal; samma tusentalsavgränsning som
+// beloppen sidan formaterar på servern ("1 150 kr", inte "1150 kr").
+function krTal(n) {
+  return `${String(n).replace(/\B(?=(\d{3})+$)/g, '\u00a0')}\u00a0kr`
+}
+
 function varde(rad, nyckel) {
   switch (nyckel) {
     case 'namn': return rad.namn
@@ -222,9 +228,9 @@ export default function Tabell({ rader }) {
                     <div style={{ fontSize: 15, fontWeight: 600 }}>{rad.pris.kr}</div>
                     {rad.pris.ursprung && <div style={underrad}>{rad.pris.ursprung}</div>}
                   </td>
-                  <td className="lk-dold" style={siffra}>{rad.perDag ? `${rad.perDag} kr` : '—'}</td>
+                  <td className="lk-dold" style={siffra}>{rad.perDag ? krTal(rad.perDag) : '—'}</td>
                   <td className="lk-dold" style={siffra}>{rad.kmText || '—'}</td>
-                  <td style={{ ...siffra, color: ACCENT, fontWeight: 600 }}>{rad.perKm ? `${rad.perKm} kr` : '—'}</td>
+                  <td style={{ ...siffra, color: ACCENT, fontWeight: 600 }}>{rad.perKm ? krTal(rad.perKm) : '—'}</td>
                   <td className="lk-dold" style={{ ...siffra, paddingRight: 16 }}>
                     <span style={{
                       fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
@@ -249,9 +255,9 @@ export default function Tabell({ rader }) {
                       <div>{rad.stort.pris.kr}</div>
                       {rad.stort.pris.ursprung && <div style={underrad}>{rad.stort.pris.ursprung}</div>}
                     </td>
-                    <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.perDag ? `${rad.stort.perDag} kr` : '—'}</td>
+                    <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.perDag ? krTal(rad.stort.perDag) : '—'}</td>
                     <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.kmText || '—'}</td>
-                    <td style={{ ...siffra, paddingTop: 0, verticalAlign: 'top', color: 'rgba(212,165,116,0.75)' }}>{rad.stort.perKm ? `${rad.stort.perKm} kr` : '—'}</td>
+                    <td style={{ ...siffra, paddingTop: 0, verticalAlign: 'top', color: 'rgba(212,165,116,0.75)' }}>{rad.stort.perKm ? krTal(rad.stort.perKm) : '—'}</td>
                     <td className="lk-dold" />
                   </tr>
                 )}

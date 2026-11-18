@@ -77,7 +77,7 @@ export default async function Liftkortspriser() {
               dag: pris(stort.dag, stort.valuta, kurser),
               pris: pris(stort.vecka, stort.valuta, kurser),
               perDag: perSkiddag(stortTal),
-              perKm: stort.km ? Math.round(stortTal / stort.km) : null,
+              perKm: stort.km && stort.perKm !== false ? Math.round(stortTal / stort.km) : null,
             }
           : null,
       }

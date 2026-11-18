@@ -108,7 +108,7 @@ export default function Tabell({ rader }) {
               onClick={() => setOrdning({ nyckel: v.nyckel, stigande: v.stigande })}
               style={{
                 fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
-                padding: '8px 14px', borderRadius: 999, cursor: 'pointer',
+                padding: '11px 16px', borderRadius: 999, cursor: 'pointer',
                 border: `1px solid ${vald ? ACCENT : 'rgba(255,255,255,0.12)'}`,
                 background: vald ? 'rgba(212,165,116,0.14)' : 'transparent',
                 color: vald ? ACCENT : 'rgba(255,255,255,0.7)',
@@ -204,7 +204,7 @@ export default function Tabell({ rader }) {
                     </td>
                     <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.perDag ? `${rad.stort.perDag} kr` : '—'}</td>
                     <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.kmText || '—'}</td>
-                    <td style={{ ...siffra, paddingTop: 0, verticalAlign: 'top', color: ACCENT }}>{rad.stort.perKm ? `${rad.stort.perKm} kr` : '—'}</td>
+                    <td style={{ ...siffra, paddingTop: 0, verticalAlign: 'top', color: 'rgba(212,165,116,0.75)' }}>{rad.stort.perKm ? `${rad.stort.perKm} kr` : '—'}</td>
                     <td className="lk-dold" />
                   </tr>
                 )}

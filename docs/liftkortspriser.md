@@ -406,3 +406,25 @@ dag, km och kronor per km, och tabellen går att sortera.
   priset hittades inte på ortens sida. Kvar.
 - **solden** — sexdagarskortet gäller redan hela Ötztal (från tre dagar);
   inget separat större kort.
+
+## 2026-11-18 — Granskning av priser och km
+
+Fyra granskare (priser, design, kod, besökare). Rättat i migration 035 och
+lib/liftkortspriser.js:
+
+- **saas-fee** — ortens sida visar nu 86 / 419 CHF för 26/27 (vi bar 84 / 413).
+  Kortet gäller Saas-Fee och Saas-Almagell: LIFTKORT 116 km (101 + 15).
+- **hemavan** — skiresort.com listar nu Hemavan 30 km och Tärnaby 20 km. Ortens
+  km blir 30, kortet 50.
+- **Dolomiti Superski** — dagskort 89 € enligt pressmeddelandet. Visas utan
+  kronor per km, eftersom de tolv områdena inte hänger ihop.
+- **grandvalira** — 308 km står nu med skiresort.com som källa.
+
+Kvar att kontrollera:
+- **zermatt** — 432 / 104 CHF är det lägsta dynamiska priset ("from CHF 432 to
+  550"), inte priset för v9. Läs kalkylatorn för 27 februari 2027.
+- **3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.
+- **Mont-Blanc Unlimited** — vad kortet omfattar och Courmayeurs 41 km är inte
+  bekräftade från CMB:s egen sida, som inte gick att läsa.
+- Större kort att överväga: Kitzbühel (Ski Alpin Card), Ischgl (Silvretta Ski
+  Pass), Madonna (Skirama).

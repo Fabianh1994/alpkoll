@@ -548,3 +548,34 @@ de talen står i noten i `lift_pass_prices` men används inte.
   skidrutter. Fürenalp är en utflyktsbana utan pist.
 
 Alla tre bör läsas igen före pressutskick, som Zermatt.
+
+
+## 2026-11-18 — Omgång 6: tre nordiska orter
+
+Hämtade från ortens egen prislista eller bokning och kontrollerade i
+granskningen av omgång 6 samma dag. Se migration 044. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns. Ingen av dem
+är SkiStars, så SkiStar-kalenderns 1 mars gäller inte; regeln från Zermatt
+(036) gör det: dynamiska priser läses för start lördag 27 februari 2027.
+
+- **idre-fjall** — Idre Fjäll Skipass, vuxen 16–64, start 27.2.2027:
+  671 / 2 827 SEK, och samma pris för sex, sju och åtta dagar. Forskaren
+  läste ortens bokning renderad; granskaren fick bara sidans skal med curl,
+  och pistat.se visar samma tal. Listpris: på nätet dras 5 %, och 10 % vid
+  köp mer än 40 dagar före. Priset ändras med veckan. Kvot 4,21.
+  Idrepasset (Idre Fjäll, Fjätervålen, Idre Himmelfjäll, Grövelfjäll) är ett
+  tilläggskort mellan fyra ägare; priset är inte läst, och det står inte i
+  `STORRE_KORT`.
+- **branas** — branas.se, "Prislista 26/27", vuxen 18–64: 595 / 2 710 SEK,
+  läst av både forskaren och granskaren. Ett pris hela säsongen, så
+  startdagen spelar ingen roll. Premiärhelgen 11–13 december kostar halva,
+  och kampanjpriset 2 440 för 6–8 dagar gällde till 31 oktober 2026 och
+  används inte. Kvot 4,55.
+- **hafjell** — **OKÄNT.** Alpinco sätter priset per startdag i en
+  Citybreak-kalender bakom Cloudflare (curl 403, webbläsaren fastnar på
+  säkerhetskontrollen). Läst bara för 27–30 november 2026: 599 NOK.
+  skiresorts och Snowtheres 699 NOK har okänt datum och används inte.
+  `resorts` lagrar null, null, 'NOK', orten står i `UTAN_PRIS` med typen
+  `kalla`, som Val Gardena, och får ingen rad i `lift_pass_prices`. Läs
+  alpinco.com/no/hafjell/kjop-dagskort-1-8-dager i en vanlig webbläsare,
+  vuxen, start 27.2.2027, 1 och 6 dagar, innan orten publiceras.

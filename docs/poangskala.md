@@ -55,7 +55,8 @@ Sannolikheten att det finns bra snö under säsongen. Höjd, glaciär, konstsnö
 - **10** Zermatt, Val Thorens — pist på glaciär över 3 800 m (Zermatt, 3 899 m) eller en by över 2 200 m med pisterna mellan husen (Val Thorens, 2 300 m)
 - **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian
 - **7** normal alport utan glaciär
-- **6** Sälen — 572–887 m, lägst på sajten
+- **6** Sälen — 572–887 m
+- **5** Branäs — 152–567 m, lägst på sajten; toppen ligger under Sälens bas
 
 Ankaret för tian skärptes 2026-11-18 (granskningen av omgång 3). Där stod
 tidigare "glaciär och åkning över 3 000 m", vilket också Tignes (Grande
@@ -67,7 +68,7 @@ pist: Chamonix 3 842 m är Aiguille du Midi.
 ### Nybörjarnivå
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.
 
-- **10** Sälen — sajtens tydligaste nybörjarort, 45 % blå pist
+- **10** Sälen — sajtens tydligaste nybörjarort, 46 % blå pist; Branäs — 82 % lätt pist och svart pist bara i Gerremobranten och Mattesgapet
 - **9** Alta Badia, Saalbach — Alta Badia 57 % blå pist, nästan hela området nås via lätta nedfarter
 - **6** normal alport
 - **4** Chamonix — osammanhängande områden, brant, dåliga övningsbackar
@@ -184,3 +185,9 @@ Bykänsla för Cervinia är 4, inte 3. Platsen var en klätterby med hotell för
 Mellannivå 9 kräver mer än Ski Club GB 5/5. Laax och St. Moritz har båda det betyget men får 8, som Tignes med samma betyg och mer pist. Nian bärs av Val Gardena, som når hela Sellaronda med lift, och av Zermatt.
 
 Snösäkerhet 9 gäller också glaciärorter med låg by: Laax (1 100 m, 37 % konstsnö) och Engelberg (1 003 m, 40 %) uppfyller ankarets ordalydelse. Den svagare snön på dalnedfarterna står i ortstexten, inte i poängen. Frågan om ankaret bör kräva något om byns höjd är ett ägarbeslut.
+
+**Avgjort 2026-11-18 (granskningen av omgång 6):** Branäs blir nybörjarnivåns andra tia. Ankaret beskrev Sälen med blå andel, och Branäs har den högsta på sajten med marginal (82 % mot Sälens 46 %), svart pist i bara två backar och tre källor om att terrängen är lätt. Hafjell (76 %, hela området nås via lätta nedfarter) och Idre Fjäll (70 %, östsidan brantare) får 9. Ankarets 45 % rättades till 46 %, som i migration 013.
+
+Snösäkerhet fick ett ankare under Sälen: Branäs 5, toppen 567 m under Sälens bas 572 m. Sälen är lägst bland de publicerade orterna tills Branäs publiceras.
+
+Bykänsla för nordiska orter byggda som anläggningar kring liftarna (Idre Fjäll 1967, Branäs och Hafjell 1988) sätts till 6, samma som Vemdalen. Tignes-ankaret 5 beskriver samma sak med samma ord, och Sälen har 7 med samma slags bebyggelse. Att de nordiska anläggningarna ligger på 6 och Tignes på 5 är inte belagt av någon skillnad i källorna. Om gruppen ska till 5, och om Sälen ska ner från 7, är ett ägarbeslut.

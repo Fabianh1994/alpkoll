@@ -42,7 +42,7 @@ Palett: `#121110` bakgrund, `#1c1a17` kort, `#D4A574` accent, `#f0ece4` text. Ty
 
 **Datan hämtas på servern.** `lib/resorts.js` filtrerar på `published` på ett ställe, så startsida, ortsidor, planerare och sitemap inte kan visa olika urval.
 
-**Bilder visas och optimeras bara när vi får kopiera dem** — se `lib/images.js`. En bild från en annan värd plockas bort av `utanOlicensieradBild()`; Myrkdalen visas därför utan foto tills en bild med licens finns.
+**Bilder visas och optimeras bara när vi får kopiera dem** — se `lib/images.js`. En bild från en annan värd plockas bort av `utanOlicensieradBild()` i stället för att hotlänkas.
 
 **Varje ortbild har licens och fotograf.** Bilderna ligger i `resort_images`, en rad per bild; position 0 är hjältebilden och `resorts.image_url` följer den. En ny bild utan känd licens läggs inte in — krediteringen på ortsidan och `/bildkallor` förutsätter att raden är komplett.
 

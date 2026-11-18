@@ -31,7 +31,7 @@ Konsekvensen är att en genomtänkt sjua hamnar bredvid en slentriansjua, och l�
 
 **En poäng måste gå att belägga med en faktamening.** Kan motiveringen inte skrivas utan att beskriva den egna smaken hör poängen inte hemma på sajten. Kravet kostar ingenting extra, eftersom varje ytterlägespoäng ändå ska ha en motivering — se nedan.
 
-Det är på det testet `scenery_score` föll (beslut 2026-08-10). "Dolomiterna är vackrare än Dalarna" är ett tycke, inte en upplysning. Kolumnen ligger kvar i databasen men renderas inte, och ska inte tas in. Bykänsla ligger nära i subjektivitet men klarar testet: *"belle époque-kurort med teater och balsal, byggd före liftarna"* är ett faktum om Bad Gastein oavsett vad läsaren tycker om saken.
+Det är på det testet `scenery_score` föll (beslut 2026-08-10). "Dolomiterna är vackrare än Dalarna" är ett tycke, inte en upplysning. Kolumnen ligger kvar i databasen men renderas inte, och ska inte tas in. Bykänsla ligger nära i subjektivitet men klarar testet: *"belle époque-kurort kring varma källor och Gasteinfallet, som rinner genom centrum, med Grand Hotel de l'Europe från 1906–1909"* är ett faktum om Bad Gastein oavsett vad läsaren tycker om saken. (Här stod tidigare "med teater och balsal", som ingen källa belägger; rättat 2026-11-18 efter granskningen av omgång 2.)
 
 ## Motiveringarna
 
@@ -43,7 +43,9 @@ Poängen visas aldrig naken. Ett tal mellan 1 och 10 utan förklaring är ett p�
 
 Meningen som binder ihop de två orterna genereras ur talen. Motiveringarna är ortsfakta. Ingen av dem är skriven för ett visst par.
 
-**Poängen avser samma sak som siffrorna: hela det sammankopplade området** — utom bykänsla och afterski, som handlar om byn.
+**Poängen avser samma sak som siffrorna: hela det sammankopplade området** — utom bykänsla, afterski och familjevänligt, som handlar om byn.
+
+Familjevänligt lades till undantaget 2026-11-18 (granskningen av omgång 2, beslut A). Skalan beskriver poängen med ord om byn, och källorna skiljer byar i samma område åt: Lech-Zürs och St. Anton delar Ski Arlberg men inte barnens vardag. Nybörjarnivå avser fortsatt området, eftersom den ska stämma med `blue_percent`. Les 3 Vallées behöver ingen ändring: Courchevel 9 och Méribel och Val Thorens 7 är byarnas olika omdömen.
 
 ## Skalorna
 
@@ -97,7 +99,7 @@ Hoppens och railsens kvalitet och underhåll.
 Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platsen fanns före liftarna.
 
 - **10** Zermatt, Cortina d'Ampezzo, Kitzbühel
-- **9** Bad Gastein (belle époque), Val Gardena, Chamonix
+- **9** Bad Gastein (belle époque-kurort kring Gasteinfallet), Val Gardena, Chamonix
 - **6** funktionell ort
 - **5** Tignes — byggd som anläggning
 - **3** Cervinia — byn saknar charm, bebyggelsen är hårt kritiserad
@@ -114,7 +116,8 @@ Hur mycket som händer från liftstopp och framåt.
 Barnens perspektiv: skidskola, avstånd, om man kan bo nära backen, om orten är byggd för barn.
 
 - **10** Sälen
-- **9** Saalbach, Courchevel
+- **9** Courchevel
+- **8** Saalbach — barnområde i varje by, men Saalbach by är utdragen och bullrig på eftermiddagen
 - **7** normal alport
 - **5** orter där barn är möjligt men inte tänkt
 
@@ -157,6 +160,6 @@ Skalan är skriven mot de fyra nya orterna (Saalbach, Cervinia, Val Gardena, Bad
 
 Migration 014 rättade det som gick att belägga, och bara det: Sälen till 10 på båda skalorna, de tre orter vars nybörjarpoäng stred mot en blå andel över hälften (Hemsedal 67 %, Voss 55 %, Sölden 52 %), och Les 3 Vallées, där Courchevel, Méribel och Val Thorens bar tre olika omdömen om samma pister. Resten av mittfältet står kvar — 120 nya omdömen utan källa hade varit samma arbetssätt som skapade problemet.
 
-**Kvar att avgöra:** om `family_friendly_score` avser området eller byn. Skalan beskriver den med ord som handlar om byn, men undantaget ovan räknar bara upp bykänsla och afterski. Frågan är skarp för Les 3 Vallées, där Courchevel står på 9 och Méribel och Val Thorens på 7 för samma backar.
+**Avgjort 2026-11-18:** `family_friendly_score` avser byn, se undantaget under Motiveringarna. Frågan var skarp för Les 3 Vallées, där Courchevel står på 9 och Méribel och Val Thorens på 7 för samma backar; de står kvar.
 
 **Fältet som inte hör hit men hänger ihop:** `avg_snowfall_cm` visas inte längre någonstans. Mätningen 2026-08-12 mot skiresort.com — sajtens enda källa — visar att den inte bär någon säsongssiffra alls, bara aktuellt snödjup; kontrollerat på både Sölden och Åre. Talen kan därmed inte komma därifrån och går inte att kontrollera mot något. Fördelningen pekade åt samma håll: alla 30 publicerade värden delbara med tio, elva unika tal bland trettio. Kolumnen ligger kvar i databasen — orter döljs och fält slutar visas, ingetdera raderas.

@@ -86,10 +86,15 @@ omräkning att ta höjd för.
 
 **Saalbach.** dag 82 / 6 dagar 440 (topp 19.12.26–12.3.27), men kortet gäller
 Skicircus PLUS Schmitten i Zell am See PLUS Kitzsteinhorn och Maiskogel i
-Kaprun — Ski ALPIN CARD, 408 km, inte Skicircus 270 km.
+Kaprun — Ski ALPIN CARD, 408 km, inte Skicircus 270 km. *Inte längre
+underkänd:* ortens prislista 26/27 har inget kort för bara Skicircus, och
+beslutet "Priset följer veckokortet" gäller. Se 2026-11-18, omgång 2, nedan.
 
 **Bad Gastein.** 6 dagar 432,50 gäller hela Ski amadé, 760 km. Inget
-Gastein-bara-alternativ finns. Dagsbiljetten 78,50 avser Gasteins 82,7 km.
+Gastein-bara-alternativ finns. Dagsbiljetten 81,50 (26/27, kassa) gäller
+inte bara Gasteins 82,7 km utan också Dorfgastein-Großarl och Sportgastein.
+Här stod tidigare "78,50 avser Gasteins 82,7 km", som var fel i både pris
+och område. *Inte längre underkänd,* se 2026-11-18, omgång 2, nedan.
 
 **Mayrhofen.** 399 € är Zillertal Superskipass för hela dalen.
 
@@ -98,7 +103,7 @@ Det är alltså inte en österrikisk egenhet utan ett allmänt mönster.
 
 **Riksgränsen — samma mönster, men det finns inget alternativ.** Skidpasset
 gäller "Björkliden Fjällby och Riksgränsen", medan våra 21 km och 6 liftar
-avser Riksgränsen ensamt. Till skillnad från Saalbach säljer orten inget
+avser Riksgränsen ensamt. Orten säljer inget
 kort som bara gäller den egna sidan — det finns ingen rätt produkt att
 välja i stället. Talet står i tabellen med den här reservationen. Frågan är
 inte vilket pris som ska hämtas utan om pisttalet borde avse båda
@@ -167,10 +172,7 @@ källa — det är för tidigt. Datumet står utsatt där orten uppger ett.
   sommarpris till en vinterjämförelse.
 
 ## KVAR — orter som ännu inte finns i databasen
-val-gardena, saalbach, bad-gastein, cervinia
-
-Saalbach och Bad Gastein är redan underkända ovan på område. För dem måste
-frågan om vilket kort som motsvarar pisttalen lösas innan orten läggs in.
+val-gardena, cervinia
 
 ## METOD som fungerar
 - Alporter med publicerad prislista: WebFetch mot ortens prissida.
@@ -433,3 +435,31 @@ International (Zermatt–Cervinia) 122 CHF för en dag och 574 CHF för sex daga
 Zermatt ensamt 104 / 510. Vi bar 104 / 432, som blandade Zermatts dagspris med
 det lägsta dynamiska sexdagarspriset. Migration 036. Priset är dynamiskt och
 bör läsas igen före pressutskicket.
+
+## 2026-11-18 — Omgång 2: fem österrikiska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 2 samma dag. Se migration 040. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+- **lech-zuers** — samma Ski Arlberg-kort som St. Anton, 85 / 468 € i peak
+  season 19.12.26–2.4.27. skiarlberg.at kallar priserna preliminära.
+- **saalbach** och **zell-am-see-kaprun** — Ski ALPIN CARD 82 / 440 € i
+  huvudsäsong 19.12.26–12.3.27 (saalbach.com, zellamsee-kaprun.com). Något
+  kort för bara den egna orten finns inte. LIFTKORT 408 km enligt
+  saalbach.com och skiresort.com, som Mayrhofens 546.
+- **bad-gastein** — 81,50 / 432,50 € i kassan, huvudsäsong
+  19.12.26–26.3.27 (skigastein.com). På nätet dynamiskt och lägre.
+  Sexdagarskortet är Ski amadé, 760 km i fem regioner utan lift mellan dem,
+  så orten räknas inte per kilometer (LIFTKORT km null, som Riksgränsen).
+  Dagskortet gäller Schlossalm–Angertal–Stubnerkogel, Dorfgastein-Großarl
+  och Sportgastein.
+- **obergurgl** — dag från 69,50 €, sex dagar 469 € i högsäsongen som
+  omfattar v9 (27.2–18.4.2027, gurgl.com). Sexdagarskortet är Ötztal
+  Superskipass, "valid in all Ötztal ski areas for 3 days or more".
+- **solden** — samma Ötztal Superskipass. Får LIFTKORT med km null i samma
+  ändring och räknas därför inte längre per kilometer.
+
+Databasens kolumner är heltal (se 022), så 69,50, 81,50 och 432,50 lagras
+avrundade i `resorts`. De exakta talen står i `lift_pass_prices`.
+

@@ -53,7 +53,7 @@ Sannolikheten att det finns bra snö under säsongen. Höjd, glaciär, konstsnö
 - **10** Zermatt, Val Thorens — glaciär och åkning över 3 000 m
 - **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl
 - **7** normal alport utan glaciär
-- **6** Sälen — 330–887 m, lägst på sajten
+- **6** Sälen — 572–887 m, lägst på sajten
 
 ### Nybörjarnivå
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.

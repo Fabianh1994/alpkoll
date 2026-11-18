@@ -277,6 +277,13 @@ export default async function Liftkortspriser() {
             en prishöjning. Kontrollera alltid hos orten innan du bokar — flera
             prissätter dynamiskt.
           </p>
+          <p style={{
+            fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.75,
+            color: 'rgba(255,255,255,0.55)', margin: '12px 0 0',
+          }}>
+            Vad priserna säger om Sverige mot Alperna står i{' '}
+            <Link href="/liftkortsindex" style={{ color: '#D4A574', textDecoration: 'none' }}>Liftkortsindex {'›'}</Link>
+          </p>
         </section>
 
       </main>

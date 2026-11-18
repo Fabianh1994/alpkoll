@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useDictionary } from '../../lib/useDictionary';
 import { oppenIManad } from '../../lib/months';
 import { formateraRestid } from '../../lib/travel';
+import { utanOlicensieradBild } from '../../lib/images';
 import SiteHeader from '../SiteHeader';
 import SiteFooter from '../SiteFooter';
 
@@ -231,7 +232,7 @@ export default function PlanPage() {
 
   useEffect(() => {
     supabase.from('resorts').select('*').eq('published', true)
-      .then(({ data }) => { if (data) setResorts(data); });
+      .then(({ data }) => { if (data) setResorts(data.map(utanOlicensieradBild)); });
   }, []);
 
   function togglePriority(p) {
@@ -514,7 +515,9 @@ export default function PlanPage() {
                     onMouseLeave={e => { e.currentTarget.style.borderColor = i === 0 ? 'rgba(212,165,116,0.2)' : T.border; e.currentTarget.style.transform = 'none'; }}
                   >
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.46)', minWidth: 20 }}>#{i + 1}</div>
-                    <img src={resort.image_url} alt={resort.name} style={{ width: 60, height: 44, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }} />
+                    {resort.image_url
+                      ? <img src={resort.image_url} alt={resort.name} style={{ width: 60, height: 44, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }} />
+                      : <div aria-hidden="true" style={{ width: 60, height: 44, borderRadius: 4, flexShrink: 0, background: '#141210' }} />}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 3 }}>
                         <span style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: T.text, letterSpacing: '0.03em' }}>{resort.name}</span>

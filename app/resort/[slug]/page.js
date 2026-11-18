@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { landsidaAdress } from '../../../lib/landsidor'
 import Image from 'next/image'
 import { farOptimeras } from '../../../lib/images'
+import Karta from './Karta'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
@@ -122,8 +123,9 @@ export default async function ResortPage({ params }) {
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
   const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
+  // Utan bild med licens visas ingen bild alls, i stället för ett
+  // stockfoto från en annan ort — se utanOlicensieradBild i lib/images.js.
   const heroImageUrl = resort.image_url
-    || 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=1200'
 
   // Bilderna ur resort_images: position 0 är hjältebilden, resten galleriet.
   // Migration 025 satte image_url till samma adress som position 0, men
@@ -398,12 +400,14 @@ export default async function ResortPage({ params }) {
             sizes="100vw"
             style={{ objectFit: 'cover', objectPosition: 'center 30%' }}
           />
-        ) : (
+        ) : heroImageUrl ? (
           <img
             src={heroImageUrl}
             alt={hjalte?.alt || resort.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
           />
+        ) : (
+          <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 70% 20%, #2a2520 0%, #121110 70%)' }} />
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.3) 0%, rgba(18,17,16,0.1) 35%, rgba(18,17,16,0.9) 100%)' }} />
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(18,17,16,0.5) 0%, transparent 60%)' }} />
@@ -780,7 +784,7 @@ export default async function ResortPage({ params }) {
                 </div>
               </div>
               <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
-                <iframe src={mapsEmbedUrl} width="100%" height="320" style={{ border: 0, display: 'block' }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+                <Karta embedUrl={mapsEmbedUrl} namn={resort.name} />
               </div>
             </div>
 

@@ -85,11 +85,19 @@ export default async function Liftkortspriser() {
     .filter((r) => r.pris && Number.isFinite(r.tal))
     .sort((a, b) => a.tal - b.tal)
 
+  // Filtret i tabellen går på det engelska landsfältet, inte på den
+  // översatta etiketten. Andorra hör inte till Alperna och syns under Alla.
+  const OMRADE = {
+    Sweden: 'sverige', Norway: 'norge', Finland: 'finland',
+    Austria: 'alperna', France: 'alperna', Italy: 'alperna', Switzerland: 'alperna',
+  }
+
   // Bara det tabellen behöver går till webbläsaren, inte hela ortraden.
   const tabellrader = rader.map((r) => ({
     slug: r.ort.slug,
     namn: r.ort.name,
     land: land(r.ort.country),
+    omrade: OMRADE[r.ort.country] || null,
     sasong: r.meta.sasong,
     kortnamn: r.kortnamn,
     dag: r.dag,

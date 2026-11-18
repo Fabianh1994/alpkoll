@@ -37,9 +37,20 @@ const KOLUMNER = [
 const SNABBVAL = [
   { etikett: 'Billigast', nyckel: 'vecka', stigande: true },
   { etikett: 'Dyrast', nyckel: 'vecka', stigande: false },
+  { etikett: 'Mest pist för pengarna', nyckel: 'perKm', stigande: true },
   { etikett: 'Mest pist', nyckel: 'km', stigande: false },
-  { etikett: 'Billigast per km', nyckel: 'perKm', stigande: true },
   { etikett: 'A–Ö', nyckel: 'namn', stigande: true },
+]
+
+// `id` jämförs mot radens `omrade`, som sidan sätter från det engelska
+// landsfältet. Etiketten styr aldrig urvalet.
+const ALLA = 'alla'
+const OMRADEN = [
+  { id: ALLA, etikett: 'Alla' },
+  { id: 'sverige', etikett: 'Sverige' },
+  { id: 'norge', etikett: 'Norge' },
+  { id: 'finland', etikett: 'Finland' },
+  { id: 'alperna', etikett: 'Alperna' },
 ]
 
 function varde(rad, nyckel) {
@@ -64,14 +75,34 @@ function detaljer(r) {
 }
 
 const CSS = `
+  .lk-ort .lk-pil { color: ${ACCENT}; margin-left: 6px; font-weight: 600; display: inline-block; transition: transform 0.15s; }
+  .lk-ort:hover { color: ${ACCENT} !important; }
+  .lk-ort:hover .lk-pil, .lk-ort:focus-visible .lk-pil { transform: translateX(3px); }
+  @media (prefers-reduced-motion: reduce) { .lk-ort .lk-pil { transition: none; } }
   .lk-mobil { display: none; }
   .lk-tabell { min-width: 760px; }
   @media (max-width: 640px) {
     .lk-dold { display: none; }
     .lk-mobil { display: block; }
     .lk-tabell { min-width: 0; }
+    .lk-chip { padding: 9px 13px !important; font-size: 12.5px !important; }
+    .lk-gruppnamn { display: none; }
   }
 `
+
+function chip(vald) {
+  return {
+    fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
+    padding: '11px 16px', borderRadius: 999, cursor: 'pointer',
+    border: `1px solid ${vald ? ACCENT : 'rgba(255,255,255,0.12)'}`,
+    background: vald ? 'rgba(212,165,116,0.14)' : 'transparent',
+    color: vald ? ACCENT : 'rgba(255,255,255,0.7)',
+    transition: 'background 0.15s, border-color 0.15s, color 0.15s',
+  }
+}
+
+const grupp = { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8 }
+const gruppnamn = { ...etikett, marginRight: 4, minWidth: 54 }
 
 function sortera(rader, nyckel, stigande) {
   return [...rader].sort((a, b) => {
@@ -88,7 +119,9 @@ function sortera(rader, nyckel, stigande) {
 
 export default function Tabell({ rader }) {
   const [ordning, setOrdning] = useState({ nyckel: 'vecka', stigande: true })
-  const sorterade = sortera(rader, ordning.nyckel, ordning.stigande)
+  const [omrade, setOmrade] = useState(ALLA)
+  const urval = omrade === ALLA ? rader : rader.filter((r) => r.omrade === omrade)
+  const sorterade = sortera(urval, ordning.nyckel, ordning.stigande)
 
   const klickaKolumn = (k) => {
     setOrdning((o) => (o.nyckel === k.nyckel ? { ...o, stigande: !o.stigande } : { nyckel: k.nyckel, stigande: k.stigande }))
@@ -97,27 +130,41 @@ export default function Tabell({ rader }) {
   return (
     <>
       <style>{CSS}</style>
-      <div role="group" aria-label="Sortera tabellen" style={{ display: 'flex', flexWrap: 'wrap', gap: 8, margin: '0 0 14px' }}>
-        {SNABBVAL.map((v) => {
-          const vald = ordning.nyckel === v.nyckel && ordning.stigande === v.stigande
-          return (
-            <button
-              key={v.etikett}
-              type="button"
-              aria-pressed={vald}
-              onClick={() => setOrdning({ nyckel: v.nyckel, stigande: v.stigande })}
-              style={{
-                fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 500,
-                padding: '11px 16px', borderRadius: 999, cursor: 'pointer',
-                border: `1px solid ${vald ? ACCENT : 'rgba(255,255,255,0.12)'}`,
-                background: vald ? 'rgba(212,165,116,0.14)' : 'transparent',
-                color: vald ? ACCENT : 'rgba(255,255,255,0.7)',
-                transition: 'background 0.15s, border-color 0.15s, color 0.15s',
-              }}
-            >{v.etikett}</button>
-          )
-        })}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, margin: '0 0 16px' }}>
+        <div role="group" aria-label="Sortera tabellen" style={grupp}>
+          <span className="lk-gruppnamn" style={gruppnamn} aria-hidden="true">Sortera</span>
+          {SNABBVAL.map((v) => {
+            const vald = ordning.nyckel === v.nyckel && ordning.stigande === v.stigande
+            return (
+              <button key={v.etikett} type="button" aria-pressed={vald} className="lk-chip" style={chip(vald)}
+                onClick={() => setOrdning({ nyckel: v.nyckel, stigande: v.stigande })}
+              >{v.etikett}</button>
+            )
+          })}
+          <button
+            type="button"
+            title="Vänd ordningen"
+            aria-label={`Vänd ordningen, nu ${ordning.stigande ? 'lägst först' : 'högst först'}`}
+            onClick={() => setOrdning((o) => ({ ...o, stigande: !o.stigande }))}
+            className="lk-chip" style={chip(false)}
+          >{ordning.stigande ? '↑ Lägst först' : '↓ Högst först'}</button>
+        </div>
+        <div role="group" aria-label="Visa skidorter i" style={grupp}>
+          <span className="lk-gruppnamn" style={gruppnamn} aria-hidden="true">Visa</span>
+          {OMRADEN.map((o) => (
+            <button key={o.id} type="button" aria-pressed={omrade === o.id} className="lk-chip" style={chip(omrade === o.id)}
+              onClick={() => setOmrade(o.id)}
+            >{o.etikett}</button>
+          ))}
+        </div>
       </div>
+
+      <p style={{ ...underrad, fontSize: 12.5, lineHeight: 1.6, margin: '0 0 12px' }}>
+        Vuxen, sex dagar i följd, högsäsong, pris i kassan.{' '}
+        <b style={{ fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>ca</b> = omräknat från €, CHF eller NOK.{' '}
+        <b style={{ fontWeight: 500, color: 'rgba(255,255,255,0.75)' }}>Per km</b> = sexdagarspriset delat med kilometer pist.
+        Dolomiti Superski räknas inte per km, eftersom områdena inte hänger ihop.
+      </p>
 
       <div style={{ ...kort, overflowX: 'auto', marginBottom: 18 }}>
         <table className="lk-tabell" style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -163,10 +210,10 @@ export default function Tabell({ rader }) {
                 <tr style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                   <td style={{ ...siffra, fontSize: 12, color: 'rgba(255,255,255,0.47)', padding: '14px 6px 14px 14px', width: 30 }}>{i + 1}</td>
                   <td style={{ padding: '14px 12px', ...klistrad }}>
-                    <Link href={`/resort/${rad.slug}`} style={{
+                    <Link href={`/resort/${rad.slug}`} className="lk-ort" style={{
                       fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
-                      color: '#f0ece4', textDecoration: 'none',
-                    }}>{rad.namn}</Link>
+                      color: '#f0ece4', textDecoration: 'none', transition: 'color 0.15s',
+                    }}>{rad.namn}<span className="lk-pil" aria-hidden="true">›</span></Link>
                     <div style={underrad}>{rad.land}{rad.kortnamn ? ` · ${rad.kortnamn}` : ''}</div>
                     <div className="lk-mobil" style={underrad}>{detaljer(rad)}</div>
                   </td>

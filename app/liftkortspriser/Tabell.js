@@ -58,7 +58,7 @@ function varde(rad, nyckel) {
 function detaljer(r) {
   return [
     r.dag && `Dag ${r.dag.kr}`,
-    r.km && `${r.km.toLocaleString('sv-SE')} km`,
+    r.kmText,
     r.sasong && r.sasong !== '26/27' && `pris ${r.sasong}`,
   ].filter(Boolean).join(' · ')
 }
@@ -176,7 +176,7 @@ export default function Tabell({ rader }) {
                     {rad.pris.ursprung && <div style={underrad}>{rad.pris.ursprung}</div>}
                   </td>
                   <td className="lk-dold" style={siffra}>{rad.perDag ? `${rad.perDag} kr` : '—'}</td>
-                  <td className="lk-dold" style={siffra}>{rad.km ? `${rad.km} km` : '—'}</td>
+                  <td className="lk-dold" style={siffra}>{rad.kmText || '—'}</td>
                   <td style={{ ...siffra, color: ACCENT, fontWeight: 600 }}>{rad.perKm ? `${rad.perKm} kr` : '—'}</td>
                   <td className="lk-dold" style={{ ...siffra, paddingRight: 16 }}>
                     <span style={{
@@ -203,7 +203,7 @@ export default function Tabell({ rader }) {
                       {rad.stort.pris.ursprung && <div style={underrad}>{rad.stort.pris.ursprung}</div>}
                     </td>
                     <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.perDag ? `${rad.stort.perDag} kr` : '—'}</td>
-                    <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.km ? `${rad.stort.km.toLocaleString('sv-SE')} km` : '—'}</td>
+                    <td className="lk-dold" style={{ ...siffra, paddingTop: 0, verticalAlign: 'top' }}>{rad.stort.kmText || '—'}</td>
                     <td style={{ ...siffra, paddingTop: 0, verticalAlign: 'top', color: ACCENT }}>{rad.stort.perKm ? `${rad.stort.perKm} kr` : '—'}</td>
                     <td className="lk-dold" />
                   </tr>

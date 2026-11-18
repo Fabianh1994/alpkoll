@@ -3,6 +3,7 @@ import { SITE_URL } from '../lib/lang'
 import { PLANERAREN_SYNLIG } from '../lib/features'
 import { indexeradeParFor } from '../lib/jamfor'
 import { KOMMUNER, kommunSlug } from '../lib/sportlov'
+import { LANDSIDOR } from '../lib/landsidor'
 
 // Genereras om enligt samma intervall som ortsidorna, så nya orter i
 // Supabase dyker upp i sitemapen utan ny deploy.
@@ -38,6 +39,8 @@ export default async function sitemap() {
     // Den vanligaste forumfrågan om Sälen. Se app/var-bo-i-salen/page.js.
     { path: '/var-bo-i-salen', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },
+    // En sida per land, se lib/landsidor.js.
+    ...LANDSIDOR.map((l) => ({ path: `/skidorter/${l.slug}`, changeFrequency: 'monthly', priority: 0.8 })),
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },
     // Rankningsinformationen enligt marknadsföringslagen. Ligger över de
     // juridiska sidorna i prioritet eftersom den beskriver innehållet.

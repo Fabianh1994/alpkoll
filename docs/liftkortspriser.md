@@ -41,7 +41,7 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | slug | valuta | dag | 6 dagar | kvot | säsong | anteckning |
 |---|---|---|---|---|---|---|
 | solden | EUR | 84,50 | **469,00** | 5,55 | 26/27 | v2/v9/v13 lika. Topp 478,50 gäller 19.12–6.1 och 30.1–26.2 |
-| ischgl | EUR | 83 | **451** | 5,43 | 26/27 | ett pris hela säsongen |
+| ischgl | EUR | 83 | **385** | 4,64 | 26/27 | VIP-kortet för Ischgl/Samnaun, gäster i Ischgl och Mathon. Ett pris hela säsongen. Silvretta-kortet 451 är större kort (omgång 8) |
 | tignes | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma område som våra 300 km |
 | alpe-d-huez | EUR | 68 | **336,50** | 4,95 | 26/27 | 19.12.26–9.4.27 |
 | courchevel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
@@ -427,8 +427,8 @@ Kvar att kontrollera:
 - ~~**3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.~~ Löst i omgång 7: 84,20 på les3vallees.com, se nedan.
 - **Mont-Blanc Unlimited** — vad kortet omfattar och Courmayeurs 41 km är inte
   bekräftade från CMB:s egen sida, som inte gick att läsa.
-- Större kort att överväga: Kitzbühel (Ski Alpin Card), Ischgl (Silvretta Ski
-  Pass), Madonna (Skirama).
+- Större kort att överväga: Kitzbühel (Ski Alpin Card), ~~Ischgl (Silvretta Ski
+  Pass)~~ (löst i omgång 8, se nedan), Madonna (Skirama).
 
 ## Zermatt för vecka 9 (2026-11-18)
 Priskalkylatorn på matterhornparadise.ch, vuxen, start 27 februari 2027:
@@ -604,3 +604,32 @@ nya rader och inga ändringar i `lib/liftkortspriser.js`.
   Mont-Blanc Unlimited 104 / 499. Oförändrat. Le Pass gäller inte Les
   Houches; ortsidans fråga om fallhöjd sade "områden som liftkortet ger"
   om alla fyra delarna, och de orden är strukna i `lib/vanligaFragor.js`.
+
+
+## 2026-11-18 — Omgång 8: fem befintliga österrikiska orter
+
+Lästa av forskarna och kontrollerade i granskningen av omgång 8 samma dag.
+Se migration 047.
+
+- **ischgl** — veckopriset byts från 451 till 385 €. ischgl.com säljer två
+  sexdagarskort med samma dagspris, 83 €. VIP Skipass Ischgl/Samnaun,
+  "Valid at 46 facilities in Ischgl/Samnaun", "Only available upon
+  presentation of a valid Ischgl/Mathon guest card!", 385 €. Silvretta
+  Skipass, "Available for guests without a Ischgl/Mathon guest card!",
+  "valid at 75 facilities in Ischgl/Samnaun + Galtür + Kappl + See", 451 €.
+  Regeln ovan (veckokortet du faktiskt köper) ger VIP-kortet: den som bor i
+  Ischgl eller Mathon, där sajten råder dig att bo, kan inte köpa
+  Silvretta-kortet, och VIP-kortet gäller exakt Silvretta Arena, området
+  våra 239 km avser. 451 var aldrig fel tal, men fel kort: raden från 022
+  hette "Silvretta Arena Ischgl–Samnaun" och bar Silvretta-kortets pris.
+  Den byter produktnamn till Silvretta Ski Pass, och VIP-kortet får en egen
+  rad, så att nästa års jämförelse avser samma produkt. Silvretta-kortet
+  står i `STORRE_KORT` med 370 km (239 + 43 + 45 + 42,5 enligt
+  skiresort.com) och utan kronor per km, eftersom Galtür, Kappl och See
+  nås med buss. Kvot 385 / 83 = 4,64.
+- **mayrhofen** — noten på dagskortsraden sade "köpt på nätet från 08.00".
+  Prislistan (2026-27_Prices Winter_EN.pdf, läst med pdftotext) skriver "1
+  DAY FROM 08.00 A.M. € 82,00" utan villkor om nätet. Noten rättad.
+- **st-anton** (85 / 468, skiarlberg.at, fortfarande "Provisional"),
+  **solden** (84,50 / 469, Ötztal Superskipass), **kitzbuehel** (83 / 423,
+  KitzSki Premium) — oförändrade.

@@ -108,7 +108,7 @@ Hoppens och railsens kvalitet och underhåll.
 
 - **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
 - **9** Les 3 Vallées (Val Thorens, Méribel, Courchevel) — VT Park vid Plateau, Open Park i Méribel-Mottaret med en liten halfpipe, Family Park i Courchevel
-- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes
+- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark)
 - **6** normal alport
 - **5** orter med park mest på pappret
 - **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass
@@ -208,3 +208,22 @@ Snösäkerhet 9 följer ankarets ordalydelse även för La Plagne (Bellecôtegla
 Afterski för byar som Ski Club GB ger 2/5: 5 om ingen annan oberoende källa beskriver ett kvällsliv i byn (Serre Chevalier), 6 om en gör det (La Plagne, Les Arcs, Courchevel). Courchevel går därmed från 8 till 6.
 
 Bykänsla för franska skidstationer byggda kring liftarna: 8 där husen byggts efter regler om trä och sten (Méribel), 7 där orten också har gamla byar (Courchevel, med Le Praz och Saint-Bon), 6 för låga eller medelhöga hus utan gammal kärna (Val Thorens, Les Arcs, Alpe d'Huez), 5 med höghus (Tignes, La Plagne), 4 för en lång rad lägenhetshus (Les Deux Alpes). Courchevel går från 9 till 7: ankarets nior fanns före liftarna, och Courchevel 1850 var den första franska skidorten som byggdes från grunden.
+
+**Avgjort 2026-11-18 (granskningen av omgång 8):** St. Anton, Ischgl, Sölden, Kitzbühel och Mayrhofen är omsatta enligt skalan, med Lech-Zürs, Saalbach, Obergurgl och Zell am See-Kaprun som avstämning. Därmed är alla österrikiska orter prövade mot ankarna, inte bara de nya. Ändringar i migration 047:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Ischgl | Snowpark | 7 → 8 | En av Alpernas största parker (skiresort 5/5), "one of Austria's best" (inthesnow). Ankaret för 8 |
+| Sölden | Mellannivå | 7 → 8 | Ski Club GB 5/5, nedfart på 15 km och 1 970 höjdmeter (skiresort) |
+| Sölden | Snowpark | 6 → 7 | Area 47 och två funslopes (skiresort 4/5), "excellent park facilities" (Ski Club GB) |
+| Kitzbühel | Nybörjare | 6 → 7 | Tio gratis övningsliftar i dalen, 54 % blått; Tignes och Les Arcs har 7 vid 55 och 52 %. Ski Club GB 2/5 säger emot |
+| Kitzbühel | Avancerad | 7 → 6 | Ski Club GB 2/5, "Not the best for advanced skiers unless there is fresh snow", 11 % svart. Zell am See-Kaprun har 6 på samma formulering |
+| Mayrhofen | Avancerad | 8 → 7 | Ski Club GB 2/5, "Elsewhere the blacks are much less intimidating" |
+| Mayrhofen | Snowpark | 7 → 8 | Penken Park, tre oberoende källor. Ankaret för 8 |
+| Mayrhofen | Bykänsla | 8 → 7 | "quite attractive" och "often in the shade" (Ski Club GB), "a lively alpine town rather than a small village" (inthesnow); Ischgl och Saalbach har 7 med samma slags beskrivning |
+
+Ski Club GB:s stjärnor står som bilder, men varje bild har sin etikett som alt-text ("star5.svg" alt="Intermediate"). Parningen är alltså utskriven i sidans kod och inte härledd ur ordningen, och den håller för alla fem orterna.
+
+Områdesbetygen i Ski Arlberg står kvar och är identiska för St. Anton och Lech-Zürs; migration 047 avbryter om de skiljer. Nybörjare 5 och gott om plats 6 har källor åt båda håll (Ski Club GB 2/5 och "Some pistes can get dangerously crowded" mot skiresort 5/5 och 43 % blått). Att St. Anton är fel by för nybörjare står i ortstexten som råd om var du bor, som för Méribel i omgång 7.
+
+Ankarna afterski 9 för Kitzbühel (Ski Club GB 3/5, skiresort 4/5) och gott om plats 4 för Ischgl och Kitzbühel (inthesnow säger emot om köerna) är svaga men står kvar. Att flytta ett ankare kräver mer än en källa som säger emot.

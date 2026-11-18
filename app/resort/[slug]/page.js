@@ -227,23 +227,60 @@ export default async function ResortPage({ params }) {
   // sifferrutorna — se lib/vanligaFragor.js.
   const fragor = vanligaFragor(resort, allaOrter, kurser)
 
-  const scores = [
-    // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
-    // pengarna tillbaka om snön uteblir. Poängen är en bedömning av
-    // sannolikhet, inte en utfästelse.
-    { label: 'Snösäkerhet',          value: resort.snow_guarantee_score,  color: '#60a5fa' },
-    { label: 'Mellannivå',           value: resort.intermediate_score,    color: '#34d399' },
-    { label: 'Avancerad nivå',       value: resort.expert_score,          color: '#a78bfa' },
-    { label: 'Nybörjarnivå',         value: resort.beginner_score,        color: '#4ade80' },
-    { label: 'Offpist',              value: resort.off_piste_score,       color: '#D4A574' },
-    { label: 'Snowpark',             value: resort.snowpark_score,        color: '#f472b6' },
-    { label: 'Bykänsla',             value: resort.village_charm_score,   color: '#fbbf24' },
-    { label: 'Afterski',             value: resort.apres_ski_score,       color: '#fb923c' },
-    { label: 'Familjevänligt',       value: resort.family_friendly_score, color: '#2dd4bf' },
-    // Högt crowd_score betyder FÄRRE människor. Etiketten måste peka åt
-    // samma håll som skalan — "Trängsel 9/10" hade sagt tvärtom.
-    { label: 'Gott om plats',        value: resort.crowd_score,           color: '#e879f9' },
+  // Placering bland de publicerade orterna, så att ett tal får ett
+  // sammanhang: "89 km" säger lite, "plats 9 av 29" säger om det är mycket.
+  // Delade värden får samma plats. Orter utan värde räknas inte.
+  const placering = (varde, matt) => {
+    if (!Number.isFinite(varde)) return null
+    const alla = allaOrter.map(matt).filter(Number.isFinite)
+    return { plats: 1 + alla.filter((v) => v > varde).length, av: alla.length }
+  }
+  const siffror = [
+    { label: 'Pist', value: `${tal(resort.total_pistes_km)} km`, rank: placering(resort.total_pistes_km, (r) => r.total_pistes_km) },
+    { label: 'Fallhöjd', value: `${tal(verticalDrop)} m`, rank: placering(verticalDrop, fallhojdFor) },
+    { label: 'Högsta punkt', value: `${tal(resort.altitude_top)} m`, rank: placering(resort.altitude_top, (r) => r.altitude_top) },
+    { label: 'Lägsta punkt', value: `${tal(resort.altitude_base)} m`, rank: null },
+    { label: 'Liftar', value: tal(resort.total_lifts), rank: placering(resort.total_lifts, (r) => r.total_lifts) },
+    { label: 'Liftkapacitet', value: resort.lift_capacity_per_hour ? `${tal(resort.lift_capacity_per_hour)} personer/tim` : '—', rank: placering(resort.lift_capacity_per_hour, (r) => r.lift_capacity_per_hour) },
+    { label: 'Konstsnö', value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—', rank: null },
+    { label: 'Säsong', value: resort.season_start_month && resort.season_end_month ? `${manadVersal(resort.season_start_month)}–${manadVersal(resort.season_end_month).toLowerCase()}` : '—', rank: null },
   ]
+
+  // Vårt omdöme i två grupper och en färg. Förut hade varje stapel en
+  // egen färg, tio färger på en ruta, och ingenting sade vad orten var
+  // bäst eller sämst på. Raden överst gör det nu, ur samma poäng.
+  //
+  // "Snögaranti" betyder i svensk resebransch ett avtalsvillkor —
+  // pengarna tillbaka om snön uteblir. Poängen är en bedömning av
+  // sannolikhet, inte en utfästelse. Högt crowd_score betyder FÄRRE
+  // människor, därför "Gott om plats".
+  const omdome = [
+    {
+      grupp: 'Åkningen',
+      rader: [
+        { label: 'Nybörjare',     value: resort.beginner_score },
+        { label: 'Mellannivå',    value: resort.intermediate_score },
+        { label: 'Avancerad',     value: resort.expert_score },
+        { label: 'Offpist',       value: resort.off_piste_score },
+        { label: 'Snowpark',      value: resort.snowpark_score },
+      ],
+    },
+    {
+      grupp: 'Orten',
+      rader: [
+        { label: 'Snösäkerhet',   value: resort.snow_guarantee_score },
+        { label: 'Bykänsla',      value: resort.village_charm_score },
+        { label: 'Afterski',      value: resort.apres_ski_score },
+        { label: 'Familjer',      value: resort.family_friendly_score },
+        { label: 'Gott om plats', value: resort.crowd_score },
+      ],
+    },
+  ]
+  const allaPoang = omdome.flatMap((g) => g.rader).filter((r) => Number.isFinite(r.value))
+  const sorterade = [...allaPoang].sort((a, b) => b.value - a.value)
+  const starkast = sorterade.slice(0, 3)
+  const svagast = sorterade.slice(-2).reverse().filter((r) => r.value <= 6)
+  const lista = (rader) => rader.map((r) => r.label.toLowerCase()).join(', ').replace(/, ([^,]*)$/, ' och $1')
 
   const card = {
     background: '#1c1a17',
@@ -487,75 +524,37 @@ export default async function ResortPage({ params }) {
                 hör hemma, före siffrorna. Se Bildgalleri.js. */}
             <Bildgalleri bilder={galleri} ortnamn={resort.name} />
 
-            {/* Snow & conditions */}
+            {/* ── I siffror ──
+                En tabell i stället för tre. Säsong och konstsnö stod i egna
+                rutor under "Snö och förhållanden", höjden i en stapel, och
+                pist, fallhöjd, liftar och kapacitet i sex rutor under
+                Terräng — samma tal som rutorna överst och sidorutan. Nu står
+                varje tal en gång här, med ortens plats bland alla orter så
+                att talet får ett sammanhang. Snöfall per säsong visas inte:
+                skiresort.com bär ingen sådan siffra (se migration 013). */}
             <div style={{ marginBottom: 48 }}>
-              <h2 style={sectionTitle}>Snö och förhållanden</h2>
-              {/* Tre rutor, inte fyra. Snöfallet togs bort och ingenting
-                  ersatte det — höjden står redan i stapeln strax nedanför
-                  och i sammanfattningen, och ett upprepat tal är inte
-                  bättre än ett tal vi inte kan belägga. auto-fit håller
-                  raden jämn på både tre och två kolumner. */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 10, marginBottom: 16 }}>
-                {[
-                  { label: 'Säsongen öppnar',  value: manadVersal(resort.season_start_month) || '—' },
-                  { label: 'Säsongen stänger', value: manadVersal(resort.season_end_month) || '—' },
-                  // "Bäst i" stod här och läste best_months_nums, som är
-                  // exakt januari–mars för 29 av 32 orter. Det var ett
-                  // standardvärde som såg ut som ett omdöme om orten.
-                  // Konstsnötäckningen skiljer däremot orterna åt på
-                  // riktigt — 0 % i Riksgränsen, 95 % i Madonna di
-                  // Campiglio — och hör hemma under snö och förhållanden.
-                  { label: 'Konstsnö',         value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—' },
-                  // "Snöfall per säsong" stod här och läste avg_snowfall_cm.
-                  // Fältet är hämtat 2026-08-12: skiresort.com — sajtens enda
-                  // källa — bär ingen säsongssiffra alls, bara aktuellt
-                  // snödjup. Kontrollerat på både en alport och en nordisk
-                  // ort. Talen kan alltså inte komma därifrån, och
-                  // fördelningen bekräftar det: alla 30 publicerade värden
-                  // delbara med tio, elva unika tal bland trettio. Samma
-                  // signatur som pistfördelningen hade före migration 013.
-                  //
-                  // Snösäkerheten står kvar som poäng längre ner, och
-                  // höjdstapeln nedanför säger samma sak med tal vi kan
-                  // belägga. Ingen ruta ersätter den borttagna.
-                ].map(item => (
-                  <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
-                    <div style={fieldLabel}>{item.label}</div>
-                    <div style={fieldValue}>{item.value}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ ...card, padding: '18px 20px' }}>
-                <div style={fieldLabel}>Höjd och fallhöjd</div>
-                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 12, marginTop: 8 }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                      <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${Math.min(resort.altitude_top / 40, 100)}%`, background: 'linear-gradient(90deg, #60a5fa, #a78bfa)', borderRadius: 3 }} />
-                      </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: '#f0ece4', minWidth: 48 }}>{tal(resort.altitude_top)}m</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <div style={{ flex: 1, height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${Math.min(resort.altitude_base / 40, 100)}%`, background: 'rgba(255,255,255,0.2)', borderRadius: 3 }} />
-                      </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 48 }}>{tal(resort.altitude_base)}m</span>
-                    </div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, color: '#60a5fa', lineHeight: 1 }}>{tal(verticalDrop)}m</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'rgba(255,255,255,0.5)', marginTop: 3 }}>fallhöjd</div>
-                  </div>
-                </div>
-                {/* Här stod en mening som räknades fram ur toppens höjd, och
-                    den sade emot sidan på fyra sätt. Kitzbühel (2 000 m) fick
-                    "god snösäkerhet" medan ortstexten säger att snön är osäker.
-                    Alpe d'Huez fick "pålitlig hela säsongen" medan texten säger
-                    opålitlig i mars. Riksgränsen fick "kom i januari" fast orten
-                    öppnar i februari. Och alla elva orter över 3 000 m fick
-                    "åkning på glaciär", även Courchevel och Méribel. Toppens
-                    höjd säger inte hur snön är i byn. Stapeln visar talen;
-                    snösäkerheten står som poäng längre ner. */}
+              <h2 style={sectionTitle}>I siffror</h2>
+              <div style={{ ...card, padding: '6px 22px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'var(--font-body)' }}>
+                  <thead>
+                    <tr>
+                      <th scope="col" style={{ ...fieldLabel, textAlign: 'left', padding: '14px 0 10px', fontWeight: 500 }}>Fakta</th>
+                      <th scope="col" style={{ ...fieldLabel, textAlign: 'right', padding: '14px 0 10px', fontWeight: 500 }}>{resort.name}</th>
+                      <th scope="col" style={{ ...fieldLabel, textAlign: 'right', padding: '14px 0 10px 16px', fontWeight: 500 }}>Bland {allaOrter.length} orter</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {siffror.map((rad) => (
+                      <tr key={rad.label} style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                        <th scope="row" style={{ textAlign: 'left', fontWeight: 400, fontSize: 13, color: 'rgba(255,255,255,0.6)', padding: '12px 0' }}>{rad.label}</th>
+                        <td style={{ textAlign: 'right', fontSize: 14, fontWeight: 500, color: '#f0ece4', padding: '12px 0', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>{rad.value}</td>
+                        <td style={{ textAlign: 'right', fontSize: 12, padding: '12px 0 12px 16px', whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums', color: rad.rank && rad.rank.plats <= 5 ? '#D4A574' : 'rgba(255,255,255,0.45)' }}>
+                          {rad.rank ? `plats ${rad.rank.plats}` : ''}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
 
@@ -657,21 +656,6 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
-                {[
-                  { label: 'Pist totalt',    value: `${resort.total_pistes_km} km` },
-                  { label: 'Fallhöjd',       value: `${tal(verticalDrop)} m` },
-                  { label: 'Antal liftar',   value: resort.total_lifts },
-                  { label: 'Liftkapacitet',  value: resort.lift_capacity_per_hour ? `${resort.lift_capacity_per_hour.toLocaleString('sv-SE')} personer/tim` : '—' },
-                  { label: 'Offpist',        value: `${resort.off_piste_score}/10` },
-                  { label: 'Snowpark',       value: `${resort.snowpark_score}/10` },
-                ].map(item => (
-                  <div key={item.label} style={{ ...card, padding: '14px 16px' }}>
-                    <div style={fieldLabel}>{item.label}</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500, color: '#f0ece4' }}>{item.value}</div>
-                  </div>
-                ))}
-              </div>
               <a href={resort.piste_map_url || resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', marginTop: 16, textDecoration: 'none', background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
                 <svg viewBox="0 0 400 80" style={{ position: 'absolute', bottom: 0, right: 0, width: '55%', opacity: 0.04, pointerEvents: 'none' }}>
                   <path d="M400,80 L400,35 L350,10 L310,30 L280,5 L240,28 L210,15 L170,38 L130,20 L100,40 L60,25 L30,45 L0,35 L0,80 Z" fill="#D4A574" />
@@ -697,20 +681,32 @@ export default async function ResortPage({ params }) {
             <div style={{ marginBottom: 48 }}>
               <h2 style={sectionTitle}>Vårt omdöme</h2>
               <div style={{ ...card, padding: '20px 24px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                  {scores.map(s => (
-                    <div key={s.label} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 170 }}>{s.label}</span>
-                      <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-                        <div style={{ height: '100%', borderRadius: 2, width: `${(s.value || 0) * 10}%`, background: s.color }} />
+                {starkast.length > 0 && (
+                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.75)', lineHeight: 1.6, margin: '0 0 20px' }}>
+                    <span style={{ color: '#D4A574' }}>Starkast:</span> {lista(starkast)}.
+                    {svagast.length > 0 && (<><br /><span style={{ color: 'rgba(255,255,255,0.5)' }}>Svagast:</span> {lista(svagast)}.</>)}
+                  </p>
+                )}
+                <div className="omdome-grupper" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px 36px' }}>
+                  {omdome.map((g) => (
+                    <div key={g.grupp}>
+                      <div style={{ ...fieldLabel, marginBottom: 12 }}>{g.grupp}</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {g.rader.map((r) => (
+                          <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.61)', minWidth: 96 }}>{r.label}</span>
+                            <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+                              <div style={{ height: '100%', borderRadius: 2, width: `${(r.value || 0) * 10}%`, background: '#D4A574', opacity: r.value >= 8 ? 1 : 0.55 }} />
+                            </div>
+                            <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', minWidth: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{r.value}/10</span>
+                          </div>
+                        ))}
                       </div>
-                      <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', minWidth: 36, textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{s.value}/10</span>
                     </div>
                   ))}
                 </div>
-                {/* Raden under staplarna förklarar "Gott om plats" i ord. Den
-                    upprepade förut samma tal med stor siffra och samma
-                    etikett, så poängen stod två gånger efter varandra. */}
+                {/* Raden förklarar "Gott om plats" i ord, så att poängen
+                    inte bara står som ett tal. */}
                 <p style={{ margin: '20px 0 0', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>
                   {resort.crowd_score >= 8 ? 'Korta liftköer och vidöppna pister, även under högsäsong.' : resort.crowd_score >= 6 ? 'Måttlig trängsel, mest folk under högsäsong och helger.' : 'Populär ort. Räkna med köer under högsäsong och skollov.'}
                 </p>

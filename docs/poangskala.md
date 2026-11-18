@@ -111,7 +111,7 @@ Hoppens och railsens kvalitet och underhåll.
 - **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark)
 - **6** normal alport
 - **5** orter med park mest på pappret
-- **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass
+- **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass; Cortina d'Ampezzo — skiresort skriver att området saknar snowpark och halfpipe, inthesnow nämner en park på Faloria
 
 ### Bykänsla
 Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platsen fanns före liftarna.
@@ -128,7 +128,7 @@ Hur mycket som händer från liftstopp och framåt.
 - **10** Ischgl, St. Anton
 - **9** Saalbach, Kitzbühel, Mayrhofen, Sölden
 - **7** normal alport
-- **6** Val Gardena, La Plagne — Ski Club GB ger 2/5, men skiresort ger 4/5 och namnger barerna i byarna
+- **6** Val Gardena, La Plagne, Saas-Fee — Ski Club GB ger 2/5, men skiresort ger 4/5 och namnger barerna i byarna
 - **5** Alta Badia, Serre Chevalier — i Alta Badia slutar afterskin på berget med sista nedfarten, och kvällarna i byarna är lugna
 
 ### Familjevänligt
@@ -169,7 +169,7 @@ Poängen ersätter inte `transfer_minutes`, som bara mäter flygplats → ort oc
 - **6** normal alport med flyg plus två timmars transfer
 - **5** Val Thorens, Zermatt — två och en halv timme eller mer från flygplatsen, sista biten serpentinväg (Val Thorens) eller tåg till en bilfri by (Zermatt)
 - **4** Riksgränsen, Levi, Ruka — långt norrut, få avgångar
-- **3** Livigno — Bergamo plus tre och en halv timme över ett pass som kan stängas
+- **3** Livigno — Bergamo plus nästan fyra timmar med bil över två pass, Aprica och Foscagno
 
 ## Att göra
 
@@ -227,3 +227,25 @@ Ski Club GB:s stjärnor står som bilder, men varje bild har sin etikett som alt
 Områdesbetygen i Ski Arlberg står kvar och är identiska för St. Anton och Lech-Zürs; migration 047 avbryter om de skiljer. Nybörjare 5 och gott om plats 6 har källor åt båda håll (Ski Club GB 2/5 och "Some pistes can get dangerously crowded" mot skiresort 5/5 och 43 % blått). Att St. Anton är fel by för nybörjare står i ortstexten som råd om var du bor, som för Méribel i omgång 7.
 
 Ankarna afterski 9 för Kitzbühel (Ski Club GB 3/5, skiresort 4/5) och gott om plats 4 för Ischgl och Kitzbühel (inthesnow säger emot om köerna) är svaga men står kvar. Att flytta ett ankare kräver mer än en källa som säger emot.
+
+**Avgjort 2026-11-18 (granskningen av omgång 9):** Zermatt, Saas-Fee, Verbier, Cortina d'Ampezzo, Livigno och Madonna di Campiglio är omsatta enligt skalan, med Cervinia som avstämning för Matterhorn Ski Paradise. Därmed är också de schweiziska och italienska orterna som fanns före omgång 4 och 5 prövade mot ankarna. Ändringar i migration 048:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Saas-Fee | Afterski | 7 → 6 | Ski Club GB 2/5; skiresort 4/5 namnger Gletscherstrasse, Iglu Zur Muhle och Black Bull. Regeln från omgång 7 ger 6 |
+| Cortina d'Ampezzo | Nybörjare | 6 → 7 | Övningsområdet vid Socrepes och långa blå ovanför (Ski Club GB 4/5, skiresort 4/5), 38 % blått |
+| Cortina d'Ampezzo | Offpist | 7 → 6 | Ski Club GB "Not a great deal of off piste terrain due to the jagged Dolomite mountains". skiresort säger emot |
+| Cortina d'Ampezzo | Snowpark | 5 → 4 | skiresort "There is no snowpark or halfpipe", inthesnow nämner en. Ankaret för 4 |
+| Cortina d'Ampezzo | Familj | 7 → 6 | skiresort 3/5 "hardly any facilities for families and children" i området, liftarna en bit från boendet (Ski Club GB) |
+| Cortina d'Ampezzo | Afterski | 8 → 7 | skiresort 3/5 "You won't find umbrella bars or loud après-ski parties", inthesnow och Iglu om vinbarer och middagar. Ski Club GB 4/5 säger emot; Tignes har 7 med samma Ski Club-betyg |
+| Livigno | Offpist | 6 → 7 | Mottolinos nordostsluttningar "prime for off piste" (Ski Club GB), skiresort 5/5 med heliskiing |
+| Livigno | Gott om plats | 6 → 7 | "quiet slopes" (Ski Club GB), "efficient enough to negate queues" (Iglu), 61 465 personer i timmen på 115 km |
+| Madonna di Campiglio | Snösäkerhet | 8 → 7 | Topp 2 504 m och 95 % konstsnö, Ski Club GB 3/5 "relatively low altitude". Mayrhofen har 7 med samma topp, konstsnö och Ski Club-betyg. skiresort 5/5 säger emot |
+| Madonna di Campiglio | Nybörjare | 6 → 7 | Ski Club GB 4/5 "few resorts with such a good selection of long blue runs", skiresort 4/5, 32 % blått |
+
+Matterhorn Ski Paradise står kvar med Zermatts områdesbetyg för båda orterna, och migration 048 avbryter om Zermatts och Cervinias områdestal eller områdesbetyg skiljer. Mellannivå 9 för området står kvar: tian bärs av Les 3 Vallées med 600 km, och ingen källa ställer Zermatt i nivå med dem. Zermatts afterski 8 (Ski Club GB 3/5) och Verbiers bykänsla 9 (Ski Club GB "a pretty big town" av hotell och lyxchalets) är svaga men står kvar.
+
+Snösäkerhet för Dolomiterna är inte enhetlig: Val Gardena har 8 med topp 2 518 m, Madonna di Campiglio nu 7 med 2 504 m, Cortina och Alta Badia 7 med 2 828 och 2 778 m. Val Gardena ingick inte i omgången och prövas inte här.
+
+Snowpark 8 för Livigno står kvar som ankare. Tre källor kallar Mottolino en av Europas eller Alpernas bästa parker, och 9 vore försvarbart, men ett ankare flyttas inte i förbigående.
+

@@ -56,13 +56,13 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | myrkdalen | NOK | 660 | **2 620** | 3,97 | gällande 26/27 | bekräftad mot ortens egen prislista 2026-08-25. Kapat pris: 6, 7 och 8 sammanhängande dagar kostar alla 2 620. Valfria dagar kostar 3 050 |
 | voss | NOK | 675 | **2 990** | 4,43 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Platt 2 990 hela 15–28.2.27; dagspriset 675 vardag / 720 helg. Ur bokningskalendern |
 | riksgransen | SEK | 520 | **2 547** | 4,90 | 25/26 | 5 dagar 2 195 + extra dag 352; ingen egen sexdagarsrad finns. **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
-| zermatt | CHF | 104 | **432** | 4,15 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Zermatt ensamt: 89/384 |
+| zermatt | CHF | 122 | **574** | 4,70 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Dynamiskt, start 27.2.2027 (036, bekräftat i omgång 9). Zermatt ensamt: 104/510 |
 | st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
 | les-arcs | EUR | 71 | **368** | 5,18 | 26/27 | Classic Pass = Les Arcs/Peisey-Vallandry, 200 km, våra tal. 19.12.26–16.4.27 |
 | saas-fee | CHF | 84 | **413** | 4,92 | 26/27 | Saas-Fee-kortet (Saas-Fee + Saas-Almagell). Destination-kortet gäller hela Saastal och är inte detta |
 | livigno | EUR | 74,50 | **374,50** | 5,03 | 26/27 | ALTA STAGIONE 30.1–29.3.27, bandet v9 ligger i. Ur tariffe_26-27.pdf. Lagras som 75/375 — heltalskolumn |
-| madonna-di-campiglio | EUR | 85 | **424** | 4,99 | **25/26** | SkiArea Campiglio Dolomiti di Brenta, samma namn som vårt `ski_area`. Söndagsregel: +10 € om kortet innehåller en söndag |
+| madonna-di-campiglio | EUR | 87 | **435** | 5,00 | 26/27 | SkiArea Campiglio Dolomiti di Brenta, samma område som våra tal. Högsäsong 20.12.26–14.3.27 (030). Söndagsregel: +10 € om kortet innehåller en söndag, kvar 26/27 (omgång 9) |
 
 ## SkiStar säljer samma kort i två valutor
 
@@ -633,3 +633,35 @@ Se migration 047.
 - **st-anton** (85 / 468, skiarlberg.at, fortfarande "Provisional"),
   **solden** (84,50 / 469, Ötztal Superskipass), **kitzbuehel** (83 / 423,
   KitzSki Premium) — oförändrade.
+
+## 2026-11-18 — Omgång 9: sex befintliga orter i Schweiz och Italien
+
+Lästa av forskarna och kontrollerade i granskningen av omgång 9 samma dag.
+Se migration 048. Inga priser ändras.
+
+- **madonna-di-campiglio** — campigliodolomiti.it, "SKIAREA - HIGH SEASON …
+  1 day € 87", "HIGH SEASON from 20.12.2026 to 14.03.2027 … 6 € 435"
+  (läst av granskaren). Söndagsregeln finns kvar: "For 3, 4, 5, and 6-day
+  skipasses including a Sunday, the following surcharge will be added …
+  Skiarea Campiglio Dolomiti di Brenta & Skirama: € 10.00 ADULT". 030 kunde
+  inte se den. Listpriset 435 står kvar enligt regeln i 019 (ordinarie pris
+  för produkten); en vecka med start lördag 27 februari innehåller söndagen
+  och kostar 445. Tillägget står i noten i `lib/liftkortspriser.js` och i
+  `lift_pass_prices`. Sidan skriver också "The list prices shown represent
+  the maximum purchase value", och webbutiken har dynamiskt pris.
+  Skirama som större kort är fortfarande inte läst; inthesnows "around
+  €67 (roughly €335 for six days)" är ett tredjepartspris och tas inte in.
+- **verbier** — verbier4vallees.ch "Prices winter 26-27": 4 Vallées 94 /
+  409 CHF, "From december 12th, 2026 to april 18, 2027", Verbier–Tzoumaz
+  86 / 374, "-10% discount if you buy at least 10 days before your arrival
+  date" (läst av granskaren). Oförändrat; raden får källadress och noten
+  i koden säger fast pris och nätrabatt.
+- **zermatt** (122 / 574 CHF, dynamiskt, start 27.2.2027), **saas-fee** (86 /
+  419 CHF, saas-fee.ch), **livigno** (74,50 / 374,50, ALTA STAGIONE) —
+  bekräftade av forskarna, oförändrade. Tabellen KLARA ovan bar fortfarande
+  Zermatts gamla 104 / 432 och Madonnas 25/26-pris; raderna är rättade.
+- **cortina-d-ampezzo** (84 / 421) — inte omläst. Dolomiti Superskis
+  kalkylator räknar flerdagarspriset bakom Cloudflare. skiresort.com anger
+  dagskort 80 €, men det är inte ortens lista. Läs om i en vanlig webbläsare
+  före pressutskick.
+

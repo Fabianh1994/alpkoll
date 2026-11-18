@@ -7,7 +7,7 @@ import { land } from '../../lib/countries'
 import { arNordisk } from '../../lib/jamfor'
 import { pris, kronorTal } from '../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../lib/valuta'
-import { DEFINITION, VERIFIERADE, harPris } from '../../lib/liftkortspriser'
+import { DEFINITION, VERIFIERADE, LIFTKORT, harPris, kortKm } from '../../lib/liftkortspriser'
 
 // Liftkortsindex — samma priser som /liftkortspriser, men läst som en
 // rapport: vad priserna säger om Sverige mot Alperna, och vad man får för
@@ -76,14 +76,18 @@ export default async function Liftkortsindex() {
     .map((ort) => {
       const valuta = ort.lift_pass_currency || 'EUR'
       const tal = kronorTal(ort.lift_pass_week_eur, valuta, kurser)
-      const km = Number(ort.total_pistes_km)
+      // Pris per kilometer räknas på vad kortet ger, se LIFTKORT.
+      const km = kortKm(ort)
+      const pistKm = Number(ort.total_pistes_km)
       return {
         ort,
         sasong: VERIFIERADE[ort.slug].sasong,
         visat: pris(ort.lift_pass_week_eur, valuta, kurser),
         tal,
-        km: Number.isFinite(km) && km > 0 ? km : null,
-        perKm: Number.isFinite(km) && km > 0 ? tal / km : null,
+        km: Number.isFinite(pistKm) && pistKm > 0 ? pistKm : null,
+        kortKm: km,
+        kort: LIFTKORT[ort.slug] || null,
+        perKm: km ? tal / km : null,
         nordisk: arNordisk(ort),
       }
     })
@@ -129,7 +133,10 @@ export default async function Liftkortsindex() {
       const no = median(norge.map((r) => r.tal))
       const se = median(sverige.map((r) => r.tal))
       return {
-        rubrik: no > se ? 'Liftkortet är dyrare i Norge än i Sverige' : 'Liftkortet är billigare i Norge än i Sverige',
+        // Jämförs på det avrundade beloppet som visas, så att rubriken aldrig
+        // säger dyrare om två tal som står lika.
+        rubrik: kr(no) === kr(se) ? 'Liftkortet kostar lika mycket i Norge som i Sverige'
+          : no > se ? 'Liftkortet är dyrare i Norge än i Sverige' : 'Liftkortet är billigare i Norge än i Sverige',
         text: `Medianen för en vecka är ${kr(no)} i Norge och ${kr(se)} i Sverige.`,
       }
     })(),
@@ -175,8 +182,9 @@ export default async function Liftkortsindex() {
         <section style={{ marginBottom: 28 }}>
           <h2 style={rubrik('clamp(26px, 4vw, 34px)')}>Pris per kilometer pist</h2>
           <p style={{ ...brod, fontSize: 15, margin: '0 0 18px' }}>
-            Veckopriset delat med pistens längd. Ett billigt kort på en liten ort kan ge mindre för
-            pengarna än ett dyrt kort på ett stort område.
+            Veckopriset delat med hur många kilometer pist kortet ger. Ett billigt kort på en liten ort
+            kan ge mindre för pengarna än ett dyrt kort på ett stort område. Där kortet gäller mer än
+            orten står kortets namn.
           </p>
           <div style={{ ...kort, overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 0 }}>
@@ -197,7 +205,7 @@ export default async function Liftkortsindex() {
                     <td style={{ padding: '12px' }}>
                       <Link href={`/resort/${r.ort.slug}`} style={{ fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500, color: '#f0ece4', textDecoration: 'none' }}>{r.ort.name}</Link>
                       <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
-                        {land(r.ort.country)} · {r.km} km pist{r.sasong !== '26/27' && ` · pris ${r.sasong}`}
+                        {land(r.ort.country)} · {r.kort ? `${r.kort.namn}, ${r.kortKm} km` : `${r.kortKm} km pist`}{r.sasong !== '26/27' && ` · pris ${r.sasong}`}
                       </div>
                     </td>
                     <td style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: '#f0ece4', padding: '12px', textAlign: 'right', whiteSpace: 'nowrap' }}>{r.visat.kr}</td>

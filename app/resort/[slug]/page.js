@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { landsidaAdress } from '../../../lib/landsidor'
 import Image from 'next/image'
 import { farOptimeras } from '../../../lib/images'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
@@ -421,7 +422,9 @@ export default async function ResortPage({ params }) {
         )}
 
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '0 clamp(24px, 4vw, 64px) 48px' }}>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{region(resort.region)} · {land(resort.country)}</p>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, color: '#D4A574', letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 10 }}>{region(resort.region)} · {landsidaAdress(resort.country)
+            ? <Link href={landsidaAdress(resort.country)} style={{ color: '#D4A574', textDecoration: 'none' }}>{land(resort.country)}</Link>
+            : land(resort.country)}</p>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 8vw, 88px)', fontWeight: 400, lineHeight: 0.95, color: '#f0ece4', letterSpacing: '0.02em', marginBottom: 24 }}>{resort.name}</h1>
 
           <div className="hero-stat-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>

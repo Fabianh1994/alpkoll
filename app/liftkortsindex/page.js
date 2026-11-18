@@ -27,7 +27,7 @@ export const revalidate = 3600
 const SASONG = '2026/2027'
 const titel = `Liftkortsindex ${SASONG}: Sverige mot Alperna i kronor | Alpkoll`
 const beskrivning =
-  'Vad en veckas liftkort kostar i kronor på skidorter i Sverige, Norge, Finland och Alperna, ' +
+  'Vad en veckas liftkort kostar i kronor på skidorter i Sverige, Norge, Finland, Alperna och Andorra, ' +
   'hämtat ur varje orts egen prislista. Och vad man får per kilometer pist.'
 
 export const metadata = {
@@ -94,7 +94,8 @@ export default async function Liftkortsindex() {
     .filter((r) => r.visat && Number.isFinite(r.tal))
     .sort((a, b) => a.tal - b.tal)
 
-  const alper = rader.filter((r) => !r.nordisk)
+  // Grandvalira ligger i Pyrenéerna och räknas inte som alport.
+  const alper = rader.filter((r) => !r.nordisk && r.ort.country !== 'Andorra')
   const sverige = rader.filter((r) => r.ort.country === 'Sweden')
   const norge = rader.filter((r) => r.ort.country === 'Norway')
   const alpMedian = median(alper.map((r) => r.tal))
@@ -159,7 +160,7 @@ export default async function Liftkortsindex() {
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
           Vad en veckas liftkort kostar i kronor på {rader.length} skidorter i Sverige, Norge,
-          Finland och Alperna. Varje pris är hämtat ur ortens egen prislista och avser samma sak:
+          Finland, Alperna och Andorra. Varje pris är hämtat ur ortens egen prislista och avser samma sak:
           vuxen, sex dagar i följd, huvudsäsong.
         </p>
         <p style={{ ...brod, fontSize: 14, margin: '0 0 34px', color: 'rgba(255,255,255,0.55)' }}>
@@ -220,7 +221,7 @@ export default async function Liftkortsindex() {
         <p style={{ ...brod, fontSize: 14, margin: '0 0 44px' }}>
           Alla priser med ortens egen valuta och noteringar per ort står på{' '}
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>liftkortspriser</Link>, tillsammans
-          med de orter som saknar pris och varför.
+          med vilket kort priset gäller och när det lästes.
         </p>
 
         <section style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)' }}>

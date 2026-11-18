@@ -366,3 +366,25 @@ på kortets kilometer.
 - **riksgransen** — kortet gäller även Björkliden; km okänt, därför inte per km.
 - **chamonix**, **grandvalira**, **cortina-d-ampezzo** — kvar. Priserna är
   dynamiska eller ligger i bokningsflöden och läses via webbläsare.
+
+## 2026-11-18 — De sista fyra, lästa i bokningarna
+
+Alla orter har nu pris. Tre av dem sätter priset efter datum, så talet
+gäller en vuxen med start i referensveckan. Se migration 034.
+
+- **chamonix** — Compagnie du Mont-Blanc, prislista hög säsong 26/27.
+  Chamonix Le Pass 76,50 / 373 €. Kortet gäller Brévent–Flégère, Grands
+  Montets och Balme, 114 km enligt delområdena; Les Houches ingår inte.
+- **grandvalira** — assistant.grandvalira.com, 28.2–5.3.2027: 396 € i kassan,
+  370,20 € på nätet. Flerdagarskortet gäller även Pal Arinsal och Ordino
+  Arcalís, 308 km. Dagspriset lästes inte.
+- **cortina-d-ampezzo** — Dolomiti Superskis konfigurator, ortskortet
+  Cortina d'Ampezzo, 1–6.3.2027: 421 € (400 € på nätet). Dag 84 €. Kortet
+  gäller samma område som våra pisttal.
+- **hemavan** — quickbook.hemavan.nu, Liftkort 6–8 dagar, start 27.2.2027:
+  2 955 kr i kassan (2 807 kr med förbokning). Dag 665 kr. Kortet gäller
+  även Tärnaby, 20 km enligt skiresort.com, alltså 52 km.
+
+**Dynamiska priser ska läsas för ett datum, inte för "säsongen".** Hemavans
+sexdagarskort kostar 2 690 kr med start före 19 februari och 2 955 kr
+därefter. Ange datumet i noten.

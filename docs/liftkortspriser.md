@@ -482,3 +482,34 @@ korten gäller samma område som pisttalen, så ingen står i `LIFTKORT`.
   (serrechevalier-pass.com/fr/grille-tarifaire). Forskaren kunde bara läsa
   priset hos tredje part; granskaren läste liftbolagets sida med Firecrawl,
   som renderar JavaScript. Början och slutet av säsongen 56 / 283 €.
+
+
+## 2026-11-18 — Omgång 4: tre italienska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 4 samma dag. Se migration 042. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+- **alta-badia** — Alta Badias eget kort 83 / 421 €, vuxen, högsäsong
+  20.12.26–9.1.27 och 31.1–20.3.27 (ortens prislista "ALTA BADIA SKIPASS
+  2026 / 2027", länkad från altabadia.org). Fasta nivåer; säsong 75 / 378.
+  Att sexdagarspriset är detsamma som Cortinas (421) är en tillfällighet.
+  Dolomiti Superski 89 / 453 € står som `STORRE_KORT`, som för Cortina.
+- **cervinia** — det internationella kortet Breuil-Cervinia–Valtournenche–
+  Zermatt, 88 / 464,50 €, fast pris 24.10.26–2.5.27 (Cervino S.p.A.:s PDF,
+  läst med pdftotext av både forskaren och granskaren). Det är samma kort som
+  Zermatts 122 / 574 CHF, men köpt i Cervinias kassa till fast pris i euro.
+  Sajten visar alltså två priser för samma område, och båda är ortens egen
+  prislista. Cervinias eget kort, 64 / 338 €, gäller bara italienska sidan
+  och står i noten. Det löser frågan i avsnittet "Zermatt löser också
+  Cervinia" ovan. `resorts` lagrar 465 (heltalskolumn).
+- **val-gardena** — dalkortet Val Gardena / Seiser Alm, samma 181 km som
+  pisttalen. Dagspriset 83 € i högsäsong är läst i Dolomiti Superskis
+  kalkylator och hos skiresort. **Sexdagarspriset är OKÄNT:** kalkylatorn
+  räknar flerdagarspriset med ett anrop bakom Cloudflare (curl 403,
+  Firecrawl omdirigerades), och valgardena.it har ingen prislista.
+  `lift_pass_week_eur` är null och orten står i `UTAN_PRIS` med typen
+  `kalla`. Ski Club GB:s 25/26-pris (80 / 404 €) är inte ortens egen lista
+  och används inte. Läs kalkylatorn i en vanlig webbläsare, start 27
+  februari 2027 som Cortina, innan orten publiceras. Dolomiti Superski står
+  som `STORRE_KORT`.

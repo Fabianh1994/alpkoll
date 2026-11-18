@@ -25,7 +25,7 @@ Konsekvensen är att en genomtänkt sjua hamnar bredvid en slentriansjua, och l�
 
 **Hela skalan används.** Om ingen ort är en tia är skalan en niogradig skala med en tom ruta. Är en ort bäst i materialet på något får den tio.
 
-**Låga poäng skrivs ut.** Cervinia får 3 för bykänsla. Det är inte elakt, det är upplysning — och det är samma princip som att Zermatt är dyrt och Val Thorens ingen vykortsby.
+**Låga poäng skrivs ut.** Les Deux Alpes får 4 för bykänsla. Det är inte elakt, det är upplysning — och det är samma princip som att Zermatt är dyrt och Val Thorens ingen vykortsby.
 
 **Där ett fält korrelerar nämns det.** Nybörjarpoängen ska inte motsäga `blue_percent`, och snösäkerheten ska inte motsäga `altitude_top`. Poängen är inte härledd ur fältet, men den får inte stå i strid med det.
 
@@ -37,7 +37,7 @@ Det är på det testet `scenery_score` föll (beslut 2026-08-10). "Dolomiterna �
 
 Poängen visas aldrig naken. Ett tal mellan 1 och 10 utan förklaring är ett påstående utan belägg.
 
-**Motiveringen hör till orten, inte till paret.** "Cervinias by byggdes som liftanläggning och bebyggelsen får hård kritik" är sann oavsett vilken ort Cervinia ställs mot. Den skrivs en gång och används på varje jämförelsesida orten förekommer på. Därför kan den heller aldrig motsäga ett enskilt par.
+**Motiveringen hör till orten, inte till paret.** "Cervinia byggdes ut kring linbanan från 1936 och på höjden under 1960-talet" är sann oavsett vilken ort Cervinia ställs mot. Den skrivs en gång och används på varje jämförelsesida orten förekommer på. Därför kan den heller aldrig motsäga ett enskilt par.
 
 **Text skrivs bara där den bär:** vid ytterlägen (3 eller lägre, 9 eller högre) och där ett par skiljer sig tre steg eller mer. En sjua mot en sexa behöver ingen förklaring.
 
@@ -68,14 +68,15 @@ pist: Chamonix 3 842 m är Aiguille du Midi.
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.
 
 - **10** Sälen — sajtens tydligaste nybörjarort, 45 % blå pist
-- **9** Cervinia, Saalbach
+- **9** Alta Badia, Saalbach — Alta Badia 57 % blå pist, nästan hela området nås via lätta nedfarter
 - **6** normal alport
 - **4** Chamonix — osammanhängande områden, brant, dåliga övningsbackar
 
 ### Mellannivå
 Utbudet för den som åker blått och rött obehindrat men inte söker det branta. Det här är de flesta.
 
-- **10** Courchevel, Val Thorens, Cervinia
+- **10** Courchevel, Val Thorens
+- **9** Val Gardena — mest röd pist, kabinbanor ut på Sellaronda åt båda hållen
 - **8** normal stor alport
 - **6** små orter med begränsad variation
 
@@ -84,7 +85,7 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 
 - **10** Chamonix, St. Anton, Verbier, Zermatt
 - **7** normal alport
-- **3** Cervinia — närmast ingenting för den vane, trots områdets storlek
+- **4** Alta Badia — två svåra nedfarter, Gran Risa och Vallon
 
 ### Offpist
 Åkning utanför pist: terräng, tillgänglighet, guidekultur, snömängd.
@@ -92,7 +93,7 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 - **10** Chamonix, St. Anton, Verbier, Zermatt
 - **9** Myrkdalen, Riksgränsen, Tignes
 - **6** normal alport
-- **4** Val Gardena — pistparadis, inte pudermål
+- **4** Val Gardena, Alta Badia — åkning utanför pist är förbjuden, i Val Gardena utom i tre freerideområden med guide
 
 ### Snowpark
 Hoppens och railsens kvalitet och underhåll.
@@ -109,7 +110,7 @@ Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platse
 - **9** Bad Gastein (belle époque-kurort kring Gasteinfallet), Val Gardena, Chamonix
 - **6** funktionell ort
 - **5** Tignes — byggd som anläggning
-- **3** Cervinia — byn saknar charm, bebyggelsen är hårt kritiserad
+- **4** Cervinia, Les Deux Alpes — Cervinia byggdes ut kring linbanan från 1936 och på höjden under 1960-talet
 
 ### Afterski
 Hur mycket som händer från liftstopp och framåt.
@@ -117,7 +118,8 @@ Hur mycket som händer från liftstopp och framåt.
 - **10** Ischgl, St. Anton
 - **9** Saalbach, Kitzbühel, Mayrhofen, Sölden
 - **7** normal alport
-- **5** Val Gardena — kvällen tillbringas vid matbordet, inte i baren
+- **6** Val Gardena, La Plagne — Ski Club GB ger 2/5, men skiresort ger 4/5 och namnger barerna i byarna
+- **5** Alta Badia, Serre Chevalier — i Alta Badia slutar afterskin på berget med sista nedfarten, och kvällarna i byarna är lugna
 
 ### Familjevänligt
 Barnens perspektiv: skidskola, avstånd, om man kan bo nära backen, om orten är byggd för barn.
@@ -170,3 +172,7 @@ Migration 014 rättade det som gick att belägga, och bara det: Sälen till 10 p
 **Avgjort 2026-11-18:** `family_friendly_score` avser byn, se undantaget under Motiveringarna. Frågan var skarp för Les 3 Vallées, där Courchevel står på 9 och Méribel och Val Thorens på 7 för samma backar; de står kvar.
 
 **Fältet som inte hör hit men hänger ihop:** `avg_snowfall_cm` visas inte längre någonstans. Mätningen 2026-08-12 mot skiresort.com — sajtens enda källa — visar att den inte bär någon säsongssiffra alls, bara aktuellt snödjup; kontrollerat på både Sölden och Åre. Talen kan därmed inte komma därifrån och går inte att kontrollera mot något. Fördelningen pekade åt samma håll: alla 30 publicerade värden delbara med tio, elva unika tal bland trettio. Kolumnen ligger kvar i databasen — orter döljs och fält slutar visas, ingetdera raderas.
+
+**Avgjort 2026-11-18 (granskningen av omgång 4):** Cervinia delar skiresort-post och `ski_area` med Zermatt, Matterhorn Ski Paradise, och bär därför Zermatts områdesbetyg: nybörjare 6, mellannivå 9, avancerad 10. Ankarna som hade Cervinia på nybörjare 9, mellannivå 10 och avancerad 3 beskrev den italienska sidan för sig, som Ski Club GB gör, och gick inte att förena med regeln att poängen avser hela området. De är utbytta: nybörjare 9 Alta Badia, mellannivå 10 utan Cervinia, avancerad 4 Alta Badia. Att det mesta av pisten från Cervinia är blå och röd står i ortstexten som råd om var du bor, inte i poängen.
+
+Bykänsla för Cervinia är 4, inte 3. Platsen var en klätterby med hotell före liftarna, och den gamla motiveringen ("byggdes som liftanläggning", "hårt kritiserad") bars bara delvis av källorna. Afterski-ankaret 5 flyttades från Val Gardena till Alta Badia: Ski Club GB ger båda 2/5, men skiresort ger Val Gardena 4/5 och Alta Badia 3/5, samma skillnad som gav La Plagne 6 och Serre Chevalier 5 i omgång 3.

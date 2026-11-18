@@ -108,10 +108,11 @@ Hoppens och railsens kvalitet och underhåll.
 
 - **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
 - **9** Les 3 Vallées (Val Thorens, Méribel, Courchevel) — VT Park vid Plateau, Open Park i Méribel-Mottaret med en liten halfpipe, Family Park i Courchevel
-- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark)
+- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark), Grandvalira (tre parker; El Tarters har en av Europas längsta rader av hopp och rails)
 - **6** normal alport
 - **5** orter med park mest på pappret
 - **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass; Cortina d'Ampezzo — skiresort skriver att området saknar snowpark och halfpipe, inthesnow nämner en park på Faloria
+- **3** Riksgränsen — ingen snowpark eller halfpipe, enligt både skiresort och pistat.se, och ingen källa säger emot
 
 ### Bykänsla
 Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platsen fanns före liftarna.
@@ -249,3 +250,38 @@ Snösäkerhet för Dolomiterna är inte enhetlig: Val Gardena har 8 med topp 2 5
 
 Snowpark 8 för Livigno står kvar som ankare. Tre källor kallar Mottolino en av Europas eller Alpernas bästa parker, och 9 vore försvarbart, men ett ankare flyttas inte i förbigående.
 
+**Avgjort 2026-11-18 (granskningen av omgång 10):** Åre, Sälen, Trysil, Hemavan, Riksgränsen, Hemsedal, Geilo, Voss, Levi, Ruka och Grandvalira är omsatta enligt skalan, kalibrerade mot varandra och mot Vemdalen, Idre Fjäll, Branäs och Hafjell. Därmed är alla befintliga orter prövade mot ankarna. Ändringar i migration 049:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Åre | Nybörjare | 6 → 7 | skiresort 5/5, lätt nedfart från toppen till alla dalstationer, 49 % blått. Levi har 7 vid 45 % |
+| Sälen | Bykänsla | 7 → 6 | Fyra anläggningar kring liftarnas dalstationer; Snowthere avråder den som vill ha alpby. Regeln från omgång 6 |
+| Trysil | Nybörjare | 7 → 8 | skiresort 5/5 "Almost the entire ski area can be accessed via very easy and easy slopes", Snowthere "Scandinavia's strongest first-ski resort", 51 % blått |
+| Trysil | Mellannivå | 8 → 7 | 23 % rött, minst bland de stora nordiska orterna. Åre och Hemsedal har 7 |
+| Hemavan | Nybörjare | 6 → 8 | 63 % blått och skiresort 5/5. 6 stred mot blå andel; Hemsedal och Idre Fjäll har 9 vid 67 och 70 % |
+| Hemavan | Snowpark | 5 → 7 | skiresort 5/5, två parker (pistat.se). 5 betyder park mest på pappret, vilket ingen källa säger |
+| Hemavan | Familj | 6 → 7 | skiresort 5/5, barnområden vid dalstationerna och i området |
+| Riksgränsen | Nybörjare | 4 → 6 | 4 är Chamonix-ankaret, som ingen källa beskriver här. skiresort 4/5, 47 % blått |
+| Riksgränsen | Avancerad | 8 → 6 | En kilometer svår pist och en svart nedfart. Avancerad avser pistad åkning; offpisten bärs av offpist 9 |
+| Riksgränsen | Snowpark | 5 → 3 | Ingen park enligt skiresort och pistat.se. Nytt ankare för 3 |
+| Hemsedal | Familj | 7 → 8 | Ett av Norges största barnområden (skiresort 5/5, Snow Magazine). Trysil, Geilo och Hafjell har 8 |
+| Geilo | Mellannivå | 7 → 6 | Dalens två sidor hänger ihop med skidbuss, längsta nedfarten 2,9 km (skiresort 3/5) |
+| Geilo | Snowpark | 6 → 7 | skiresort 5/5, tre parker. Samma som Hemsedal, Trysil och Hafjell |
+| Geilo | Afterski | 7 → 6 | skiresort 3/5, livligt bara på helger. Regeln från omgång 7 |
+| Voss | Afterski | 7 → 6 | skiresort 3/5, "The 'apres' scene is limited" (Snow Magazine). Regeln från omgång 7 |
+| Levi | Snowpark | 6 → 7 | skiresort 5/5, park vid Levi South och superpipe på Front Slopes |
+| Ruka | Nybörjare | 6 → 7 | Samma skiresort-ordalydelse och blå andel (47 %) som Levi |
+| Ruka | Mellannivå | 7 → 6 | Minst pist på sajten, längsta nedfarten runt 1,3 km. Ankaret 6 |
+| Ruka | Avancerad | 7 → 5 | skiresort 2/5 "only a few challenging runs", tre källor om för snäll terräng för vana åkare |
+| Ruka | Afterski | 7 → 6 | "relaxed rather than rowdy" (inthesnow). Levi har 7 |
+| Ruka | Bykänsla | 7 → 6 | Byn växte kring backarna från 1954. Regeln från omgång 6 |
+| Grandvalira | Nybörjare | 6 → 7 | skiresort 5/5, övningsområden i alla sex sektorer, 47 % blått |
+| Grandvalira | Snowpark | 7 → 8 | Två oberoende källor om en park i europeisk klass, som Penken Park |
+
+Sälens bykänsla 6 besvarar den öppna frågan från omgång 6: Sälen står nu med de andra nordiska anläggningarna. Om hela gruppen ska till 5, som Tignes-ankaret, är fortfarande ett ägarbeslut.
+
+Snowpark fick ett ankare för 3 under Engelberg och Cortina. Riksgränsen saknar park enligt två källor och ingen säger emot; Engelberg och Cortina har 4 därför att en källa nämner något slags park. Grandvalira lades till bland åttorna.
+
+Svaga och kvar: Trysils, Levis och Riksgränsens bykänsla (7, 8 och 7; ingen källa beskriver byn mot ankarna), Levis mellannivå 7, Hemavans mellannivå 7, Riksgränsens avancerad 6 mot 5 (Sälen har 5), Rukas offpist 6 (ingen källa nämner offpist, men samma gäller Levi) och Åres snösäkerhet 7 mot Hemsedals 8. Hemsedal delar 8 med de nordligaste orterna (Hemavan, Riksgränsen, Levi, Ruka) men ligger söderut; att 8 bärs av höjd och konstsnö och inte av breddgrad är ett ägarbeslut.
+
+Avsnittet Att göra överst beskriver ett läge som inte längre gäller: alla befintliga orter är nu prövade mot ankarna i omgång 7–10. Texten, och brasklappen om mittfältet på /sa-jamfor-vi, står kvar tills ägaren beslutar att ta bort dem.

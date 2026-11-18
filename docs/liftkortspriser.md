@@ -35,6 +35,9 @@ veckopriset måste hämtas från ortens egen sida. Beslut av Fabian 2026-08-12.
 Definition: vuxen, sexdagarskort, ordinarie pris (ej onlinerabatt).
 Referensveckor 2027: v2 (9–16 jan), v9 (27 feb–6 mar, sportlov), v13 (27 mar–3 apr).
 Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
+Sedan omgång 5 läses dynamiska priser för start lördag 2027-02-27, regeln
+från Zermatt (036). SkiStar är läst för båda datumen i omgång 10; se
+nedan.
 
 ## KLARA — kontrollerade mot ortens egen sida
 
@@ -49,13 +52,13 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | val-thorens | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | verbier | CHF | 94 | **409** | 4,35 | 26/27 | 4 Vallées, samma som våra 412 km. Verbier–Tzoumaz ensamt: 86/374 |
 | geilo | NOK | 693 | **2 871** | 4,14 | 25/26 | produkten heter "6–8 dagar" |
-| are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, fångat 2026-08-12 för 1 mars 2027 |
-| salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil |
-| trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan |
-| hemsedal | NOK | 745 | **3 769** | 5,06 | 26/27 | hämtat på SkiStars norska sida, i NOK |
+| are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, lika för start 27.2 och 1.3 (omläst 2026-11-18) |
+| salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil. Lika för 27.2 och 1.3 |
+| trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan. Lika för 27.2 och 1.3 |
+| hemsedal | NOK | 775 | **3 769** | 4,86 | 26/27 | hämtat på SkiStars norska sida, i NOK. Dagskortet 775 lördag 27.2, 745 måndag 1.3; sexdagarskortet lika (049) |
 | myrkdalen | NOK | 660 | **2 620** | 3,97 | gällande 26/27 | bekräftad mot ortens egen prislista 2026-08-25. Kapat pris: 6, 7 och 8 sammanhängande dagar kostar alla 2 620. Valfria dagar kostar 3 050 |
-| voss | NOK | 675 | **2 990** | 4,43 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Platt 2 990 hela 15–28.2.27; dagspriset 675 vardag / 720 helg. Ur bokningskalendern |
-| riksgransen | SEK | 520 | **2 547** | 4,90 | 25/26 | 5 dagar 2 195 + extra dag 352; ingen egen sexdagarsrad finns. **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
+| voss | NOK | 675 | **2 750** | 4,07 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Nätpris ur bokningskalendern, 2 750 för varje startdag 8.2–7.3.2027 och dagskortet 675 varje dag (049). 2026-08-25 visade kalendern 2 990 och 675 / 720 |
+| riksgransen | SEK | 546 | **2 673** | 4,90 | 26/27 | 5 dagar 2 304 + extra dag 369; ingen egen sexdagarsrad finns. Ett pris hela säsongen (049). **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
 | zermatt | CHF | 122 | **574** | 4,70 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Dynamiskt, start 27.2.2027 (036, bekräftat i omgång 9). Zermatt ensamt: 104/510 |
 | st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
@@ -114,7 +117,8 @@ Sälen är det alltså ingen hopslagning — se rättelsen längre ner.
 
 **Grandvalira.** Flerdagarskortet (2 dagar och uppåt) gäller Grandvalira
 PLUS Ordino Arcalís PLUS Pal Arinsal — 308 km mot våra 215. Dagsbiljetten
-avser Grandvalira ensamt. Priset är dessutom dynamiskt och står bara i
+avser Grandvalira ensamt. [Rättat i omgång 10: dagskortet heter Andorra
+Pass och gäller också alla tre, enligt GV-pass FAQ.] Priset är dessutom dynamiskt och står bara i
 bokningsassistenten, inte som tabell. Andorra visar alltså samma mönster som
 Österrike: flerdagarskortet är ett regionkort.
 
@@ -380,7 +384,8 @@ gäller en vuxen med start i referensveckan. Se migration 034.
   Montets och Balme, 114 km enligt delområdena; Les Houches ingår inte.
 - **grandvalira** — assistant.grandvalira.com, 28.2–5.3.2027: 396 € i kassan,
   370,20 € på nätet. Flerdagarskortet gäller även Pal Arinsal och Ordino
-  Arcalís, 308 km. Dagspriset lästes inte.
+  Arcalís, 308 km. Dagspriset lästes inte. [Läst i omgång 10: 72 € i
+  kassan, 69 € på nätet, start 27.2.2027.]
 - **cortina-d-ampezzo** — Dolomiti Superskis konfigurator, ortskortet
   Cortina d'Ampezzo, 1–6.3.2027: 421 € (400 € på nätet). Dag 84 €. Kortet
   gäller samma område som våra pisttal.
@@ -390,7 +395,9 @@ gäller en vuxen med start i referensveckan. Se migration 034.
 
 **Dynamiska priser ska läsas för ett datum, inte för "säsongen".** Hemavans
 sexdagarskort kostar 2 690 kr med start före 19 februari och 2 955 kr
-därefter. Ange datumet i noten.
+därefter. Ange datumet i noten. [Omgång 10: hemavan.nu sätter
+högperiodens början till 14 februari, inte 19. Start 27.2 ligger i
+högperioden med båda gränserna, så priset står.]
 
 ## 2026-11-18 — Större kort och sorterbar tabell
 
@@ -665,3 +672,56 @@ Se migration 048. Inga priser ändras.
   dagskort 80 €, men det är inte ortens lista. Läs om i en vanlig webbläsare
   före pressutskick.
 
+## 2026-11-18 — Omgång 10: elva befintliga orter i Norden och Andorra
+
+Lästa av forskarna och av granskaren och kontrollerade i granskningen av
+omgång 10 samma dag. SkiStar, Voss och Grandvalira lästes i webbläsare
+(browser-use, egen flik, inget köpt, cookies avvisade), eftersom bokningarna
+bara visar priset efter att sidan körts. Se migration 049.
+
+**Startdagen för SkiStar är avgjord.** Tabellen KLARA sade att SkiStar
+fångades för 1 mars 2027, och omgång 5 gjorde lördag 27 februari till
+regeln. SkiStar är nu läst för båda datumen. Priserna är lika utom
+Hemsedals dagskort, som kostar 775 NOK en lördag och 745 en måndag. Regeln
+från Zermatt gäller också SkiStar: Hemsedals dagspris blir 775. Det lagrade
+priset är SkiStars förköpspris, som i 019. "Online samma dag" kostar ungefär
+tio procent mer och används inte.
+
+Akta adressen: produkt-id:t i SkiStars `length`-parameter hör till en ort.
+Samma id under en annan orts adress visar Åres pris under fel ortnamn.
+Klicka fram SkiPass från ortens egen sida.
+
+- **are** 759 / 3 744 SEK, **salen** 650 / 3 126 SEK, **trysil** 775 /
+  3 806 NOK — oförändrade, lika för 27.2 och 1.3.
+- **hemsedal** — 745 → **775** / 3 769 NOK. Kvot 4,86.
+- **voss** — 2 990 → **2 750** NOK, dag 675. Samma bokningskalender som
+  021, som bara visar nätpris; orten skriver "Alltid lågast pris på skikort
+  … når du kjøper på nett" och har inget kassapris att välja i stället.
+  Kalendern visar 2 750 för varje startdag 8.2–7.3.2027 och 675 för varje
+  dag samma period. 720 för helg syns inte längre. Om Voss sänkt priset
+  eller om nätpriset ändras med köptid går inte att se. Kvot 4,07.
+- **grandvalira** — dag null → **72 €** i kassan (69 på nätet), sex dagar
+  396 € i kassan (370,20 på nätet), start 27.2.2027. Kassapriset lagras,
+  som 034 gjorde för sexdagarskortet. Nätpriset gäller ett begränsat antal
+  kort ("Quedan 69 forfait a este precio"). Dagskortet heter Andorra Pass
+  och gäller, som flerdagarskortet, Grandvalira, Pal Arinsal och Ordino
+  Arcalís; noten ovan om att dagsbiljetten avser Grandvalira ensamt är fel
+  och rättad. Kvot 5,50.
+- **riksgransen** — 520 / 2 547 (25/26) → **546 / 2 673 SEK (26/27)**.
+  riksgransen.se: 1 dag 546, 5 dagar 2 304, extra dag 369. Ett pris hela
+  säsongen. Ny rad i `lift_pass_prices`; 25/26-raden står kvar. Kortet
+  gäller fortfarande Björkliden och Riksgränsen. Kvot 4,90.
+- **ruka** — 58 / 265 → **59 / 269 €**, ruka.fi samma sida som 030, kassapris.
+  Raden för 26/27 uppdateras, eftersom säsong och produkt är desamma.
+- **levi** (60 / 269 €) — bekräftat av forskaren, oförändrat.
+- **geilo** — butikens tabell heter fortfarande "Skipass 25/26" men visar
+  nu 745 för en dag mot 693 i september; flerdagarskortet är 2 871 båda
+  gångerna. Vilket datum 745 avser står inte. Talet står kvar som 693 tills
+  ägaren beslutar eller 26/27 släpps.
+- **hemavan** (665 / 2 955), **hafjell**, **val-gardena** — **OKÄNT** i
+  omgång 10. Hemavans och Hafjells bokningar och Dolomiti Superskis
+  kalkylator visar Cloudflares säkerhetskontroll eller spärr, och den
+  försöker vi inte ta oss förbi. Hemavans pris står kvar. hemavan.nu listar
+  högperioden "19 dec – 4 jan & 14 feb – 3 maj" men ännu inga belopp.
+  pistat.se och skiresort visar 605 / 2 685, troligen förra årets tal, som
+  inte tas in.

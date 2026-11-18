@@ -78,7 +78,7 @@ Utbudet för den som åker blått och rött obehindrat men inte söker det brant
 - **10** Courchevel, Val Thorens
 - **9** Val Gardena — mest röd pist, kabinbanor ut på Sellaronda åt båda hållen
 - **8** normal stor alport
-- **6** små orter med begränsad variation
+- **6** små orter med begränsad variation, Engelberg — pisterna delas av Titlis och Jochstock
 
 ### Avancerad nivå
 Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med flit.
@@ -90,7 +90,7 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 ### Offpist
 Åkning utanför pist: terräng, tillgänglighet, guidekultur, snömängd.
 
-- **10** Chamonix, St. Anton, Verbier, Zermatt
+- **10** Chamonix, St. Anton, Verbier, Zermatt, Engelberg — från Laubersgrat går Laub ner mot Gerschnialp, och fler nedfarter utanför pist nås med lift från Titlis och Jochstock
 - **9** Myrkdalen, Riksgränsen, Tignes
 - **6** normal alport
 - **4** Val Gardena, Alta Badia — åkning utanför pist är förbjuden, i Val Gardena utom i tre freerideområden med guide
@@ -98,10 +98,12 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 ### Snowpark
 Hoppens och railsens kvalitet och underhåll.
 
+- **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
 - **9** Val Thorens
 - **8** Saalbach (Nitro Snowpark Leogang), Livigno, Courchevel, Tignes
 - **6** normal alport
 - **5** orter med park mest på pappret
+- **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass
 
 ### Bykänsla
 Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platsen fanns före liftarna.
@@ -176,3 +178,9 @@ Migration 014 rättade det som gick att belägga, och bara det: Sälen till 10 p
 **Avgjort 2026-11-18 (granskningen av omgång 4):** Cervinia delar skiresort-post och `ski_area` med Zermatt, Matterhorn Ski Paradise, och bär därför Zermatts områdesbetyg: nybörjare 6, mellannivå 9, avancerad 10. Ankarna som hade Cervinia på nybörjare 9, mellannivå 10 och avancerad 3 beskrev den italienska sidan för sig, som Ski Club GB gör, och gick inte att förena med regeln att poängen avser hela området. De är utbytta: nybörjare 9 Alta Badia, mellannivå 10 utan Cervinia, avancerad 4 Alta Badia. Att det mesta av pisten från Cervinia är blå och röd står i ortstexten som råd om var du bor, inte i poängen.
 
 Bykänsla för Cervinia är 4, inte 3. Platsen var en klätterby med hotell före liftarna, och den gamla motiveringen ("byggdes som liftanläggning", "hårt kritiserad") bars bara delvis av källorna. Afterski-ankaret 5 flyttades från Val Gardena till Alta Badia: Ski Club GB ger båda 2/5, men skiresort ger Val Gardena 4/5 och Alta Badia 3/5, samma skillnad som gav La Plagne 6 och Serre Chevalier 5 i omgång 3.
+
+**Avgjort 2026-11-18 (granskningen av omgång 5):** Snowpark fick sin första tia. Laax har fyra parker, en superpipe och en inomhushall, och tre oberoende källor (skiresort, Ski Club GB, inthesnow) beskriver det som det största freestyleutbudet; Val Thorens står kvar på 9. Engelberg blir ankare för 4 i stället för 3: skiresort skriver att Titlis saknar park, men Iglu räknar en, och ett ytterläge kräver mer än en källa när en annan säger emot (samma regel som offpist för Alta Badia i omgång 4). Offpist 10 får en femte ort, Engelberg, med Laub och Galtiberg som Ski Club GB och Powderhounds kallar världsklass.
+
+Mellannivå 9 kräver mer än Ski Club GB 5/5. Laax och St. Moritz har båda det betyget men får 8, som Tignes med samma betyg och mer pist. Nian bärs av Val Gardena, som når hela Sellaronda med lift, och av Zermatt.
+
+Snösäkerhet 9 gäller också glaciärorter med låg by: Laax (1 100 m, 37 % konstsnö) och Engelberg (1 003 m, 40 %) uppfyller ankarets ordalydelse. Den svagare snön på dalnedfarterna står i ortstexten, inte i poängen. Frågan om ankaret bör kräva något om byns höjd är ett ägarbeslut.

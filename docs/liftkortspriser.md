@@ -172,7 +172,8 @@ källa — det är för tidigt. Datumet står utsatt där orten uppger ett.
   sommarpris till en vinterjämförelse.
 
 ## KVAR — orter som ännu inte finns i databasen
-val-gardena, cervinia
+Inga. Val Gardena och Cervinia lades in i migration 042, Laax, St. Moritz och
+Engelberg i 043.
 
 ## METOD som fungerar
 - Alporter med publicerad prislista: WebFetch mot ortens prissida.
@@ -513,3 +514,37 @@ omgång 4 samma dag. Se migration 042. Orterna ligger dolda
   och används inte. Läs kalkylatorn i en vanlig webbläsare, start 27
   februari 2027 som Cortina, innan orten publiceras. Dolomiti Superski står
   som `STORRE_KORT`.
+
+
+## 2026-11-18 — Omgång 5: tre schweiziska orter
+
+Hämtade från ortens egen bokning och kontrollerade i granskningen av
+omgång 5 samma dag. Se migration 043. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+Alla tre priserna är dynamiska. **Regeln för dynamiska priser är den från
+Zermatt (036): läs för start lördag 27 februari 2027, referensveckans första
+dag, sex dagar 27.2–4.3.** Forskarna läste 1 mars för Laax och St. Moritz;
+de talen står i noten i `lift_pass_prices` men används inte.
+
+- **laax** — LAAX-kortet, samma område som pisttalen, 90,00 / 440,00 CHF,
+  vuxen 18–63 (shop.laax.com, Pricenow-butiken, läst av granskaren i
+  webbläsare). Start 1 mars: 86,50 / 442,00. Kvot 4,89.
+- **st-moritz** — Upper Engadin, 86,00 / 454,50 CHF, vuxen 18+
+  (booking.engadin.ch, "Snow-Deal", läst av både forskaren och granskaren).
+  `resorts` lagrar 455. Start 1 mars: 91,50 / 452,00. Flerdagskort finns
+  bara för hela Oberengadin, som också gäller Zuoz, fem små backar och
+  bussar och tåg i dalen. `LIFTKORT` med km null, eftersom Maloja och
+  Muottas Muragl saknar egen post hos skiresort. Torsdagarna i februari och
+  mars kostar 55 CHF för en dag, mot 76–106 CHF övriga dagar; skälet är inte
+  utrett och påverkar inte sexdagarspriset, som är ett eget tal.
+- **engelberg** — kortet för Titlis och Brunni (shop.titlis.ch, "Ski
+  tickets for the whole destination (TITLIS/Brunni/Fürenalp)"), 67 / 302
+  CHF på nätet, vuxen, läst av granskaren i webbläsare. Forskaren kunde
+  inte bläddra till mars och lämnade priset OKÄNT. titlis.ch kallar alla
+  listade priser "online prices"; i kassan tillkommer 5 CHF per köp, inte
+  per dag. Kvot 4,51. `LIFTKORT` 79 km (Titlis 70 + Brunni 8,5 enligt
+  skiresort.com); butikens egna "82 kilometers of slopes" räknar in
+  skidrutter. Fürenalp är en utflyktsbana utan pist.
+
+Alla tre bör läsas igen före pressutskick, som Zermatt.

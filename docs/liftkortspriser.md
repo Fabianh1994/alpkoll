@@ -421,10 +421,15 @@ lib/liftkortspriser.js:
 - **grandvalira** — 308 km står nu med skiresort.com som källa.
 
 Kvar att kontrollera:
-- **zermatt** — 432 / 104 CHF är det lägsta dynamiska priset ("from CHF 432 to
-  550"), inte priset för v9. Läs kalkylatorn för 27 februari 2027.
 - **3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.
 - **Mont-Blanc Unlimited** — vad kortet omfattar och Courmayeurs 41 km är inte
   bekräftade från CMB:s egen sida, som inte gick att läsa.
 - Större kort att överväga: Kitzbühel (Ski Alpin Card), Ischgl (Silvretta Ski
   Pass), Madonna (Skirama).
+
+## Zermatt för vecka 9 (2026-11-18)
+Priskalkylatorn på matterhornparadise.ch, vuxen, start 27 februari 2027:
+International (Zermatt–Cervinia) 122 CHF för en dag och 574 CHF för sex dagar;
+Zermatt ensamt 104 / 510. Vi bar 104 / 432, som blandade Zermatts dagspris med
+det lägsta dynamiska sexdagarspriset. Migration 036. Priset är dynamiskt och
+bör läsas igen före pressutskicket.

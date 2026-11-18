@@ -708,15 +708,12 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-                <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, color: resort.crowd_score >= 7 ? '#4ade80' : resort.crowd_score >= 5 ? '#fbbf24' : '#fb923c', lineHeight: 1 }}>{resort.crowd_score}/10</div>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: '#f0ece4', marginBottom: 2 }}>Gott om plats</div>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.54)', lineHeight: 1.4 }}>
-                      {resort.crowd_score >= 8 ? 'Gott om plats — korta liftköer och vidöppna pister.' : resort.crowd_score >= 6 ? 'Måttlig trängsel — mest folk under högsäsong och helger.' : 'Populär ort — räkna med köer under högsäsong och skollov.'}
-                    </div>
-                  </div>
-                </div>
+                {/* Raden under staplarna förklarar "Gott om plats" i ord. Den
+                    upprepade förut samma tal med stor siffra och samma
+                    etikett, så poängen stod två gånger efter varandra. */}
+                <p style={{ margin: '20px 0 0', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>
+                  {resort.crowd_score >= 8 ? 'Korta liftköer och vidöppna pister, även under högsäsong.' : resort.crowd_score >= 6 ? 'Måttlig trängsel, mest folk under högsäsong och helger.' : 'Populär ort. Räkna med köer under högsäsong och skollov.'}
+                </p>
               </div>
             </div>
 

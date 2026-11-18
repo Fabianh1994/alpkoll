@@ -8,6 +8,7 @@
 
 import Link from 'next/link';
 import { AVSANDARE, KONTAKT } from '../lib/kontakt';
+import { LANDSIDOR } from '../lib/landsidor';
 
 // Innehållssidorna först, de juridiska sist.
 //
@@ -25,6 +26,11 @@ const LANKAR = [
   { href: '/liftkortspriser', label: 'Liftkortspriser' },
   { href: '/nattaget-till-alperna', label: 'Nattåget' },
   { href: '/sportlov', label: 'Sportlov' },
+  // Guiderna från november 2026. De nåddes bara från en eller två andra
+  // sidor, och granskningen 2026-11-18 hittade dem inte från startsidan.
+  { href: '/skidorter-for-barnfamiljer', label: 'Barnfamiljer' },
+  { href: '/var-bo-i-salen', label: 'Var bo i Sälen' },
+  { href: '/liftkortsindex', label: 'Liftkortsindex' },
   { href: '/about', label: 'Om oss' },
   { href: '/sa-jamfor-vi', label: 'Så jämför vi' },
   { href: '/privacy', label: 'Integritetspolicy' },
@@ -63,9 +69,24 @@ export default function SiteFooter() {
         .site-footer-link:hover { color: #D4A574 !important; }
       `}</style>
 
+      {/* En sida per land, på varje sida. Landsidorna nåddes förut bara
+          från varandra och från landsnamnet på ortsidorna. */}
+      <div style={{
+        display: 'flex', gap: '8px 18px', flexWrap: 'wrap', alignItems: 'baseline',
+        paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)',
+        fontFamily: 'var(--font-body)', fontSize: 12,
+      }}>
+        <span style={{ color: 'rgba(255,255,255,0.38)' }}>Skidorter i</span>
+        {LANDSIDOR.map(l => (
+          <Link key={l.slug} href={`/skidorter/${l.slug}`} className="site-footer-link" style={{
+            color: 'rgba(255,255,255,0.5)', textDecoration: 'none',
+          }}>{l.namn}</Link>
+        ))}
+      </div>
+
       <div style={{
         display: 'flex', gap: 24, flexWrap: 'wrap',
-        paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)',
+        paddingTop: 16, marginTop: 16, borderTop: '1px solid rgba(255,255,255,0.03)',
       }}>
         {LANKAR.map(link => (
           <Link key={link.href} href={link.href} className="site-footer-link" style={{

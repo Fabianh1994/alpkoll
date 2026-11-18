@@ -11,6 +11,16 @@ import SiteHeader from './SiteHeader';
 import SiteFooter from './SiteFooter';
 import Flagga from './Flagga';
 
+// Guiderna som visas ovanför ortlistan. Sportlov och priser ligger också i
+// mobilmenyn, men barnfamiljer och nattåget fanns bara längre ner på andra
+// sidor.
+const GUIDER = [
+  { href: '/liftkortspriser', label: 'Liftkortspriser' },
+  { href: '/skidorter-for-barnfamiljer', label: 'Barnfamiljer' },
+  { href: '/sportlov', label: 'Sportlov' },
+  { href: '/nattaget-till-alperna', label: 'Nattåget till Alperna' },
+];
+
 const heroImage = 'https://odlzoewjwyipiopttucv.supabase.co/storage/v1/object/public/images/valerii-ladomyriak-A9Ci7flea_U-unsplash.jpg';
 
 function NoiseOverlay() {
@@ -121,12 +131,12 @@ function ResortCard({ resort, t }) {
               onLoad={() => setLoaded(true)}
               style={{ objectFit: 'cover', opacity: loaded ? 1 : 0, transition: 'opacity 0.4s' }}
             />
-          ) : (
+          ) : resort.image_url ? (
             <img src={resort.image_url} alt={resort.name} onLoad={() => setLoaded(true)} style={{
               width: '100%', height: '100%', objectFit: 'cover', opacity: loaded ? 1 : 0,
               transition: 'opacity 0.4s',
             }} />
-          )}
+          ) : null}
           <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 60, background: 'linear-gradient(transparent, #1c1a17)' }} />
           <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 500, fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.75)', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: '4px 10px', borderRadius: 4, letterSpacing: '0.03em' }}>
             <Flagga country={resort.country} />
@@ -264,12 +274,29 @@ export default function HomeClient({ resorts }) {
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 38, fontWeight: 400, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>{t.resorts.title}</h2>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.54)' }}>{filtered.length} {filtered.length !== 1 ? t.resorts.destinations : t.resorts.destination}</p>
           </div>
+          {/* Guiderna, så att de går att hitta från startsidan. Granskningen
+              2026-11-18 visade att besökarna aldrig kom fram till dem. */}
+          <nav aria-label="Guider" style={{ display: 'flex', gap: '8px 18px', flexWrap: 'wrap', fontFamily: 'var(--font-body)', fontSize: 13 }}>
+            {GUIDER.map(g => (
+              <Link key={g.href} href={g.href} className="hem-guide" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none' }}>{g.label} <span style={{ color: '#D4A574' }}>›</span></Link>
+            ))}
+          </nav>
         </div>
         <div style={{ display: 'flex', gap: 10, marginBottom: 40, flexWrap: 'wrap', alignItems: 'center' }}>
-          <input type="text" placeholder={t.resorts.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 13, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
-          <div style={{ display: 'flex', gap: 0, borderRadius: 4, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+          {/* Landsknapparna låg förut i en ruta med overflow: hidden och utan
+              radbrytning, så på mobilen klipptes de sista länderna bort.
+              Nu är varje land en egen knapp som bryts till nästa rad.
+              Sökfältet har en etikett för skärmläsare och en synlig ram
+              när man tabbar till det — outline: none tog bort den. */}
+          <style>{`
+            .hem-sok:focus-visible, .hem-land:focus-visible, .hem-guide:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
+            .hem-guide { transition: color 0.2s; }
+            .hem-guide:hover { color: #D4A574 !important; }
+          `}</style>
+          <input type="search" className="hem-sok" aria-label="Sök skidort" placeholder={t.resorts.searchPlaceholder} value={search} onChange={e => setSearch(e.target.value)} style={{ flex: '1 1 260px', fontFamily: 'var(--font-body)', fontSize: 16, padding: '11px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 4, color: '#f0ece4', outline: 'none' }} />
+          <div role="group" aria-label="Filtrera på land" style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {countries.map(c => (
-              <button key={c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', border: 'none', cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.54)', transition: 'background 0.2s, color 0.2s', borderRight: '1px solid rgba(255,255,255,0.04)', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
+              <button key={c} type="button" className="hem-land" aria-pressed={country === c} onClick={() => setCountry(c)} style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: country === c ? 600 : 400, padding: '10px 14px', borderRadius: 4, cursor: 'pointer', background: country === c ? 'rgba(212,165,116,0.15)' : 'rgba(255,255,255,0.02)', color: country === c ? '#D4A574' : 'rgba(255,255,255,0.54)', border: `1px solid ${country === c ? 'rgba(212,165,116,0.35)' : 'rgba(255,255,255,0.08)'}`, transition: 'background 0.2s, color 0.2s', letterSpacing: '0.03em', textTransform: 'uppercase' }}>{c === ALLA_LANDER ? t.resorts.all : land(c)}</button>
             ))}
           </div>
         </div>

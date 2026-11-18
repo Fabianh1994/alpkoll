@@ -72,8 +72,10 @@ export default function PrivacyPage() {
           spårningskakor, annonskakor eller analyskakor, och därför finns det
           heller ingen kakruta att klicka bort. Det gäller även
           partnerlänkarna: de är vanliga länkar, och ingenting från vår
-          partner laddas eller lagras medan du är kvar på Alpkoll. Tjänster vi
-          länkar till kan använda kakor på sina egna domäner.
+          partner laddas eller lagras medan du är kvar på Alpkoll. Kartan på
+          ortsidorna kommer från Google och laddas först när du klickar på
+          Visa karta; då kan Google sätta sina kakor. Tjänster vi länkar till
+          kan använda kakor på sina egna domäner.
         </p>
       </Avsnitt>
 

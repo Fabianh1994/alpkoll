@@ -52,10 +52,17 @@ Familjevänligt lades till undantaget 2026-11-18 (granskningen av omgång 2, bes
 ### Snösäkerhet
 Sannolikheten att det finns bra snö under säsongen. Höjd, glaciär, konstsnö och läge.
 
-- **10** Zermatt, Val Thorens — glaciär och åkning över 3 000 m
-- **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl
+- **10** Zermatt, Val Thorens — pist på glaciär över 3 800 m (Zermatt, 3 899 m) eller en by över 2 200 m med pisterna mellan husen (Val Thorens, 2 300 m)
+- **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian
 - **7** normal alport utan glaciär
 - **6** Sälen — 572–887 m, lägst på sajten
+
+Ankaret för tian skärptes 2026-11-18 (granskningen av omgång 3). Där stod
+tidigare "glaciär och åkning över 3 000 m", vilket också Tignes (Grande
+Motte-glaciären, 3 456 m) uppfyller utan att vara en tia, och vilket Val
+Thorens, som saknar glaciär, inte uppfyller. Les Deux Alpes (glaciär,
+3 523 m, byn på 1 650 m) får därför 9. Toppen räknas bara där det finns
+pist: Chamonix 3 842 m är Aiguille du Midi.
 
 ### Nybörjarnivå
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.

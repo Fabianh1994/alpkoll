@@ -445,6 +445,15 @@ values
  'Kassapris huvudsäsong 19.12.26–26.3.27; på nätet 367,50–432,50 efter datum. Gäller hela Ski amadé, 760 km.')
 on conflict (resort_slug, season, product) do nothing;
 
+
+-- transfer_note: hur restiden ovan körs, som i 005/007. Utan den visar
+-- sidan restiden utan "med bil från …".
+update resorts set transfer_note = 'med bil från Innsbruck' where slug = 'lech-zuers' and transfer_note is null;
+update resorts set transfer_note = 'med bil från Salzburg' where slug = 'saalbach' and transfer_note is null;
+update resorts set transfer_note = 'med bil från Salzburg' where slug = 'zell-am-see-kaprun' and transfer_note is null;
+update resorts set transfer_note = 'med bil från Innsbruck' where slug = 'obergurgl' and transfer_note is null;
+update resorts set transfer_note = 'med bil från Salzburg' where slug = 'bad-gastein' and transfer_note is null;
+
 commit;
 
 

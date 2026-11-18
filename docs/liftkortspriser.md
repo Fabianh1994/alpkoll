@@ -463,3 +463,22 @@ omgång 2 samma dag. Se migration 040. Orterna ligger dolda
 Databasens kolumner är heltal (se 022), så 69,50, 81,50 och 432,50 lagras
 avrundade i `resorts`. De exakta talen står i `lift_pass_prices`.
 
+
+## 2026-11-18 — Omgång 3: tre franska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 3 samma dag. Se migration 041. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns. Alla tre
+korten gäller samma område som pisttalen, så ingen står i `LIFTKORT`.
+
+- **la-plagne** — La Plagne-kortet 72 / 370 €, vuxen 13–64, ett pris
+  12.12.26–24.4.27 (PDF-prislistan på skipass-laplagne.com). Cirka 15 %
+  lägre vissa datum i början och slutet. Paradiski 78 / 412 €, samma som
+  för Les Arcs, står som `STORRE_KORT` med 225 + 200 km.
+- **les-deux-alpes** — 68 / 333 €, vuxen 19–64, period P3 19.12.26–9.4.27
+  (skipass-2alpes.com, tabelldata i sidan). Fasta periodpriser. Sex dagar
+  ger två dagar i Alpe d'Huez och en dag i fyra Grande Galaxie-orter.
+- **serre-chevalier** — 68 / 345 €, vuxen 12–64, säsong 19.12.26–26.3.27
+  (serrechevalier-pass.com/fr/grille-tarifaire). Forskaren kunde bara läsa
+  priset hos tredje part; granskaren läste liftbolagets sida med Firecrawl,
+  som renderar JavaScript. Början och slutet av säsongen 56 / 283 €.

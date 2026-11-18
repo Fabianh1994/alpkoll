@@ -137,4 +137,10 @@ insert into resorts (
 )
 on conflict (slug) do nothing;
 
+
+-- transfer_note: hur restiden ovan körs, som i 005/007. Utan den visar
+-- sidan restiden utan "med bil från …".
+update resorts set transfer_note = 'med bil från Genève' where slug = 'val-d-isere' and transfer_note is null;
+update resorts set transfer_note = 'med bil från Östersund' where slug = 'vemdalen' and transfer_note is null;
+
 commit;

@@ -340,3 +340,16 @@ Livignos tabell kom ut med dagsiffrorna i en kolumn och priserna i en annan,
 förskjutna ett steg, vilket gav sex dagar för 127 € i stället för 331.
 `-table` löser det. Ett tal som ser en faktor för lågt ut är förskjutning,
 inte rabatt.
+
+## 2026-11-18 — Levi hämtad, Cortina och Hemavan kvar
+
+- **levi** — levi.fi/en/ski/levi-ski-resort-services/skipasses har nu en
+  tabell rubricerad "Ski pass prices on winter season 2026-2027". Kassa
+  60 / 269 €, ett pris hela säsongen. Se migration 032.
+- **cortina-d-ampezzo** — Dolomiti Superski publicerar bara helkortet i
+  pressmeddelandet (453 € för sex dagar i högsäsong). Ortskortet för Cortina
+  syns bara i deras datumkonfigurator, som inte går att läsa utan webbläsare.
+  En tidning anger 421 € för 15–20 februari 2027; det är inte vår källa.
+- **hemavan** — fortfarande bara i bokningen. Freeride.se anger 2 685 kr
+  för sex dagar i högsäsong; inte vår källa.
+- **geilo** och **riksgransen** — oförändrat 25/26.

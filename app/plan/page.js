@@ -57,8 +57,8 @@ function getSkillScore(resort, skill) {
 
 // Tillgänglighet räknas på uppmätt restid, inte på avståndet till
 // flygplatsen. Avståndet visste inget om serpentinvägar: Val Thorens
-// ligger 180 km från Genève men tar tre timmar, medan Chamonix på 90 km
-// tar drygt en.
+// ligger 155 km från Genève men tar två och en halv timme, medan Chamonix
+// på 87 km tar drygt en (OSRM, migration 046).
 //
 // KVARSTÅR: poängen mäter transfern från flygplatsen, inte hela resan
 // hemifrån. Hemavan får därför högsta betyg för en flygplats fem

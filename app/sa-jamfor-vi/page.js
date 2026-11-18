@@ -83,10 +83,9 @@ export default function SaJamforViPage() {
           De tolv poängen mellan 1 och 10 — snösäkerhet, nybörjarnivå, offpist,
           bykänsla och de andra — är redaktionella bedömningar. Det gör dem inte
           godtyckliga: varje skala har namngivna orter i topp och botten, och en
-          ny ort placeras genom att jämföras med dem. Zermatt och Val Thorens är
-          tior på snösäkerhet därför att de har glaciär och åkning över
-          3 000 meter; Sälen är en sexa därför att orten ligger mellan 330 och
-          887 meter.
+          ny ort placeras genom att jämföras med dem. Zermatt är tia på
+          snösäkerhet därför att pisten når 3 899 meter på glaciär; Sälen är
+          en sexa därför att orten ligger mellan 572 och 887 meter.
         </p>
         <p style={{ marginTop: 12 }}>
           <Stark>En poäng måste gå att belägga med en faktamening.</Stark> Kan

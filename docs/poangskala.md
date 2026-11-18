@@ -52,18 +52,25 @@ Familjevänligt lades till undantaget 2026-11-18 (granskningen av omgång 2, bes
 ### Snösäkerhet
 Sannolikheten att det finns bra snö under säsongen. Höjd, glaciär, konstsnö och läge.
 
-- **10** Zermatt, Val Thorens — pist på glaciär över 3 800 m (Zermatt, 3 899 m) eller en by över 2 200 m med pisterna mellan husen (Val Thorens, 2 300 m)
-- **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian
+- **10** Zermatt — pist på glaciär upp till 3 899 m, högst på sajten
+- **9** Tignes, Les 3 Vallées, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian. Les 3 Vallées: glaciärer i Val Thorens-sektorn, topp 3 230 m, 85 % av pisten över 1 800 m och 60 % konstsnö
 - **7** normal alport utan glaciär
 - **6** Sälen — 572–887 m
 - **5** Branäs — 152–567 m, lägst på sajten; toppen ligger under Sälens bas
 
 Ankaret för tian skärptes 2026-11-18 (granskningen av omgång 3). Där stod
 tidigare "glaciär och åkning över 3 000 m", vilket också Tignes (Grande
-Motte-glaciären, 3 456 m) uppfyller utan att vara en tia, och vilket Val
-Thorens, som saknar glaciär, inte uppfyller. Les Deux Alpes (glaciär,
-3 523 m, byn på 1 650 m) får därför 9. Toppen räknas bara där det finns
-pist: Chamonix 3 842 m är Aiguille du Midi.
+Motte-glaciären, 3 456 m) uppfyller utan att vara en tia. Les Deux Alpes
+(glaciär, 3 523 m, byn på 1 650 m) får därför 9. Toppen räknas bara där det
+finns pist: Chamonix 3 842 m är Aiguille du Midi.
+
+Samma dag, i granskningen av omgång 7, ströks Val Thorens ur tian. Ankaret
+beskrev byn ("en by över 2 200 m med pisterna mellan husen"), men
+snösäkerhet är ett områdesbetyg, och Courchevel, Méribel och Val Thorens
+bar 8, 8 och 10 för samma pister. Som område går Les 3 Vallées inte att
+skilja från Tignes eller Sölden, båda 9 med högre topp. Alla tre har nu 9.
+Påståendet att Val Thorens saknar glaciär var fel: skiresort skriver "In
+the Val Thorens sector, there are also several glaciers".
 
 ### Nybörjarnivå
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.
@@ -100,8 +107,8 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 Hoppens och railsens kvalitet och underhåll.
 
 - **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
-- **9** Val Thorens
-- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Courchevel, Tignes
+- **9** Les 3 Vallées (Val Thorens, Méribel, Courchevel) — VT Park vid Plateau, Open Park i Méribel-Mottaret med en liten halfpipe, Family Park i Courchevel
+- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes
 - **6** normal alport
 - **5** orter med park mest på pappret
 - **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass
@@ -158,9 +165,9 @@ Poängen skiljer Norden från Alperna tydligare än någon annan — nordiska or
 Poängen ersätter inte `transfer_minutes`, som bara mäter flygplats → ort och därför inte går att jämföra mellan Norden och Alperna. Den befintliga `public_transport_access` mäter något annat — lokal kollektivtrafik — och duger inte: Sälen står som `false` trots bussar från Stockholm.
 
 - **9** Åre (nattåg sju timmar från Stockholm, direktflyg till Östersund), Sälen (fyra och en halv timme med bil)
-- **8** Trysil, St. Anton (nattåg från Malmö, annars Innsbruck), Chamonix (Genève på 75 min, direktbussar)
+- **8** Trysil, St. Anton (nattåg från Malmö, annars Innsbruck), Chamonix (Genève på drygt en timme med bil, direktbussar)
 - **6** normal alport med flyg plus två timmars transfer
-- **5** Val Thorens, Zermatt — tre timmar eller mer från flygplatsen
+- **5** Val Thorens, Zermatt — två och en halv timme eller mer från flygplatsen, sista biten serpentinväg (Val Thorens) eller tåg till en bilfri by (Zermatt)
 - **4** Riksgränsen, Levi, Ruka — långt norrut, få avgångar
 - **3** Livigno — Bergamo plus tre och en halv timme över ett pass som kan stängas
 
@@ -191,3 +198,13 @@ Snösäkerhet 9 gäller också glaciärorter med låg by: Laax (1 100 m, 37 % ko
 Snösäkerhet fick ett ankare under Sälen: Branäs 5, toppen 567 m under Sälens bas 572 m. Sälen är lägst bland de publicerade orterna tills Branäs publiceras.
 
 Bykänsla för nordiska orter byggda som anläggningar kring liftarna (Idre Fjäll 1967, Branäs och Hafjell 1988) sätts till 6, samma som Vemdalen. Tignes-ankaret 5 beskriver samma sak med samma ord, och Sälen har 7 med samma slags bebyggelse. Att de nordiska anläggningarna ligger på 6 och Tignes på 5 är inte belagt av någon skillnad i källorna. Om gruppen ska till 5, och om Sälen ska ner från 7, är ett ägarbeslut.
+
+**Avgjort 2026-11-18 (granskningen av omgång 7):** Les 3 Vallées bär samma områdesbetyg i alla tre byarna, som 014 krävde för nybörjare, mellannivå och avancerad: snösäkerhet 9, offpist 9, snowpark 9 och gott om plats 5. Det flyttar Courchevel och Méribel ett steg upp på snösäkerhet och Val Thorens ett steg ned; Val Thorens går två steg ned på gott om plats (7 → 5) och Méribel två steg upp på snowpark (7 → 9). Migration 046 avbryter om något områdestal eller områdesbetyg skiljer inom Les 3 Vallées eller Tignes/Val d'Isère.
+
+Säsongen i Les 3 Vallées är områdets, enligt regeln i 005: 11–5 för alla tre, fast Courchevel och Méribel öppnar sina egna liftar först i december.
+
+Snösäkerhet 9 följer ankarets ordalydelse även för La Plagne (Bellecôteglaciären, 3 167 m), Les Arcs (3 226 m) och Alpe d'Huez (Sarenneglaciären, 3 330 m), som stod på 8 sedan omgång 3. Laax och Engelberg fick 9 i omgång 5 med lägre topp och lägre konstsnö, och inget fält skiljer de franska orterna från dem. Ett skarpare ankare (till exempel glaciär med pist över 3 400 m eller konstsnö på minst halva pisten) skulle sätta alla fem på 8 och är ett ägarbeslut.
+
+Afterski för byar som Ski Club GB ger 2/5: 5 om ingen annan oberoende källa beskriver ett kvällsliv i byn (Serre Chevalier), 6 om en gör det (La Plagne, Les Arcs, Courchevel). Courchevel går därmed från 8 till 6.
+
+Bykänsla för franska skidstationer byggda kring liftarna: 8 där husen byggts efter regler om trä och sten (Méribel), 7 där orten också har gamla byar (Courchevel, med Le Praz och Saint-Bon), 6 för låga eller medelhöga hus utan gammal kärna (Val Thorens, Les Arcs, Alpe d'Huez), 5 med höghus (Tignes, La Plagne), 4 för en lång rad lägenhetshus (Les Deux Alpes). Courchevel går från 9 till 7: ankarets nior fanns före liftarna, och Courchevel 1850 var den första franska skidorten som byggdes från grunden.

@@ -44,9 +44,9 @@ Huvudtal = v9. Dynamiska priser fångade 2026-08-12 för startdag 2027-03-01.
 | ischgl | EUR | 83 | **451** | 5,43 | 26/27 | ett pris hela säsongen |
 | tignes | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma område som våra 300 km |
 | alpe-d-huez | EUR | 68 | **336,50** | 4,95 | 26/27 | 19.12.26–9.4.27 |
-| courchevel | EUR | ~82 | **421** | 5,13 | 26/27 | Les 3 Vallées |
-| meribel | EUR | ~82 | **421** | 5,13 | 26/27 | Les 3 Vallées |
-| val-thorens | EUR | ~82 | **421** | 5,13 | 26/27 | Les 3 Vallées |
+| courchevel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
+| meribel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
+| val-thorens | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | verbier | CHF | 94 | **409** | 4,35 | 26/27 | 4 Vallées, samma som våra 412 km. Verbier–Tzoumaz ensamt: 86/374 |
 | geilo | NOK | 693 | **2 871** | 4,14 | 25/26 | produkten heter "6–8 dagar" |
 | are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, fångat 2026-08-12 för 1 mars 2027 |
@@ -424,7 +424,7 @@ lib/liftkortspriser.js:
 - **grandvalira** — 308 km står nu med skiresort.com som källa.
 
 Kvar att kontrollera:
-- **3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.
+- ~~**3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.~~ Löst i omgång 7: 84,20 på les3vallees.com, se nedan.
 - **Mont-Blanc Unlimited** — vad kortet omfattar och Courmayeurs 41 km är inte
   bekräftade från CMB:s egen sida, som inte gick att läsa.
 - Större kort att överväga: Kitzbühel (Ski Alpin Card), Ischgl (Silvretta Ski
@@ -579,3 +579,28 @@ granskningen av omgång 6 samma dag. Se migration 044. Orterna ligger dolda
   `kalla`, som Val Gardena, och får ingen rad i `lift_pass_prices`. Läs
   alpinco.com/no/hafjell/kjop-dagskort-1-8-dager i en vanlig webbläsare,
   vuxen, start 27.2.2027, 1 och 6 dagar, innan orten publiceras.
+
+
+## 2026-11-18 — Omgång 7: sju befintliga franska orter
+
+Lästa av forskarna och kontrollerade i granskningen av omgång 7 samma dag.
+Se migration 046. Befintliga rader i `lift_pass_prices` uppdateras; inga
+nya rader och inga ändringar i `lib/liftkortspriser.js`.
+
+- **courchevel, meribel, val-thorens** — les3vallees.com, "1-Day Adult Solo
+  Pass €84.20" och "6-Day Adult Solo Pass €421.00", vuxen 18–74, fast pris
+  från 19 december 2026. Dagspriset var 82 ur skiresort.com via 013 och
+  blir 84,20 med ortens egen sida som källa (`resorts` lagrar 84, heltal).
+  Lördagar säljs dagskortet för 67,30; det är inget ordinarie pris och
+  används inte. Sexdagarspriset är oförändrat. Kvot 5,00.
+- **alpe-d-huez** — skipass.alpedhuez.com, "Du 19 décembre 2026 au 9 avril
+  2027", Adulte 13–64: 68,00 / 336,50. Oförändrat; raden får källadress.
+- **tignes** — valdisere.com, kortet Tignes–Val d'Isère, Hiver 12.12.26–
+  23.4.27, vuxen 19–64: 78 / 468. Oförändrat; raden får källadress och
+  lågsäsongens 67 / 402 i noten.
+- **les-arcs** — lesarcs-peiseyvallandry.com, Classic Pass 71 / 368,
+  Paradiski 78 / 412. Oförändrat; raden får källadress.
+- **chamonix** — Compagnie du Mont-Blanc, Chamonix Le Pass 76,50 / 373,
+  Mont-Blanc Unlimited 104 / 499. Oförändrat. Le Pass gäller inte Les
+  Houches; ortsidans fråga om fallhöjd sade "områden som liftkortet ger"
+  om alla fyra delarna, och de orden är strukna i `lib/vanligaFragor.js`.

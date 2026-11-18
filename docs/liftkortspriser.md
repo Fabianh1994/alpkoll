@@ -86,10 +86,15 @@ omräkning att ta höjd för.
 
 **Saalbach.** dag 82 / 6 dagar 440 (topp 19.12.26–12.3.27), men kortet gäller
 Skicircus PLUS Schmitten i Zell am See PLUS Kitzsteinhorn och Maiskogel i
-Kaprun — Ski ALPIN CARD, 408 km, inte Skicircus 270 km.
+Kaprun — Ski ALPIN CARD, 408 km, inte Skicircus 270 km. *Inte längre
+underkänd:* ortens prislista 26/27 har inget kort för bara Skicircus, och
+beslutet "Priset följer veckokortet" gäller. Se 2026-11-18, omgång 2, nedan.
 
 **Bad Gastein.** 6 dagar 432,50 gäller hela Ski amadé, 760 km. Inget
-Gastein-bara-alternativ finns. Dagsbiljetten 78,50 avser Gasteins 82,7 km.
+Gastein-bara-alternativ finns. Dagsbiljetten 81,50 (26/27, kassa) gäller
+inte bara Gasteins 82,7 km utan också Dorfgastein-Großarl och Sportgastein.
+Här stod tidigare "78,50 avser Gasteins 82,7 km", som var fel i både pris
+och område. *Inte längre underkänd,* se 2026-11-18, omgång 2, nedan.
 
 **Mayrhofen.** 399 € är Zillertal Superskipass för hela dalen.
 
@@ -98,7 +103,7 @@ Det är alltså inte en österrikisk egenhet utan ett allmänt mönster.
 
 **Riksgränsen — samma mönster, men det finns inget alternativ.** Skidpasset
 gäller "Björkliden Fjällby och Riksgränsen", medan våra 21 km och 6 liftar
-avser Riksgränsen ensamt. Till skillnad från Saalbach säljer orten inget
+avser Riksgränsen ensamt. Orten säljer inget
 kort som bara gäller den egna sidan — det finns ingen rätt produkt att
 välja i stället. Talet står i tabellen med den här reservationen. Frågan är
 inte vilket pris som ska hämtas utan om pisttalet borde avse båda
@@ -167,10 +172,8 @@ källa — det är för tidigt. Datumet står utsatt där orten uppger ett.
   sommarpris till en vinterjämförelse.
 
 ## KVAR — orter som ännu inte finns i databasen
-val-gardena, saalbach, bad-gastein, cervinia
-
-Saalbach och Bad Gastein är redan underkända ovan på område. För dem måste
-frågan om vilket kort som motsvarar pisttalen lösas innan orten läggs in.
+Inga. Val Gardena och Cervinia lades in i migration 042, Laax, St. Moritz och
+Engelberg i 043.
 
 ## METOD som fungerar
 - Alporter med publicerad prislista: WebFetch mot ortens prissida.
@@ -433,3 +436,146 @@ International (Zermatt–Cervinia) 122 CHF för en dag och 574 CHF för sex daga
 Zermatt ensamt 104 / 510. Vi bar 104 / 432, som blandade Zermatts dagspris med
 det lägsta dynamiska sexdagarspriset. Migration 036. Priset är dynamiskt och
 bör läsas igen före pressutskicket.
+
+## 2026-11-18 — Omgång 2: fem österrikiska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 2 samma dag. Se migration 040. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+- **lech-zuers** — samma Ski Arlberg-kort som St. Anton, 85 / 468 € i peak
+  season 19.12.26–2.4.27. skiarlberg.at kallar priserna preliminära.
+- **saalbach** och **zell-am-see-kaprun** — Ski ALPIN CARD 82 / 440 € i
+  huvudsäsong 19.12.26–12.3.27 (saalbach.com, zellamsee-kaprun.com). Något
+  kort för bara den egna orten finns inte. LIFTKORT 408 km enligt
+  saalbach.com och skiresort.com, som Mayrhofens 546.
+- **bad-gastein** — 81,50 / 432,50 € i kassan, huvudsäsong
+  19.12.26–26.3.27 (skigastein.com). På nätet dynamiskt och lägre.
+  Sexdagarskortet är Ski amadé, 760 km i fem regioner utan lift mellan dem,
+  så orten räknas inte per kilometer (LIFTKORT km null, som Riksgränsen).
+  Dagskortet gäller Schlossalm–Angertal–Stubnerkogel, Dorfgastein-Großarl
+  och Sportgastein.
+- **obergurgl** — dag från 69,50 €, sex dagar 469 € i högsäsongen som
+  omfattar v9 (27.2–18.4.2027, gurgl.com). Sexdagarskortet är Ötztal
+  Superskipass, "valid in all Ötztal ski areas for 3 days or more".
+- **solden** — samma Ötztal Superskipass. Får LIFTKORT med km null i samma
+  ändring och räknas därför inte längre per kilometer.
+
+Databasens kolumner är heltal (se 022), så 69,50, 81,50 och 432,50 lagras
+avrundade i `resorts`. De exakta talen står i `lift_pass_prices`.
+
+
+## 2026-11-18 — Omgång 3: tre franska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 3 samma dag. Se migration 041. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns. Alla tre
+korten gäller samma område som pisttalen, så ingen står i `LIFTKORT`.
+
+- **la-plagne** — La Plagne-kortet 72 / 370 €, vuxen 13–64, ett pris
+  12.12.26–24.4.27 (PDF-prislistan på skipass-laplagne.com). Cirka 15 %
+  lägre vissa datum i början och slutet. Paradiski 78 / 412 €, samma som
+  för Les Arcs, står som `STORRE_KORT` med 225 + 200 km.
+- **les-deux-alpes** — 68 / 333 €, vuxen 19–64, period P3 19.12.26–9.4.27
+  (skipass-2alpes.com, tabelldata i sidan). Fasta periodpriser. Sex dagar
+  ger två dagar i Alpe d'Huez och en dag i fyra Grande Galaxie-orter.
+- **serre-chevalier** — 68 / 345 €, vuxen 12–64, säsong 19.12.26–26.3.27
+  (serrechevalier-pass.com/fr/grille-tarifaire). Forskaren kunde bara läsa
+  priset hos tredje part; granskaren läste liftbolagets sida med Firecrawl,
+  som renderar JavaScript. Början och slutet av säsongen 56 / 283 €.
+
+
+## 2026-11-18 — Omgång 4: tre italienska orter
+
+Hämtade från ortens egen prislista och kontrollerade i granskningen av
+omgång 4 samma dag. Se migration 042. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+- **alta-badia** — Alta Badias eget kort 83 / 421 €, vuxen, högsäsong
+  20.12.26–9.1.27 och 31.1–20.3.27 (ortens prislista "ALTA BADIA SKIPASS
+  2026 / 2027", länkad från altabadia.org). Fasta nivåer; säsong 75 / 378.
+  Att sexdagarspriset är detsamma som Cortinas (421) är en tillfällighet.
+  Dolomiti Superski 89 / 453 € står som `STORRE_KORT`, som för Cortina.
+- **cervinia** — det internationella kortet Breuil-Cervinia–Valtournenche–
+  Zermatt, 88 / 464,50 €, fast pris 24.10.26–2.5.27 (Cervino S.p.A.:s PDF,
+  läst med pdftotext av både forskaren och granskaren). Det är samma kort som
+  Zermatts 122 / 574 CHF, men köpt i Cervinias kassa till fast pris i euro.
+  Sajten visar alltså två priser för samma område, och båda är ortens egen
+  prislista. Cervinias eget kort, 64 / 338 €, gäller bara italienska sidan
+  och står i noten. Det löser frågan i avsnittet "Zermatt löser också
+  Cervinia" ovan. `resorts` lagrar 465 (heltalskolumn).
+- **val-gardena** — dalkortet Val Gardena / Seiser Alm, samma 181 km som
+  pisttalen. Dagspriset 83 € i högsäsong är läst i Dolomiti Superskis
+  kalkylator och hos skiresort. **Sexdagarspriset är OKÄNT:** kalkylatorn
+  räknar flerdagarspriset med ett anrop bakom Cloudflare (curl 403,
+  Firecrawl omdirigerades), och valgardena.it har ingen prislista.
+  `lift_pass_week_eur` är null och orten står i `UTAN_PRIS` med typen
+  `kalla`. Ski Club GB:s 25/26-pris (80 / 404 €) är inte ortens egen lista
+  och används inte. Läs kalkylatorn i en vanlig webbläsare, start 27
+  februari 2027 som Cortina, innan orten publiceras. Dolomiti Superski står
+  som `STORRE_KORT`.
+
+
+## 2026-11-18 — Omgång 5: tre schweiziska orter
+
+Hämtade från ortens egen bokning och kontrollerade i granskningen av
+omgång 5 samma dag. Se migration 043. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns.
+
+Alla tre priserna är dynamiska. **Regeln för dynamiska priser är den från
+Zermatt (036): läs för start lördag 27 februari 2027, referensveckans första
+dag, sex dagar 27.2–4.3.** Forskarna läste 1 mars för Laax och St. Moritz;
+de talen står i noten i `lift_pass_prices` men används inte.
+
+- **laax** — LAAX-kortet, samma område som pisttalen, 90,00 / 440,00 CHF,
+  vuxen 18–63 (shop.laax.com, Pricenow-butiken, läst av granskaren i
+  webbläsare). Start 1 mars: 86,50 / 442,00. Kvot 4,89.
+- **st-moritz** — Upper Engadin, 86,00 / 454,50 CHF, vuxen 18+
+  (booking.engadin.ch, "Snow-Deal", läst av både forskaren och granskaren).
+  `resorts` lagrar 455. Start 1 mars: 91,50 / 452,00. Flerdagskort finns
+  bara för hela Oberengadin, som också gäller Zuoz, fem små backar och
+  bussar och tåg i dalen. `LIFTKORT` med km null, eftersom Maloja och
+  Muottas Muragl saknar egen post hos skiresort. Torsdagarna i februari och
+  mars kostar 55 CHF för en dag, mot 76–106 CHF övriga dagar; skälet är inte
+  utrett och påverkar inte sexdagarspriset, som är ett eget tal.
+- **engelberg** — kortet för Titlis och Brunni (shop.titlis.ch, "Ski
+  tickets for the whole destination (TITLIS/Brunni/Fürenalp)"), 67 / 302
+  CHF på nätet, vuxen, läst av granskaren i webbläsare. Forskaren kunde
+  inte bläddra till mars och lämnade priset OKÄNT. titlis.ch kallar alla
+  listade priser "online prices"; i kassan tillkommer 5 CHF per köp, inte
+  per dag. Kvot 4,51. `LIFTKORT` 79 km (Titlis 70 + Brunni 8,5 enligt
+  skiresort.com); butikens egna "82 kilometers of slopes" räknar in
+  skidrutter. Fürenalp är en utflyktsbana utan pist.
+
+Alla tre bör läsas igen före pressutskick, som Zermatt.
+
+
+## 2026-11-18 — Omgång 6: tre nordiska orter
+
+Hämtade från ortens egen prislista eller bokning och kontrollerade i
+granskningen av omgång 6 samma dag. Se migration 044. Orterna ligger dolda
+(`published = false`) tills bild och Booking-söksträng finns. Ingen av dem
+är SkiStars, så SkiStar-kalenderns 1 mars gäller inte; regeln från Zermatt
+(036) gör det: dynamiska priser läses för start lördag 27 februari 2027.
+
+- **idre-fjall** — Idre Fjäll Skipass, vuxen 16–64, start 27.2.2027:
+  671 / 2 827 SEK, och samma pris för sex, sju och åtta dagar. Forskaren
+  läste ortens bokning renderad; granskaren fick bara sidans skal med curl,
+  och pistat.se visar samma tal. Listpris: på nätet dras 5 %, och 10 % vid
+  köp mer än 40 dagar före. Priset ändras med veckan. Kvot 4,21.
+  Idrepasset (Idre Fjäll, Fjätervålen, Idre Himmelfjäll, Grövelfjäll) är ett
+  tilläggskort mellan fyra ägare; priset är inte läst, och det står inte i
+  `STORRE_KORT`.
+- **branas** — branas.se, "Prislista 26/27", vuxen 18–64: 595 / 2 710 SEK,
+  läst av både forskaren och granskaren. Ett pris hela säsongen, så
+  startdagen spelar ingen roll. Premiärhelgen 11–13 december kostar halva,
+  och kampanjpriset 2 440 för 6–8 dagar gällde till 31 oktober 2026 och
+  används inte. Kvot 4,55.
+- **hafjell** — **OKÄNT.** Alpinco sätter priset per startdag i en
+  Citybreak-kalender bakom Cloudflare (curl 403, webbläsaren fastnar på
+  säkerhetskontrollen). Läst bara för 27–30 november 2026: 599 NOK.
+  skiresorts och Snowtheres 699 NOK har okänt datum och används inte.
+  `resorts` lagrar null, null, 'NOK', orten står i `UTAN_PRIS` med typen
+  `kalla`, som Val Gardena, och får ingen rad i `lift_pass_prices`. Läs
+  alpinco.com/no/hafjell/kjop-dagskort-1-8-dager i en vanlig webbläsare,
+  vuxen, start 27.2.2027, 1 och 6 dagar, innan orten publiceras.

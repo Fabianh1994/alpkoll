@@ -366,3 +366,65 @@ på kortets kilometer.
 - **riksgransen** — kortet gäller även Björkliden; km okänt, därför inte per km.
 - **chamonix**, **grandvalira**, **cortina-d-ampezzo** — kvar. Priserna är
   dynamiska eller ligger i bokningsflöden och läses via webbläsare.
+
+## 2026-11-18 — De sista fyra, lästa i bokningarna
+
+Alla orter har nu pris. Tre av dem sätter priset efter datum, så talet
+gäller en vuxen med start i referensveckan. Se migration 034.
+
+- **chamonix** — Compagnie du Mont-Blanc, prislista hög säsong 26/27.
+  Chamonix Le Pass 76,50 / 373 €. Kortet gäller Brévent–Flégère, Grands
+  Montets och Balme, 114 km enligt delområdena; Les Houches ingår inte.
+- **grandvalira** — assistant.grandvalira.com, 28.2–5.3.2027: 396 € i kassan,
+  370,20 € på nätet. Flerdagarskortet gäller även Pal Arinsal och Ordino
+  Arcalís, 308 km. Dagspriset lästes inte.
+- **cortina-d-ampezzo** — Dolomiti Superskis konfigurator, ortskortet
+  Cortina d'Ampezzo, 1–6.3.2027: 421 € (400 € på nätet). Dag 84 €. Kortet
+  gäller samma område som våra pisttal.
+- **hemavan** — quickbook.hemavan.nu, Liftkort 6–8 dagar, start 27.2.2027:
+  2 955 kr i kassan (2 807 kr med förbokning). Dag 665 kr. Kortet gäller
+  även Tärnaby, 20 km enligt skiresort.com, alltså 52 km.
+
+**Dynamiska priser ska läsas för ett datum, inte för "säsongen".** Hemavans
+sexdagarskort kostar 2 690 kr med start före 19 februari och 2 955 kr
+därefter. Ange datumet i noten.
+
+## 2026-11-18 — Större kort och sorterbar tabell
+
+Önskemål av Fabian: liftkortspriser visar ortens kort och, där det finns,
+det större kortet på en rad under (`STORRE_KORT` i lib/liftkortspriser.js).
+Ortens kort styr ordning och index. Varje rad har dagskort, sex dagar, per
+dag, km och kronor per km, och tabellen går att sortera.
+
+- **cortina-d-ampezzo** — Dolomiti Superski 453 €, 1 200 km.
+- **chamonix** — Mont-Blanc Unlimited 104 / 499 €, 170 + 41 km (Courmayeur).
+- **les-arcs** — Paradiski, Essential Pass 78 / 412 € i högsäsong,
+  lesarcs-peiseyvallandry.com. 200 + 225 km.
+- **saas-fee** — Destination-kortet för hela Saastal, 428 CHF (fast pris),
+  saas-fee.ch. 101 + 26 + 15 + 1 km.
+- **madonna-di-campiglio** — Skirama Dolomiti Adamello Brenta finns, men
+  priset hittades inte på ortens sida. Kvar.
+- **solden** — sexdagarskortet gäller redan hela Ötztal (från tre dagar);
+  inget separat större kort.
+
+## 2026-11-18 — Granskning av priser och km
+
+Fyra granskare (priser, design, kod, besökare). Rättat i migration 035 och
+lib/liftkortspriser.js:
+
+- **saas-fee** — ortens sida visar nu 86 / 419 CHF för 26/27 (vi bar 84 / 413).
+  Kortet gäller Saas-Fee och Saas-Almagell: LIFTKORT 116 km (101 + 15).
+- **hemavan** — skiresort.com listar nu Hemavan 30 km och Tärnaby 20 km. Ortens
+  km blir 30, kortet 50.
+- **Dolomiti Superski** — dagskort 89 € enligt pressmeddelandet. Visas utan
+  kronor per km, eftersom de tolv områdena inte hänger ihop.
+- **grandvalira** — 308 km står nu med skiresort.com som källa.
+
+Kvar att kontrollera:
+- **zermatt** — 432 / 104 CHF är det lägsta dynamiska priset ("from CHF 432 to
+  550"), inte priset för v9. Läs kalkylatorn för 27 februari 2027.
+- **3 Vallées** — dagspriset 82 € har skiresort.com som källa; alti-mag anger 84,20.
+- **Mont-Blanc Unlimited** — vad kortet omfattar och Courmayeurs 41 km är inte
+  bekräftade från CMB:s egen sida, som inte gick att läsa.
+- Större kort att överväga: Kitzbühel (Ski Alpin Card), Ischgl (Silvretta Ski
+  Pass), Madonna (Skirama).

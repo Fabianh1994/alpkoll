@@ -1,12 +1,13 @@
 import Link from 'next/link'
+import Tabell from './Tabell'
 import SiteHeader from '../SiteHeader'
 import SiteFooter from '../SiteFooter'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { pris, kronorTal, perSkiddag } from '../../lib/pris'
+import { pris, kronorTal, perSkiddag, talet } from '../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../lib/valuta'
-import { DEFINITION, VERIFIERADE, UTAN_PRIS, LIFTKORT, harPris } from '../../lib/liftkortspriser'
+import { DEFINITION, VERIFIERADE, UTAN_PRIS, LIFTKORT, STORRE_KORT, harPris, kortKm } from '../../lib/liftkortspriser'
 
 // Samma intervall som ortsidorna. Ett rättat pris i Supabase slår igenom
 // här inom en timme, utan ny deploy.
@@ -16,7 +17,7 @@ const SASONG = '2026/2027'
 
 const titel = `Liftkortspriser ${SASONG} — vad sex skiddagar kostar | Alpkoll`
 const beskrivning =
-  'Sexdagarspriset för liftkort i Alperna och Norden, i kronor, hämtat från ' +
+  'Sexdagarspriset för liftkort i Alperna, Andorra och Norden, i kronor, hämtat från ' +
   'varje orts egen prislista. Samma definition för alla orter.'
 
 export const metadata = {
@@ -45,23 +46,70 @@ const etikett = {
 export default async function Liftkortspriser() {
   const [orter, kurser] = await Promise.all([getResorts(), hamtaKurser()])
 
-  // Bara orter vi kan stå för — se lib/liftkortspriser.js. Tre orter bär
-  // värden som aldrig hämtats och visas därför inte med pris.
+  // Bara orter vi kan stå för — se lib/liftkortspriser.js. Orter som bär
+  // värden som aldrig hämtats visas inte med pris.
   const rader = orter
     .filter(harPris)
     .map((ort) => {
       const valuta = ort.lift_pass_currency || 'EUR'
       const tal = kronorTal(ort.lift_pass_week_eur, valuta, kurser)
+      const km = kortKm(ort)
+      const stort = STORRE_KORT[ort.slug]
+      const stortTal = stort ? kronorTal(stort.vecka, stort.valuta, kurser) : null
       return {
         ort,
         meta: VERIFIERADE[ort.slug],
+        kortnamn: LIFTKORT[ort.slug]?.namn || null,
+        dag: pris(ort.lift_pass_day_eur, valuta, kurser),
+        dagTal: kronorTal(ort.lift_pass_day_eur, valuta, kurser),
         pris: pris(ort.lift_pass_week_eur, valuta, kurser),
         tal,
         perDag: perSkiddag(tal),
+        km,
+        kmText: km ? `${talet(km)} km` : null,
+        perKm: km && tal ? Math.round(tal / km) : null,
+        stort: stort && stortTal
+          ? {
+              namn: stort.namn,
+              galler: stort.galler,
+              km: stort.km,
+              kmText: stort.km ? `${talet(stort.km)} km` : null,
+              dag: pris(stort.dag, stort.valuta, kurser),
+              pris: pris(stort.vecka, stort.valuta, kurser),
+              perDag: perSkiddag(stortTal),
+              perKm: stort.km && stort.perKm !== false ? Math.round(stortTal / stort.km) : null,
+            }
+          : null,
       }
     })
     .filter((r) => r.pris && Number.isFinite(r.tal))
     .sort((a, b) => a.tal - b.tal)
+
+  // Filtret i tabellen går på det engelska landsfältet, inte på den
+  // översatta etiketten. Andorra hör inte till Alperna och syns under Alla.
+  const OMRADE = {
+    Sweden: 'sverige', Norway: 'norge', Finland: 'finland',
+    Austria: 'alperna', France: 'alperna', Italy: 'alperna', Switzerland: 'alperna',
+  }
+
+  // Bara det tabellen behöver går till webbläsaren, inte hela ortraden.
+  const tabellrader = rader.map((r) => ({
+    slug: r.ort.slug,
+    namn: r.ort.name,
+    land: land(r.ort.country),
+    omrade: OMRADE[r.ort.country] || null,
+    sasong: r.meta.sasong,
+    kortnamn: r.kortnamn,
+    dag: r.dag,
+    dagTal: r.dagTal,
+    pris: r.pris,
+    tal: r.tal,
+    perDag: r.perDag,
+    km: r.km,
+    kmText: r.kmText,
+    perKm: r.perKm,
+    stort: r.stort,
+  }))
 
   const utan = orter
     .filter((ort) => UTAN_PRIS[ort.slug])
@@ -89,8 +137,9 @@ export default async function Liftkortspriser() {
           fontFamily: 'var(--font-body)', fontSize: 16, lineHeight: 1.75,
           color: 'rgba(255,255,255,0.62)', maxWidth: 660, margin: '0 0 16px',
         }}>
-          Liftkortet för sex dagar, i kronor, för {rader.length} skidorter i Alperna
-          och Norden. Varje pris är hämtat från ortens egen prislista, inte från en
+          Dagskort, sex dagar och pris per kilometer pist, i kronor, för{' '}
+          {rader.length} skidorter i Alperna, Andorra och Norden — och det större kortet där
+          orten ingår i ett. Varje pris är hämtat från ortens egen prislista, inte från en
           sammanställning — och alla avser samma sak, så att talen går att ställa
           bredvid varandra.
         </p>
@@ -115,74 +164,15 @@ export default async function Liftkortspriser() {
         {/* ── Tabellen ──
             Sorterad på kronbeloppet, inte på namn. Den som läser en prislista
             vill veta vad som är billigt, och ordningen är svaret. */}
-        <div style={{ ...kort, overflowX: 'auto', marginBottom: 18 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 620 }}>
-            <thead>
-              <tr>
-                {['', 'Skidort', 'Sex dagar', 'Per skiddag', 'Säsong'].map((h, i) => (
-                  <th key={i} style={{
-                    ...etikett, textAlign: i >= 2 ? 'right' : 'left', padding: '16px 14px',
-                    borderBottom: '1px solid rgba(255,255,255,0.07)', whiteSpace: 'nowrap',
-                  }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rader.map((rad, i) => (
-                <tr key={rad.ort.slug} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <td style={{
-                    fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.47)',
-                    padding: '14px 8px 14px 16px', textAlign: 'right', width: 34,
-                  }}>{i + 1}</td>
-
-                  <td style={{ padding: '14px 14px' }}>
-                    <Link href={`/resort/${rad.ort.slug}`} style={{
-                      fontFamily: 'var(--font-body)', fontSize: 14.5, fontWeight: 500,
-                      color: '#f0ece4', textDecoration: 'none',
-                    }}>{rad.ort.name}</Link>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
-                      {land(rad.ort.country)} · {LIFTKORT[rad.ort.slug]?.km
-                        ? `${LIFTKORT[rad.ort.slug].namn}, ${LIFTKORT[rad.ort.slug].km} km`
-                        : `${rad.ort.total_pistes_km} km pist`}
-                    </div>
-                  </td>
-
-                  <td style={{ padding: '14px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: '#f0ece4' }}>
-                      {rad.pris.kr}
-                    </div>
-                    {rad.pris.ursprung && (
-                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(255,255,255,0.54)', marginTop: 3 }}>
-                        {rad.pris.ursprung}
-                      </div>
-                    )}
-                  </td>
-
-                  <td style={{
-                    fontFamily: 'var(--font-body)', fontSize: 13.5, color: 'rgba(255,255,255,0.5)',
-                    padding: '14px 14px', textAlign: 'right', whiteSpace: 'nowrap',
-                  }}>
-                    {rad.perDag ? `${rad.perDag} kr` : '—'}
-                  </td>
-
-                  <td style={{ padding: '14px 16px 14px 14px', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                    <span style={{
-                      fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.04em',
-                      padding: '4px 9px', borderRadius: 4,
-                      background: rad.meta.sasong === '26/27' ? 'rgba(212,165,116,0.12)' : 'rgba(255,255,255,0.05)',
-                      color: rad.meta.sasong === '26/27' ? ACCENT : 'rgba(255,255,255,0.61)',
-                    }}>{rad.meta.sasong}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Tabell rader={tabellrader} />
 
         <p style={{
           fontFamily: 'var(--font-body)', fontSize: 12.5, lineHeight: 1.7,
           color: 'rgba(255,255,255,0.57)', margin: '0 0 60px',
         }}>
+          Per km är sexdagarspriset delat med hur många kilometer pist kortet ger.
+          Per dag är sexdagarspriset delat med sex. Större kort står med en pil under
+          orten och räknas inte in i ordningen.{' '}
           Kronbeloppet är omräknat mot Europeiska centralbankens kurs den{' '}
           {skrivDatum(kurser.datum)} och avrundat till närmaste femtio. Ortens eget
           belopp står under. Raderna märkta{' '}
@@ -217,7 +207,7 @@ export default async function Liftkortspriser() {
         )}
 
         {/* ── Orter utan pris ──
-            Frånvaron är innehåll, inte ett hål. Den som undrar varför Cortina
+            Frånvaron är innehåll, inte ett hål. Den som undrar varför en ort
             saknas ska få veta det, och skälet är ofta att det är för tidigt. */}
         {utan.length > 0 && (
           <section style={{ marginBottom: 60 }}>
@@ -272,9 +262,11 @@ export default async function Liftkortspriser() {
           }}>
             Flera orter säljer både sammanhängande och valfria dagar, och skillnaden
             kan vara över tio procent. Talen här avser sammanhängande dagar överallt.
-            Där orten säljer flera kort har vi valt det som motsvarar den pist ortens
-            sida på Alpkoll redovisar — inte ett större regionkort, eftersom det hade
-            fått orten att se billigare ut per kilometer än den är.
+            Där orten säljer flera kort räknar vi på det som motsvarar den pist ortens
+            sida på Alpkoll redovisar. Ett större regionkort står på en egen rad under
+            orten, med sitt eget pris per kilometer. Där veckokortet bara finns som
+            dalkort, som i Zillertal, står kortets namn under orten och kilometrarna
+            är kortets.
           </p>
           <p style={{
             fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.75,

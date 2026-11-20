@@ -19,6 +19,23 @@
 // upplysning.
 
 import JuridiskSida, { Avsnitt, Lank, Stark } from '../JuridiskSida';
+import { getResorts } from '../../lib/resorts';
+import { harPris } from '../../lib/liftkortspriser';
+import { DELOMRADEN } from '../../lib/delomraden';
+
+// Antalen räknas ur datan. Handskrivna tal här ("sex orter utan pris",
+// "trettio orter av trettioåtta", "170 kilometer") stod kvar långt efter
+// att urvalet och talen ändrats (omgång 10, migration 049).
+export const revalidate = 3600;
+
+const NORDEN = new Set(['Sweden', 'Norway', 'Finland']);
+
+const ORD = ['noll', 'en', 'två', 'tre', 'fyra', 'fem', 'sex', 'sju', 'åtta', 'nio', 'tio', 'elva', 'tolv'];
+const ord = (n) => ORD[n] || String(n);
+
+/** "A", "A och B", "A, B och C". */
+const lista = (namn) =>
+  namn.length < 2 ? namn.join('') : `${namn.slice(0, -1).join(', ')} och ${namn[namn.length - 1]}`;
 
 export const metadata = {
   title: 'Så jämför vi skidorterna — Alpkoll',
@@ -27,9 +44,23 @@ export const metadata = {
   alternates: { canonical: '/sa-jamfor-vi' },
 };
 
-export default function SaJamforViPage() {
+export default async function SaJamforViPage() {
+  const orter = await getResorts();
+
+  const utanPris = orter.filter((r) => !harPris(r)).length;
+  const summerade = orter.filter((r) => DELOMRADEN[r.slug]);
+  const exempel = summerade.find((r) => r.slug === 'chamonix') || summerade[0];
+
+  const norden = orter.filter((r) => NORDEN.has(r.country)).length;
+  const andorra = orter.filter((r) => r.country === 'Andorra');
+  const alperna = orter.length - norden - andorra.length;
+  const andorraText = andorra.length === 1 ? andorra[0].name : ord(andorra.length);
+  const regioner = andorra.length
+    ? `${ord(alperna)} i Alperna, ${ord(norden)} i Norden och ${andorraText} i Andorra`
+    : `${ord(alperna)} i Alperna och ${ord(norden)} i Norden`;
+
   return (
-    <JuridiskSida titel="Så jämför vi" etikett="Om siffrorna" uppdaterad="september 2026">
+    <JuridiskSida titel="Så jämför vi" etikett="Om siffrorna" uppdaterad="november 2026">
       <Avsnitt titel="Ordningen är inte en rangordning">
         <p>
           <Stark>Listorna står i bokstavsordning.</Stark> Både startsidans
@@ -63,19 +94,37 @@ export default function SaJamforViPage() {
           <Stark>Priserna kommer ur varje orts egen prislista</Stark>, med
           säsongen utskriven intill beloppet. Ett pris vi inte kunnat hämta och
           kontrollera visas inte alls — ett tal vi inte kan belägga är sämre än
-          inget tal. Därför står sex orter utan pris i dag, med skälet utskrivet
-          på <Lank href="/liftkortspriser">prislistesidan</Lank>.
+          inget tal.{' '}
+          {utanPris > 0 ? (
+            <>
+              Därför står {ord(utanPris)} {utanPris === 1 ? 'ort' : 'orter'} utan
+              pris i dag, med skälet utskrivet på{' '}
+              <Lank href="/liftkortspriser">prislistesidan</Lank>.
+            </>
+          ) : (
+            <>
+              I dag har alla orter på sajten ett pris, och{' '}
+              <Lank href="/liftkortspriser">prislistesidan</Lank> visar vad
+              varje kort gäller.
+            </>
+          )}
         </p>
         <p style={{ marginTop: 12 }}>
           <Stark>Restiderna är uppmätta</Stark>, inte uppskattade: körsträckan
           från hundra svenska tätorter är räknad med vägdata, och nattågets
           tider är hämtade ur tågbolagens tidtabeller.
         </p>
-        <p style={{ marginTop: 12 }}>
-          Två orter har tal som är summan av flera områden, Sälen och Chamonix.
-          Där listas delarna var för sig på ortsidan, eftersom 170 kilometer som
-          inte hänger ihop inte är jämförbart med 150 som gör det.
-        </p>
+        {exempel && (
+          <p style={{ marginTop: 12 }}>
+            {summerade.length === 1
+              ? `${exempel.name} har tal som är summan av flera områden som inte når varandra med lift.`
+              : `${lista(summerade.map((r) => r.name))} har tal som är summan av flera områden som inte når varandra med lift.`}{' '}
+            Där listas delarna var för sig på ortsidan, eftersom de{' '}
+            {exempel.total_pistes_km} kilometrarna i {exempel.name} ligger i
+            skilda områden och inte är jämförbara med 150 kilometer som hänger
+            ihop.
+          </p>
+        )}
       </Avsnitt>
 
       <Avsnitt titel="Poängen är omdömen, inte mätvärden">
@@ -83,10 +132,9 @@ export default function SaJamforViPage() {
           De tolv poängen mellan 1 och 10 — snösäkerhet, nybörjarnivå, offpist,
           bykänsla och de andra — är redaktionella bedömningar. Det gör dem inte
           godtyckliga: varje skala har namngivna orter i topp och botten, och en
-          ny ort placeras genom att jämföras med dem. Zermatt och Val Thorens är
-          tior på snösäkerhet därför att de har glaciär och åkning över
-          3 000 meter; Sälen är en sexa därför att orten ligger mellan 330 och
-          887 meter.
+          ny ort placeras genom att jämföras med dem. Zermatt är tia på
+          snösäkerhet därför att pisten når 3 899 meter på glaciär; Sälen är
+          en sexa därför att orten ligger mellan 572 och 887 meter.
         </p>
         <p style={{ marginTop: 12 }}>
           <Stark>En poäng måste gå att belägga med en faktamening.</Stark> Kan
@@ -120,11 +168,11 @@ export default function SaJamforViPage() {
 
       <Avsnitt titel="Vilka orter som visas">
         <p>
-          Trettio orter av trettioåtta i databasen är publicerade: arton i
-          Alperna, elva i Norden och Grandvalira i Andorra. De åtta som är dolda
-          är ett redaktionellt val — sex ligger utanför Europa och är inte
-          relevanta för en svensk skidvecka, och två schweiziska orter är dolda
-          därför att Zermatt, Verbier och Saas-Fee räcker som schweiziskt urval.
+          På sajten finns i dag {ord(orter.length)} orter: {regioner}. Fler
+          orter ligger i databasen men visas inte. Orterna utanför Europa är
+          sällan aktuella för en svensk skidvecka, och några alpina orter står
+          utanför urvalet av redaktionella skäl. En ort kan också vara dold
+          medan något fattas, till exempel en bild vi har rätt att visa.
         </p>
         <p style={{ marginTop: 12 }}>
           Jämförelseverktyget låter dig ställa vilka två publicerade orter som

@@ -52,18 +52,25 @@ Familjevänligt lades till undantaget 2026-11-18 (granskningen av omgång 2, bes
 ### Snösäkerhet
 Sannolikheten att det finns bra snö under säsongen. Höjd, glaciär, konstsnö och läge.
 
-- **10** Zermatt, Val Thorens — pist på glaciär över 3 800 m (Zermatt, 3 899 m) eller en by över 2 200 m med pisterna mellan husen (Val Thorens, 2 300 m)
-- **9** Tignes, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian
+- **10** Zermatt — pist på glaciär upp till 3 899 m, högst på sajten
+- **9** Tignes, Les 3 Vallées, Sölden, Saas-Fee, Verbier, Ischgl — glaciär eller åkning över 3 000 m räcker hit, inte till tian. Les 3 Vallées: glaciärer i Val Thorens-sektorn, topp 3 230 m, 85 % av pisten över 1 800 m och 60 % konstsnö
 - **7** normal alport utan glaciär
 - **6** Sälen — 572–887 m
 - **5** Branäs — 152–567 m, lägst på sajten; toppen ligger under Sälens bas
 
 Ankaret för tian skärptes 2026-11-18 (granskningen av omgång 3). Där stod
 tidigare "glaciär och åkning över 3 000 m", vilket också Tignes (Grande
-Motte-glaciären, 3 456 m) uppfyller utan att vara en tia, och vilket Val
-Thorens, som saknar glaciär, inte uppfyller. Les Deux Alpes (glaciär,
-3 523 m, byn på 1 650 m) får därför 9. Toppen räknas bara där det finns
-pist: Chamonix 3 842 m är Aiguille du Midi.
+Motte-glaciären, 3 456 m) uppfyller utan att vara en tia. Les Deux Alpes
+(glaciär, 3 523 m, byn på 1 650 m) får därför 9. Toppen räknas bara där det
+finns pist: Chamonix 3 842 m är Aiguille du Midi.
+
+Samma dag, i granskningen av omgång 7, ströks Val Thorens ur tian. Ankaret
+beskrev byn ("en by över 2 200 m med pisterna mellan husen"), men
+snösäkerhet är ett områdesbetyg, och Courchevel, Méribel och Val Thorens
+bar 8, 8 och 10 för samma pister. Som område går Les 3 Vallées inte att
+skilja från Tignes eller Sölden, båda 9 med högre topp. Alla tre har nu 9.
+Påståendet att Val Thorens saknar glaciär var fel: skiresort skriver "In
+the Val Thorens sector, there are also several glaciers".
 
 ### Nybörjarnivå
 Hur väl orten tar hand om någon som aldrig stått på skidor. Övningsområden, breda blå backar, skidskolor, och att man inte tvingas ner för något svårt för att ta sig hem.
@@ -100,11 +107,12 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 Hoppens och railsens kvalitet och underhåll.
 
 - **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
-- **9** Val Thorens
-- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Courchevel, Tignes
+- **9** Les 3 Vallées (Val Thorens, Méribel, Courchevel) — VT Park vid Plateau, Open Park i Méribel-Mottaret med en liten halfpipe, Family Park i Courchevel
+- **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark), Grandvalira (tre parker; El Tarters har en av Europas längsta rader av hopp och rails)
 - **6** normal alport
 - **5** orter med park mest på pappret
-- **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass
+- **4** Engelberg — Titlis-området har ingen snowpark eller halfpipe, bara en bana med vågor och doserade kurvor vid Jochpass; Cortina d'Ampezzo — skiresort skriver att området saknar snowpark och halfpipe, inthesnow nämner en park på Faloria
+- **3** Riksgränsen — ingen snowpark eller halfpipe, enligt både skiresort och pistat.se, och ingen källa säger emot
 
 ### Bykänsla
 Hur byn känns att vistas i när skidorna är av. Arkitektur, gatuliv, om platsen fanns före liftarna.
@@ -121,7 +129,7 @@ Hur mycket som händer från liftstopp och framåt.
 - **10** Ischgl, St. Anton
 - **9** Saalbach, Kitzbühel, Mayrhofen, Sölden
 - **7** normal alport
-- **6** Val Gardena, La Plagne — Ski Club GB ger 2/5, men skiresort ger 4/5 och namnger barerna i byarna
+- **6** Val Gardena, La Plagne, Saas-Fee — Ski Club GB ger 2/5, men skiresort ger 4/5 och namnger barerna i byarna
 - **5** Alta Badia, Serre Chevalier — i Alta Badia slutar afterskin på berget med sista nedfarten, och kvällarna i byarna är lugna
 
 ### Familjevänligt
@@ -158,11 +166,11 @@ Poängen skiljer Norden från Alperna tydligare än någon annan — nordiska or
 Poängen ersätter inte `transfer_minutes`, som bara mäter flygplats → ort och därför inte går att jämföra mellan Norden och Alperna. Den befintliga `public_transport_access` mäter något annat — lokal kollektivtrafik — och duger inte: Sälen står som `false` trots bussar från Stockholm.
 
 - **9** Åre (nattåg sju timmar från Stockholm, direktflyg till Östersund), Sälen (fyra och en halv timme med bil)
-- **8** Trysil, St. Anton (nattåg från Malmö, annars Innsbruck), Chamonix (Genève på 75 min, direktbussar)
+- **8** Trysil, St. Anton (nattåg från Malmö, annars Innsbruck), Chamonix (Genève på drygt en timme med bil, direktbussar)
 - **6** normal alport med flyg plus två timmars transfer
-- **5** Val Thorens, Zermatt — tre timmar eller mer från flygplatsen
+- **5** Val Thorens, Zermatt — två och en halv timme eller mer från flygplatsen, sista biten serpentinväg (Val Thorens) eller tåg till en bilfri by (Zermatt)
 - **4** Riksgränsen, Levi, Ruka — långt norrut, få avgångar
-- **3** Livigno — Bergamo plus tre och en halv timme över ett pass som kan stängas
+- **3** Livigno — Bergamo plus nästan fyra timmar med bil över två pass, Aprica och Foscagno
 
 ## Att göra
 
@@ -191,3 +199,89 @@ Snösäkerhet 9 gäller också glaciärorter med låg by: Laax (1 100 m, 37 % ko
 Snösäkerhet fick ett ankare under Sälen: Branäs 5, toppen 567 m under Sälens bas 572 m. Sälen är lägst bland de publicerade orterna tills Branäs publiceras.
 
 Bykänsla för nordiska orter byggda som anläggningar kring liftarna (Idre Fjäll 1967, Branäs och Hafjell 1988) sätts till 6, samma som Vemdalen. Tignes-ankaret 5 beskriver samma sak med samma ord, och Sälen har 7 med samma slags bebyggelse. Att de nordiska anläggningarna ligger på 6 och Tignes på 5 är inte belagt av någon skillnad i källorna. Om gruppen ska till 5, och om Sälen ska ner från 7, är ett ägarbeslut.
+
+**Avgjort 2026-11-18 (granskningen av omgång 7):** Les 3 Vallées bär samma områdesbetyg i alla tre byarna, som 014 krävde för nybörjare, mellannivå och avancerad: snösäkerhet 9, offpist 9, snowpark 9 och gott om plats 5. Det flyttar Courchevel och Méribel ett steg upp på snösäkerhet och Val Thorens ett steg ned; Val Thorens går två steg ned på gott om plats (7 → 5) och Méribel två steg upp på snowpark (7 → 9). Migration 046 avbryter om något områdestal eller områdesbetyg skiljer inom Les 3 Vallées eller Tignes/Val d'Isère.
+
+Säsongen i Les 3 Vallées är områdets, enligt regeln i 005: 11–5 för alla tre, fast Courchevel och Méribel öppnar sina egna liftar först i december.
+
+Snösäkerhet 9 följer ankarets ordalydelse även för La Plagne (Bellecôteglaciären, 3 167 m), Les Arcs (3 226 m) och Alpe d'Huez (Sarenneglaciären, 3 330 m), som stod på 8 sedan omgång 3. Laax och Engelberg fick 9 i omgång 5 med lägre topp och lägre konstsnö, och inget fält skiljer de franska orterna från dem. Ett skarpare ankare (till exempel glaciär med pist över 3 400 m eller konstsnö på minst halva pisten) skulle sätta alla fem på 8 och är ett ägarbeslut.
+
+Afterski för byar som Ski Club GB ger 2/5: 5 om ingen annan oberoende källa beskriver ett kvällsliv i byn (Serre Chevalier), 6 om en gör det (La Plagne, Les Arcs, Courchevel). Courchevel går därmed från 8 till 6.
+
+Bykänsla för franska skidstationer byggda kring liftarna: 8 där husen byggts efter regler om trä och sten (Méribel), 7 där orten också har gamla byar (Courchevel, med Le Praz och Saint-Bon), 6 för låga eller medelhöga hus utan gammal kärna (Val Thorens, Les Arcs, Alpe d'Huez), 5 med höghus (Tignes, La Plagne), 4 för en lång rad lägenhetshus (Les Deux Alpes). Courchevel går från 9 till 7: ankarets nior fanns före liftarna, och Courchevel 1850 var den första franska skidorten som byggdes från grunden.
+
+**Avgjort 2026-11-18 (granskningen av omgång 8):** St. Anton, Ischgl, Sölden, Kitzbühel och Mayrhofen är omsatta enligt skalan, med Lech-Zürs, Saalbach, Obergurgl och Zell am See-Kaprun som avstämning. Därmed är alla österrikiska orter prövade mot ankarna, inte bara de nya. Ändringar i migration 047:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Ischgl | Snowpark | 7 → 8 | En av Alpernas största parker (skiresort 5/5), "one of Austria's best" (inthesnow). Ankaret för 8 |
+| Sölden | Mellannivå | 7 → 8 | Ski Club GB 5/5, nedfart på 15 km och 1 970 höjdmeter (skiresort) |
+| Sölden | Snowpark | 6 → 7 | Area 47 och två funslopes (skiresort 4/5), "excellent park facilities" (Ski Club GB) |
+| Kitzbühel | Nybörjare | 6 → 7 | Tio gratis övningsliftar i dalen, 54 % blått; Tignes och Les Arcs har 7 vid 55 och 52 %. Ski Club GB 2/5 säger emot |
+| Kitzbühel | Avancerad | 7 → 6 | Ski Club GB 2/5, "Not the best for advanced skiers unless there is fresh snow", 11 % svart. Zell am See-Kaprun har 6 på samma formulering |
+| Mayrhofen | Avancerad | 8 → 7 | Ski Club GB 2/5, "Elsewhere the blacks are much less intimidating" |
+| Mayrhofen | Snowpark | 7 → 8 | Penken Park, tre oberoende källor. Ankaret för 8 |
+| Mayrhofen | Bykänsla | 8 → 7 | "quite attractive" och "often in the shade" (Ski Club GB), "a lively alpine town rather than a small village" (inthesnow); Ischgl och Saalbach har 7 med samma slags beskrivning |
+
+Ski Club GB:s stjärnor står som bilder, men varje bild har sin etikett som alt-text ("star5.svg" alt="Intermediate"). Parningen är alltså utskriven i sidans kod och inte härledd ur ordningen, och den håller för alla fem orterna.
+
+Områdesbetygen i Ski Arlberg står kvar och är identiska för St. Anton och Lech-Zürs; migration 047 avbryter om de skiljer. Nybörjare 5 och gott om plats 6 har källor åt båda håll (Ski Club GB 2/5 och "Some pistes can get dangerously crowded" mot skiresort 5/5 och 43 % blått). Att St. Anton är fel by för nybörjare står i ortstexten som råd om var du bor, som för Méribel i omgång 7.
+
+Ankarna afterski 9 för Kitzbühel (Ski Club GB 3/5, skiresort 4/5) och gott om plats 4 för Ischgl och Kitzbühel (inthesnow säger emot om köerna) är svaga men står kvar. Att flytta ett ankare kräver mer än en källa som säger emot.
+
+**Avgjort 2026-11-18 (granskningen av omgång 9):** Zermatt, Saas-Fee, Verbier, Cortina d'Ampezzo, Livigno och Madonna di Campiglio är omsatta enligt skalan, med Cervinia som avstämning för Matterhorn Ski Paradise. Därmed är också de schweiziska och italienska orterna som fanns före omgång 4 och 5 prövade mot ankarna. Ändringar i migration 048:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Saas-Fee | Afterski | 7 → 6 | Ski Club GB 2/5; skiresort 4/5 namnger Gletscherstrasse, Iglu Zur Muhle och Black Bull. Regeln från omgång 7 ger 6 |
+| Cortina d'Ampezzo | Nybörjare | 6 → 7 | Övningsområdet vid Socrepes och långa blå ovanför (Ski Club GB 4/5, skiresort 4/5), 38 % blått |
+| Cortina d'Ampezzo | Offpist | 7 → 6 | Ski Club GB "Not a great deal of off piste terrain due to the jagged Dolomite mountains". skiresort säger emot |
+| Cortina d'Ampezzo | Snowpark | 5 → 4 | skiresort "There is no snowpark or halfpipe", inthesnow nämner en. Ankaret för 4 |
+| Cortina d'Ampezzo | Familj | 7 → 6 | skiresort 3/5 "hardly any facilities for families and children" i området, liftarna en bit från boendet (Ski Club GB) |
+| Cortina d'Ampezzo | Afterski | 8 → 7 | skiresort 3/5 "You won't find umbrella bars or loud après-ski parties", inthesnow och Iglu om vinbarer och middagar. Ski Club GB 4/5 säger emot; Tignes har 7 med samma Ski Club-betyg |
+| Livigno | Offpist | 6 → 7 | Mottolinos nordostsluttningar "prime for off piste" (Ski Club GB), skiresort 5/5 med heliskiing |
+| Livigno | Gott om plats | 6 → 7 | "quiet slopes" (Ski Club GB), "efficient enough to negate queues" (Iglu), 61 465 personer i timmen på 115 km |
+| Madonna di Campiglio | Snösäkerhet | 8 → 7 | Topp 2 504 m och 95 % konstsnö, Ski Club GB 3/5 "relatively low altitude". Mayrhofen har 7 med samma topp, konstsnö och Ski Club-betyg. skiresort 5/5 säger emot |
+| Madonna di Campiglio | Nybörjare | 6 → 7 | Ski Club GB 4/5 "few resorts with such a good selection of long blue runs", skiresort 4/5, 32 % blått |
+
+Matterhorn Ski Paradise står kvar med Zermatts områdesbetyg för båda orterna, och migration 048 avbryter om Zermatts och Cervinias områdestal eller områdesbetyg skiljer. Mellannivå 9 för området står kvar: tian bärs av Les 3 Vallées med 600 km, och ingen källa ställer Zermatt i nivå med dem. Zermatts afterski 8 (Ski Club GB 3/5) och Verbiers bykänsla 9 (Ski Club GB "a pretty big town" av hotell och lyxchalets) är svaga men står kvar.
+
+Snösäkerhet för Dolomiterna är inte enhetlig: Val Gardena har 8 med topp 2 518 m, Madonna di Campiglio nu 7 med 2 504 m, Cortina och Alta Badia 7 med 2 828 och 2 778 m. Val Gardena ingick inte i omgången och prövas inte här.
+
+Snowpark 8 för Livigno står kvar som ankare. Tre källor kallar Mottolino en av Europas eller Alpernas bästa parker, och 9 vore försvarbart, men ett ankare flyttas inte i förbigående.
+
+**Avgjort 2026-11-18 (granskningen av omgång 10):** Åre, Sälen, Trysil, Hemavan, Riksgränsen, Hemsedal, Geilo, Voss, Levi, Ruka och Grandvalira är omsatta enligt skalan, kalibrerade mot varandra och mot Vemdalen, Idre Fjäll, Branäs och Hafjell. Därmed är alla befintliga orter prövade mot ankarna. Ändringar i migration 049:
+
+| Ort | Betyg | Före → efter | Grund |
+|---|---|---|---|
+| Åre | Nybörjare | 6 → 7 | skiresort 5/5, lätt nedfart från toppen till alla dalstationer, 49 % blått. Levi har 7 vid 45 % |
+| Sälen | Bykänsla | 7 → 6 | Fyra anläggningar kring liftarnas dalstationer; Snowthere avråder den som vill ha alpby. Regeln från omgång 6 |
+| Trysil | Nybörjare | 7 → 8 | skiresort 5/5 "Almost the entire ski area can be accessed via very easy and easy slopes", Snowthere "Scandinavia's strongest first-ski resort", 51 % blått |
+| Trysil | Mellannivå | 8 → 7 | 23 % rött, minst bland de stora nordiska orterna. Åre och Hemsedal har 7 |
+| Hemavan | Nybörjare | 6 → 8 | 63 % blått och skiresort 5/5. 6 stred mot blå andel; Hemsedal och Idre Fjäll har 9 vid 67 och 70 % |
+| Hemavan | Snowpark | 5 → 7 | skiresort 5/5, två parker (pistat.se). 5 betyder park mest på pappret, vilket ingen källa säger |
+| Hemavan | Familj | 6 → 7 | skiresort 5/5, barnområden vid dalstationerna och i området |
+| Riksgränsen | Nybörjare | 4 → 6 | 4 är Chamonix-ankaret, som ingen källa beskriver här. skiresort 4/5, 47 % blått |
+| Riksgränsen | Avancerad | 8 → 6 | En kilometer svår pist och en svart nedfart. Avancerad avser pistad åkning; offpisten bärs av offpist 9 |
+| Riksgränsen | Snowpark | 5 → 3 | Ingen park enligt skiresort och pistat.se. Nytt ankare för 3 |
+| Hemsedal | Familj | 7 → 8 | Ett av Norges största barnområden (skiresort 5/5, Snow Magazine). Trysil, Geilo och Hafjell har 8 |
+| Geilo | Mellannivå | 7 → 6 | Dalens två sidor hänger ihop med skidbuss, längsta nedfarten 2,9 km (skiresort 3/5) |
+| Geilo | Snowpark | 6 → 7 | skiresort 5/5, tre parker. Samma som Hemsedal, Trysil och Hafjell |
+| Geilo | Afterski | 7 → 6 | skiresort 3/5, livligt bara på helger. Regeln från omgång 7 |
+| Voss | Afterski | 7 → 6 | skiresort 3/5, "The 'apres' scene is limited" (Snow Magazine). Regeln från omgång 7 |
+| Levi | Snowpark | 6 → 7 | skiresort 5/5, park vid Levi South och superpipe på Front Slopes |
+| Ruka | Nybörjare | 6 → 7 | Samma skiresort-ordalydelse och blå andel (47 %) som Levi |
+| Ruka | Mellannivå | 7 → 6 | Minst pist på sajten, längsta nedfarten runt 1,3 km. Ankaret 6 |
+| Ruka | Avancerad | 7 → 5 | skiresort 2/5 "only a few challenging runs", tre källor om för snäll terräng för vana åkare |
+| Ruka | Afterski | 7 → 6 | "relaxed rather than rowdy" (inthesnow). Levi har 7 |
+| Ruka | Bykänsla | 7 → 6 | Byn växte kring backarna från 1954. Regeln från omgång 6 |
+| Grandvalira | Nybörjare | 6 → 7 | skiresort 5/5, övningsområden i alla sex sektorer, 47 % blått |
+| Grandvalira | Snowpark | 7 → 8 | Två oberoende källor om en park i europeisk klass, som Penken Park |
+
+Sälens bykänsla 6 besvarar den öppna frågan från omgång 6: Sälen står nu med de andra nordiska anläggningarna. Om hela gruppen ska till 5, som Tignes-ankaret, är fortfarande ett ägarbeslut.
+
+Snowpark fick ett ankare för 3 under Engelberg och Cortina. Riksgränsen saknar park enligt två källor och ingen säger emot; Engelberg och Cortina har 4 därför att en källa nämner något slags park. Grandvalira lades till bland åttorna.
+
+Svaga och kvar: Trysils, Levis och Riksgränsens bykänsla (7, 8 och 7; ingen källa beskriver byn mot ankarna), Levis mellannivå 7, Hemavans mellannivå 7, Riksgränsens avancerad 6 mot 5 (Sälen har 5), Rukas offpist 6 (ingen källa nämner offpist, men samma gäller Levi) och Åres snösäkerhet 7 mot Hemsedals 8. Hemsedal delar 8 med de nordligaste orterna (Hemavan, Riksgränsen, Levi, Ruka) men ligger söderut; att 8 bärs av höjd och konstsnö och inte av breddgrad är ett ägarbeslut.
+
+Avsnittet Att göra överst beskriver ett läge som inte längre gäller: alla befintliga orter är nu prövade mot ankarna i omgång 7–10. Texten, och brasklappen om mittfältet på /sa-jamfor-vi, står kvar tills ägaren beslutar att ta bort dem.

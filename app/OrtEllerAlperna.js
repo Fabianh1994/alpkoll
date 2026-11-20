@@ -232,8 +232,7 @@ export default async function OrtEllerAlperna({ slug }) {
                 på lördagsmorgonen.{' '}
                 {utanBuss.length > 0 && (
                   <>
-                    Tåget stannar i {utanBuss.map((r) => r.name).join(' och ')}, så dit
-                    behöver du varken flyg eller transferbuss.{' '}
+                    Tåget stannar i {[...new Set(utanBuss.map((r) => r.nattaget.station))].join(', ').replace(/, ([^,]*)$/, ' och $1')}.{' '}
                   </>
                 )}
                 {medBuss.length > 0 && (
@@ -265,7 +264,7 @@ export default async function OrtEllerAlperna({ slug }) {
                         ? r.nattaget.station
                           ? `Buss från ${r.nattaget.station}`
                           : 'Buss från tåget'
-                        : `Tåget stannar här · ${restidText(stationFor(r.slug)?.restidMin)}`}
+                        : `Tåget stannar i ${r.nattaget.station} · ${restidText(stationFor(r.slug)?.restidMin)}`}
                     </div>
                   </Link>
                 ))}

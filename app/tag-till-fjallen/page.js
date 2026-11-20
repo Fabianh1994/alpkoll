@@ -82,7 +82,8 @@ export default async function TagTillFjallen() {
   const fragor = [
     {
       fraga: 'Vilka skidorter i Sverige kan man ta tåget till?',
-      svar: `Tåget går hela vägen till ${lista(helaVagen)}. Till ${lista(medBuss)} tar du tåget och sedan buss sista biten.` +
+      svar: `Tåget går hela vägen till ${lista(helaVagen)}.` +
+        (medBuss.length ? ` Till ${lista(medBuss)} tar du tåget och sedan buss sista biten.` : '') +
         (utan.length ? ` Till ${lista(utan)} går inget tåg.` : ''),
     },
     {

@@ -11,6 +11,7 @@ import { hamtaKurser } from '../../lib/valuta'
 import { STADER, bilresa, narmastMedBil, timmar } from '../../lib/restider'
 import { nattagFor } from '../../lib/nattaget'
 import { AR } from '../../lib/sportlov'
+import { MOTIVERINGAR, SAKNAS, UPPDATERAD, PUBLICERAD, SASONG } from '../../lib/barnfamiljer'
 
 // Skidorter för barnfamiljer.
 //
@@ -25,25 +26,39 @@ import { AR } from '../../lib/sportlov'
 // orter ur samma urval som resten av sajten, så en ort Alpkoll inte säljer
 // något hos kommer med på samma villkor som de andra.
 //
-// Poängen är omdömen, och mittfältet i skalan är inte genomgånget sedan
-// augusti 2026. Därför visas talen utskrivna och aldrig som en samlad
-// placering med medalj — läsaren ska kunna se att 8 och 7 är nära.
+// Poängen är omdömen. Talen visas därför utskrivna bredvid placeringen,
+// så att läsaren ser att 9 och 8 är nära.
+//
+// Sedan november 2026 är sidan byggd för att kunna citeras av ChatGPT och
+// Googles AI-svar: ett kort svar överst, en numrerad topplista med årtal i
+// rubriken, en motivering och en nackdel per ort (lib/barnfamiljer.js),
+// källor, ett synligt uppdateringsdatum och strukturerad data (ItemList,
+// Article och FAQPage). ChatGPT svarade på "vilken skidort är bäst för en
+// barnfamilj?" med listor från Freeride, Bokafjällen och Gogo, alla med
+// årtal i titeln och en motivering per ort.
 
 export const revalidate = 3600
 
-const titel = 'Skidorter för barnfamiljer: Sverige, Norge och Alperna jämförda | Alpkoll'
+const ADRESS = `${SITE_URL}/skidorter-for-barnfamiljer`
+const titel = `Bästa skidorten för barnfamiljer ${SASONG}: topplista Sverige och Alperna | Alpkoll`
 const beskrivning =
-  'Vilken skidort passar barnfamiljen? Orterna jämförda på barnvänlighet, lätta backar, ' +
-  'hur mycket folk det är, bilresan hemifrån och vad liftkortet kostar i kronor.'
+  `Bästa skidorterna för barnfamiljer ${SASONG}, rankade på barnvänlighet, lätta backar, ` +
+  'hur mycket folk det är, bilresan hemifrån och liftkortet i kronor. Med motivering och nackdel för varje ort.'
+
+/** "2026-11-20" -> "20 november 2026" */
+const datum = (iso) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString('sv-SE', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
 
 export const metadata = {
   title: titel,
   description: beskrivning,
-  alternates: { canonical: `${SITE_URL}/skidorter-for-barnfamiljer` },
+  alternates: { canonical: ADRESS },
   openGraph: {
     title: titel,
     description: beskrivning,
-    url: `${SITE_URL}/skidorter-for-barnfamiljer`,
+    url: ADRESS,
+    publishedTime: PUBLICERAD,
+    modifiedTime: UPPDATERAD,
     siteName: 'Alpkoll',
     type: 'article',
     locale: 'sv_SE',
@@ -108,20 +123,116 @@ export default async function SkidorterForBarnfamiljer() {
 
   const nordiska = familjeorter.filter(arNordisk)
   const alporter = familjeorter.filter((o) => !arNordisk(o))
+  const svenska = nordiska.filter((o) => o.country === 'Sweden')
+
+  // Kort svar: meningen en AI-tjänst eller en stressad förälder kan citera
+  // rakt av. Härleds ur samma ordning som listan, så den inte kan säga emot.
+  const lista = (orter) => orter.map((o) => o.name).reduce((acc, n, i, arr) =>
+    i === 0 ? n : i === arr.length - 1 ? `${acc} och ${n}` : `${acc}, ${n}`, '')
+  const motiv = (o) => MOTIVERINGAR[o.slug]?.kort
+  const toppSverige = svenska.slice(0, 3)
+  const toppAlperna = alporter.slice(0, 3)
+
+  const fragor = [
+    toppSverige.length > 0 && {
+      fraga: 'Vilken skidort i Sverige är bäst för barnfamiljer?',
+      svar: `${toppSverige[0].name}, följt av ${lista(toppSverige.slice(1))}. ` +
+        toppSverige.map((o) => motiv(o) && `${o.name}: ${motiv(o)}.`).filter(Boolean).join(' '),
+    },
+    toppAlperna.length > 0 && {
+      fraga: 'Vilken skidort i Alperna är bäst för barnfamiljer?',
+      svar: `${lista(toppAlperna)}. ` +
+        toppAlperna.map((o) => motiv(o) && `${o.name}: ${motiv(o)}.`).filter(Boolean).join(' '),
+    },
+    {
+      fraga: 'Var åker barn gratis i liftarna?',
+      svar: 'I Branäs åker barn upp till sex år gratis och i Idre Fjäll barn under åtta. I Alta Badia åker barn under åtta år gratis med en betalande vuxen, och i Saas-Fee barn under nio när en förälder köper sexdagarskort.',
+    },
+    {
+      fraga: 'Sverige eller Alperna med små barn?',
+      svar: 'Med barn under skolåldern är Sverige oftast enklare: bilresan i stället för flyg och transfer, boende vid backen och lätt pist. Alperna ger mer snö högt upp och längre backar, och passar bättre när barnen åker själva i röd pist.',
+    },
+  ].filter(Boolean)
+
+  const topplistan = [...nordiska, ...alporter]
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        '@id': `${ADRESS}#artikel`,
+        headline: `Bästa skidorterna för barnfamiljer ${SASONG}`,
+        description: beskrivning,
+        datePublished: PUBLICERAD,
+        dateModified: UPPDATERAD,
+        inLanguage: 'sv-SE',
+        mainEntityOfPage: ADRESS,
+        image: `${SITE_URL}/og-image.png`,
+        author: { '@type': 'Organization', name: 'Alpkoll', url: SITE_URL },
+        publisher: { '@type': 'Organization', name: 'Alpkoll', url: SITE_URL, logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon-512.png` } },
+      },
+      {
+        '@type': 'ItemList',
+        name: `Bästa skidorterna för barnfamiljer ${SASONG}`,
+        itemListOrder: 'https://schema.org/ItemListOrderDescending',
+        numberOfItems: topplistan.length,
+        itemListElement: topplistan.map((o, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: o.name,
+          url: `${SITE_URL}/resort/${o.slug}`,
+          ...(MOTIVERINGAR[o.slug] ? { description: MOTIVERINGAR[o.slug].varfor } : {}),
+        })),
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: fragor.map((f) => ({
+          '@type': 'Question',
+          name: f.fraga,
+          acceptedAnswer: { '@type': 'Answer', text: f.svar },
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Alpkoll', item: SITE_URL },
+          { '@type': 'ListItem', position: 2, name: 'Skidorter för barnfamiljer', item: ADRESS },
+        ],
+      },
+    ],
+  }
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
 
       <main style={{ maxWidth: 860, margin: '0 auto', padding: '108px clamp(20px, 5vw, 32px) 100px' }}>
-        <h1 style={{ ...rubrik('clamp(34px, 5.5vw, 54px)'), lineHeight: 1.04, marginBottom: 20 }}>
-          Skidorter för barnfamiljer
+        <h1 style={{ ...rubrik('clamp(34px, 5.5vw, 54px)'), lineHeight: 1.04, marginBottom: 12 }}>
+          Bästa skidorterna för barnfamiljer {SASONG}
         </h1>
+        <p style={{ ...etikett, margin: '0 0 24px' }}>
+          Uppdaterad <time dateTime={UPPDATERAD}>{datum(UPPDATERAD)}</time> · Alpkoll
+        </p>
+
+        {/* ── Kort svar ── */}
+        {toppSverige.length > 0 && (
+          <section style={{ ...kort, borderLeft: `3px solid ${ACCENT}`, padding: 'clamp(18px, 4vw, 24px)', marginBottom: 24 }}>
+            <h2 style={{ ...etikett, color: ACCENT, margin: '0 0 10px' }}>Kort svar</h2>
+            <p style={{ ...brod, color: 'rgba(255,255,255,0.82)', margin: 0 }}>
+              Bäst för barnfamiljer i Sverige {SASONG} är <strong style={{ color: '#f0ece4' }}>{lista(toppSverige)}</strong>.{' '}
+              {toppSverige.map((o) => motiv(o) && <span key={o.slug}>{o.name}: {motiv(o)}. </span>)}
+              {toppAlperna.length > 0 && (
+                <>I Alperna ligger <strong style={{ color: '#f0ece4' }}>{lista(toppAlperna)}</strong> högst.</>
+              )}
+            </p>
+          </section>
+        )}
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
           Med barn väljer man ort på andra saker än pistkilometer: lätta backar nära
           boendet, skidskola, hur mycket folk det är och hur länge barnen sitter i bilen.
-          Här står orterna i Sverige, Norge, Finland och Alperna jämförda på just det.
+          Här står orterna i Sverige, Norge, Finland och Alperna rankade på just det.
         </p>
         <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px', color: 'rgba(255,255,255,0.57)' }}>
           {familjeorter.length > 0 && (
@@ -129,6 +240,7 @@ export default async function SkidorterForBarnfamiljer() {
               {familjeorter.length} av {orter.length} orter får minst {GRANS} av 10 för barnfamiljer.{' '}
             </>
           )}
+          Ordningen följer familjepoängen, sedan nybörjarpoängen och sist hur mycket plats det är i backen.
           Poängen är våra egna omdömen, satta mot fasta ankare: Sälen är 10, en vanlig alport 7.{' '}
           <Link href="/sa-jamfor-vi" style={{ color: ACCENT }}>Så sätter vi poängen</Link>.
         </p>
@@ -159,12 +271,14 @@ export default async function SkidorterForBarnfamiljer() {
         )}
 
         {[
-          { rubrik: 'I Norden', lista: nordiska },
-          { rubrik: 'I Alperna', lista: alporter },
+          { rubrik: `Topplistan: Sverige och Norden ${SASONG}`, lista: nordiska },
+          { rubrik: `Topplistan: Alperna ${SASONG}`, lista: alporter },
         ].filter((g) => g.lista.length > 0).map((grupp) => (
           <section key={grupp.rubrik} style={{ marginBottom: 36 }}>
             <h2 style={rubrik('clamp(26px, 4vw, 34px)')}>{grupp.rubrik}</h2>
-            {grupp.lista.map((o) => {
+            <ol style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+            {grupp.lista.map((o, plats) => {
+              const m = MOTIVERINGAR[o.slug]
               const kr = harPris(o) ? pris(o.lift_pass_week_eur, o.lift_pass_currency || 'EUR', kurser)?.kr : null
               // Till alporterna räknas bilen från Malmö, samma val som
               // bilMening i lib/restider.js: 22 timmar från Stockholm
@@ -173,9 +287,10 @@ export default async function SkidorterForBarnfamiljer() {
               const bil = bilresa(o.slug, fran.nyckel)
               const tag = nattagFor(o.slug)
               return (
-                <article key={o.slug} style={{ ...kort, padding: 'clamp(18px, 4vw, 26px)', marginBottom: 10 }}>
+                <li key={o.slug} style={{ ...kort, padding: 'clamp(18px, 4vw, 26px)', marginBottom: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap' }}>
                     <h3 style={{ ...rubrik(26), margin: 0 }}>
+                      <span style={{ color: ACCENT, marginRight: 10 }}>{plats + 1}.</span>
                       <Link href={`/resort/${o.slug}`} style={{ color: '#f0ece4', textDecoration: 'none' }}>{o.name}</Link>
                     </h3>
                     <span style={etikett}>{land(o.country)}</span>
@@ -185,6 +300,16 @@ export default async function SkidorterForBarnfamiljer() {
                     <Poang namn="Nybörjare" varde={tal(o.beginner_score)} />
                     <Poang namn="Gott om plats" varde={tal(o.crowd_score)} />
                   </div>
+                  {m && (
+                    <>
+                      <p style={{ ...brod, fontSize: 15, margin: '0 0 8px', color: 'rgba(255,255,255,0.78)' }}>
+                        <strong style={{ color: '#f0ece4', fontWeight: 600 }}>Därför: </strong>{m.varfor}
+                      </p>
+                      <p style={{ ...brod, fontSize: 15, margin: '0 0 12px' }}>
+                        <strong style={{ color: '#f0ece4', fontWeight: 600 }}>Nackdel: </strong>{m.nackdel}
+                      </p>
+                    </>
+                  )}
                   <p style={{ ...brod, fontSize: 14, margin: 0 }}>
                     {bil && <>Med bil {timmar(bil.minuter)} från {fran.namn}. </>}
                     {tag && <>Nattåget går hit. </>}
@@ -193,9 +318,21 @@ export default async function SkidorterForBarnfamiljer() {
                       <Link href="/var-bo-i-salen" style={{ color: ACCENT }}>Vilket område i Sälen?</Link>
                     )}
                   </p>
-                </article>
+                  {m?.kallor?.length > 0 && (
+                    <p style={{ ...brod, fontSize: 12.5, margin: '10px 0 0', color: 'rgba(255,255,255,0.48)' }}>
+                      Källor:{' '}
+                      {m.kallor.map((k, i) => (
+                        <span key={k.url}>
+                          {i > 0 && ', '}
+                          <a href={k.url} rel="noopener" target="_blank" style={{ color: 'rgba(255,255,255,0.6)' }}>{k.namn}</a>
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </li>
               )
             })}
+            </ol>
           </section>
         ))}
 
@@ -217,6 +354,50 @@ export default async function SkidorterForBarnfamiljer() {
             </p>
           </section>
         )}
+
+        {/* ── Saknas ──
+            Orter som AI-svaren och topplistorna nämner men som inte finns i
+            databasen. Utan raden ser listan ut att ha valt bort dem. */}
+        {SAKNAS.length > 0 && (
+          <section style={{ marginBottom: 36 }}>
+            <h2 style={rubrik(22)}>Saknas i jämförelsen</h2>
+            <p style={{ ...brod, fontSize: 14.5, margin: '0 0 10px' }}>
+              Två svenska familjeorter finns inte i vår databas än, så vi kan inte ranka dem
+              på samma siffror som de andra:
+            </p>
+            <ul style={{ ...brod, fontSize: 14.5, margin: 0, paddingLeft: 20 }}>
+              {SAKNAS.map((x) => (
+                <li key={x.namn} style={{ marginBottom: 6 }}>
+                  <strong style={{ color: '#f0ece4', fontWeight: 600 }}>{x.namn}</strong> {x.text} (
+                  <a href={x.kalla.url} rel="noopener" target="_blank" style={{ color: 'rgba(255,255,255,0.7)' }}>{x.kalla.namn}</a>).
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* ── Vanliga frågor ── samma text som FAQPage i jsonLd. */}
+        <section style={{ marginBottom: 36 }}>
+          <h2 style={rubrik('clamp(24px, 3.6vw, 30px)')}>Vanliga frågor</h2>
+          {fragor.map((f) => (
+            <div key={f.fraga} style={{ marginBottom: 18 }}>
+              <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 16.5, fontWeight: 600, color: '#f0ece4', margin: '0 0 6px' }}>{f.fraga}</h3>
+              <p style={{ ...brod, fontSize: 15, margin: 0 }}>{f.svar}</p>
+            </div>
+          ))}
+        </section>
+
+        <section style={{ marginBottom: 30 }}>
+          <h2 style={rubrik(22)}>Källor och metod</h2>
+          <p style={{ ...brod, fontSize: 14.5, margin: 0 }}>
+            Pistfördelning, liftar och höjder kommer från skiresort.com för alla orter. Barnområden,
+            barnpriser och skidskolor kommer från orternas egna sidor, skiresort.com:s familjebetyg,
+            Ski Club GB och Snowthere, länkade under varje ort. Körtiderna är uppmätta med samma
+            ruttmotor för alla orter, och liftkortspriset är sexdagarskortet för en vuxen i
+            högsäsong, omräknat till kronor. Ingen ort kan betala för sin placering.{' '}
+            <Link href="/sa-jamfor-vi" style={{ color: ACCENT }}>Så jämför vi</Link>.
+          </p>
+        </section>
 
         <p style={{ ...brod, fontSize: 14.5, margin: '30px 0 0' }}>
           Vidare: <Link href="/var-bo-i-salen" style={{ color: ACCENT }}>var ska man bo i Sälen</Link>,{' '}

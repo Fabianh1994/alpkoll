@@ -1,0 +1,22 @@
+# Säger till Bing och de andra IndexNow-sökmotorerna att sajten ändrats,
+# efter varje lyckad produktionsdeploy. Vercel rapporterar sina deployer
+# till GitHub som deployment_status, så workflowen behöver ingen nyckel.
+name: IndexNow
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+jobs:
+  skicka:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' &&
+       github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/indexnow.mjs

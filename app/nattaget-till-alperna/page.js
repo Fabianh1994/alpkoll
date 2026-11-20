@@ -16,7 +16,9 @@ import {
 // säsongen tagit slut inom en timme efter att den gjort det, utan deploy.
 export const revalidate = 3600
 
-const titel = 'Nattåg till Alperna — tider, orter och vad som gäller | Alpkoll'
+// "Tåg till Alperna" först: det är så frågan ställs, till Google och till
+// ChatGPT. "Nattåg" står kvar i adressen och i rubriken.
+const titel = 'Tåg till Alperna 2026/27: nattåget Malmö–Österrike, tider och orter | Alpkoll'
 const beskrivning =
   'Snälltågets nattåg Malmö–Österrike vintern 2026/27: avgångar, alla sex ' +
   'stationer med restid, vilka skidorter du når och vad skidorna kostar ombord.'
@@ -129,8 +131,59 @@ export default async function NattagetTillAlperna() {
   // en kolumn som löpte baklänges bredvid en som löpte framlänges.
   const hemresa = [...STATIONER].reverse()
 
+  // Vanliga frågor, i samma ordalag som frågan ställs till Google och
+  // ChatGPT. Svaren räknas fram ur lib/nattaget.js som resten av sidan,
+  // och visas bara medan säsongen pågår.
+  const fragor = slut ? [] : [
+    {
+      fraga: 'Går det tåg från Sverige till Alperna?',
+      svar: `Ja. Snälltåget kör nattåg ${SVERIGE.avgangsort}–Österrike ${SASONG}. Tåget går ${SVERIGE.avgangsdag} ${SVERIGE.avgang} från ${SVERIGE.avgangsstation} och är framme i Alperna på lördagsmorgonen.`,
+    },
+    {
+      fraga: 'Hur lång tid tar tåget till Alperna?',
+      svar: `Till ${STATIONER[0].namn} ${restidText(STATIONER[0].restidMin)} och till ${STATIONER[STATIONER.length - 1].namn} ${restidText(STATIONER[STATIONER.length - 1].restidMin)}, räknat från ${SVERIGE.avgangsstation}.`,
+    },
+    utanBuss.length > 0 && {
+      fraga: 'Vilka skidorter når man med tåg?',
+      svar: `Tåget stannar i ${utanBuss.map((n) => n.ort.name).join(' och ')}.` +
+        (medBuss.length ? ` Till ${lista(medBuss)} går transferbuss.` : ''),
+    },
+    {
+      fraga: 'Går nattåget till Alperna från Stockholm?',
+      svar: `Bara en gång: ${SVERIGE.stockholmsavgang.datum} kl. ${SVERIGE.stockholmsavgang.avgang}, inför ${SVERIGE.stockholmsavgang.anledning}. Övriga veckor ansluter du till tåget i ${SVERIGE.avgangsort}.`,
+    },
+    {
+      fraga: 'Vad kostar det att ta med skidor på nattåget?',
+      svar: `Skidincheckning kostar ${PRAKTISKT.skidincheckningKr} kr ${PRAKTISKT.skidincheckningNot}.`,
+    },
+  ].filter(Boolean)
+
+  const jsonLd = fragor.length ? {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Article',
+        headline: 'Tåg till Alperna med nattåget',
+        description: beskrivning,
+        dateModified: HAMTAD,
+        inLanguage: 'sv-SE',
+        mainEntityOfPage: `${SITE_URL}/nattaget-till-alperna`,
+        image: `${SITE_URL}/og-image.png`,
+        author: { '@type': 'Organization', name: 'Alpkoll', url: SITE_URL },
+        publisher: { '@type': 'Organization', name: 'Alpkoll', url: SITE_URL },
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: fragor.map((f) => ({
+          '@type': 'Question', name: f.fraga, acceptedAnswer: { '@type': 'Answer', text: f.svar },
+        })),
+      },
+    ],
+  } : null
+
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
+      {jsonLd && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />}
       <SiteHeader />
 
       <main style={{ padding: '120px clamp(20px, 4vw, 64px) 100px', maxWidth: 1100, margin: '0 auto' }}>
@@ -142,8 +195,11 @@ export default async function NattagetTillAlperna() {
           fontFamily: 'var(--font-heading)', fontSize: 'clamp(34px, 6vw, 56px)', fontWeight: 400,
           letterSpacing: '0.03em', lineHeight: 1.05, margin: '0 0 22px',
         }}>
-          Nattåg till Alperna
+          Tåg till Alperna med nattåget
         </h1>
+        <p style={{ ...etikett, margin: '-8px 0 22px' }}>
+          Tiderna hämtade från Snälltåget <time dateTime={HAMTAD}>{skrivDatum(HAMTAD)}</time> · Alpkoll
+        </p>
 
         {slut ? (
           <p style={{ ...brod, margin: '0 0 40px' }}>
@@ -495,6 +551,18 @@ export default async function NattagetTillAlperna() {
           </>
         )}
 
+        {fragor.length > 0 && (
+          <section style={{ marginBottom: 40 }}>
+            <h2 style={rubrik(28)}>Vanliga frågor</h2>
+            {fragor.map((f) => (
+              <div key={f.fraga} style={{ marginBottom: 18, maxWidth: 660 }}>
+                <h3 style={{ fontFamily: 'var(--font-body)', fontSize: 16.5, fontWeight: 600, color: '#f0ece4', margin: '0 0 6px' }}>{f.fraga}</h3>
+                <p style={{ ...brod, fontSize: 15, margin: 0 }}>{f.svar}</p>
+              </div>
+            ))}
+          </section>
+        )}
+
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: '0 0 8px' }}>
           Tider och villkor är hämtade från Snälltåget den {skrivDatum(HAMTAD)}.
           Biljetter bokas hos{' '}
@@ -508,6 +576,8 @@ export default async function NattagetTillAlperna() {
           och <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link>,
           och vad liftkortet kostar står i{' '}
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>prislistan</Link>.
+          Ska du till de svenska fjällen i stället finns{' '}
+          <Link href="/tag-till-fjallen" style={{ color: ACCENT }}>tåg till fjällen</Link>.
         </p>
       </main>
 

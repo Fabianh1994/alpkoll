@@ -56,10 +56,11 @@ ${[
   lank('Liftkortsindex', '/liftkortsindex', 'samma priser som rapport: Sverige mot Alperna, och pris per kilometer pist'),
   lank('Åre eller Alperna?', '/are-eller-alperna', 'vad som skiljer Åre från en alport'),
   lank('Sälen eller Alperna?', '/salen-eller-alperna', 'vad som skiljer Sälen från en alport'),
-  lank('Nattåg till Alperna', '/nattaget-till-alperna', 'nattåget från Malmö till Österrike: avgångar, stationer och vilka orter det når'),
+  lank('Tåg till Alperna', '/nattaget-till-alperna', 'nattåget från Malmö till Österrike: avgångar, stationer och vilka orter det når'),
+  lank('Tåg till fjällen', '/tag-till-fjallen', 'vilka svenska skidorter du når med tåg, med eller utan transferbuss, och tiderna'),
   lank('Sportlov', '/sportlov', 'vilken vecka sportlovet är i varje kommun, och vilken fredag nattåget går'),
   lank('Var ska man bo i Sälen?', '/var-bo-i-salen', 'Sälens sex områden jämförda'),
-  lank('Skidorter för barnfamiljer', '/skidorter-for-barnfamiljer', 'orterna jämförda på barnvänlighet, lätta backar och resan hemifrån'),
+  lank('Bästa skidorterna för barnfamiljer', '/skidorter-for-barnfamiljer', 'topplista för Sverige, Norden och Alperna, med motivering och nackdel för varje ort'),
 ].join('\n')}
 
 ## Skidorter per land

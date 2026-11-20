@@ -130,6 +130,8 @@ export default async function SkidorterForBarnfamiljer() {
   const lista = (orter) => orter.map((o) => o.name).reduce((acc, n, i, arr) =>
     i === 0 ? n : i === arr.length - 1 ? `${acc} och ${n}` : `${acc}, ${n}`, '')
   const motiv = (o) => MOTIVERINGAR[o.slug]?.kort
+  // En ort som saknas tills den publiceras: när den finns bland orterna står den i listan i stället.
+  const saknas = SAKNAS.filter((x) => !orter.some((o) => o.slug === x.slug))
   const toppSverige = svenska.slice(0, 3)
   const toppAlperna = alporter.slice(0, 3)
 
@@ -358,15 +360,15 @@ export default async function SkidorterForBarnfamiljer() {
         {/* ── Saknas ──
             Orter som AI-svaren och topplistorna nämner men som inte finns i
             databasen. Utan raden ser listan ut att ha valt bort dem. */}
-        {SAKNAS.length > 0 && (
+        {saknas.length > 0 && (
           <section style={{ marginBottom: 36 }}>
             <h2 style={rubrik(22)}>Saknas i jämförelsen</h2>
             <p style={{ ...brod, fontSize: 14.5, margin: '0 0 10px' }}>
-              Två svenska familjeorter finns inte i vår databas än, så vi kan inte ranka dem
-              på samma siffror som de andra:
+              {saknas.length === 1 ? 'En svensk familjeort' : 'Några svenska familjeorter'} finns inte i
+              jämförelsen än, så vi kan inte ranka {saknas.length === 1 ? 'den' : 'dem'} på samma siffror som de andra:
             </p>
             <ul style={{ ...brod, fontSize: 14.5, margin: 0, paddingLeft: 20 }}>
-              {SAKNAS.map((x) => (
+              {saknas.map((x) => (
                 <li key={x.namn} style={{ marginBottom: 6 }}>
                   <strong style={{ color: '#f0ece4', fontWeight: 600 }}>{x.namn}</strong> {x.text} (
                   <a href={x.kalla.url} rel="noopener" target="_blank" style={{ color: 'rgba(255,255,255,0.7)' }}>{x.kalla.namn}</a>).

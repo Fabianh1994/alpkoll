@@ -333,7 +333,7 @@ export default async function ResortPage({ params }) {
     sameAs: resort.resort_url || undefined,
     address: {
       '@type': 'PostalAddress',
-      addressRegion: resort.region || undefined,
+      addressRegion: region(resort.region) || undefined,
       // Strukturerad data läses av maskiner, inte av besökare — här ska
       // det engelska landsnamnet stå kvar.
       addressCountry: resort.country || undefined,
@@ -571,7 +571,7 @@ export default async function ResortPage({ params }) {
                   margin: '-12px 0 18px',
                 }}>
                   Pist, liftar och höjder avser hela{' '}
-                  <span style={{ color: '#D4A574' }}>{resort.ski_area}</span> — området
+                  <span style={{ color: '#D4A574' }}>{resort.ski_area}</span>, området
                   du kommer åt med liftkortet, inte bara {resort.name}.
                 </p>
               )}
@@ -709,11 +709,10 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-                {/* Raden förklarar "Gott om plats" i ord, så att poängen
-                    inte bara står som ett tal. */}
-                <p style={{ margin: '20px 0 0', paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.05)', fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.54)', lineHeight: 1.5 }}>
-                  {resort.crowd_score >= 8 ? 'Korta liftköer och vidöppna pister, även under högsäsong.' : resort.crowd_score >= 6 ? 'Måttlig trängsel, mest folk under högsäsong och helger.' : 'Populär ort. Räkna med köer under högsäsong och skollov.'}
-                </p>
+                {/* Här stod en mening per poängband ("Måttlig trängsel, mest
+                    folk under högsäsong och helger."). Den blev likadan på 47 av
+                    50 orter och sade "trängsel" under betyget Gott om plats, så
+                    den är struken: docs/copy.md, Framräknade meningar. */}
               </div>
             </div>
 
@@ -770,7 +769,7 @@ export default async function ResortPage({ params }) {
                         ? `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG}. ${nattag.station
                             ? `Kliv av i ${nattag.station} och ta transferbussen${nattag.hallplats ? `, som stannar vid ${nattag.hallplats}` : ''}.`
                             : `Sista biten går med transferbuss${nattag.hallplats ? ` till hållplatsen vid ${nattag.hallplats}` : ''}.`}`
-                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${resort.name} — ingen flygplats, ingen buss, inget byte. Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
+                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${resort.name}, så du kliver av mitt i orten utan byte. Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
                       {' '}
                       <Link href="/nattaget-till-alperna" style={{ color: '#D4A574', textDecoration: 'none' }}>Tider och orter →</Link>
                     </p>
@@ -875,8 +874,8 @@ export default async function ResortPage({ params }) {
                       <>
                         Vi visar inget liftkortspris för {resort.name}.{' '}
                         {utanPris?.skal ? <>{utanPris.skal}{' '}</> : null}
-                        Ett pris vi inte kan belägga mot ortens egen prislista är sämre än inget pris — se{' '}
-                        <Link href="/liftkortspriser" style={{ color: '#D4A574', textDecoration: 'none' }}>hela prislistan</Link>.
+                        Ett pris vi inte kan belägga mot ortens egen prislista är sämre än inget pris. De priser vi har belagt står i{' '}
+                        <Link href="/liftkortspriser" style={{ color: '#D4A574', textDecoration: 'none' }}>prislistan</Link>.
                       </>
                     )}
                   </div>

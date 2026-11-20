@@ -232,8 +232,8 @@ export default async function OrtEllerAlperna({ slug }) {
                 på lördagsmorgonen.{' '}
                 {utanBuss.length > 0 && (
                   <>
-                    Tåget stannar i {utanBuss.map((r) => r.name).join(' och ')} — ingen
-                    flygplats, ingen buss, inget byte.{' '}
+                    Tåget stannar i {utanBuss.map((r) => r.name).join(' och ')}, så dit
+                    behöver du varken flyg eller transferbuss.{' '}
                   </>
                 )}
                 {medBuss.length > 0 && (

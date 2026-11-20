@@ -756,7 +756,7 @@ export default async function ResortPage({ params }) {
                     ))}
                   </div>
                 )}
-                {/* Nattåget, för de fem orter det faktiskt går till.
+                {/* Nattåget, för orterna i lib/nattaget.js.
                     Uppgiften stod tidigare bara på alpsidorna, som Åre och
                     Sälen länkar till — alltså aldrig på den ortsida resan
                     handlar om. Texten kommer ur lib/nattaget.js så att den

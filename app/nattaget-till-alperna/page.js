@@ -227,11 +227,10 @@ export default async function NattagetTillAlperna() {
                   {utanBuss.map((n) => n.ort.name).join(' och ')}.{' '}
                 </>
               )}
-              {/* Mayrhofen får inte bakas in i "från stationen". Snälltåget
-                  skriver inte ut vilken station bussen dit utgår från, och
-                  meningen ska inte påstå mer än datan bär — det var precis den
-                  sortens handskrivna generalisering som gjorde den gamla
-                  meningen osann. Korten längre ner säger samma sak. */}
+              {/* En bussort utan utsatt station får inte bakas in i "från
+                  stationen". Meningen ska inte påstå mer än datan bär — det
+                  var precis den sortens handskrivna generalisering som gjorde
+                  den gamla meningen osann. */}
               {bussMedStation.length > 0 && (
                 <>
                   Till {lista(bussMedStation)} går transferbuss från stationen.{' '}

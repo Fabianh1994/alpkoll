@@ -333,7 +333,7 @@ export default async function ResortPage({ params }) {
     sameAs: resort.resort_url || undefined,
     address: {
       '@type': 'PostalAddress',
-      addressRegion: resort.region || undefined,
+      addressRegion: region(resort.region) || undefined,
       // Strukturerad data läses av maskiner, inte av besökare — här ska
       // det engelska landsnamnet stå kvar.
       addressCountry: resort.country || undefined,
@@ -769,7 +769,7 @@ export default async function ResortPage({ params }) {
                         ? `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG}. ${nattag.station
                             ? `Kliv av i ${nattag.station} och ta transferbussen${nattag.hallplats ? `, som stannar vid ${nattag.hallplats}` : ''}.`
                             : `Sista biten går med transferbuss${nattag.hallplats ? ` till hållplatsen vid ${nattag.hallplats}` : ''}.`}`
-                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${resort.name}, så du kliver av i byn utan byte. Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
+                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${resort.name}, så du kliver av mitt i orten utan byte. Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
                       {' '}
                       <Link href="/nattaget-till-alperna" style={{ color: '#D4A574', textDecoration: 'none' }}>Tider och orter →</Link>
                     </p>

@@ -39,12 +39,6 @@ set where_to_stay = replace(where_to_stay, 'Reser ni många passar de stora huse
 where slug = 'klappen'
   and where_to_stay like '%Reser ni många passar de stora husen i Örebäcken och Kläppbacken.%';
 
--- are, where_to_stay: CLAUDE.md, Språk: svenska där ordet finns. Övriga orter skriver "vid backen".
-update resorts
-set where_to_stay = replace(where_to_stay, 'med gröna och blå backar och boende ski in/ski out.', 'med gröna och blå backar och boende vid backen.')
-where slug = 'are'
-  and where_to_stay like '%med gröna och blå backar och boende ski in/ski out.%';
-
 -- val-d-isere, where_to_stay: Samma mening som Saalbach, som skriver "kontrollera".
 update resorts
 set where_to_stay = replace(where_to_stay, 'så kolla avståndet till närmaste lift innan du bokar.', 'så kontrollera avståndet till närmaste lift innan du bokar.')
@@ -65,7 +59,7 @@ where slug = 'cervinia'
 
 -- engelberg, notes: Otydligt: "delas av" kan läsas som att två berg delar på pisten. Källan (Powderhounds) säger "disjointed pistes & lifts".
 update resorts
-set notes = replace(notes, 'Pisterna delas av Titlis och Jochstock,', 'Pisten är uppdelad mellan Titlis och Jochstock,')
+set notes = replace(notes, 'Pisterna delas av Titlis och Jochstock,', 'Pisterna på Titlis och Jochstock hänger dåligt ihop,')
 where slug = 'engelberg'
   and notes like '%Pisterna delas av Titlis och Jochstock,%';
 
@@ -152,7 +146,7 @@ declare
 begin
   select string_agg(slug, ', ') into kvar
   from resorts
-  where (notes like '%I Hemsedal ligger restaurangerna och utelivet i sentrum, dit skibussen går gratis.%') or (where_to_stay like '%Restaurangerna och utelivet finns nere i Hemsedal sentrum, dit skibussen går gratis.%') or (where_to_stay like '%Reser ni många passar de stora husen i Örebäcken och Kläppbacken.%') or (where_to_stay like '%med gröna och blå backar och boende ski in/ski out.%') or (where_to_stay like '%så kolla avståndet till närmaste lift innan du bokar.%') or (notes like '%Kvällen sker mest på hotellen och i några barer i byn.%') or (notes like '%Byn byggdes ut kring linbanan från 1936 och på höjden under 1960-talet.%') or (notes like '%Pisterna delas av Titlis och Jochstock,%') or (notes like '%efter kriget byggdes husen efter regler om%') or (notes like '%har övningsliftarna vid byn och lite som händer på kvällen.%') or (notes like '%är Åre by fel ställe att bo.%') or (where_to_stay like '%Verbier ligger som en balkong över Val de Bagnes,%') or (notes like '%Byn är en av Frankrikes livligaste för afterski.%');
+  where (notes like '%I Hemsedal ligger restaurangerna och utelivet i sentrum, dit skibussen går gratis.%') or (where_to_stay like '%Restaurangerna och utelivet finns nere i Hemsedal sentrum, dit skibussen går gratis.%') or (where_to_stay like '%Reser ni många passar de stora husen i Örebäcken och Kläppbacken.%') or (where_to_stay like '%så kolla avståndet till närmaste lift innan du bokar.%') or (notes like '%Kvällen sker mest på hotellen och i några barer i byn.%') or (notes like '%Byn byggdes ut kring linbanan från 1936 och på höjden under 1960-talet.%') or (notes like '%Pisterna delas av Titlis och Jochstock,%') or (notes like '%efter kriget byggdes husen efter regler om%') or (notes like '%har övningsliftarna vid byn och lite som händer på kvällen.%') or (notes like '%är Åre by fel ställe att bo.%') or (where_to_stay like '%Verbier ligger som en balkong över Val de Bagnes,%') or (notes like '%Byn är en av Frankrikes livligaste för afterski.%');
   if kvar is not null then
     raise exception 'Gamla fraser finns kvar hos: %', kvar;
   end if;

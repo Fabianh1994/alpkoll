@@ -59,6 +59,13 @@ const lista = (rader) =>
   rader.map((n) => n.ort.name).join(', ').replace(/, ([^,]*)$/, ' och $1')
 
 /**
+ * Stationerna tåget stannar vid, inte orterna. Zell am See-Kaprun har sin
+ * station i Zell am See, och Kaprun ska inte se ut att ha en egen.
+ */
+const stationsnamn = (rader) =>
+  [...new Set(rader.map((n) => n.station))].join(', ').replace(/, ([^,]*)$/, ' och $1')
+
+/**
  * Resan till en ort som en följd av steg, i den ordning den görs.
  *
  * Byggd ur ORTER och STATIONER av samma skäl som meningen överst på sidan:
@@ -96,7 +103,7 @@ function resesteg(n, station) {
  */
 function resesumma(n, station) {
   if (!station) return 'Restiden går inte att räkna — stationen är inte utsatt'
-  if (!n.buss) return `${restidText(station.restidMin)} från ${SVERIGE.avgangsstation}, hela vägen`
+  if (!n.buss) return `${restidText(station.restidMin)} från ${SVERIGE.avgangsstation}, hela vägen till ${station.namn}`
   return `${restidText(station.restidMin)} till ${station.namn} · transferbussen tillkommer`
 }
 
@@ -145,7 +152,7 @@ export default async function NattagetTillAlperna() {
     },
     utanBuss.length > 0 && {
       fraga: 'Vilka skidorter når man med tåg?',
-      svar: `Tåget stannar i ${utanBuss.map((n) => n.ort.name).join(' och ')}.` +
+      svar: `Tåget stannar i ${stationsnamn(utanBuss)}.` +
         (medBuss.length ? ` Till ${lista(medBuss)} går transferbuss.` : ''),
     },
     {
@@ -224,14 +231,13 @@ export default async function NattagetTillAlperna() {
               {utanBuss.length > 0 && (
                 <>
                   Av skidorterna på Alpkoll stannar tåget i{' '}
-                  {utanBuss.map((n) => n.ort.name).join(' och ')}.{' '}
+                  {stationsnamn(utanBuss)}.{' '}
                 </>
               )}
-              {/* Mayrhofen får inte bakas in i "från stationen". Snälltåget
-                  skriver inte ut vilken station bussen dit utgår från, och
-                  meningen ska inte påstå mer än datan bär — det var precis den
-                  sortens handskrivna generalisering som gjorde den gamla
-                  meningen osann. Korten längre ner säger samma sak. */}
+              {/* En bussort utan utsatt station får inte bakas in i "från
+                  stationen". Meningen ska inte påstå mer än datan bär — det
+                  var precis den sortens handskrivna generalisering som gjorde
+                  den gamla meningen osann. */}
               {bussMedStation.length > 0 && (
                 <>
                   Till {lista(bussMedStation)} går transferbuss från stationen.{' '}

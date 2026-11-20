@@ -57,7 +57,7 @@ const rubrik = (storlek) => ({
 
 const TYPER = [
   { typ: 'hela-vagen', rubrik: 'Tåget går hela vägen' },
-  { typ: 'buss', rubrik: 'Tåg och transferbuss' },
+  { typ: 'buss', rubrik: 'Tåg och buss sista biten' },
   { typ: 'inget', rubrik: 'Inget tåg i närheten' },
 ]
 
@@ -74,14 +74,17 @@ export default async function TagTillFjallen() {
   const rader = FJALLTAG.filter((f) => ort.has(f.slug)).map((f) => ({ ...f, ort: ort.get(f.slug) }))
 
   const helaVagen = rader.filter((r) => r.typ === 'hela-vagen' && r.ort.country === 'Sweden').map((r) => r.ort.name)
-  const medBuss = rader.filter((r) => r.typ === 'buss').map((r) => r.ort.name)
-  const utan = rader.filter((r) => r.typ === 'inget').map((r) => r.ort.name)
+  // Korta svaret och första frågan gäller Sverige. Norska orter med tåg
+  // står i korten nedanför, men inte i en mening om svenska fjällen.
+  const medBuss = rader.filter((r) => r.typ === 'buss' && r.ort.country === 'Sweden').map((r) => r.ort.name)
+  const utan = rader.filter((r) => r.typ === 'inget' && r.ort.country === 'Sweden').map((r) => r.ort.name)
 
   const fragor = [
     {
       fraga: 'Vilka skidorter i Sverige kan man ta tåget till?',
-      svar: `Hela vägen med tåg: ${lista(helaVagen)}. Med tåg och transferbuss: ${lista(medBuss)}.` +
-        (utan.length ? ` Dit går inget tåg: ${lista(utan)}.` : ''),
+      svar: `Tåget går hela vägen till ${lista(helaVagen)}.` +
+        (medBuss.length ? ` Till ${lista(medBuss)} tar du tåget och sedan buss sista biten.` : '') +
+        (utan.length ? ` Till ${lista(utan)} går inget tåg.` : ''),
     },
     {
       fraga: 'Går det tåg till Sälen?',
@@ -137,7 +140,7 @@ export default async function TagTillFjallen() {
           <h2 style={{ ...etikett, color: ACCENT, margin: '0 0 10px' }}>Kort svar</h2>
           <p style={{ ...brod, color: 'rgba(255,255,255,0.82)', margin: 0 }}>
             Till <strong style={{ color: '#f0ece4' }}>{lista(helaVagen)}</strong> går nattåget hela vägen.
-            Till <strong style={{ color: '#f0ece4' }}>{lista(medBuss)}</strong> tar du tåget och sedan transferbuss,
+            Till <strong style={{ color: '#f0ece4' }}>{lista(medBuss)}</strong> tar du tåget och sedan buss sista biten,
             och Sälen har fått ett eget tåg till Mora från den här vintern.
             {utan.length > 0 && <> Till {lista(utan)} går inget tåg.</>}
           </p>

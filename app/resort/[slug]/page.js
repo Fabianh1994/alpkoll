@@ -656,9 +656,10 @@ export default async function ResortPage({ params }) {
                   </div>
                 ))}
               </div>
-              {/* Utan adress blir kortet en död länk – visa det inte alls. */}
-              {(resort.piste_map_url || resort.resort_url) && (
-              <a href={resort.piste_map_url || resort.resort_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', marginTop: 16, textDecoration: 'none', background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
+              {/* Kortet lovar en pistkarta: utan kartadress visas det inte alls,
+                  i stället för att bli en död länk eller leda till startsidan. */}
+              {resort.piste_map_url && (
+              <a href={resort.piste_map_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', marginTop: 16, textDecoration: 'none', background: '#1c1a17', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 10, padding: '20px 22px', position: 'relative', overflow: 'hidden' }}>
                 <svg viewBox="0 0 400 80" style={{ position: 'absolute', bottom: 0, right: 0, width: '55%', opacity: 0.04, pointerEvents: 'none' }}>
                   <path d="M400,80 L400,35 L350,10 L310,30 L280,5 L240,28 L210,15 L170,38 L130,20 L100,40 L60,25 L30,45 L0,35 L0,80 Z" fill="#D4A574" />
                 </svg>
@@ -672,7 +673,7 @@ export default async function ResortPage({ params }) {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#f0ece4', letterSpacing: '0.04em', marginBottom: 4 }}>Pistkarta</div>
-                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.57)', lineHeight: 1.5, margin: '0 0 12px' }}>Se hela pistkartan för {resort.name} — alla nedfarter, liftar och fjällrestauranger på ortens officiella karta.</p>
+                    <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(255,255,255,0.57)', lineHeight: 1.5, margin: '0 0 12px' }}>Se hela pistkartan för {resort.name}, med alla nedfarter och liftar, på ortens officiella karta.</p>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 600, color: '#D4A574', letterSpacing: '0.04em' }}>Öppna pistkartan →</span>
                   </div>
                 </div>

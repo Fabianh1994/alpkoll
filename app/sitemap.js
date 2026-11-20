@@ -41,6 +41,8 @@ export default async function sitemap() {
     // Den vanligaste forumfrågan om Sälen. Se app/var-bo-i-salen/page.js.
     { path: '/var-bo-i-salen', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },
+    // Vilka svenska orter tåget når, se lib/fjalltag.js.
+    { path: '/tag-till-fjallen', changeFrequency: 'monthly', priority: 0.8 },
     // En sida per land, se lib/landsidor.js.
     ...LANDSIDOR.map((l) => ({ path: `/skidorter/${l.slug}`, changeFrequency: 'monthly', priority: 0.8 })),
     { path: '/about', changeFrequency: 'monthly', priority: 0.4 },

@@ -51,7 +51,7 @@ from (values
   ('obergurgl',          'https://www.gurgl.com/en/activities/winter/skiing-snowboarding/ski-area-information/ski-area-map-lifts-slopes',      'https://www.gurgl.com/en'),
   ('saalbach',           'https://www.saalbach.com/en/winter/ski-resort/piste-map',                                                            'https://www.saalbach.com/en'),
   ('serre-chevalier',    'https://www.serre-chevalier.com/en/ski-area/interactive-trail-map',                                                  'https://www.serre-chevalier.com/en'),
-  ('st-moritz',          'https://www.mountains.ch/en/facilities',                                                                             'https://www.stmoritz.com/en'),
+  ('st-moritz',          'https://www.engadin.ch/en/guide/activities/ski-snowboard',                                                           'https://www.stmoritz.com/en'),
   ('val-d-isere',        'https://www.valdisere.com/en/live/ski-map/',                                                                         'https://www.valdisere.com/en/'),
   ('val-gardena',        'https://www.valgardena.it/en/winter-holidays-dolomites/ski-resort-val-gardena/',                                     'https://www.valgardena.it/en/'),
   ('vemdalen',           'https://www.skistar.com/en/ski-destinations/vemdalen/winter-in-vemdalen/piste-maps2/',                               'https://www.skistar.com/vemdalen'),
@@ -89,6 +89,19 @@ commit;
 
 
 -- ── Efterkontroll ─────────────────────────────────────────────────────
+--
+-- St. Moritz länkar till Engadins sida, inte till mountains.ch: orten
+-- räknas som Corviglia, Corvatsch och Diavolezza tillsammans, och
+-- mountains.ch visar bara Corviglia.
+--
+-- Ska ge 26 rader, en per ort ovan, alla med adress:
+--
+--   SELECT slug, piste_map_url, resort_url FROM resorts
+--   WHERE slug IN ('alta-badia','bad-gastein','branas','cervinia','engelberg',
+--     'funasfjallen','hafjell','idre-fjall','klappen','la-plagne','laax',
+--     'lech-zuers','les-deux-alpes','obergurgl','saalbach','serre-chevalier',
+--     'st-moritz','val-d-isere','val-gardena','vemdalen','zell-am-see-kaprun',
+--     'ischgl','verbier','saas-fee','les-arcs','madonna-di-campiglio');
 --
 -- Ska ge noll rader: inga publicerade orter utan pistkarta eller webbplats.
 --

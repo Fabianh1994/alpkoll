@@ -34,10 +34,11 @@ const MENY = [
   { label: 'Liftkortspriser', href: '/liftkortspriser', match: (p) => p === '/liftkortspriser' },
   {
     label: 'Guider', href: '/sportlov',
-    match: (p) => ['/sportlov', '/nattaget-till-alperna', '/skidorter-for-barnfamiljer', '/var-bo-i-salen', '/liftkortsindex'].includes(p) || p.startsWith('/sportlov/'),
+    match: (p) => ['/sportlov', '/nattaget-till-alperna', '/tag-till-fjallen', '/skidorter-for-barnfamiljer', '/var-bo-i-salen', '/liftkortsindex'].includes(p) || p.startsWith('/sportlov/'),
     under: [
       { label: 'Sportlov', href: '/sportlov' },
-      { label: 'Nattåget till Alperna', href: '/nattaget-till-alperna' },
+      { label: 'Tåg till Alperna', href: '/nattaget-till-alperna' },
+      { label: 'Tåg till fjällen', href: '/tag-till-fjallen' },
       { label: 'Skidorter för barnfamiljer', href: '/skidorter-for-barnfamiljer' },
       { label: 'Var bo i Sälen', href: '/var-bo-i-salen' },
       { label: 'Liftkortsindex', href: '/liftkortsindex' },

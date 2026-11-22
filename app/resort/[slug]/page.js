@@ -70,17 +70,16 @@ export async function generateMetadata({ params }) {
     .filter(Boolean)
 
   const title = ortTitel({ namn: resort.name, harPris: prisAttVisa, sasong })
-  // Ortens två högsta betyg, samma poäng och etiketter som Vårt omdöme
-  // längre ner. Bara betyg från 7 och uppåt: "högst betyg" ska betyda
-  // något även för en ort som är medelmåttig på allt.
-  const betyg = [
+  // De två första under "Starkast" i Vårt omdöme längre ner: samma
+  // poäng, samma etiketter och samma ordning vid lika poäng.
+  const starkast = [
     ['nybörjare', resort.beginner_score], ['mellannivå', resort.intermediate_score],
-    ['avancerade', resort.expert_score], ['offpist', resort.off_piste_score],
+    ['avancerad', resort.expert_score], ['offpist', resort.off_piste_score],
     ['snowpark', resort.snowpark_score], ['snösäkerhet', resort.snow_guarantee_score],
     ['bykänsla', resort.village_charm_score], ['afterski', resort.apres_ski_score],
     ['familjer', resort.family_friendly_score], ['gott om plats', resort.crowd_score],
   ]
-    .filter(([, v]) => Number.isFinite(v) && v >= 7)
+    .filter(([, v]) => Number.isFinite(v))
     .sort((a, b) => b[1] - a[1])
     .map(([namn]) => namn)
 
@@ -89,16 +88,17 @@ export async function generateMetadata({ params }) {
     nordisk: arNordisk(resort),
     bil: STADER.map((s) => ({ stad: s.namn, minuter: bilresa(resort.slug, s.nyckel)?.minuter }))
       .filter((x) => Number.isFinite(x.minuter)),
-    nattag: nattaget?.station || null,
+    nattag: Boolean(nattaget),
     flyg: resort.nearest_airport || null,
   })
 
   const description = ortBeskrivning({
     namn: resort.name,
     fallhojd: tal(fallhojdFor(resort)),
-    pistKm: resort.total_pistes_km,
+    pistKm: tal(resort.total_pistes_km),
     dagspass: dagspass?.kr,
-    betyg,
+    sasong,
+    starkast,
     resan,
     jamforMed: jamforOrdning(motparter).map((r) => r.name),
   })

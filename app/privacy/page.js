@@ -33,7 +33,9 @@ export default function PrivacyPage() {
           <Stark>Besöksstatistik:</Stark> vi använder Vercel Web Analytics, som
           inte sätter kakor och inte samlar in personuppgifter. Den räknar
           anonyma sidvisningar — din IP-adress lagras inte, ingen enhet
-          fingeravtrycks och inget följs mellan olika sajter.
+          fingeravtrycks och inget följs mellan olika sajter. På samma sätt
+          räknar den hur många som klickar på en länk till en partner, och
+          från vilken sida. Räkningen säger ingenting om vem som klickade.
         </p>
         <p style={{ marginTop: 12 }}>
           <Stark>Länkar vidare:</Stark> när du klickar dig vidare till en

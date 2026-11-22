@@ -5,8 +5,8 @@
 //
 // Kraven den är byggd efter (lagen om elektronisk kommunikation 9 kap. 28 §,
 // GDPR och IMY:s vägledning om kakor):
-//  - Inget laddas och ingen kaka sätts innan besökaren tryckt Godkänn.
-//  - Godkänn och Neka är lika stora och ser likadana ut. Ett nej ska vara
+//  - Inget laddas och ingen kaka sätts innan besökaren tryckt "Ja, det är okej".
+//  - Ja- och nej-knappen är lika stora och ser likadana ut. Ett nej ska vara
 //    lika lätt som ett ja.
 //  - Inga förifyllda val. Att stänga eller scrolla förbi rutan är inget ja.
 //  - Valet går att ändra när som helst, via "Kakinställningar" i sidfoten.
@@ -223,7 +223,7 @@ export default function Kakruta() {
         margin: '0 0 4px',
         color: '#f0ece4',
       }}>
-        Får Alpkoll se hur sidan används?
+        Får Alpkoll använda Microsoft Clarity?
       </h2>
       <p id="kakruta-text" style={{
         fontSize: 13,
@@ -231,18 +231,17 @@ export default function Kakruta() {
         margin: '0 0 12px',
         color: 'rgba(240,236,228,0.72)',
       }}>
-        Säger du ja spelar Microsoft Clarity in klick och scroll och sätter
-        kakor för det. Sajten fungerar likadant om du nekar.{' '}
+        Det spelar in klick och scroll och sätter kakor.{' '}
         <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›
         </Link>
       </p>
       <div style={{ display: 'flex', gap: 10 }}>
         <button ref={forstaKnapp} type="button" style={knapp} onClick={() => valj('nej')}>
-          Neka
+          Nej, tack
         </button>
         <button type="button" style={knapp} onClick={() => valj('ja')}>
-          Godkänn
+          Ja, det är okej
         </button>
       </div>
 

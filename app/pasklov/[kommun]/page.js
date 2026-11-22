@@ -7,8 +7,11 @@ import { skrivDatum } from '../../../lib/valuta'
 import { SITE_URL } from '../../../lib/lang'
 import { AR, HAMTAD, PASKDAGEN, PASKLOV, ledigtIRad, pasklovFranSlug, pasklovetSlut, skidveckaInom, veckan } from '../../../lib/pasklov'
 import { kommunFranSlug, veckan as sportlovsveckan } from '../../../lib/sportlov'
-import { ACCENT, brod, dag, kort, rubrik, spann } from '../../sportlov/Veckan'
+import { ACCENT, brod, dag, etikett, kort, rubrik, spann } from '../../sportlov/Veckan'
 import Snon from '../Snon'
+import Partnerlank from '../../Partnerlank'
+import Annonsmarkning from '../../Annonsmarkning'
+import { BOOKING_BLA, bookingSok } from '../../../lib/booking'
 
 // En sida per kommun, samma upplägg som /sportlov/<kommun>.
 //
@@ -26,6 +29,21 @@ export function generateStaticParams() {
 }
 
 const i = (rad) => (rad.pa ? 'på' : 'i')
+
+// Samma fyra orter som boendet på sportlovssidan: de nordiska orter som
+// sätter priset efter startdagen, så att datumen i sökningen gör nytta.
+const BOENDE_ORTER = [
+  { slug: 'are', name: 'Åre' },
+  { slug: 'salen', name: 'Sälen' },
+  { slug: 'hemsedal', name: 'Hemsedal' },
+  { slug: 'trysil', name: 'Trysil' },
+]
+
+/** Andra kommuner med exakt samma lovdagar, i svensk bokstavsordning. */
+const sammaDatum = (rad) =>
+  PASKLOV
+    .filter((r) => r.slug !== rad.slug && r.start && r.start === rad.start && r.slut === rad.slut)
+    .sort((a, b) => a.kommun.localeCompare(b.kommun, 'sv'))
 
 /** "30 mars–2 april", eller "vecka 13" där kommunen bara anger veckan. */
 const lovet = (rad) => (rad.start ? spann(rad.start, rad.slut) : `vecka ${rad.vecka}`)
@@ -67,9 +85,19 @@ export default async function PasklovKommun({ params }) {
   const sportlov = kommunFranSlug(rad.slug)
   const sv = sportlov && sportlovsveckan(sportlov.vecka)
   const liten = { ...brod, fontSize: 14, margin: '0 0 30px', color: 'rgba(255,255,255,0.57)' }
+  const samma = sammaDatum(rad)
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: `Påsklov ${AR}`, item: `${SITE_URL}/pasklov` },
+      { '@type': 'ListItem', position: 2, name: rad.kommun, item: `${SITE_URL}/pasklov/${rad.slug}` },
+    ],
+  }
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <SiteHeader />
 
       <main style={{ maxWidth: 860, margin: '0 auto', padding: '108px clamp(20px, 5vw, 32px) 100px' }}>
@@ -102,6 +130,30 @@ export default async function PasklovKommun({ params }) {
           innan du bokar.
         </p>
 
+        {!passerat && skidvecka && (
+          <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 30 }}>
+            <h2 style={{ ...etikett, margin: '0 0 12px' }}>Boende i påsk</h2>
+            <p style={{ ...brod, fontSize: 15, margin: '0 0 14px' }}>
+              Sökningen gäller lördag till lördag, {spann(skidvecka.start, skidvecka.slut)}.
+            </p>
+            <Annonsmarkning kompakt style={{ marginBottom: 10 }} />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+              {BOENDE_ORTER.map((ort) => (
+                <Partnerlank
+                  key={ort.slug}
+                  sid={`pasklov-v${rad.vecka}-${ort.slug}`}
+                  sok={{ destination: bookingSok(ort), checkin: skidvecka.start, checkout: skidvecka.slut }}
+                  markning={null}
+                  style={{ display: 'block', background: BOOKING_BLA, borderRadius: 8, padding: '12px 14px', textDecoration: 'none' }}
+                >
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600, color: '#fff' }}>{ort.name}</div>
+                  <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.72)', marginTop: 2 }}>Booking.com →</div>
+                </Partnerlank>
+              ))}
+            </div>
+          </div>
+        )}
+
         {passerat && (
           <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 30 }}>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
@@ -117,6 +169,17 @@ export default async function PasklovKommun({ params }) {
             <>
               Sportlovet {i(rad)} {rad.kommun} är vecka {sv.nr}, se{' '}
               <Link href={`/sportlov/${rad.slug}`} style={{ color: ACCENT }}>sportlov {AR} {i(rad)} {rad.kommun}</Link>.{' '}
+            </>
+          )}
+          {samma.length > 0 && (
+            <>
+              Samma lovdagar har{' '}
+              {samma.map((k, n) => (
+                <span key={k.slug}>
+                  {n > 0 && (n === samma.length - 1 ? ' och ' : ', ')}
+                  <Link href={`/pasklov/${k.slug}`} style={{ color: 'rgba(255,255,255,0.72)' }}>{k.kommun}</Link>
+                </span>
+              ))}.{' '}
             </>
           )}
           Alla kommuner står på{' '}

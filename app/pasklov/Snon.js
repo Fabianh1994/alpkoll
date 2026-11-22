@@ -23,18 +23,29 @@ const SYNLIGA = 6
 /** 1450 -> "1 450", utan att hänga på serverns språkdata. */
 const tal = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
 
+/**
+ * " · 1 125–1 450 m": dalen och toppen. Dalen står med eftersom det är där
+ * snön tar slut först i påsk, och det är den siffran läsaren behöver.
+ */
+function hojd(o) {
+  const topp = Number.isFinite(o.altitude_top) ? o.altitude_top : null
+  const dal = Number.isFinite(o.altitude_base) ? o.altitude_base : null
+  if (topp && dal) return ` · ${tal(dal)}–${tal(topp)} m`
+  if (topp) return ` · toppen ${tal(topp)} m`
+  return ''
+}
+
 const ordning = (a, b) =>
   (b.snow_guarantee_score || 0) - (a.snow_guarantee_score || 0) || (b.altitude_top || 0) - (a.altitude_top || 0)
 
 /**
  * Databasen har stängningsmånaden, inte dagen. Påsklovet vecka 13 slutar
  * 4 april, så en ort som stänger "i april" kan ha stängt innan lovet är
- * slut. Raden säger därför olika saker för april och för maj.
+ * slut. Att det är planen och inte ett löfte står en gång ovanför listan.
  */
 function stanger(m) {
   if (!m) return ''
-  if (m === 4) return ' · stänger i april enligt plan'
-  return ` · öppet in i ${manad(m)} enligt plan`
+  return ` · stänger i ${manad(m)}`
 }
 
 function Rad({ o }) {
@@ -52,7 +63,7 @@ function Rad({ o }) {
       </span>
       <span style={{ color: 'rgba(255,255,255,0.62)', fontSize: 14 }}>
         Snösäkerhet {o.snow_guarantee_score}/10
-        {Number.isFinite(o.altitude_top) ? ` · toppen ${tal(o.altitude_top)} m` : ''}
+        {hojd(o)}
         {stanger(o.season_end_month)}
       </span>
     </li>
@@ -72,7 +83,7 @@ function Ortlista({ orter }) {
             cursor: 'pointer', color: ACCENT, fontFamily: 'var(--font-body)', fontSize: 14,
             padding: '10px 0', borderTop: '1px solid rgba(255,255,255,0.06)',
           }}>
-            Visa {resten.length} till
+            Visa {resten.length} orter till
           </summary>
           <ul style={lista}>{resten.map((o) => <Rad key={o.slug} o={o} />)}</ul>
         </details>
@@ -92,19 +103,19 @@ export default function Snon({ orter, ar }) {
     <section>
       <h2 style={rubrik('clamp(28px, 4.5vw, 40px)')}>Var finns snön i påsk?</h2>
       <p style={{ ...brod, margin: '0 0 14px' }}>
-        Påsken {ar} ligger tidigt. Listan börjar med de snösäkraste orterna. Nedfarterna till
-        byn smälter först, och på lägre orter kan backen vara hård på morgonen och blöt på
-        eftermiddagen.
+        Påsken {ar} ligger tidigt. Listan börjar med de snösäkraste orterna. Höjden på varje
+        rad går från dalen till toppen. Nedfarterna till dalen smälter först, och på
+        lägre orter kan backen vara hård på morgonen och blöt på eftermiddagen.
       </p>
       <p style={{ ...brod, fontSize: 14.5, margin: '0 0 22px' }}>
-        Vi vet vilken månad orterna planerar att stänga, inte vilken dag. En ort som stänger i
+        Månaden på raden är när orten planerar att stänga. Vi vet månaden, inte dagen. En ort som stänger i
         april kan stänga strax efter påsk, så kolla ortens sista dag innan du bokar.
       </p>
 
       <h3 style={{ ...etikett, fontSize: 11, margin: '0 0 10px' }}>Sverige, Norge och Finland</h3>
       <Ortlista orter={norden} />
 
-      <h3 style={{ ...etikett, fontSize: 11, margin: '0 0 10px' }}>Alperna: högst snösäkerhet</h3>
+      <h3 style={{ ...etikett, fontSize: 11, margin: '0 0 10px' }}>Alperna, snösäkerhet {ALP_GRANS}–10</h3>
       <Ortlista orter={alperna} />
 
       <p style={{ ...liten, margin: 0 }}>

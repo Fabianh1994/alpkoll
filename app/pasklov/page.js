@@ -4,7 +4,7 @@ import SiteFooter from '../SiteFooter'
 import { getResorts } from '../../lib/resorts'
 import { skrivDatum } from '../../lib/valuta'
 import { SITE_URL } from '../../lib/lang'
-import { AR, HAMTAD, PASKDAGEN, PASKLOV, VECKOR, kommunerVecka, pasklovetSlut } from '../../lib/pasklov'
+import { AR, HAMTAD, PASKDAGEN, PASKLOV, VECKOR, kommunerVecka, ledigtIRad, pasklovetSlut } from '../../lib/pasklov'
 import { ACCENT, brod, dag, etikett, kort, rubrik, spann } from '../sportlov/Veckan'
 import Snon from './Snon'
 import Kommunvaljare from './Kommunvaljare'
@@ -62,14 +62,39 @@ function datum(r) {
   return r.start ? spann(r.start, r.slut) : `vecka ${r.vecka}`
 }
 
+/**
+ * Den ledighet flest kommuner i veckan får med helger och röda dagar, och
+ * hur många som har den. Kommunerna skriver lovet olika (Göteborg 26 mars,
+ * Stockholm 30 mars) men de flesta är lediga samma dagar.
+ */
+function vanligastLedigt(rader) {
+  const antal = {}
+  for (const r of rader) {
+    const l = ledigtIRad(r)
+    if (l) antal[`${l.start}|${l.slut}`] = (antal[`${l.start}|${l.slut}`] || 0) + 1
+  }
+  const [nyckel, n] = Object.entries(antal).sort((a, b) => b[1] - a[1])[0] || []
+  if (!nyckel) return null
+  const [start, slut] = nyckel.split('|')
+  return { start, slut, n }
+}
+
 function Kommunlista({ v }) {
   const rader = kommunerVecka(v.nr)
+  const ledigt = vanligastLedigt(rader)
   return (
     <section style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 14 }}>
       <div style={etikett}>Vecka {v.nr}, {v.namn}</div>
-      <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), margin: '8px 0 14px' }}>
+      <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), margin: '8px 0 6px' }}>
         {spann(v.start, v.slut)} {AR}
       </h2>
+      {ledigt && (
+        <p style={{ ...liten, margin: '0 0 14px' }}>
+          Med helger och röda dagar är barnen lediga {spann(ledigt.start, ledigt.slut)} i{' '}
+          {ledigt.n === rader.length ? 'alla' : `${ledigt.n} av ${rader.length}`} kommuner här.
+          Datumen bredvid kommunen är lovet som kommunen skriver det.
+        </p>
+      )}
       <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
         {rader.map((r) => (
           <li key={r.kommun} style={{
@@ -128,7 +153,7 @@ export default async function PasklovSida() {
         )}
 
         <p style={{ ...liten, margin: '6px 0 44px' }}>
-          Datumen står som kommunen skriver dem. Uppgifterna är lästa på {PASKLOV.length} kommuners egna sidor den {skrivDatum(HAMTAD)},
+          Uppgifterna är lästa på {PASKLOV.length} kommuners egna sidor den {skrivDatum(HAMTAD)},
           och varje kommunsida länkar dit. Lovet bestäms av varje kommun och kan ändras, så
           kolla din egen kommun innan du bokar. Står din kommun inte här finns lovet på
           kommunens sida under läsårstider.

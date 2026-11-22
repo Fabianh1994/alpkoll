@@ -34,9 +34,10 @@ const MENY = [
   { label: 'Liftkortspriser', href: '/liftkortspriser', match: (p) => p === '/liftkortspriser' },
   {
     label: 'Guider', href: '/sportlov',
-    match: (p) => ['/sportlov', '/nattaget-till-alperna', '/tag-till-fjallen', '/skidorter-for-barnfamiljer', '/var-bo-i-salen', '/liftkortsindex', '/fallhojd'].includes(p) || p.startsWith('/sportlov/'),
+    match: (p) => ['/sportlov', '/pasklov', '/nattaget-till-alperna', '/tag-till-fjallen', '/skidorter-for-barnfamiljer', '/var-bo-i-salen', '/liftkortsindex', '/fallhojd'].includes(p) || p.startsWith('/sportlov/') || p.startsWith('/pasklov/'),
     under: [
       { label: 'Sportlov', href: '/sportlov' },
+      { label: 'Påsklov', href: '/pasklov' },
       { label: 'Tåg till Alperna', href: '/nattaget-till-alperna' },
       { label: 'Tåg till fjällen', href: '/tag-till-fjallen' },
       { label: 'Skidorter för barnfamiljer', href: '/skidorter-for-barnfamiljer' },

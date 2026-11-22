@@ -3,6 +3,7 @@ import { SITE_URL } from '../lib/lang'
 import { PLANERAREN_SYNLIG } from '../lib/features'
 import { indexeradeParFor } from '../lib/jamfor'
 import { KOMMUNER, kommunSlug } from '../lib/sportlov'
+import { PASKLOV } from '../lib/pasklov'
 import { LANDSIDOR } from '../lib/landsidor'
 
 // Genereras om enligt samma intervall som ortsidorna, så nya orter i
@@ -69,6 +70,13 @@ export default async function sitemap() {
     // En sida per kommun vi läst sportlovet för, se lib/sportlov.js.
     ...KOMMUNER.map((k) => ({
       url: `${SITE_URL}/sportlov/${kommunSlug(k.kommun)}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    })),
+    // Och för påsklovet, se lib/pasklov.js.
+    ...PASKLOV.map((r) => ({
+      url: `${SITE_URL}/pasklov/${r.slug}`,
       lastModified: now,
       changeFrequency: 'monthly',
       priority: 0.7,

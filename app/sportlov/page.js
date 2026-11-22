@@ -7,6 +7,7 @@ import { SITE_URL } from '../../lib/lang'
 import { AR, KOMMUNER, VECKOR, hamtadeDagar, sportlovetSlut } from '../../lib/sportlov'
 import { sasongenSlut } from '../../lib/nattaget'
 import { ACCENT, Veckan, brod, kort, rubrik, spann } from './Veckan'
+import { VECKOR as PASKVECKOR } from '../../lib/pasklov'
 
 // Samma intervall som ortsidorna. Betyder också att sidan märker att
 // sportlovet passerat inom en timme, utan deploy.
@@ -88,6 +89,8 @@ export default function SportlovSida() {
           Ska det bli Sverige eller Alperna finns{' '}
           <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link>{' '}
           och <Link href="/are-eller-alperna" style={{ color: ACCENT }}>Åre eller Alperna</Link>.
+          Påsklovet ligger vecka {PASKVECKOR.map((v) => v.nr).join(' eller ')}, se{' '}
+          <Link href="/pasklov" style={{ color: ACCENT }}>Påsklov {AR}</Link>.
         </p>
       </main>
 

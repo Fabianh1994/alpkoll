@@ -17,14 +17,14 @@ import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
 import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
 import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
 import { restid } from '../../../lib/travel'
-import { linjeMeningar, linjerFor } from '../../../lib/restider'
+import { STADER, bilresa, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { land, region } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
 import { vanligaFragor } from '../../../lib/vanligaFragor'
 import { delomraden, fallhojd as fallhojdFor, pistadeDelar, spannMening, summaText, tal } from '../../../lib/delomraden'
 import { getOrtbilder } from '../../../lib/ortbilder'
 import { kreditering } from '../../../lib/kreditering'
-import { jamforOrdning, ortBeskrivning, ortTitel } from '../../../lib/sokresultat'
+import { jamforOrdning, ortBeskrivning, ortTitel, resanKort } from '../../../lib/sokresultat'
 import Bildgalleri from './Bildgalleri'
 import Partnerlank from '../../Partnerlank'
 
@@ -70,18 +70,36 @@ export async function generateMetadata({ params }) {
     .filter(Boolean)
 
   const title = ortTitel({ namn: resort.name, harPris: prisAttVisa, sasong })
+  // Ortens två högsta betyg, samma poäng och etiketter som Vårt omdöme
+  // längre ner. Bara betyg från 7 och uppåt: "högst betyg" ska betyda
+  // något även för en ort som är medelmåttig på allt.
+  const betyg = [
+    ['nybörjare', resort.beginner_score], ['mellannivå', resort.intermediate_score],
+    ['avancerade', resort.expert_score], ['offpist', resort.off_piste_score],
+    ['snowpark', resort.snowpark_score], ['snösäkerhet', resort.snow_guarantee_score],
+    ['bykänsla', resort.village_charm_score], ['afterski', resort.apres_ski_score],
+    ['familjer', resort.family_friendly_score], ['gott om plats', resort.crowd_score],
+  ]
+    .filter(([, v]) => Number.isFinite(v) && v >= 7)
+    .sort((a, b) => b[1] - a[1])
+    .map(([namn]) => namn)
+
+  const nattaget = sasongenSlut() ? null : nattagFor(resort.slug)
+  const resan = resanKort({
+    nordisk: arNordisk(resort),
+    bil: STADER.map((s) => ({ stad: s.namn, minuter: bilresa(resort.slug, s.nyckel)?.minuter }))
+      .filter((x) => Number.isFinite(x.minuter)),
+    nattag: nattaget?.station || null,
+    flyg: resort.nearest_airport || null,
+  })
+
   const description = ortBeskrivning({
     namn: resort.name,
     fallhojd: tal(fallhojdFor(resort)),
     pistKm: resort.total_pistes_km,
-    liftar: resort.total_lifts,
-    bas: tal(resort.altitude_base),
-    topp: tal(resort.altitude_top),
-    pistTopp: pistadeDelar(resort).length
-      ? tal(Math.max(...pistadeDelar(resort).map((d) => d.topp)))
-      : null,
     dagspass: dagspass?.kr,
-    sasong,
+    betyg,
+    resan,
     jamforMed: jamforOrdning(motparter).map((r) => r.name),
   })
 

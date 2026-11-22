@@ -7,8 +7,8 @@ import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
 import { manad } from '../../lib/months'
 import { arNordisk } from '../../lib/jamfor'
-import { AR, HAMTAD, PASKLOV, VECKOR, kommunerVecka, pasklovetSlut } from '../../lib/pasklov'
-import { ACCENT, brod, etikett, kort, rubrik, spann } from '../sportlov/Veckan'
+import { AR, HAMTAD, PASKDAGEN, PASKLOV, VECKOR, kommunerVecka, pasklovetSlut } from '../../lib/pasklov'
+import { ACCENT, brod, dag, etikett, kort, rubrik, spann } from '../sportlov/Veckan'
 
 // Påsklov 2027: vilken vecka varje kommun har lov, och vilka orter som
 // håller snön i slutet av mars. Kommunuppgifterna och skälet till sidan
@@ -20,14 +20,28 @@ export const revalidate = 3600
 
 // Alporterna listan tar med: högsta betyget för snösäkerhet. Alla
 // publicerade orter har säsong in i april enligt databasen, så säsongen
-// skiljer dem inte åt. Snösäkerheten gör det.
+// skiljer dem inte åt. Snösäkerheten gör det. Grandvalira i Andorra
+// faller bort på samma gräns.
 const ALP_GRANS = 9
 
-const titel = `Påsklov ${AR}: vecka 12 eller 13 i din kommun | Alpkoll`
+// Texten byggs ur raderna i lib/pasklov.js, så att den följer med när
+// raderna byts nästa år. Den vecka flest kommuner har är "de flestas".
+const listaOrd = (ord) => (ord.length < 2 ? ord.join('') : `${ord.slice(0, -1).join(', ')} och ${ord[ord.length - 1]}`)
+const perVecka = VECKOR.map((v) => ({ ...v, kommuner: kommunerVecka(v.nr) }))
+const storst = [...perVecka].sort((a, b) => b.kommuner.length - a.kommuner.length)[0]
+const ovriga = perVecka.filter((v) => v.nr !== storst.nr && v.kommuner.length)
+const veckonummer = listaOrd(VECKOR.map((v) => String(v.nr)))
+const undantag = ovriga
+  .map((v) => `${listaOrd(v.kommuner.map((k) => k.kommun))} har vecka ${v.nr}, veckan ${v.namn}`)
+  .join('. ')
+const stockholm = PASKLOV.find((r) => r.kommun === 'Stockholm')
+const goteborg = PASKLOV.find((r) => r.kommun === 'Göteborg')
+
+const titel = `Påsklov ${AR}: vecka ${veckonummer.replace(' och ', ' eller ')} i din kommun | Alpkoll`
 const beskrivning =
-  `Påsklovet ${AR} ligger vecka 13 i de flesta kommuner. Malmö, Lund, Helsingborg ` +
-  `och Skövde har vecka 12, före påsk. Se din kommun och vilka skidorter som har ` +
-  'säkrast snö i slutet av mars.'
+  `Påsklovet ${AR} ligger vecka ${storst.nr} i de flesta kommuner. ` +
+  (undantag ? `${undantag}. ` : '') +
+  'Se din kommun och hur snösäkra skidorterna är.'
 
 export const metadata = {
   title: titel,
@@ -44,6 +58,9 @@ export const metadata = {
   },
   twitter: { card: 'summary_large_image', title: titel, description: beskrivning, images: ['/og-image.png'] },
 }
+
+/** 1450 -> "1 450", utan att hänga på serverns språkdata. */
+const tal = (v) => String(v).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
 
 const liten = { ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)' }
 
@@ -94,8 +111,9 @@ function Ortlista({ orter }) {
             <span style={{ color: 'rgba(255,255,255,0.52)', fontSize: 13.5 }}> {land(o.country)}</span>
           </span>
           <span style={{ color: 'rgba(255,255,255,0.62)', fontSize: 14 }}>
-            Snösäkerhet {o.snow_guarantee_score}/10 · toppen {o.altitude_top.toLocaleString('sv-SE')} m
-            {o.season_end_month ? ` · öppet till ${manad(o.season_end_month)}` : ''}
+            Snösäkerhet {o.snow_guarantee_score}/10
+            {Number.isFinite(o.altitude_top) ? ` · toppen ${tal(o.altitude_top)} m` : ''}
+            {o.season_end_month ? ` · planerat öppet till ${manad(o.season_end_month)}` : ''}
           </span>
         </li>
       ))}
@@ -114,7 +132,7 @@ export default async function PasklovSida() {
   const allaOppna = oppna.length === orter.length
   const norden = oppna.filter((o) => arNordisk(o) && o.snow_guarantee_score).sort(ordning)
   const alperna = oppna
-    .filter((o) => !arNordisk(o) && o.country !== 'Andorra' && o.snow_guarantee_score >= ALP_GRANS)
+    .filter((o) => !arNordisk(o) && o.snow_guarantee_score >= ALP_GRANS)
     .sort(ordning)
 
   return (
@@ -127,19 +145,21 @@ export default async function PasklovSida() {
         </h1>
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
-          Påskdagen {AR} är den 28 mars. De flesta kommuner har påsklov vecka 13, veckan
-          efter påsk. Malmö, Lund, Helsingborg och Skövde har vecka 12, veckan före.
+          Påskdagen {AR} är den {dag(PASKDAGEN)}. De flesta kommuner har påsklov vecka{' '}
+          {storst.nr}, veckan {storst.namn}.{undantag ? ` ${undantag}.` : ''}
         </p>
-        <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px' }}>
-          Långfredag 26 mars och annandag påsk 29 mars är röda dagar. Därför skriver
-          kommunerna olika första dag för samma lov: Stockholm skriver 30 mars, Göteborg
-          26 mars. Klicka på kommunen för att läsa på kommunens egen sida.
-        </p>
+        {!passerat && stockholm?.start && goteborg?.start && (
+          <p style={{ ...brod, fontSize: 14.5, margin: '0 0 30px' }}>
+            Långfredagen och annandag påsk är röda dagar, och kommunerna räknar dem olika.
+            Stockholm skriver att lovet börjar {dag(stockholm.start)}, Göteborg{' '}
+            {dag(goteborg.start)}. Kommunnamnet leder till kommunens egen sida.
+          </p>
+        )}
 
         {passerat ? (
           <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 30 }}>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
-              Påsklovet {AR} är passerat. Nästa års veckor beslutas av kommunerna, och sidan
+              Påsklovet {AR} har passerat. Nästa års veckor beslutas av kommunerna, och sidan
               uppdateras när de är publicerade.
             </p>
           </div>
@@ -157,8 +177,8 @@ export default async function PasklovSida() {
         <p style={{ ...brod, margin: '0 0 22px' }}>
           Påsken {AR} ligger tidigt.{' '}
           {allaOppna
-            ? 'I slutet av mars har alla orter på Alpkoll fortfarande öppet, så det som skiljer dem åt är hur säker snön är.'
-            : 'Listorna tar med orterna som har öppet in i april, ordnade efter hur säker snön är.'} Nedfarterna till byn är det som
+            ? 'Alla orter på Alpkoll planerar att ha öppet in i april, så det som skiljer dem åt är hur snösäkra de är.'
+            : 'Listorna tar med orterna som planerar att ha öppet in i april, ordnade efter hur snösäkra de är.'} Nedfarterna till byn är det som
           smälter först, och på lägre orter kan backen vara hård på morgonen och blöt på
           eftermiddagen.
         </p>
@@ -172,8 +192,8 @@ export default async function PasklovSida() {
         <Ortlista orter={alperna} />
 
         <p style={{ ...liten, margin: '0 0 8px' }}>
-          Snösäkerheten är Alpkolls betyg från 1 till 10, och samma tal står på ortsidan.
-          Öppet till anger månaden orten planerar att stänga. Ett år med lite snö kan
+          Snösäkerheten är Alpkolls betyg från 1 till 10 för hela säsongen, och samma tal
+          står på ortsidan. Planerat öppet till anger månaden orten planerar att stänga. Ett år med lite snö kan
           nedre delen stänga tidigare.
         </p>
         <p style={{ ...liten, margin: 0 }}>

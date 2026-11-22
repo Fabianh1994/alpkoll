@@ -91,9 +91,9 @@ uppgiften står utan barn i backen.
 
 | Vecka | Antal | Kommuner |
 |---|---|---|
-| 7 | 4 | Borås, Göteborg, Jönköping, Skövde |
-| 8 | 12 | Eskilstuna, Halmstad, Helsingborg, Kristianstad, Linköping, Lund, Malmö, Norrköping, Uddevalla, Uppsala, Varberg, Växjö |
-| 9 | 10 | Borlänge, Gävle, Huddinge, Karlstad, Luleå, Malung-Sälen, Sigtuna, Solna, Stockholm, Västerås |
+| 7 | 6 | Borås, Göteborg, Jönköping, Kungsbacka, Mölndal, Skövde |
+| 8 | 15 | Eskilstuna, Halmstad, Helsingborg, Kalmar, Kristianstad, Linköping, Lund, Malmö, Norrköping, Nyköping, Uddevalla, Uppsala, Varberg, Växjö, Örebro |
+| 9 | 13 | Borlänge, Gotland, Gävle, Huddinge, Karlstad, Luleå, Malung-Sälen, Nacka, Sigtuna, Solna, Stockholm, Täby, Västerås |
 | 10 | 9 | Hudiksvall, Härjedalen, Skellefteå, Sollefteå, Sundsvall, Söderhamn, Umeå, Åre, Östersund |
 
 Skidorternas egna kommuner ligger sent: Malung-Sälen vecka 9, Åre och
@@ -101,5 +101,5 @@ Härjedalen vecka 10. De har alltså sportlov när gästerna inte har det.
 
 ## Vad som återstår
 
-255 kommuner. Arbetet är rakt men långt: ett besök per kommun på sidan om
+247 kommuner. Arbetet är rakt men långt: ett besök per kommun på sidan om
 läsårstider och lov. Det finns ingen genväg — se regeln överst.

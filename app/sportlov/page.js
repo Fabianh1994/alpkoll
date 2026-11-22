@@ -38,9 +38,10 @@ export default function SportlovSida() {
   const passerat = sportlovetSlut()
   // "9 september och 22 november 2026": listan har lästs i omgångar.
   const dagar = hamtadeDagar().map(skrivDatum)
-  const lasDagar = dagar.length < 2
-    ? dagar.join('')
-    : `${dagar.slice(0, -1).map((d) => d.replace(/ \d{4}$/, '')).join(', ')} och ${dagar[dagar.length - 1]}`
+  // Årtalet skrivs bara en gång när alla dagar ligger samma år.
+  const ettAr = new Set(hamtadeDagar().map((d) => d.slice(0, 4))).size === 1
+  const forsta = dagar.slice(0, -1).map((d) => (ettAr ? d.replace(/ \d{4}$/, '') : d))
+  const lasDagar = dagar.length < 2 ? dagar.join('') : `${forsta.join(', ')} och ${dagar[dagar.length - 1]}`
   const tagetGar = !sasongenSlut()
 
   const veckor = VECKOR.map((v) => ({ nr: v.nr, text: spann(v.start, v.slut) }))

@@ -67,9 +67,9 @@ export default function JuridiskSida({ titel, uppdaterad, etikett = 'Juridiskt',
   );
 }
 
-export function Avsnitt({ titel, children }) {
+export function Avsnitt({ titel, id, children }) {
   return (
-    <section style={{ marginBottom: 40 }}>
+    <section id={id} style={{ marginBottom: 40, scrollMarginTop: 100 }}>
       <h2 style={{
         fontFamily: 'var(--font-heading)',
         fontSize: 22,

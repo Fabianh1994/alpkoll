@@ -223,7 +223,7 @@ export default function Kakruta() {
         margin: '0 0 4px',
         color: '#f0ece4',
       }}>
-        Får Alpkoll använda Microsoft Clarity?
+        Får Alpkoll använda kakor?
       </h2>
       <p id="kakruta-text" style={{
         fontSize: 13,
@@ -231,7 +231,7 @@ export default function Kakruta() {
         margin: '0 0 12px',
         color: 'rgba(240,236,228,0.72)',
       }}>
-        Det analyserar hur sidan används, så att den kan bli bättre. Det sätter kakor.{' '}
+        De visar hur sidan används, så att den kan bli bättre.{' '}
         <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›
         </Link>

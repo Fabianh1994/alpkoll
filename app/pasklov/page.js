@@ -69,14 +69,15 @@ function datum(r) {
  */
 function vanligastLedigt(rader) {
   const antal = {}
-  for (const r of rader) {
+  const medDatum = rader.filter((r) => r.start)
+  for (const r of medDatum) {
     const l = ledigtIRad(r)
     if (l) antal[`${l.start}|${l.slut}`] = (antal[`${l.start}|${l.slut}`] || 0) + 1
   }
   const [nyckel, n] = Object.entries(antal).sort((a, b) => b[1] - a[1])[0] || []
   if (!nyckel) return null
   const [start, slut] = nyckel.split('|')
-  return { start, slut, n }
+  return { start, slut, n, av: medDatum.length }
 }
 
 function Kommunlista({ v }) {
@@ -91,8 +92,8 @@ function Kommunlista({ v }) {
       {ledigt && (
         <p style={{ ...liten, margin: '0 0 14px' }}>
           Med helger och röda dagar är barnen lediga {spann(ledigt.start, ledigt.slut)} i{' '}
-          {ledigt.n === rader.length ? 'alla' : `${ledigt.n} av ${rader.length}`} kommuner här.
-          Datumen bredvid kommunen är lovet som kommunen skriver det.
+          {ledigt.n === ledigt.av ? 'alla' : `${ledigt.n} av ${ledigt.av}`} kommuner här som anger datum.
+          Datumen vid varje kommun är lovet så som kommunen skriver det.
         </p>
       )}
       <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>

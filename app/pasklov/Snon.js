@@ -108,7 +108,7 @@ export default function Snon({ orter, ar }) {
         lägre orter kan backen vara hård på morgonen och blöt på eftermiddagen.
       </p>
       <p style={{ ...brod, fontSize: 14.5, margin: '0 0 22px' }}>
-        Månaden på raden är när orten planerar att stänga. Vi vet månaden, inte dagen. En ort som stänger i
+        Månaden på raden är när orten planerar att stänga, och dagen står inte med. En ort som stänger i
         april kan stänga strax efter påsk, så kolla ortens sista dag innan du bokar.
       </p>
 
@@ -120,7 +120,7 @@ export default function Snon({ orter, ar }) {
 
       <p style={{ ...liten, margin: 0 }}>
         Snösäkerheten är Alpkolls betyg från 1 till 10 för hela säsongen, och samma tal står på
-        ortsidan. Alporterna i listan har {ALP_GRANS} eller 10. Ett år med lite snö kan nedre
+        ortsidan. Ett år med lite snö kan nedre
         delen av en ort stänga tidigare än planerat.
       </p>
     </section>

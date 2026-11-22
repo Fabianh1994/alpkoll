@@ -30,7 +30,7 @@ export const rubrik = (storlek) => ({
 // Orterna som sätter priset efter startdagen, samma fyra som stycket om
 // priset nämner. För dem ändrar veckan vad boendet kostar, och där gör
 // datumen i sökningen nytta.
-const BOENDE_ORTER = [
+export const BOENDE_ORTER = [
   { slug: 'are', name: 'Åre' },
   { slug: 'salen', name: 'Sälen' },
   { slug: 'hemsedal', name: 'Hemsedal' },

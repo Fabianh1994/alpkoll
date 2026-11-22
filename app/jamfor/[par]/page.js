@@ -10,7 +10,7 @@ import { restid } from '../../../lib/travel'
 import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
-import { fallhojd as fallhojdFor, summaMening } from '../../../lib/delomraden'
+import { fallhojd as fallhojdFor, summaMening, tal } from '../../../lib/delomraden'
 import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
 import { harPris } from '../../../lib/liftkortspriser'
 import Partnerlank from '../../Partnerlank'
@@ -61,14 +61,20 @@ export async function generateMetadata({ params }) {
 
   const [a, b] = par.kanonisk ? par.orter : [...par.orter].reverse()
 
-  const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
+  // Titeln säger vad som jämförs. "Jämförelse" ensamt sade inget om
+  // innehållet, och Åre–Sälen och Åre–Trysil fick 0 klick på 173
+  // exponeringar på plats 5–7 (Search Console 24 oktober–20 november
+  // 2026). Fallhöjden först: det är den folk söker på för de orterna.
+  const title = harPris(a) && harPris(b)
+    ? `${a.name} eller ${b.name}? Fallhöjd, pist och liftkort | Alpkoll`
+    : `${a.name} eller ${b.name}? Fallhöjd, pist och resväg | Alpkoll`
 
   // Beskrivningen bar förut "veckan kostar X mot Y" ur est_weekly_cost_eur,
   // ett tal som aldrig hämtats någonstans ifrån — det stod alltså i Googles
   // sökresultat för 83 sidor. Kvar står fallhöjden, som räknas ur höjderna
   // och dessutom är det de söker på: fallhöjdsfrågor gav 59 exponeringar i
   // Search Console 8 september 2026.
-  const fallhojd = (r) => fallhojdFor(r)
+  const fallhojd = (r) => tal(fallhojdFor(r))
 
   // Vem orterna passar först, se vemPassarMening i lib/jamfor.js.
   const vem = vemPassarMening(a, b)

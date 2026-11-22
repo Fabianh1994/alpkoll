@@ -54,6 +54,7 @@ ${[
   lank('Jämför två skidorter', '/jamfor', 'ställ två orter mot varandra på storlek, liftkortspris, fallhöjd och resväg'),
   lank('Liftkortspriser', '/liftkortspriser', 'sexdagarspriset för alla orter i kronor, sorterbart'),
   lank('Liftkortsindex', '/liftkortsindex', 'samma priser som rapport: Sverige mot Alperna, och pris per kilometer pist'),
+  lank('Fallhöjd i skidorterna', '/fallhojd', 'fallhöjd och höjd över havet för alla orter, sorterbart, med Sälens och de andra delade orternas områden var för sig'),
   lank('Åre eller Alperna?', '/are-eller-alperna', 'vad som skiljer Åre från en alport'),
   lank('Sälen eller Alperna?', '/salen-eller-alperna', 'vad som skiljer Sälen från en alport'),
   lank('Tåg till Alperna', '/nattaget-till-alperna', 'nattåget från Malmö till Österrike: avgångar, stationer och vilka orter det når'),

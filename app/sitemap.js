@@ -25,6 +25,9 @@ export default async function sitemap() {
     { path: '/liftkortspriser', changeFrequency: 'weekly', priority: 0.9 },
     // Samma priser läst som rapport, för pressen. Se app/liftkortsindex/page.js.
     { path: '/liftkortsindex', changeFrequency: 'weekly', priority: 0.8 },
+    // Fallhöjd och höjd över havet för alla orter. De vanligaste
+    // sökfrågorna i Search Console i november 2026, se app/fallhojd/page.js.
+    { path: '/fallhojd', changeFrequency: 'monthly', priority: 0.9 },
     // Frågan varje svensk skidåkare ställer före bokningen, och den enda
     // kategori sajten kan vinna — se lib/ellerAlperna.js.
     { path: '/are-eller-alperna', changeFrequency: 'monthly', priority: 0.9 },

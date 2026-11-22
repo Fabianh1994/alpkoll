@@ -24,6 +24,7 @@ const LANKAR = [
   { href: '/', label: 'Skidorter' },
   { href: '/jamfor', label: 'Jämför' },
   { href: '/liftkortspriser', label: 'Liftkortspriser' },
+  { href: '/fallhojd', label: 'Fallhöjd' },
   { href: '/nattaget-till-alperna', label: 'Tåg till Alperna' },
   { href: '/tag-till-fjallen', label: 'Tåg till fjällen' },
   { href: '/sportlov', label: 'Sportlov' },

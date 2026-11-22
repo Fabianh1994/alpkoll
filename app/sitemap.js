@@ -41,6 +41,8 @@ export default async function sitemap() {
     // vilken fredag nattåget går just den veckan står ingen annanstans.
     // Sidan tystnar av sig själv när sista sportlovsveckan passerats.
     { path: '/sportlov', changeFrequency: 'monthly', priority: 0.9 },
+    // Påsklovet per kommun och snön i slutet av mars, se lib/pasklov.js.
+    { path: '/pasklov', changeFrequency: 'monthly', priority: 0.8 },
     // Den vanligaste forumfrågan om Sälen. Se app/var-bo-i-salen/page.js.
     { path: '/var-bo-i-salen', changeFrequency: 'monthly', priority: 0.8 },
     { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },

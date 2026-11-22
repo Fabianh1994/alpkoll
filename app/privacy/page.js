@@ -1,17 +1,22 @@
 // app/privacy/page.js
 import JuridiskSida, { Avsnitt, Lank, Stark, KONTAKT } from '../JuridiskSida';
 import { hasAffiliateId } from '../../lib/booking';
+import { anvanderClarity } from '../../lib/clarity';
+import Kakinstallningar from '../Kakinstallningar';
 
 export const metadata = {
   title: 'Integritetspolicy — Alpkoll',
-  description:
-    'Så hanterar Alpkoll dina uppgifter: inga konton, inga egna kakor, ingen spårning. Statistiken är anonym och databasen ligger inom EU.',
+  // Beskrivningen följer brytaren i lib/clarity.js, så att Google inte
+  // visar "inga kakor" när Clarity är påslaget.
+  description: anvanderClarity
+    ? 'Så hanterar Alpkoll dina uppgifter: inga konton, och kakor bara om du godkänner Microsoft Clarity. Övrig statistik är anonym och databasen ligger inom EU.'
+    : 'Så hanterar Alpkoll dina uppgifter: inga konton, inga egna kakor, ingen spårning. Statistiken är anonym och databasen ligger inom EU.',
   alternates: { canonical: '/privacy' },
 };
 
 export default function PrivacyPage() {
   return (
-    <JuridiskSida titel="Integritetspolicy" uppdaterad="augusti 2026">
+    <JuridiskSida titel="Integritetspolicy" uppdaterad={anvanderClarity ? 'november 2026' : 'augusti 2026'}>
       <Avsnitt titel="Vilka vi är">
         <p>
           Alpkoll är ett jämförelseverktyg för skidorter som drivs från Sverige.
@@ -36,6 +41,20 @@ export default function PrivacyPage() {
           egna kakor på sin egen webbplats. Det ligger utanför vår kontroll,
           och där gäller deras integritetspolicy.
         </p>
+
+        {anvanderClarity && (
+          <p style={{ marginTop: 12 }}>
+            <Stark>Om du godkänner det i kakrutan:</Stark> Microsoft Clarity
+            registrerar hur du rör dig på sajten: klick, scroll, musrörelser,
+            vilka sidor du besöker, din skärmstorlek, webbläsare och ungefär
+            vilket land du är i. Det används för att se var sidorna är
+            krångliga, i värmekartor och inspelningar av besök. Microsoft
+            Corporation behandlar uppgifterna, också i
+            USA, under EU–USA-ramverket för dataskydd. Inspelningar sparas i 30
+            dagar och klickdata i 9 månader. Säger du nej, eller inget alls,
+            laddas Clarity aldrig.
+          </p>
+        )}
 
         {/* Stycket beskriver en behandling som inte sker förrän
             affiliatespårningen är påslagen. Utan ID byggs en vanlig
@@ -66,7 +85,40 @@ export default function PrivacyPage() {
         </p>
       </Avsnitt>
 
-      <Avsnitt titel="Kakor">
+      <Avsnitt titel="Kakor" id="kakor">
+        {anvanderClarity ? (
+          <>
+            <p>
+              Alpkoll sätter kakor bara om du godkänner Microsoft Clarity i
+              rutan som visas vid första besöket. Godkänn och Neka väger lika,
+              och sajten fungerar likadant om du nekar. Ditt val gäller i tolv
+              månader och sparas i din webbläsare (localStorage), inte i en kaka.
+            </p>
+            <p style={{ marginTop: 12 }}>Med ditt ja sätts:</p>
+            <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+              <li><Stark>_clck</Stark> (alpkoll.se, ett år): ett slumpat ID som
+                känner igen din webbläsare mellan besök.</li>
+              <li><Stark>_clsk</Stark> (alpkoll.se, ett dygn): knyter ihop
+                sidorna i ett besök till en inspelning.</li>
+              <li><Stark>CLID, MUID med flera</Stark> (clarity.ms och bing.com,
+                Microsofts egna kakor): känner igen webbläsaren hos Microsoft.</li>
+            </ul>
+            <p style={{ marginTop: 12 }}>
+              Du kan ändra ditt val när som helst under{' '}
+              <Kakinstallningar style={{
+                font: 'inherit', color: '#D4A574',
+              }} />{' '}
+              i sidfoten. Ett nej raderar kakorna på alpkoll.se. Microsofts egna
+              på clarity.ms och bing.com tar du bort i webbläsarens inställningar.
+            </p>
+            <p style={{ marginTop: 12 }}>
+              Vercel Web Analytics och partnerlänkarna sätter inga kakor.
+              Kartan på ortsidorna kommer från Google och laddas först när du
+              klickar på Visa karta; då kan Google sätta sina kakor. Tjänster vi
+              länkar till kan använda kakor på sina egna domäner.
+            </p>
+          </>
+        ) : (
         <p>
           Alpkoll sätter inga egna kakor. Vi använder varken
           spårningskakor, annonskakor eller analyskakor, och därför finns det
@@ -77,6 +129,7 @@ export default function PrivacyPage() {
           Visa karta; då kan Google sätta sina kakor. Tjänster vi länkar till
           kan använda kakor på sina egna domäner.
         </p>
+        )}
       </Avsnitt>
 
       <Avsnitt titel="Dina rättigheter enligt GDPR">

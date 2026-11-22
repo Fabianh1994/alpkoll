@@ -2,6 +2,8 @@ import { Bebas_Neue, Barlow } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import MobileNav from "./MobileNav";
+import Kakruta from "./Kakruta";
+import { anvanderClarity } from "../lib/clarity";
 import { LangProvider } from "../lib/LangContext";
 import { SITE_LANG, SITE_URL } from "../lib/lang";
 
@@ -95,6 +97,8 @@ export default function RootLayout({ children }) {
         <LangProvider lang={SITE_LANG}>
           {children}
           <MobileNav />
+          {/* Kakrutan finns bara när Clarity är påslaget, se lib/clarity.js. */}
+          {anvanderClarity && <Kakruta />}
         </LangProvider>
         <Analytics />
       </body>

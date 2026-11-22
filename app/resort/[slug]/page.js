@@ -69,7 +69,7 @@ export async function generateMetadata({ params }) {
     .map((par) => allaOrter.find((r) => r.slug === motparten(par, resort.slug)))
     .filter(Boolean)
 
-  const title = ortTitel({ namn: resort.name, harPris: prisAttVisa, sasong })
+  const title = ortTitel({ namn: resort.name, harPris: prisAttVisa, harPistkarta: Boolean(resort.piste_map_url), sasong })
   // De två första under "Starkast" i Vårt omdöme längre ner: samma
   // poäng, samma etiketter och samma ordning vid lika poäng.
   const starkast = [

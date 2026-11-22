@@ -10,7 +10,7 @@ import { restid } from '../../../lib/travel'
 import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
-import { fallhojd as fallhojdFor, summaMening } from '../../../lib/delomraden'
+import { fallhojd as fallhojdFor, summaMening, tal } from '../../../lib/delomraden'
 import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
 import { harPris } from '../../../lib/liftkortspriser'
 import Partnerlank from '../../Partnerlank'
@@ -74,7 +74,7 @@ export async function generateMetadata({ params }) {
   // sökresultat för 83 sidor. Kvar står fallhöjden, som räknas ur höjderna
   // och dessutom är det de söker på: fallhöjdsfrågor gav 59 exponeringar i
   // Search Console 8 september 2026.
-  const fallhojd = (r) => fallhojdFor(r)
+  const fallhojd = (r) => tal(fallhojdFor(r))
 
   // Vem orterna passar först, se vemPassarMening i lib/jamfor.js.
   const vem = vemPassarMening(a, b)

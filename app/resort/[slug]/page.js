@@ -77,7 +77,9 @@ export async function generateMetadata({ params }) {
     liftar: resort.total_lifts,
     bas: tal(resort.altitude_base),
     topp: tal(resort.altitude_top),
-    delat: pistadeDelar(resort).length > 0,
+    pistTopp: pistadeDelar(resort).length
+      ? tal(Math.max(...pistadeDelar(resort).map((d) => d.topp)))
+      : null,
     dagspass: dagspass?.kr,
     sasong,
     jamforMed: jamforOrdning(motparter).map((r) => r.name),
@@ -959,7 +961,7 @@ export default async function ResortPage({ params }) {
                           </div>
                           <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.55)', marginTop: 5 }}>
                             {annan.total_pistes_km} km pist
-                            {' · '}{fallhojdFor(annan)} m fallhöjd
+                            {' · '}{tal(fallhojdFor(annan))} m fallhöjd
                           </div>
                         </Link>
                       ))}

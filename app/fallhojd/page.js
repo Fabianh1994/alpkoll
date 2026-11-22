@@ -5,7 +5,7 @@ import SiteFooter from '../SiteFooter'
 import { getResorts } from '../../lib/resorts'
 import { SITE_URL } from '../../lib/lang'
 import { land } from '../../lib/countries'
-import { DELOMRADEN, antalOrd, brantasteDelen, fallhojd, pistadeDelar, tal } from '../../lib/delomraden'
+import { DELOMRADEN, antalOrd, brantasteDelen, fallhojd, pistadeDelar, spannMening, tal } from '../../lib/delomraden'
 
 // Fallhöjd och höjd över havet för alla orter.
 //
@@ -34,10 +34,11 @@ export async function generateMetadata() {
     .sort((a, b) => fallhojd(b) - fallhojd(a))
     .map((o) => `${o.name} ${tal(fallhojd(o))} m`)
 
-  const titel = `Fallhöjd i ${orter.length} skidorter: Sverige, Norge och Alperna | Alpkoll`
+  const titel = `Fallhöjd för ${orter.length} skidorter i Norden och Alperna | Alpkoll`
   const beskrivning =
-    `${sokta.join(', ')}. Fallhöjd och höjd över havet för ${orter.length} skidorter ` +
-    'i Sverige, Norge, Finland och Alperna, sorterbart.'
+    (sokta.length ? `${sokta.join(', ')}. ` : '') +
+    `Fallhöjd och höjd över havet för ${orter.length} skidorter i Norden, Alperna och Andorra, ` +
+    'i en tabell du kan sortera.'
   const url = `${SITE_URL}/fallhojd`
 
   return {
@@ -96,7 +97,8 @@ function uppraknat(namn) {
 /** Orterna med störst fallhöjd i ett område. Orter i samma skidområde delar tal och står ihop. */
 function storst(orter) {
   if (!orter.length) return null
-  const max = Math.max(...orter.map(fallhojd))
+  const max = Math.max(...orter.map(fallhojd).filter(Number.isFinite))
+  if (!Number.isFinite(max)) return null
   return { orter: orter.filter((o) => fallhojd(o) === max), meter: max }
 }
 
@@ -113,7 +115,7 @@ export default async function Fallhojd() {
       land: land(ort.country),
       omrade: OMRADE[ort.country] || null,
       skidomrade: ort.ski_area && ort.ski_area !== ort.name ? ort.ski_area : null,
-      fallhojd: fallhojd(ort),
+      fallhojd: Number.isFinite(fallhojd(ort)) ? fallhojd(ort) : null,
       bas: ort.altitude_base,
       topp: ort.altitude_top,
       km: ort.total_pistes_km,
@@ -167,8 +169,10 @@ export default async function Fallhojd() {
             , {tal(forsta.meter)} meter.{' '}
             {ovriga.map((l, i) => (
               <span key={l.id}>
-                {i === 0 ? 'I' : i === ovriga.length - 1 ? ' och i' : ', i'}{' '}
-                {l.i.replace(/^i /, '')} är det {uppraknat(l.orter.map((o) => o.name))} med {tal(l.meter)} m
+                {i === 0
+                  ? `I ${l.i.replace(/^i /, '')} har ${uppraknat(l.orter.map((o) => o.name))} störst fallhöjd`
+                  : `${i === ovriga.length - 1 ? ', och i' : ', i'} ${l.i.replace(/^i /, '')} ${uppraknat(l.orter.map((o) => o.name))}`}
+                , {tal(l.meter)} meter
               </span>
             ))}
             {ovriga.length > 0 && '.'}
@@ -179,8 +183,8 @@ export default async function Fallhojd() {
           Fallhöjden är skillnaden mellan högsta och lägsta punkt i samma skidområde.
           Höjderna står i meter över havet. Orter som delar skidområde, som de tre i
           Les 3 Vallées, visar samma tal. Där en ort är flera områden som inte hänger
-          ihop med lift gäller fallhöjden det brantaste av dem, och alla områden står
-          under orten.
+          ihop med lift gäller fallhöjden det område som har störst fallhöjd, och alla
+          områden står under orten.
         </p>
 
         <Tabell rader={rader} />
@@ -218,7 +222,7 @@ export default async function Fallhojd() {
                         ? `${d.namn} ligger ${tal(d.bas)}–${tal(d.topp)} m över havet, men där går ingen nedfart hela vägen till dalen.`
                         : `${d.namn} har ${tal(d.topp - d.bas)} m fallhöjd, ${tal(d.bas)}–${tal(d.topp)} m över havet.`
                       )).join(' ')}{' '}
-                      {DELOMRADEN[ort.slug].forbindelse}
+                      {DELOMRADEN[ort.slug].forbindelse}{spannMening(ort) ? ` ${spannMening(ort)}` : ''}
                     </p>
                     {ort.slug === 'salen' && (
                       <p style={{
@@ -242,9 +246,14 @@ export default async function Fallhojd() {
             fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.75,
             color: 'rgba(255,255,255,0.55)', margin: 0,
           }}>
-            Fallhöjd, pist, liftkort och resväg för två orter sida vid sida står på{' '}
-            <Link href="/jamfor" style={{ color: ACCENT, textDecoration: 'none' }}>Jämför ›</Link>{' '}
-            Vad liftkortet kostar står i{' '}
+            Två orter sida vid sida, med fallhöjd, pist, liftkort och resväg:{' '}
+            <Link href="/jamfor" style={{ color: ACCENT, textDecoration: 'none' }}>Jämför ›</Link>
+          </p>
+          <p style={{
+            fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.75,
+            color: 'rgba(255,255,255,0.55)', margin: '8px 0 0',
+          }}>
+            Vad liftkortet kostar på varje ort:{' '}
             <Link href="/liftkortspriser" style={{ color: ACCENT, textDecoration: 'none' }}>Liftkortspriser ›</Link>
           </p>
         </section>

@@ -4,7 +4,7 @@ import SiteFooter from '../SiteFooter'
 import Veckovaljaren from './Veckovaljaren'
 import { skrivDatum } from '../../lib/valuta'
 import { SITE_URL } from '../../lib/lang'
-import { AR, HAMTAD, KOMMUNER, VECKOR, sportlovetSlut } from '../../lib/sportlov'
+import { AR, KOMMUNER, VECKOR, hamtadeDagar, sportlovetSlut } from '../../lib/sportlov'
 import { sasongenSlut } from '../../lib/nattaget'
 import { ACCENT, Veckan, brod, kort, rubrik, spann } from './Veckan'
 
@@ -36,6 +36,11 @@ export const metadata = {
 
 export default function SportlovSida() {
   const passerat = sportlovetSlut()
+  // "9 september och 22 november 2026": listan har lästs i omgångar.
+  const dagar = hamtadeDagar().map(skrivDatum)
+  const lasDagar = dagar.length < 2
+    ? dagar.join('')
+    : `${dagar.slice(0, -1).map((d) => d.replace(/ \d{4}$/, '')).join(', ')} och ${dagar[dagar.length - 1]}`
   const tagetGar = !sasongenSlut()
 
   const veckor = VECKOR.map((v) => ({ nr: v.nr, text: spann(v.start, v.slut) }))
@@ -75,7 +80,7 @@ export default function SportlovSida() {
 
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: '30px 0 8px' }}>
           Veckorna räknas måndag till söndag. Kommunuppgifterna är hämtade från{' '}
-          {KOMMUNER.length} kommuners egna sidor den {skrivDatum(HAMTAD)}. Sportlovet
+          {KOMMUNER.length} kommuners egna sidor den {lasDagar}. Sportlovet
           bestäms av varje kommun och kan flyttas, så kolla mot din egen innan du bokar.
         </p>
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: 0 }}>

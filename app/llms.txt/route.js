@@ -60,6 +60,7 @@ ${[
   lank('Tåg till Alperna', '/nattaget-till-alperna', 'nattåget från Malmö till Österrike: avgångar, stationer och vilka orter det når'),
   lank('Tåg till fjällen', '/tag-till-fjallen', 'vilka svenska skidorter du når med tåg, med eller utan transferbuss, och tiderna'),
   lank('Sportlov', '/sportlov', 'vilken vecka sportlovet är i varje kommun, och vilken fredag nattåget går'),
+  lank('Påsklov', '/pasklov', 'vilken vecka påsklovet är i varje kommun vi läst, och hur snösäkra skidorterna är i påsk'),
   lank('Var ska man bo i Sälen?', '/var-bo-i-salen', 'Sälens sex områden jämförda'),
   lank('Bästa skidorterna för barnfamiljer', '/skidorter-for-barnfamiljer', 'topplista för Sverige, Norden och Alperna, med motivering och nackdel för varje ort'),
 ].join('\n')}

@@ -5,7 +5,7 @@ import SiteFooter from '../../SiteFooter'
 import { skrivDatum } from '../../../lib/valuta'
 import { SITE_URL } from '../../../lib/lang'
 import {
-  AR, HAMTAD, KOMMUNER, kommunFranSlug, kommunSlug, skidveckan, sportlovetSlut, veckan,
+  AR, KOMMUNER, hamtadFor, kommunFranSlug, kommunSlug, skidveckan, sportlovetSlut, veckan,
 } from '../../../lib/sportlov'
 import { sasongenSlut } from '../../../lib/nattaget'
 import { ACCENT, Veckan, brod, dag, kort, rubrik, spann } from '../Veckan'
@@ -75,7 +75,7 @@ export default async function SportlovKommun({ params }) {
         </p>
 
         <h1 style={{ ...rubrik('clamp(34px, 5.5vw, 54px)'), lineHeight: 1.04, marginBottom: 20 }}>
-          Sportlov {AR} i {rad.kommun}: vecka {v.nr}
+          Sportlov {AR} {rad.pa ? 'på' : 'i'} {rad.kommun}: vecka {v.nr}
         </h1>
 
         <p style={{ ...brod, margin: '0 0 14px' }}>
@@ -87,7 +87,7 @@ export default async function SportlovKommun({ params }) {
         <p style={{ ...brod, fontSize: 14, margin: '0 0 30px', color: 'rgba(255,255,255,0.57)' }}>
           Uppgiften kommer från{' '}
           <a href={rad.kalla} rel="noopener" style={{ color: ACCENT }}>kommunens egen sida</a>,
-          läst {skrivDatum(HAMTAD)}. Fristående skolor kan ha egna lov, så kolla med
+          läst {skrivDatum(hamtadFor(rad))}. Fristående skolor kan ha egna lov, så kolla med
           skolan innan du bokar.
         </p>
 

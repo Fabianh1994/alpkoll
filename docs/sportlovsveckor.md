@@ -39,7 +39,7 @@ uppgiften står utan barn i backen.
 
 ## Hämtade kommuner
 
-35 av 290. Varje rad är läst på kommunens egen sida.
+43 av 290. Varje rad är läst på kommunens egen sida. De första 35 lästes 9 september 2026; de åtta sista lades till 22 november 2026, valda efter sökvolym på "påsklov 2027 <kommun>" (Google Ads).
 
 | Kommun | Vecka | Datum | Källa |
 |---|---|---|---|
@@ -78,14 +78,22 @@ uppgiften står utan barn i backen.
 | Växjö | 8 | 22-26 februari | <https://www.vaxjo.se/sidor/forskola-och-skola/skola-6---16-ar/lasarstider-grundskola.html> |
 | Åre | 10 | 8-12 mars | <https://are.se/forskola-och-skola/grundskola/lasarstider-och-lov> |
 | Östersund | 10 | 8-12 mars | <https://www.ostersund.se/barn-och-utbildning/grundskola-och-anpassad-grundskola/lov-ledigheter-lasarstider.html> |
+| Gotland | 9 | 1-5 mars | <https://gotland.se/forskola-skola-och-utbildning/grundskola/lasarstider-och-lov> |
+| Kalmar | 8 | 22-26 februari | <https://kalmar.se/utbildning-och-barnomsorg/grundskola-och-fritidshem/lov-och-studiedagar.html> |
+| Kungsbacka | 7 | 15-19 februari | <https://kungsbacka.se/utbildning-och-barnomsorg/grundskola/lasarstider-lov-och-studiedagar> |
+| Mölndal | 7 | 15-19 februari | <https://www.molndal.se/forskola-skola-och-utbildning/lasarstider/lasarstider-lov-och-studiedagar-forskola-och-grundskola> |
+| Nacka | 9 | 1-5 mars | <https://www.nacka.se/valfard-skola/nackas-kommunala-skolor/vara-verksamheter/terminer-och-lov/> |
+| Nyköping | 8 | 22-26 februari | <https://www.nykoping.se/barn-och-utbildning/lasarstider2/> |
+| Täby | 9 | 1-5 mars | <https://www.taby.se/forskola-och-skola/grundskola/lasarstider-och-lov-grundskolor> |
+| Örebro | 8 | 22-26 februari | <https://www.orebro.se/barn--utbildning/lasarstider-for-grundskolor--gymnasieskolor.html> |
 
 ## Fördelningen så här långt
 
 | Vecka | Antal | Kommuner |
 |---|---|---|
-| 7 | 4 | Borås, Göteborg, Jönköping, Skövde |
-| 8 | 12 | Eskilstuna, Halmstad, Helsingborg, Kristianstad, Linköping, Lund, Malmö, Norrköping, Uddevalla, Uppsala, Varberg, Växjö |
-| 9 | 10 | Borlänge, Gävle, Huddinge, Karlstad, Luleå, Malung-Sälen, Sigtuna, Solna, Stockholm, Västerås |
+| 7 | 6 | Borås, Göteborg, Jönköping, Kungsbacka, Mölndal, Skövde |
+| 8 | 15 | Eskilstuna, Halmstad, Helsingborg, Kalmar, Kristianstad, Linköping, Lund, Malmö, Norrköping, Nyköping, Uddevalla, Uppsala, Varberg, Växjö, Örebro |
+| 9 | 13 | Borlänge, Gotland, Gävle, Huddinge, Karlstad, Luleå, Malung-Sälen, Nacka, Sigtuna, Solna, Stockholm, Täby, Västerås |
 | 10 | 9 | Hudiksvall, Härjedalen, Skellefteå, Sollefteå, Sundsvall, Söderhamn, Umeå, Åre, Östersund |
 
 Skidorternas egna kommuner ligger sent: Malung-Sälen vecka 9, Åre och
@@ -93,5 +101,5 @@ Härjedalen vecka 10. De har alltså sportlov när gästerna inte har det.
 
 ## Vad som återstår
 
-255 kommuner. Arbetet är rakt men långt: ett besök per kommun på sidan om
+247 kommuner. Arbetet är rakt men långt: ett besök per kommun på sidan om
 läsårstider och lov. Det finns ingen genväg — se regeln överst.

@@ -61,7 +61,13 @@ export async function generateMetadata({ params }) {
 
   const [a, b] = par.kanonisk ? par.orter : [...par.orter].reverse()
 
-  const title = `${a.name} eller ${b.name}? Jämförelse | Alpkoll`
+  // Titeln säger vad som jämförs. "Jämförelse" ensamt sade inget om
+  // innehållet, och Åre–Sälen och Åre–Trysil fick 0 klick på 173
+  // exponeringar på plats 5–7 (Search Console 24 oktober–20 november
+  // 2026). Fallhöjden först: det är den folk söker på för de orterna.
+  const title = harPris(a) && harPris(b)
+    ? `${a.name} eller ${b.name}? Fallhöjd, pist och liftkort | Alpkoll`
+    : `${a.name} eller ${b.name}? Fallhöjd, pist och resväg | Alpkoll`
 
   // Beskrivningen bar förut "veckan kostar X mot Y" ur est_weekly_cost_eur,
   // ett tal som aldrig hämtats någonstans ifrån — det stod alltså i Googles

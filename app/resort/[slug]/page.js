@@ -61,7 +61,6 @@ export async function generateMetadata({ params }) {
   const prisAttVisa = harPris(resort)
   const valutan = resort.lift_pass_currency || 'EUR'
   const dagspass = prisAttVisa ? pris(resort.lift_pass_day_eur, valutan, kurser) : null
-  const veckopass = prisAttVisa ? pris(resort.lift_pass_week_eur, valutan, kurser) : null
   const sasong = prisAttVisa ? VERIFIERADE[resort.slug].sasong : null
 
   // Beskrivningen nämner bara orter som sidan länkar en jämförelse till.
@@ -78,8 +77,8 @@ export async function generateMetadata({ params }) {
     liftar: resort.total_lifts,
     bas: tal(resort.altitude_base),
     topp: tal(resort.altitude_top),
+    delat: pistadeDelar(resort).length > 0,
     dagspass: dagspass?.kr,
-    veckopass: veckopass?.kr,
     sasong,
     jamforMed: jamforOrdning(motparter).map((r) => r.name),
   })
@@ -238,8 +237,8 @@ export default async function ResortPage({ params }) {
   const siffror = [
     { label: 'Pist', value: `${tal(resort.total_pistes_km)} km`, rank: placering(resort.total_pistes_km, (r) => r.total_pistes_km) },
     { label: 'Fallhöjd', value: `${tal(verticalDrop)} m`, rank: placering(verticalDrop, fallhojdFor) },
-    { label: 'Högsta punkt', value: `${tal(resort.altitude_top)} m`, rank: placering(resort.altitude_top, (r) => r.altitude_top) },
-    { label: 'Lägsta punkt', value: `${tal(resort.altitude_base)} m`, rank: null },
+    { label: 'Högsta punkt över havet', value: `${tal(resort.altitude_top)} m`, rank: placering(resort.altitude_top, (r) => r.altitude_top) },
+    { label: 'Lägsta punkt över havet', value: `${tal(resort.altitude_base)} m`, rank: null },
     { label: 'Liftar', value: tal(resort.total_lifts), rank: placering(resort.total_lifts, (r) => r.total_lifts) },
     { label: 'Liftkapacitet', value: resort.lift_capacity_per_hour ? `${tal(resort.lift_capacity_per_hour)} personer/tim` : '—', rank: placering(resort.lift_capacity_per_hour, (r) => r.lift_capacity_per_hour) },
     { label: 'Konstsnö', value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} % av pisten` : '—', rank: null },
@@ -556,6 +555,13 @@ export default async function ResortPage({ params }) {
                   </tbody>
                 </table>
               </div>
+              {/* Länken till /fallhojd. Fallhöjd och höjd över havet är det
+                  folk oftast söker på för en ort, och listan svarar på
+                  följdfrågan: är det mycket? */}
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.57)', margin: '12px 0 0' }}>
+                Fallhöjd och höjd över havet för alla {allaOrter.length} orter:{' '}
+                <Link href="/fallhojd" style={{ color: '#D4A574', textDecoration: 'none' }}>Fallhöjd i skidorterna ›</Link>
+              </p>
             </div>
 
             {/* Terrain */}

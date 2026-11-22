@@ -8,6 +8,7 @@ import {
   AR, KOMMUNER, hamtadFor, kommunFranSlug, kommunSlug, skidveckan, sportlovetSlut, veckan,
 } from '../../../lib/sportlov'
 import { sasongenSlut } from '../../../lib/nattaget'
+import { pasklovFranSlug } from '../../../lib/pasklov'
 import { ACCENT, Veckan, brod, dag, kort, rubrik, spann } from '../Veckan'
 
 // En sida per kommun vi läst på kommunens egen sida.
@@ -61,6 +62,7 @@ export default async function SportlovKommun({ params }) {
   const v = veckan(rad.vecka)
   const vecka = skidveckan(rad.vecka)
 
+  const pask = pasklovFranSlug(kommunSlug(rad.kommun))
   const passerat = sportlovetSlut()
   const tagetGar = !sasongenSlut()
 
@@ -103,6 +105,12 @@ export default async function SportlovKommun({ params }) {
         )}
 
         <p style={{ ...brod, fontSize: 13.5, color: 'rgba(255,255,255,0.57)', margin: '30px 0 0' }}>
+          {pask && (
+            <>
+              Påsklovet {rad.pa ? 'på' : 'i'} {rad.kommun} är vecka {pask.vecka}, se{' '}
+              <Link href={`/pasklov/${pask.slug}`} style={{ color: ACCENT }}>påsklov {AR} {rad.pa ? 'på' : 'i'} {rad.kommun}</Link>.{' '}
+            </>
+          )}
           Alla veckor och kommuner står på{' '}
           <Link href="/sportlov" style={{ color: ACCENT }}>sportlovssidan</Link>. Ska det bli
           Sverige eller Alperna finns{' '}

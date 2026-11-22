@@ -88,6 +88,8 @@ export default function SportlovSida() {
           Ska det bli Sverige eller Alperna finns{' '}
           <Link href="/salen-eller-alperna" style={{ color: ACCENT }}>Sälen eller Alperna</Link>{' '}
           och <Link href="/are-eller-alperna" style={{ color: ACCENT }}>Åre eller Alperna</Link>.
+          Påsklovet ligger vecka 12 eller 13, se{' '}
+          <Link href="/pasklov" style={{ color: ACCENT }}>Påsklov {AR}</Link>.
         </p>
       </main>
 

@@ -30,6 +30,7 @@ const LANKAR = [
   { href: '/nattaget-till-alperna', label: 'Tåg till Alperna' },
   { href: '/tag-till-fjallen', label: 'Tåg till fjällen' },
   { href: '/sportlov', label: 'Sportlov' },
+  { href: '/pasklov', label: 'Påsklov' },
   // Guiderna från november 2026. De nåddes bara från en eller två andra
   // sidor, och granskningen 2026-11-18 hittade dem inte från startsidan.
   { href: '/skidorter-for-barnfamiljer', label: 'Barnfamiljer' },

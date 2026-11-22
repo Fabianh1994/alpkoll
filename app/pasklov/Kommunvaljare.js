@@ -22,7 +22,13 @@ export default function Kommunvaljare({ kommuner }) {
       </span>
       <select
         defaultValue=""
-        onChange={(e) => { if (e.target.value) router.push(`/pasklov/${e.target.value}`) }}
+        onChange={(e) => {
+          const slug = e.target.value
+          // Tillbaka till platshållaren, så att samma kommun går att välja igen
+          // efter bakåtknappen.
+          e.target.value = ''
+          if (slug) router.push(`/pasklov/${slug}`)
+        }}
         style={{
           width: '100%', maxWidth: 420, padding: '13px 14px', borderRadius: 10,
           background: '#1c1a17', color: '#f0ece4', border: '1px solid rgba(212,165,116,0.42)',

@@ -92,13 +92,13 @@ export default function Snon({ orter, ar }) {
     <section>
       <h2 style={rubrik('clamp(28px, 4.5vw, 40px)')}>Var finns snön i påsk?</h2>
       <p style={{ ...brod, margin: '0 0 14px' }}>
-        Påsken {ar} ligger tidigt, och de snösäkraste orterna står överst. Nedfarterna till
+        Påsken {ar} ligger tidigt. Listan börjar med de snösäkraste orterna. Nedfarterna till
         byn smälter först, och på lägre orter kan backen vara hård på morgonen och blöt på
         eftermiddagen.
       </p>
       <p style={{ ...brod, fontSize: 14.5, margin: '0 0 22px' }}>
         Vi vet vilken månad orterna planerar att stänga, inte vilken dag. En ort som stänger i
-        april kan stänga strax efter påsk, så kolla ortens sista dag innan du bokar vecka 13.
+        april kan stänga strax efter påsk, så kolla ortens sista dag innan du bokar.
       </p>
 
       <h3 style={{ ...etikett, fontSize: 11, margin: '0 0 10px' }}>Sverige, Norge och Finland</h3>

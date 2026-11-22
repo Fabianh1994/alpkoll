@@ -90,7 +90,7 @@ export default async function PasklovKommun({ params }) {
         </p>
         {ledigt && (
           <p style={{ ...brod, margin: '0 0 14px' }}>
-            Med helger och röda dagar är skolan stängd {skrivDag(ledigt.start)} till{' '}
+            Med helger och röda dagar är barnen lediga {skrivDag(ledigt.start)} till{' '}
             {skrivDag(ledigt.slut)}, {ledigt.dagar} dagar i rad.
             {skidvecka && <> En skidvecka lördag till lördag ryms: ut {dag(skidvecka.start)}, hem {dag(skidvecka.slut)}.</>}
           </p>
@@ -105,8 +105,7 @@ export default async function PasklovKommun({ params }) {
         {passerat && (
           <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 30 }}>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
-              Påsklovet {AR} har passerat. Nästa års veckor beslutas av kommunerna, och sidan
-              uppdateras när de är publicerade.
+              Påsklovet {AR} har passerat. Nästa års veckor beslutas av kommunerna.
             </p>
           </div>
         )}

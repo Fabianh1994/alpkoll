@@ -67,10 +67,9 @@ function Kommunlista({ v }) {
   return (
     <section style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 14 }}>
       <div style={etikett}>Vecka {v.nr}, {v.namn}</div>
-      <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), margin: '8px 0 6px' }}>
+      <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), margin: '8px 0 14px' }}>
         {spann(v.start, v.slut)} {AR}
       </h2>
-      <p style={{ ...liten, margin: '0 0 14px' }}>Datumen bredvid kommunen är lovet som kommunen skriver det.</p>
       <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
         {rader.map((r) => (
           <li key={r.kommun} style={{
@@ -118,8 +117,7 @@ export default async function PasklovSida() {
         {passerat ? (
           <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 30 }}>
             <p style={{ ...brod, fontSize: 15, margin: 0 }}>
-              Påsklovet {AR} har passerat. Nästa års veckor beslutas av kommunerna, och sidan
-              uppdateras när de är publicerade.
+              Påsklovet {AR} har passerat. Nästa års veckor beslutas av kommunerna.
             </p>
           </div>
         ) : (
@@ -130,7 +128,7 @@ export default async function PasklovSida() {
         )}
 
         <p style={{ ...liten, margin: '6px 0 44px' }}>
-          Uppgifterna är lästa på {PASKLOV.length} kommuners egna sidor den {skrivDatum(HAMTAD)},
+          Datumen står som kommunen skriver dem. Uppgifterna är lästa på {PASKLOV.length} kommuners egna sidor den {skrivDatum(HAMTAD)},
           och varje kommunsida länkar dit. Lovet bestäms av varje kommun och kan ändras, så
           kolla din egen kommun innan du bokar. Står din kommun inte här finns lovet på
           kommunens sida under läsårstider.

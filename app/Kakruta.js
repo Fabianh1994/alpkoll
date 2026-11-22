@@ -20,6 +20,7 @@
 // nödvändigt för att kunna respektera det och kräver inget samtycke.
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import {
   CLARITY_ID,
   OPPNA_KAKRUTAN,
@@ -47,15 +48,17 @@ function sparaVal(val) {
       SAMTYCKE_NYCKEL,
       JSON.stringify({ val, v: SAMTYCKE_VERSION, t: Date.now() })
     );
+    return true;
   } catch {
     // Går valet inte att spara gäller det ändå resten av besöket.
+    return false;
   }
 }
 
 // Clarity-koden som Microsoft anger, med ID:t som argument. Skriptet
 // hämtas från clarity.ms först här.
 function laddaClarity() {
-  if (window.clarity && window.clarity.alpkollLaddad) return;
+  if (window.alpkollClarityLaddad) return;
   (function (c, l, a, r, i) {
     c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
     const t = l.createElement(r);
@@ -64,28 +67,44 @@ function laddaClarity() {
     const y = l.getElementsByTagName(r)[0];
     y.parentNode.insertBefore(t, y);
   })(window, document, 'clarity', 'script', CLARITY_ID);
-  window.clarity.alpkollLaddad = true;
+  // Flaggan ligger på window, inte på window.clarity: clarity.js byter ut
+  // funktionen när det laddats.
+  window.alpkollClarityLaddad = true;
 
   // Sedan oktober 2025 kräver Clarity en samtyckessignal för besökare i
   // EES. Analys är godkänt; annonslagring nekas, Alpkoll använder ingen.
   window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
 }
 
-// Vid ett nej efter ett tidigare ja: be Clarity radera sina kakor och sluta
-// spela in, och ta bort förstapartskakorna själva ifall skriptet inte
-// hunnit ladda. Microsofts kakor på clarity.ms kan bara Microsoft radera.
-function stangAvClarity() {
-  try {
-    if (window.clarity) window.clarity('consent', false);
-  } catch {
-    // Skriptet kan vara blockerat av en annonsblockerare.
-  }
+function raderaKakor() {
   const bas = window.location.hostname.split('.').slice(-2).join('.');
   for (const namn of ['_clck', '_clsk']) {
     for (const doman of ['', `; domain=${window.location.hostname}`, `; domain=.${bas}`]) {
       document.cookie = `${namn}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/${doman}`;
     }
   }
+}
+
+// Vid ett nej efter ett tidigare ja: säg nej till Clarity med samma API som
+// gav ja, be det radera sina kakor, ta bort förstapartskakorna själva och
+// ladda om, så att inget Clarity-skript ligger kvar i minnet. Omladdningen
+// väntar en stund så att nej-signalen hinner iväg, och kakorna raderas en
+// gång till precis före, ifall Clarity skrivit dem på nytt.
+// Microsofts egna kakor på clarity.ms och bing.com kan bara Microsoft radera.
+function stangAvClarity() {
+  try {
+    if (window.clarity) {
+      window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'denied' });
+      window.clarity('consent', false);
+    }
+  } catch {
+    // Skriptet kan vara blockerat av en annonsblockerare.
+  }
+  raderaKakor();
+  window.setTimeout(() => {
+    raderaKakor();
+    window.location.reload();
+  }, 400);
 }
 
 const knapp = {
@@ -122,16 +141,27 @@ export default function Kakruta() {
   // Valet i minnet, för när localStorage inte går att skriva till.
   const [valIMinnet, setValIMinnet] = useState(null);
   const forstaKnapp = useRef(null);
+  const ruta = useRef(null);
+  // Elementet som öppnade rutan, så att fokus kan lämnas tillbaka dit.
+  const oppnadesFran = useRef(null);
+  // Rutans höjd, så att sidans slut går att scrolla fram ovanför den.
+  const [hojd, setHojd] = useState(0);
 
   const galler = valIMinnet ?? val;
   const visas = val !== 'server' && (galler === null || oppnad);
 
   useEffect(() => {
     if (galler === 'ja') laddaClarity();
+    // Ett nej i en annan flik når hit via storage-händelsen. Är Clarity
+    // laddat i den här fliken stängs det av här också.
+    if (galler === 'nej' && window.alpkollClarityLaddad) stangAvClarity();
   }, [galler]);
 
   useEffect(() => {
-    const oppna = () => setOppnad(true);
+    const oppna = () => {
+      oppnadesFran.current = document.activeElement;
+      setOppnad(true);
+    };
     window.addEventListener(OPPNA_KAKRUTAN, oppna);
     return () => window.removeEventListener(OPPNA_KAKRUTAN, oppna);
   }, []);
@@ -143,25 +173,34 @@ export default function Kakruta() {
     if (oppnad) forstaKnapp.current?.focus();
   }, [oppnad]);
 
+  useEffect(() => {
+    if (!visas || !ruta.current) return;
+    const obs = new ResizeObserver(([e]) => setHojd(e.target.offsetHeight));
+    obs.observe(ruta.current);
+    return () => obs.disconnect();
+  }, [visas]);
+
   const valj = (nytt) => {
-    const tidigare = galler;
-    sparaVal(nytt);
-    setValIMinnet(nytt);
+    const sparat = sparaVal(nytt);
+    // Valet hålls i minnet bara om det inte gick att spara. Annars gäller
+    // det sparade, så att ett nej i en annan flik slår igenom här.
+    setValIMinnet(sparat ? null : nytt);
     setOppnad(false);
     window.dispatchEvent(new Event(VAL_ANDRAT));
-    if (nytt === 'nej' && tidigare === 'ja') {
-      stangAvClarity();
-      // Laddar om så att inget Clarity-skript ligger kvar i minnet.
-      window.location.reload();
-    }
+    oppnadesFran.current?.focus?.();
+    oppnadesFran.current = null;
   };
 
   if (!visas) return null;
 
   return (
+    <>
+    {/* Lika högt som rutan, i sidans flöde längst ner, så att sidfoten
+        och sidans slut går att scrolla fram ovanför rutan. */}
+    <div aria-hidden="true" style={{ height: hojd + 24 }} />
     <section
-      role="dialog"
-      aria-modal="false"
+      ref={ruta}
+      role="region"
       aria-labelledby="kakruta-rubrik"
       aria-describedby="kakruta-text"
       className="kakruta"
@@ -194,9 +233,9 @@ export default function Kakruta() {
       }}>
         Säger du ja spelar Microsoft Clarity in klick och scroll och sätter
         kakor för det. Sajten fungerar likadant om du nekar.{' '}
-        <a href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+        <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›
-        </a>
+        </Link>
       </p>
       <div style={{ display: 'flex', gap: 10 }}>
         <button ref={forstaKnapp} type="button" style={knapp} onClick={() => valj('nej')}>
@@ -219,7 +258,13 @@ export default function Kakruta() {
         @media (min-width: 769px) {
           .kakruta { left: 24px; right: auto; bottom: 24px; max-width: 400px; }
         }
+        /* Liggande telefon: rubriken stryks så att rutan tar mindre plats. */
+        @media (max-height: 500px) {
+          .kakruta h2 { display: none; }
+          .kakruta p { margin-bottom: 8px !important; }
+        }
       `}</style>
     </section>
+    </>
   );
 }

@@ -46,12 +46,13 @@ export default function PrivacyPage() {
           <p style={{ marginTop: 12 }}>
             <Stark>Om du godkänner det i kakrutan:</Stark> Microsoft Clarity
             registrerar hur du rör dig på sajten: klick, scroll, musrörelser,
-            vilka sidor du besöker, din skärmstorlek, webbläsare och ungefär
-            vilket land du är i. Det används för att se var sidorna är
-            krångliga, i värmekartor och inspelningar av besök. Microsoft
-            Corporation behandlar uppgifterna, också i
-            USA, under EU–USA-ramverket för dataskydd. Inspelningar sparas i 30
-            dagar och klickdata i 9 månader. Säger du nej, eller inget alls,
+            vilka sidor du besöker, din skärmstorlek och webbläsare. Microsoft
+            tar också emot din IP-adress och räknar fram ungefär vilket land du
+            är i. Det används för att se var sidorna är krångliga, i
+            värmekartor och inspelningar av besök. Inspelningar sparas i 30
+            dagar, klickdata och inspelningar vi markerar i 9 månader.
+            Behandlingen vilar på ditt samtycke (artikel 6.1 a i GDPR), och du
+            kan ta tillbaka det när som helst. Säger du nej, eller inget alls,
             laddas Clarity aldrig.
           </p>
         )}
@@ -83,6 +84,17 @@ export default function PrivacyPage() {
           (EU-regionen eu-north-1). Webbplatsen körs hos Vercel. Inga
           personuppgifter om besökare lagras i något av systemen.
         </p>
+        {anvanderClarity && (
+          <p style={{ marginTop: 12 }}>
+            Uppgifterna från Microsoft Clarity lagras hos Microsoft Corporation,
+            också i USA. Microsoft deltar i EU–USA-ramverket för dataskydd,
+            som EU-kommissionen godkänt för överföringar dit. För
+            inspelningarna och värmekartorna är Microsoft vårt
+            personuppgiftsbiträde. Kakan MUID, som Microsoft synkar via
+            bing.com, använder Microsoft också för egna ändamål, och för den är
+            Microsoft själva personuppgiftsansvariga.
+          </p>
+        )}
       </Avsnitt>
 
       <Avsnitt titel="Kakor" id="kakor">
@@ -90,8 +102,8 @@ export default function PrivacyPage() {
           <>
             <p>
               Alpkoll sätter kakor bara om du godkänner Microsoft Clarity i
-              rutan som visas vid första besöket. Godkänn och Neka väger lika,
-              och sajten fungerar likadant om du nekar. Ditt val gäller i tolv
+              rutan som visas vid första besöket. Sajten fungerar likadant om
+              du nekar. Ditt val gäller i tolv
               månader och sparas i din webbläsare (localStorage), inte i en kaka.
             </p>
             <p style={{ marginTop: 12 }}>Med ditt ja sätts:</p>
@@ -101,7 +113,8 @@ export default function PrivacyPage() {
               <li><Stark>_clsk</Stark> (alpkoll.se, ett dygn): knyter ihop
                 sidorna i ett besök till en inspelning.</li>
               <li><Stark>CLID, MUID med flera</Stark> (clarity.ms och bing.com,
-                Microsofts egna kakor): känner igen webbläsaren hos Microsoft.</li>
+                Microsofts egna kakor, ungefär ett år): känner igen webbläsaren
+                hos Microsoft.</li>
             </ul>
             <p style={{ marginTop: 12 }}>
               Du kan ändra ditt val när som helst under{' '}
@@ -133,15 +146,24 @@ export default function PrivacyPage() {
       </Avsnitt>
 
       <Avsnitt titel="Dina rättigheter enligt GDPR">
-        <p>
-          Eftersom vi inte samlar in personuppgifter finns det normalt
-          ingenting att begära ut eller radera. Skulle du ändå tro att vi har
-          uppgifter om dig har du rätt att:
-        </p>
+        {anvanderClarity ? (
+          <p>
+            Har du godkänt Clarity finns uppgifter om ditt besök hos Microsoft
+            under den tid som anges ovan. Annars samlar vi inte in några
+            personuppgifter. Du har rätt att:
+          </p>
+        ) : (
+          <p>
+            Eftersom vi inte samlar in personuppgifter finns det normalt
+            ingenting att begära ut eller radera. Skulle du ändå tro att vi har
+            uppgifter om dig har du rätt att:
+          </p>
+        )}
         <ul style={{ marginTop: 8, paddingLeft: 20 }}>
           <li>begära tillgång till dina uppgifter</li>
           <li>begära rättelse eller radering av dem</li>
           <li>invända mot behandlingen</li>
+          {anvanderClarity && <li>ta tillbaka ditt samtycke till Clarity</li>}
           <li>lämna klagomål till Integritetsskyddsmyndigheten (IMY)</li>
         </ul>
         <p style={{ marginTop: 12 }}>

@@ -231,7 +231,7 @@ export default function Kakruta() {
         margin: '0 0 12px',
         color: 'rgba(240,236,228,0.72)',
       }}>
-        Det spelar in klick och scroll och sätter kakor.{' '}
+        Det analyserar hur sidan används, så att den kan bli bättre. Det sätter kakor.{' '}
         <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›
         </Link>

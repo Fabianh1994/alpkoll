@@ -27,6 +27,7 @@ import { kreditering } from '../../../lib/kreditering'
 import { jamforOrdning, ortBeskrivning, ortTitel, resanKort } from '../../../lib/sokresultat'
 import Bildgalleri from './Bildgalleri'
 import Partnerlank from '../../Partnerlank'
+import { VAR_BO } from '../../../lib/varbo'
 
 // Ortsidorna genereras statiskt vid bygget och byggs om en gång i timmen.
 // Möjligt först sedan rotlayouten slutade läsa request-headers (se lib/lang.js).
@@ -821,12 +822,11 @@ export default async function ResortPage({ params }) {
                 {resort.where_to_stay && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: 0 }}>{resort.where_to_stay}</p>
                 )}
-                {/* Sälen har en egen sida om områdena, den vanligaste frågan
-                    om orten i forumen. Se app/var-bo-i-salen/page.js. */}
-                {resort.slug === 'salen' && (
+                {/* Orter med en egen sida om var man ska bo, se lib/varbo.js. */}
+                {VAR_BO[resort.slug] && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '12px 0 0' }}>
-                    Lindvallen, Hundfjället eller Stöten?{' '}
-                    <Link href="/var-bo-i-salen" style={{ color: '#D4A574' }}>Alla sex områden jämförda</Link>.
+                    {VAR_BO[resort.slug].omraden.slice(0, 3).map((a) => a.namn).join(', ').replace(/, ([^,]*)$/, ' eller $1')}?{' '}
+                    <Link href={VAR_BO[resort.slug].path} style={{ color: '#D4A574' }}>Var du ska bo, område för område</Link>.
                   </p>
                 )}
               </div>

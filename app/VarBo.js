@@ -1,10 +1,14 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import SiteHeader from './SiteHeader'
 import SiteFooter from './SiteFooter'
 import Partnerlank from './Partnerlank'
 import { SITE_URL } from '../lib/lang'
 import { bookingSok, BOOKING_BLA } from '../lib/booking'
 import { VAR_BO, VAR_BO_ORDNING, UTHYRARE, HAMTAD } from '../lib/varbo'
+import { getOrtbilder } from '../lib/ortbilder'
+import { kreditering } from '../lib/kreditering'
+import { farOptimeras } from '../lib/images'
 
 // Sidan "Var ska man bo i <ort>?", gemensam för alla orter i lib/varbo.js.
 // Innehållet står där. Den här filen bestämmer bara hur det ser ut.
@@ -23,7 +27,6 @@ const rubrik = (storlek) => ({
   fontFamily: 'var(--font-heading)', fontSize: storlek, fontWeight: 400,
   letterSpacing: '0.03em', margin: '0 0 18px', color: '#f0ece4',
 })
-const stark = { color: '#f0ece4', fontWeight: 500 }
 
 function ort(slug) {
   const o = VAR_BO[slug]
@@ -100,23 +103,28 @@ function BookingKnapp({ ort, sid }) {
   )
 }
 
+const dold = { position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap' }
+
+// Uthyrarna som små kort, två eller tre i bredd på dator och ett på mobil.
 function Uthyrare({ nycklar }) {
   return (
-    <ul style={{ listStyle: 'none', padding: 0, margin: '6px 0 0', display: 'grid', gap: 6 }}>
+    <ul style={{ listStyle: 'none', padding: 0, margin: '10px 0 0', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 8 }}>
       {[...nycklar].sort((x, y) => UTHYRARE[x].namn.localeCompare(UTHYRARE[y].namn, 'sv')).map((k) => {
         const u = UTHYRARE[k]
         return (
-          <li key={k} style={{ fontFamily: 'var(--font-body)', fontSize: 14.5, lineHeight: 1.5 }}>
+          <li key={k}>
             <Partnerlank
               partner={u.partner || 'direkt'}
               sok={{ url: u.url }}
               markning={null}
-              style={{ color: ACCENT, textDecoration: 'none', fontWeight: 500 }}
+              style={{ display: 'block', height: '100%', boxSizing: 'border-box', padding: '11px 14px', borderRadius: 8, border: '1px solid rgba(212,165,116,0.28)', background: 'rgba(212,165,116,0.05)', textDecoration: 'none' }}
             >
-              {u.namn} <span aria-hidden="true">↗</span>
-              <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap' }}> (öppnas i ny flik)</span>
+              <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: ACCENT }}>
+                {u.namn} <span aria-hidden="true">↗</span>
+              </span>
+              <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: 13, lineHeight: 1.45, color: 'rgba(255,255,255,0.55)', marginTop: 2 }}>{u.vad}</span>
+              <span style={dold}> (öppnas i ny flik)</span>
             </Partnerlank>
-            <span style={{ color: 'rgba(255,255,255,0.55)' }}>, {u.vad}</span>
           </li>
         )
       })}
@@ -124,42 +132,108 @@ function Uthyrare({ nycklar }) {
   )
 }
 
-export default function VarBo({ slug }) {
+// Krediteringen ligger på bilden, som på ortsidan. CC BY kräver att
+// fotografen namnges där bilden visas.
+function Kreditering({ bild, style }) {
+  return (
+    <a href={bild.source_page} target="_blank" rel="noopener noreferrer" style={{ position: 'absolute', fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.7)', textDecoration: 'none', textShadow: '0 1px 6px rgba(0,0,0,0.7)', ...style }}>
+      {kreditering(bild)}
+    </a>
+  )
+}
+
+const chip = {
+  display: 'inline-block', padding: '8px 14px', borderRadius: 999,
+  border: '1px solid rgba(255,255,255,0.12)', background: '#1c1a17',
+  fontFamily: 'var(--font-body)', fontSize: 14, color: '#f0ece4', textDecoration: 'none',
+}
+
+export default async function VarBo({ slug }) {
   const o = ort(slug)
   const andra = VAR_BO_ORDNING.filter((s) => s !== slug).map((s) => VAR_BO[s])
 
+  // Ortens bilder ur resort_images. Svarar Supabase inte blir listan tom
+  // och sidan visas utan bilder, som före.
+  const bilder = (await getOrtbilder(slug)).filter((b) => farOptimeras(b.url))
+  const hjalte = bilder.find((b) => b.position === 0)
+  const omradesbild = (a) => a.bild != null
+    ? bilder.find((b) => b.position === a.bild && b.alt?.includes(a.namn))
+    : null
+
+  const lasVidare = [
+    [`${o.ort}: liftkort och pistkarta`, `/resort/${slug}`],
+    ...andra.map((a) => [`Boende i ${a.ort}`, a.path]),
+    ...(o.jamfor || []),
+    ['Tåg till fjällen', '/tag-till-fjallen'],
+    ['Skidorter för barnfamiljer', '/skidorter-for-barnfamiljer'],
+  ]
+
+  const rubrikH1 = (
+    <h1 style={{ ...rubrik('clamp(38px, 7vw, 68px)'), lineHeight: 0.98, margin: 0 }}>
+      Var ska man bo i {o.ort}?
+    </h1>
+  )
+
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
+      <style>{`
+        .vb-fakta { display: grid; grid-template-columns: 104px 1fr; gap: 6px 16px; margin: 0; }
+        .vb-fakta dt { padding-top: 3px; }
+        .vb-fakta dd { margin: 0 0 8px; }
+        @media (max-width: 560px) {
+          .vb-fakta { grid-template-columns: 1fr; gap: 2px; }
+          .vb-fakta dd { margin-bottom: 12px; }
+          .vb-omradesbild { height: 170px !important; }
+          .vb-svar { padding: 11px 13px !important; }
+        }
+        .vb-kallor summary { cursor: pointer; list-style: none; }
+        .vb-kallor summary::-webkit-details-marker { display: none; }
+        .vb-kallor[open] .vb-pil { transform: rotate(90deg); }
+      `}</style>
       <SiteHeader />
 
-      <main style={{ maxWidth: 860, margin: '0 auto', padding: '108px clamp(20px, 5vw, 32px) 100px' }}>
-        <h1 style={{ ...rubrik('clamp(36px, 6vw, 58px)'), lineHeight: 1.02, marginBottom: 20 }}>
-          Var ska man bo i {o.ort}?
-        </h1>
+      {/* ── Bild och rubrik ── */}
+      {hjalte ? (
+        <div style={{ position: 'relative', height: 'clamp(340px, 54vh, 540px)', overflow: 'hidden' }}>
+          <Image src={hjalte.url} alt={hjalte.alt || o.ort} fill priority sizes="100vw" style={{ objectFit: 'cover', objectPosition: 'center 40%' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(18,17,16,0.45) 0%, rgba(18,17,16,0.05) 35%, rgba(18,17,16,0.92) 100%)' }} />
+          <Kreditering bild={hjalte} style={{ top: 84, right: 'clamp(20px, 4vw, 48px)', maxWidth: '50%', textAlign: 'right' }} />
+          <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0 }}>
+            <div style={{ maxWidth: 860, margin: '0 auto', padding: '0 clamp(20px, 5vw, 32px) 30px' }}>
+              <p style={{ ...etikett, color: ACCENT, letterSpacing: '0.2em', margin: '0 0 10px' }}>Boende · {o.omraden.length} områden</p>
+              {rubrikH1}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{ maxWidth: 860, margin: '0 auto', padding: '108px clamp(20px, 5vw, 32px) 0' }}>
+          <p style={{ ...etikett, color: ACCENT, letterSpacing: '0.2em', margin: '0 0 10px' }}>Boende · {o.omraden.length} områden</p>
+          {rubrikH1}
+        </div>
+      )}
 
+      <main style={{ maxWidth: 860, margin: '0 auto', padding: '28px clamp(20px, 5vw, 32px) 100px' }}>
         {o.ingress.map((t, i) => (
-          <p key={i} style={{ ...brod, margin: '0 0 14px' }}>{t}</p>
+          <p key={i} style={{ ...brod, fontSize: 17, color: 'rgba(255,255,255,0.72)', margin: '0 0 14px' }}>{t}</p>
         ))}
 
         {/* ── Kort svar ── */}
-        <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', margin: '28px 0 12px' }}>
-          <h2 style={{ ...etikett, margin: '0 0 14px' }}>Kort svar</h2>
-          <div style={{ display: 'grid', gap: 8 }}>
-            {o.kortSvar.map((rad) => (
-              <div key={rad.vem} style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 0.8fr) 1.2fr', gap: 12 }}>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>{rad.vem}</span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}><MedLankar text={rad.var} omraden={o.omraden} /></span>
-              </div>
-            ))}
-          </div>
-          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: '14px 0 0' }}>
-            Tryck på ett område för att se vem som hyr ut där.
-          </p>
+        <h2 style={{ ...etikett, margin: '30px 0 10px' }}>Kort svar</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: 8 }}>
+          {o.kortSvar.map((rad) => (
+            <div key={rad.vem} className="vb-svar" style={{ ...kort, padding: '14px 16px' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.55)', marginBottom: 4 }}>{rad.vem}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 600, color: '#f0ece4', lineHeight: 1.4 }}><MedLankar text={rad.var} omraden={o.omraden} /></div>
+            </div>
+          ))}
         </div>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: '10px 0 0' }}>
+          Tryck på ett område för att se vem som hyr ut där.
+        </p>
 
         {/* ── Boende för hela orten, högt upp: den som söker "boende <ort>" vill boka ── */}
-        <div style={{ ...kort, padding: 'clamp(20px, 4vw, 30px)', marginBottom: 12 }}>
-          <h2 style={{ ...etikett, margin: '0 0 12px' }}>Boende i {o.ort}</h2>
+        <div style={{ ...kort, borderColor: 'rgba(212,165,116,0.25)', padding: 'clamp(20px, 4vw, 28px)', margin: '24px 0 0' }}>
+          <h2 style={{ ...etikett, margin: '0 0 12px' }}>Boende i hela {o.ort}</h2>
           <BookingKnapp ort={o} sid={`var-bo-i-${slug}-boende-${slug}`} />
           <p style={{ ...brod, fontSize: 14, margin: '14px 0 0', color: 'rgba(255,255,255,0.55)' }}>
             Mycket av boendet hyrs ut av liftbolagen och lokala stugförmedlare och finns inte på Booking.
@@ -168,67 +242,74 @@ export default function VarBo({ slug }) {
         </div>
 
         {/* ── Områdena ── */}
-        <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), marginTop: 44 }}>Områdena ett och ett</h2>
-        {o.omraden.map((a) => (
-          <section key={a.namn} id={ankare(a.namn)} style={{ scrollMarginTop: 90, ...kort, padding: 'clamp(20px, 4vw, 28px)', marginBottom: 12 }}>
-            <div style={etikett}>{a.agare}</div>
-            <h3 style={{ ...rubrik(28), margin: '6px 0 12px' }}>{a.namn}</h3>
-            <p style={{ ...brod, fontSize: 15, margin: '0 0 10px' }}>
-              <strong style={stark}>Passar: </strong>{a.passar}
-            </p>
-            <p style={{ ...brod, fontSize: 15, margin: '0 0 10px' }}>
-              <strong style={stark}>Nackdel: </strong>{a.nackdel}
-            </p>
-            <p style={{ ...brod, fontSize: 15, margin: '0 0 10px' }}>
-              <strong style={stark}>Till liften: </strong>{a.lift}
-            </p>
-            {a.boende && (
-              <p style={{ ...brod, fontSize: 15, margin: '0 0 10px' }}>
-                <strong style={stark}>Boende: </strong>{a.boende}
-              </p>
-            )}
-            <p style={{ ...brod, fontSize: 13.5, margin: '0 0 14px', color: 'rgba(255,255,255,0.55)' }}>
-              {a.tal && <>{a.tal}{' '}</>}
-              Källor:{' '}
-              {[a.kalla, a.kalla2].filter(Boolean).map((url, i, alla) => {
-                // Två källor på samma webbplats får sidans namn efter värden.
-                const dubbel = alla.filter((u) => vard(u) === vard(url)).length > 1
-                const text = dubbel ? `${vard(url)} (${i === 0 ? 'området' : 'mer'})` : vard(url)
-                return <span key={url}>{i > 0 && ', '}<a href={url} rel="noopener" style={{ color: ACCENT }}>{text}</a></span>
-              })}
-            </p>
-            <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
-              <div style={etikett}>Hyr boende i {a.namn}</div>
-              <Uthyrare nycklar={a.uthyrare} />
-            </div>
-          </section>
-        ))}
+        <h2 style={{ ...rubrik('clamp(28px, 4.5vw, 38px)'), marginTop: 52 }}>Områdena ett och ett</h2>
+        {o.omraden.map((a) => {
+          const bild = omradesbild(a)
+          return (
+            <section key={a.namn} id={ankare(a.namn)} style={{ scrollMarginTop: 90, ...kort, overflow: 'hidden', marginBottom: 14 }}>
+              {bild && (
+                <div className="vb-omradesbild" style={{ position: 'relative', height: 230 }}>
+                  <Image src={bild.url} alt={bild.alt} fill sizes="(max-width: 900px) 100vw, 860px" style={{ objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, transparent 55%, rgba(28,26,23,0.85) 100%)' }} />
+                  <Kreditering bild={bild} style={{ bottom: 10, right: 14 }} />
+                </div>
+              )}
+              <div style={{ padding: 'clamp(20px, 4vw, 28px)' }}>
+                <div style={etikett}>{a.agare}</div>
+                <h3 style={{ ...rubrik('clamp(30px, 5vw, 36px)'), margin: '4px 0 16px' }}>{a.namn}</h3>
+                <dl className="vb-fakta">
+                  {[['Passar', a.passar], ['Nackdel', a.nackdel], ['Till liften', a.lift], ['Boende', a.boende]].filter(([, v]) => v).map(([k, v]) => (
+                    <div key={k} style={{ display: 'contents' }}>
+                      <dt style={{ ...etikett, color: ACCENT }}>{k}</dt>
+                      <dd style={{ ...brod, fontSize: 15, lineHeight: 1.65 }}>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, lineHeight: 1.6, margin: '4px 0 18px', color: 'rgba(255,255,255,0.5)' }}>
+                  {a.tal && <>{a.tal}{' '}</>}
+                  Källor:{' '}
+                  {[a.kalla, a.kalla2].filter(Boolean).map((url, i, alla) => {
+                    // Två källor på samma webbplats får sidans namn efter värden.
+                    const dubbel = alla.filter((u) => vard(u) === vard(url)).length > 1
+                    const text = dubbel ? `${vard(url)} (${i === 0 ? 'området' : 'mer'})` : vard(url)
+                    return <span key={url}>{i > 0 && ', '}<a href={url} rel="noopener" style={{ color: 'rgba(212,165,116,0.85)' }}>{text}</a></span>
+                  })}
+                </p>
+                <div style={etikett}>Hyr boende i {a.namn}</div>
+                <Uthyrare nycklar={a.uthyrare} />
+              </div>
+            </section>
+          )
+        })}
 
         {/* ── Liftkortet och resan ── */}
-        <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), marginTop: 44 }}>{o.liftkortRubrik || 'Liftkortet'}</h2>
+        <h2 style={{ ...rubrik('clamp(28px, 4.5vw, 38px)'), marginTop: 52 }}>{o.liftkortRubrik || 'Liftkortet'}</h2>
         {o.liftkort.map((delar, i) => (
           <Stycke key={i} delar={delar} style={{ ...brod, margin: '0 0 14px' }} />
         ))}
         {o.fotnot && <Stycke delar={o.fotnot} style={{ ...brod, fontSize: 14.5, margin: 0, color: 'rgba(255,255,255,0.57)' }} />}
 
-        <p style={{ ...brod, fontSize: 14.5, margin: '36px 0 8px' }}>
-          Mer om {o.ort}: <Link href={`/resort/${slug}`} style={{ color: ACCENT }}>ortsidan</Link> med
-          liftkortspris och pistkarta, och <Link href="/tag-till-fjallen" style={{ color: ACCENT }}>tåg till fjällen</Link>.
-          Var du bor i{' '}
-          {andra.map((a, i) => (
-            <span key={a.slug}>
-              {i > 0 && ' och '}
-              <Link href={a.path} style={{ color: ACCENT }}>{a.ort}</Link>
-            </span>
+        {/* ── Läs vidare: länkar som knappar i stället för ett långt stycke ── */}
+        <h2 style={{ ...etikett, margin: '44px 0 12px' }}>Läs vidare</h2>
+        <nav style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          {lasVidare.map(([text, href]) => (
+            <Link key={href} href={href} style={chip}>{text[0].toUpperCase() + text.slice(1)}</Link>
           ))}
-          .{o.jamfor && <> Jämför: {o.jamfor.map(([text, href], i) => (
-            <span key={href}>{i > 0 && ', '}<Link href={href} style={{ color: ACCENT }}>{text}</Link></span>
-          ))}.</>} Andra orter för barn står i <Link href="/skidorter-for-barnfamiljer" style={{ color: ACCENT }}>skidorter för barnfamiljer</Link>.
+        </nav>
+
+        <details className="vb-kallor" style={{ marginTop: 28, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 14 }}>
+          <summary style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.55)' }}>
+            <span className="vb-pil" aria-hidden="true" style={{ display: 'inline-block', marginRight: 6, transition: 'transform .15s' }}>›</span>
+            Källor och hur sidan är gjord
+          </summary>
+          <Stycke
+            delar={[...o.kallor, ` Hämtat ${HAMTAD}. Uthyrarna står i bokstavsordning.`]}
+            style={{ ...brod, fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: '10px 0 0' }}
+          />
+        </details>
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.45)', margin: '10px 0 0' }}>
+          Länkarna till uthyrarna ger ingen provision.
         </p>
-        <Stycke
-          delar={[...o.kallor, ` Hämtat ${HAMTAD}. Länkarna till uthyrarna ger ingen provision, och de står i bokstavsordning.`]}
-          style={{ ...brod, fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: 0 }}
-        />
       </main>
 
       <SiteFooter />

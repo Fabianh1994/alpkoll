@@ -25,8 +25,14 @@ const rubrik = (storlek) => ({
 })
 const stark = { color: '#f0ece4', fontWeight: 500 }
 
-export function varBoMetadata(slug) {
+function ort(slug) {
   const o = VAR_BO[slug]
+  if (!o) throw new Error(`VAR_BO i lib/varbo.js saknar ${slug}`)
+  return o
+}
+
+export function varBoMetadata(slug) {
+  const o = ort(slug)
   const url = `${SITE_URL}${o.path}`
   return {
     title: o.titel,
@@ -54,6 +60,7 @@ const ankare = (namn) => namn.toLowerCase().normalize('NFD').replace(/[\u0300-\u
 // Områdesnamnen i ett svar blir länkar till sina kort.
 function MedLankar({ text, omraden }) {
   const namn = omraden.map((a) => a.namn).sort((x, y) => y.length - x.length)
+  if (namn.length === 0) return text
   const re = new RegExp(`(${namn.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g')
   return text.split(re).map((del, i) =>
     namn.includes(del)
@@ -106,7 +113,8 @@ function Uthyrare({ nycklar }) {
               markning={null}
               style={{ color: ACCENT, textDecoration: 'none', fontWeight: 500 }}
             >
-              {u.namn} ↗
+              {u.namn} <span aria-hidden="true">↗</span>
+              <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)', whiteSpace: 'nowrap' }}> (öppnas i ny flik)</span>
             </Partnerlank>
             <span style={{ color: 'rgba(255,255,255,0.55)' }}>, {u.vad}</span>
           </li>
@@ -117,7 +125,7 @@ function Uthyrare({ nycklar }) {
 }
 
 export default function VarBo({ slug }) {
-  const o = VAR_BO[slug]
+  const o = ort(slug)
   const andra = VAR_BO_ORDNING.filter((s) => s !== slug).map((s) => VAR_BO[s])
 
   return (
@@ -182,9 +190,12 @@ export default function VarBo({ slug }) {
             <p style={{ ...brod, fontSize: 13.5, margin: '0 0 14px', color: 'rgba(255,255,255,0.55)' }}>
               {a.tal && <>{a.tal}{' '}</>}
               Källor:{' '}
-              {[a.kalla, a.kalla2].filter(Boolean).map((url, i) => (
-                <span key={url}>{i > 0 && ', '}<a href={url} rel="noopener" style={{ color: ACCENT }}>{vard(url)}</a></span>
-              ))}
+              {[a.kalla, a.kalla2].filter(Boolean).map((url, i, alla) => {
+                // Två källor på samma webbplats får sidans namn efter värden.
+                const dubbel = alla.filter((u) => vard(u) === vard(url)).length > 1
+                const text = dubbel ? `${vard(url)} (${i === 0 ? 'området' : 'mer'})` : vard(url)
+                return <span key={url}>{i > 0 && ', '}<a href={url} rel="noopener" style={{ color: ACCENT }}>{text}</a></span>
+              })}
             </p>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 12 }}>
               <div style={etikett}>Hyr boende i {a.namn}</div>

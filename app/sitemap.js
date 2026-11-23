@@ -47,7 +47,8 @@ export default async function sitemap() {
     { path: '/pasklov', changeFrequency: 'monthly', priority: 0.8 },
     // Var man ska bo, per ort. Boende söks ca 11 000 gånger i månaden.
     // Se lib/varbo.js.
-    ...VAR_BO_ORDNING.map((s) => ({ path: VAR_BO[s].path, changeFrequency: 'monthly', priority: 0.8 })),
+    // Bara orter som är publicerade, så att sidan inte länkar till en dold ortsida.
+    ...VAR_BO_ORDNING.filter((s) => slugs.includes(s)).map((s) => ({ path: VAR_BO[s].path, changeFrequency: 'monthly', priority: 0.8 })),
     { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },
     // Vilka svenska orter tåget når, se lib/fjalltag.js.
     { path: '/tag-till-fjallen', changeFrequency: 'monthly', priority: 0.8 },

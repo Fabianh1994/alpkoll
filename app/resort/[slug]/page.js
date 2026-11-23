@@ -825,7 +825,7 @@ export default async function ResortPage({ params }) {
                 {/* Orter med en egen sida om var man ska bo, se lib/varbo.js. */}
                 {VAR_BO[resort.slug] && (
                   <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7, margin: '12px 0 0' }}>
-                    {VAR_BO[resort.slug].omraden.slice(0, 3).map((a) => a.namn).join(', ').replace(/, ([^,]*)$/, ' eller $1')}?{' '}
+                    {VAR_BO[resort.slug].teaser}{' '}
                     <Link href={VAR_BO[resort.slug].path} style={{ color: '#D4A574' }}>Var du ska bo, område för område</Link>.
                   </p>
                 )}

@@ -12,6 +12,7 @@ import { STADER, bilresa, narmastMedBil, timmar } from '../../lib/restider'
 import { nattagFor } from '../../lib/nattaget'
 import { AR } from '../../lib/sportlov'
 import { MOTIVERINGAR, SAKNAS, UPPDATERAD, PUBLICERAD, SASONG } from '../../lib/barnfamiljer'
+import { VAR_BO } from '../../lib/varbo'
 
 // Skidorter för barnfamiljer.
 //
@@ -316,8 +317,8 @@ export default async function SkidorterForBarnfamiljer() {
                     {bil && <>Med bil {timmar(bil.minuter)} från {fran.namn}. </>}
                     {tag && <>Nattåget går hit. </>}
                     {kr && <>Liftkort för sex dagar {kr}. </>}
-                    {o.slug === 'salen' && (
-                      <Link href="/var-bo-i-salen" style={{ color: ACCENT }}>Vilket område i Sälen?</Link>
+                    {VAR_BO[o.slug] && (
+                      <Link href={VAR_BO[o.slug].path} style={{ color: ACCENT }}>Vilket område i {VAR_BO[o.slug].ort}?</Link>
                     )}
                   </p>
                   {m?.kallor?.length > 0 && (
@@ -402,7 +403,9 @@ export default async function SkidorterForBarnfamiljer() {
         </section>
 
         <p style={{ ...brod, fontSize: 14.5, margin: '30px 0 0' }}>
-          Vidare: <Link href="/var-bo-i-salen" style={{ color: ACCENT }}>var ska man bo i Sälen</Link>,{' '}
+          Vidare: var ska man bo i <Link href="/var-bo-i-salen" style={{ color: ACCENT }}>Sälen</Link>,{' '}
+          <Link href="/var-bo-i-are" style={{ color: ACCENT }}>Åre</Link> och{' '}
+          <Link href="/var-bo-i-trysil" style={{ color: ACCENT }}>Trysil</Link>,{' '}
           <Link href="/sportlov" style={{ color: ACCENT }}>sportlovet {AR}</Link>,{' '}
           <Link href="/jamfor" style={{ color: ACCENT }}>jämför två orter</Link> och{' '}
           <Link href="/liftkortspriser" style={{ color: ACCENT }}>liftkortspriser</Link>.

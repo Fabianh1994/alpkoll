@@ -35,6 +35,8 @@ const LANKAR = [
   // sidor, och granskningen 2026-11-18 hittade dem inte från startsidan.
   { href: '/skidorter-for-barnfamiljer', label: 'Barnfamiljer' },
   { href: '/var-bo-i-salen', label: 'Var bo i Sälen' },
+  { href: '/var-bo-i-are', label: 'Var bo i Åre' },
+  { href: '/var-bo-i-trysil', label: 'Var bo i Trysil' },
   { href: '/liftkortsindex', label: 'Liftkortsindex' },
   { href: '/about', label: 'Om oss' },
   { href: '/sa-jamfor-vi', label: 'Så jämför vi' },

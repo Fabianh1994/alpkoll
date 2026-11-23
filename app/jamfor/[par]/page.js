@@ -15,6 +15,7 @@ import { bookingSok, BOOKING_BLA } from '../../../lib/booking'
 import { harPris } from '../../../lib/liftkortspriser'
 import Partnerlank from '../../Partnerlank'
 import Annonsmarkning from '../../Annonsmarkning'
+import { VAR_BO } from '../../../lib/varbo'
 import {
   GRUPPER,
   HUVUDPUNKTER,
@@ -472,6 +473,19 @@ export default async function JamforPage({ params }) {
                 </Partnerlank>
               ))}
             </div>
+            {/* Orter med en sida om var man ska bo, se lib/varbo.js. */}
+            {medBoende.some(({ ort }) => VAR_BO[ort.slug]) && (
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: 'rgba(255,255,255,0.55)', margin: '12px 0 0' }}>
+                Vilket område?{' '}
+                {medBoende.filter(({ ort }) => VAR_BO[ort.slug]).map(({ ort }, i) => (
+                  <span key={ort.slug}>
+                    {i > 0 && ' och '}
+                    <Link href={VAR_BO[ort.slug].path} style={{ color: '#D4A574' }}>Var bo i {ort.name}</Link>
+                  </span>
+                ))}
+                .
+              </p>
+            )}
           </section>
         )}
 

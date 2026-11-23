@@ -61,7 +61,9 @@ ${[
   lank('Tåg till fjällen', '/tag-till-fjallen', 'vilka svenska skidorter du når med tåg, med eller utan transferbuss, och tiderna'),
   lank('Sportlov', '/sportlov', 'vilken vecka sportlovet är i varje kommun, och vilken fredag nattåget går'),
   lank('Påsklov', '/pasklov', 'vilken vecka påsklovet är i varje kommun vi läst, och hur snösäkra skidorterna är i påsk'),
-  lank('Var ska man bo i Sälen?', '/var-bo-i-salen', 'Sälens sex områden jämförda'),
+  lank('Var ska man bo i Sälen?', '/var-bo-i-salen', 'Sälens sex områden jämförda, och vem som hyr ut i varje'),
+  lank('Var ska man bo i Åre?', '/var-bo-i-are', 'Åre by, Björnen, Tegefjäll och Duved jämförda, och vem som hyr ut i varje'),
+  lank('Var ska man bo i Trysil?', '/var-bo-i-trysil', 'Turistsenteret, Fageråsen och byn jämförda, och vem som hyr ut i varje'),
   lank('Bästa skidorterna för barnfamiljer', '/skidorter-for-barnfamiljer', 'topplista för Sverige, Norden och Alperna, med motivering och nackdel för varje ort'),
 ].join('\n')}
 

@@ -5,6 +5,7 @@ import { indexeradeParFor } from '../lib/jamfor'
 import { KOMMUNER, kommunSlug } from '../lib/sportlov'
 import { PASKLOV } from '../lib/pasklov'
 import { LANDSIDOR } from '../lib/landsidor'
+import { VAR_BO, VAR_BO_ORDNING } from '../lib/varbo'
 
 // Genereras om enligt samma intervall som ortsidorna, så nya orter i
 // Supabase dyker upp i sitemapen utan ny deploy.
@@ -44,8 +45,10 @@ export default async function sitemap() {
     { path: '/sportlov', changeFrequency: 'monthly', priority: 0.9 },
     // Påsklovet per kommun och snön i slutet av mars, se lib/pasklov.js.
     { path: '/pasklov', changeFrequency: 'monthly', priority: 0.8 },
-    // Den vanligaste forumfrågan om Sälen. Se app/var-bo-i-salen/page.js.
-    { path: '/var-bo-i-salen', changeFrequency: 'monthly', priority: 0.8 },
+    // Var man ska bo, per ort. Boende söks ca 11 000 gånger i månaden.
+    // Se lib/varbo.js.
+    // Bara orter som är publicerade, så att sidan inte länkar till en dold ortsida.
+    ...VAR_BO_ORDNING.filter((s) => slugs.includes(s)).map((s) => ({ path: VAR_BO[s].path, changeFrequency: 'monthly', priority: 0.8 })),
     { path: '/skidorter-for-barnfamiljer', changeFrequency: 'monthly', priority: 0.8 },
     // Vilka svenska orter tåget når, se lib/fjalltag.js.
     { path: '/tag-till-fjallen', changeFrequency: 'monthly', priority: 0.8 },

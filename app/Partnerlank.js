@@ -28,6 +28,13 @@ const PARTNERS = {
     adress: ({ destination, checkin, checkout, sid }) =>
       bookingUrl(destination, { lang: 'sv', label: sid, checkin, checkout }),
   },
+  // Uthyrare utan avtal, se lib/varbo.js. Länken går rakt till deras sida,
+  // utan spårning och därför utan annonsmärkning och utan rel="sponsored".
+  // Får en av dem ett avtal läggs den till som egen partner här.
+  direkt: {
+    sparas: false,
+    adress: ({ url }) => url,
+  },
 }
 
 /**
@@ -56,7 +63,7 @@ export default function Partnerlank({
 
   return (
     <>
-      {markning && <Annonsmarkning kompakt={markning === 'kompakt'} style={markningStyle} />}
+      {markning && p.sparas && <Annonsmarkning kompakt={markning === 'kompakt'} style={markningStyle} />}
       <a href={href} target="_blank" rel={rel} style={style}>
         {children}
       </a>

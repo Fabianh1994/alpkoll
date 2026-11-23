@@ -23,6 +23,8 @@ import {
   PASSAR,
   arNordisk,
   jamforelseMeningar,
+  genitiv,
+  kortSvar,
   motparten,
   parFor,
   parSlugsFor,
@@ -77,12 +79,21 @@ export async function generateMetadata({ params }) {
   // Search Console 8 september 2026.
   const fallhojd = (r) => tal(fallhojdFor(r))
 
-  // Vem orterna passar först, se vemPassarMening i lib/jamfor.js.
+  // Det korta svaret först, samma text som rutan överst på sidan. Bara
+  // när det ryms i det Google visar; annars som förut, vem orterna passar.
+  const kurser = await hamtaKurser()
+  const svar = kortSvar(a, b, kurser)
   const vem = vemPassarMening(a, b)
   const sidaVidSida = harPris(a) && harPris(b)
     ? 'Restid, liftkort och boende sida vid sida.'
     : 'Restid och boende sida vid sida.'
-  const description = vem
+  // Bara när båda orterna har skäl: "Välj Sälen om du reser med barn"
+  // ensamt nämner aldrig Trysil, och då är det gamla svaret bättre.
+  const description = svar.sidor.length === 2 && svar.text.length <= 155
+    ? `${svar.text} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}.`.length <= 160
+      ? `${svar.text} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}.`
+      : svar.text
+    : vem
     ? `${vem} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}, ${a.total_pistes_km} km pist mot ${b.total_pistes_km}. ${sidaVidSida}`
     : `${a.name} mot ${b.name}: ${a.total_pistes_km} km pist mot ${b.total_pistes_km}, ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}. ${sidaVidSida}`
   const url = `${SITE_URL}/jamfor/${par.kanoniskSlug}`
@@ -252,6 +263,19 @@ export default async function JamforPage({ params }) {
   // dem; en punktlista som upprepar tabellen är brus.
   const ingress = jamforelseMeningar(a, b, kurser).slice(0, 3).join(' ')
 
+  // Det korta svaret, se kortSvar i lib/jamfor.js. Samma text går till
+  // FAQPage nedan, så att det maskinläsbara svaret är det som syns.
+  const svar = kortSvar(a, b, kurser)
+  const svarLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [{
+      '@type': 'Question',
+      name: `${a.name} eller ${b.name}?`,
+      acceptedAnswer: { '@type': 'Answer', text: svar.text },
+    }],
+  }
+
   const korsPar = arNordisk(a) !== arNordisk(b)
 
   // Orterna som har en Booking-sökning. Hemavan saknar boenden där och
@@ -269,7 +293,14 @@ export default async function JamforPage({ params }) {
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(svarLd) }}
+      />
+
       <style>{`
+        .jamfor-svar { display: grid; grid-template-columns: 1fr 1fr; }
+        .jamfor-svar > div + div { border-left: 1px solid rgba(255,255,255,0.07); }
         .jamfor-hjalte {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -307,6 +338,8 @@ export default async function JamforPage({ params }) {
         @media (max-width: 640px) {
           .jamfor-hjalte { height: 34vh; min-height: 200px; }
           .jamfor-tva { grid-template-columns: 1fr; }
+          .jamfor-svar { grid-template-columns: 1fr; }
+          .jamfor-svar > div + div { border-left: none; border-top: 1px solid rgba(255,255,255,0.07); }
           .jamfor-rad { grid-template-columns: 1fr 96px 1fr; padding: 13px 12px; gap: 6px; }
           .jamfor-tabell td, .jamfor-tabell th { padding: 9px 12px; }
         }
@@ -335,9 +368,11 @@ export default async function JamforPage({ params }) {
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px, 4.5vw, 40px)', fontWeight: 400, lineHeight: 1.1, color: '#f0ece4', letterSpacing: '0.02em', margin: 0 }}>
           {a.name} eller {b.name}?
         </h1>
-        {ingress && <p style={{ ...brodtext, fontSize: 14.5, marginTop: 14 }}>{ingress}</p>}
+        <KortSvar svar={svar} orter={orter} />
 
-        {/* ── Kort svar ──
+        {ingress && <p style={{ ...brodtext, fontSize: 14.5, marginTop: 22 }}>{ingress}</p>}
+
+        {/* ── Huvudtalen ──
             Tre tal, inte arton. Valda för att de avgör valet och för att
             de går att lita på — se HUVUDPUNKTER i lib/jamfor.js. */}
         <section style={{ marginTop: 40 }}>
@@ -616,5 +651,100 @@ function Fragmentgrupp({ grupp, orter, kurser }) {
         </tr>
       ))}
     </>
+  )
+}
+
+/** Liten rund ortbild till det korta svaret. */
+function Rundbild({ ort }) {
+  const url = ort.image_url
+  if (!url) return null
+  return (
+    <div style={{ position: 'relative', width: 46, height: 46, borderRadius: '50%', overflow: 'hidden', flexShrink: 0, boxShadow: `0 0 0 2px #1c1a17, 0 0 0 3px ${ACCENT}` }}>
+      {farOptimeras(url) ? (
+        <Image src={url} alt="" fill sizes="46px" style={{ objectFit: 'cover' }} />
+      ) : (
+        <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      )}
+    </div>
+  )
+}
+
+/** En liten bock i accentfärgen framför varje skäl. */
+function Bock() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" style={{ flexShrink: 0, marginTop: 2 }}>
+      <circle cx="8" cy="8" r="8" fill="rgba(212,165,116,0.16)" />
+      <path d="M4.6 8.3l2.2 2.2 4.6-4.8" fill="none" stroke={ACCENT} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+/**
+ * Rutan "Kort svar" överst på sidan: vem som ska välja vilken ort, med
+ * ett tal som bevis för varje skäl. Allt räknas fram i kortSvar.
+ */
+function KortSvar({ svar, orter }) {
+  const skalFor = (ort) => svar.sidor.find((s) => s.ort.slug === ort.slug)?.skal || []
+
+  return (
+    <section aria-labelledby="kort-svar" style={{ marginTop: 22 }}>
+      <div style={{ ...kort, border: '1px solid rgba(212,165,116,0.32)', borderRadius: 12, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'linear-gradient(90deg, rgba(212,165,116,0.10), rgba(212,165,116,0) 70%)' }}>
+          <h2 id="kort-svar" style={{ ...etikett, fontSize: 11, fontWeight: 600, color: ACCENT, letterSpacing: '0.16em', margin: 0 }}>Kort svar</h2>
+        </div>
+
+        {svar.reserv ? (
+          <p style={{ ...brodtext, fontSize: 14.5, color: '#f0ece4', padding: '18px 20px' }}>{svar.reserv}</p>
+        ) : (
+          <div className="jamfor-svar">
+            {orter.map((ort) => {
+              const skal = skalFor(ort)
+              return (
+                <div key={ort.slug} style={{ padding: '18px 20px 20px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                    <Rundbild ort={ort} />
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(22px, 3.4vw, 27px)', lineHeight: 1.05, color: '#f0ece4', letterSpacing: '0.02em' }}>
+                      {skal.length
+                        ? <>Välj <span style={{ color: ACCENT }}>{ort.name}</span> om du</>
+                        : <span style={{ color: ACCENT }}>{ort.name}</span>}
+                    </div>
+                  </div>
+                  {skal.length ? (
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12 }}>
+                      {skal.map((s) => (
+                        <li key={s.text} style={{ display: 'flex', gap: 10 }}>
+                          <Bock />
+                          <div>
+                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: '#f0ece4', lineHeight: 1.3 }}>{s.text}</div>
+                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.68)', marginTop: 2, lineHeight: 1.45 }}>{s.bevis}</div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p style={{ ...brodtext, fontSize: 13 }}>
+                      Inget av talen här skiljer sig tydligt till {genitiv(ort.name)} fördel. Jämför resan och boendet längre ner.
+                    </p>
+                  )}
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {svar.lika.length > 0 && (
+          <div style={{ padding: '12px 20px', borderTop: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.66)', lineHeight: 1.55 }}>
+            <span style={{ color: ACCENT, fontWeight: 600, marginRight: 6 }}>Lika:</span>
+            {svar.lika.join(' · ')}
+          </div>
+        )}
+      </div>
+      <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.54)' }}>
+        Pist och fallhöjd kommer från skiresort.com och bilresan är räknad
+        på samma sätt för alla orter. Betygen 1–10 är Alpkolls omdömen,
+        satta mot en fast skala med källor.{' '}
+        <Link href="/sa-jamfor-vi" style={{ color: ACCENT, textDecoration: 'none' }}>Så jämför vi</Link>
+      </p>
+    </section>
   )
 }

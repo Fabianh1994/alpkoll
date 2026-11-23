@@ -23,6 +23,7 @@ import {
   PASSAR,
   arNordisk,
   jamforelseMeningar,
+  genitiv,
   kortSvar,
   motparten,
   parFor,
@@ -86,7 +87,9 @@ export async function generateMetadata({ params }) {
   const sidaVidSida = harPris(a) && harPris(b)
     ? 'Restid, liftkort och boende sida vid sida.'
     : 'Restid och boende sida vid sida.'
-  const description = !svar.reserv && svar.text.length <= 155
+  // Bara när båda orterna har skäl: "Välj Sälen om du reser med barn"
+  // ensamt nämner aldrig Trysil, och då är det gamla svaret bättre.
+  const description = svar.sidor.length === 2 && svar.text.length <= 155
     ? `${svar.text} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}.`.length <= 160
       ? `${svar.text} ${a.name} har ${fallhojd(a)} m fallhöjd mot ${fallhojd(b)}.`
       : svar.text
@@ -369,7 +372,7 @@ export default async function JamforPage({ params }) {
 
         {ingress && <p style={{ ...brodtext, fontSize: 14.5, marginTop: 22 }}>{ingress}</p>}
 
-        {/* ── Kort svar ──
+        {/* ── Huvudtalen ──
             Tre tal, inte arton. Valda för att de avgör valet och för att
             de går att lita på — se HUVUDPUNKTER i lib/jamfor.js. */}
         <section style={{ marginTop: 40 }}>
@@ -713,14 +716,14 @@ function KortSvar({ svar, orter }) {
                           <Bock />
                           <div>
                             <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: '#f0ece4', lineHeight: 1.3 }}>{s.text}</div>
-                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.58)', marginTop: 2, lineHeight: 1.45 }}>{s.bevis}</div>
+                            <div style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(255,255,255,0.68)', marginTop: 2, lineHeight: 1.45 }}>{s.bevis}</div>
                           </div>
                         </li>
                       ))}
                     </ul>
                   ) : (
                     <p style={{ ...brodtext, fontSize: 13 }}>
-                      Inget av talen här skiljer sig tydligt till {ort.name}s fördel. Jämför resan och boendet längre ner.
+                      Inget av talen här skiljer sig tydligt till {genitiv(ort.name)} fördel. Jämför resan och boendet längre ner.
                     </p>
                   )}
                 </div>
@@ -737,9 +740,9 @@ function KortSvar({ svar, orter }) {
         )}
       </div>
       <p style={{ ...brodtext, fontSize: 11.5, marginTop: 10, color: 'rgba(255,255,255,0.54)' }}>
-        Pist och fallhöjd är hämtade från skiresort.com, liftkortet ur ortens
-        egen prislista och bilresan räknad på samma sätt för alla orter.
-        Betygen 1–10 är våra omdömen med källor.{' '}
+        Pist och fallhöjd kommer från skiresort.com och bilresan är räknad
+        på samma sätt för alla orter. Betygen 1–10 är Alpkolls omdömen,
+        satta mot en fast skala med källor.{' '}
         <Link href="/sa-jamfor-vi" style={{ color: ACCENT, textDecoration: 'none' }}>Så jämför vi</Link>
       </p>
     </section>

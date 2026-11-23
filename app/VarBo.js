@@ -48,6 +48,20 @@ export function varBoMetadata(slug) {
 // Källans namn som läsaren känner igen: skistar.com, aresweden.com.
 const vard = (url) => new URL(url).hostname.replace(/^www\./, '')
 
+// Ankare för ett område, så att kort svar kan länka ner till kortet.
+const ankare = (namn) => namn.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-')
+
+// Områdesnamnen i ett svar blir länkar till sina kort.
+function MedLankar({ text, omraden }) {
+  const namn = omraden.map((a) => a.namn).sort((x, y) => y.length - x.length)
+  const re = new RegExp(`(${namn.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'g')
+  return text.split(re).map((del, i) =>
+    namn.includes(del)
+      ? <a key={i} href={`#${ankare(del)}`} style={{ color: '#f0ece4', textDecorationColor: 'rgba(212,165,116,0.6)', textUnderlineOffset: 3 }}>{del}</a>
+      : <span key={i}>{del}</span>
+  )
+}
+
 // Ett stycke i datan är en lista av text och [länktext, adress].
 function Stycke({ delar, style }) {
   return (
@@ -126,10 +140,13 @@ export default function VarBo({ slug }) {
             {o.kortSvar.map((rad) => (
               <div key={rad.vem} style={{ display: 'grid', gridTemplateColumns: 'minmax(120px, 0.8fr) 1.2fr', gap: 12 }}>
                 <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.6)' }}>{rad.vem}</span>
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}>{rad.var}</span>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 500, color: '#f0ece4' }}><MedLankar text={rad.var} omraden={o.omraden} /></span>
               </div>
             ))}
           </div>
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: '14px 0 0' }}>
+            Tryck på ett område för att se vem som hyr ut där.
+          </p>
         </div>
 
         {/* ── Boende för hela orten, högt upp: den som söker "boende <ort>" vill boka ── */}
@@ -145,7 +162,7 @@ export default function VarBo({ slug }) {
         {/* ── Områdena ── */}
         <h2 style={{ ...rubrik('clamp(26px, 4vw, 34px)'), marginTop: 44 }}>Områdena ett och ett</h2>
         {o.omraden.map((a) => (
-          <section key={a.namn} style={{ ...kort, padding: 'clamp(20px, 4vw, 28px)', marginBottom: 12 }}>
+          <section key={a.namn} id={ankare(a.namn)} style={{ scrollMarginTop: 90, ...kort, padding: 'clamp(20px, 4vw, 28px)', marginBottom: 12 }}>
             <div style={etikett}>{a.agare}</div>
             <h3 style={{ ...rubrik(28), margin: '6px 0 12px' }}>{a.namn}</h3>
             <p style={{ ...brod, fontSize: 15, margin: '0 0 10px' }}>

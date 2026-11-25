@@ -42,6 +42,22 @@ const PARTNERS = {
       return u.toString()
     },
   },
+  // Transfer från flygplatsen via Travelpayouts (Holiday Taxis). Länken
+  // skapas i Travelpayouts när programmet är godkänt och läggs i
+  // NEXT_PUBLIC_HOLIDAYTAXIS_LANK; spårningsnamnet läggs efter markören med
+  // en punkt, som för Aviasales. Utan länk går knappen rakt till Holiday
+  // Taxis, utan provision och utan annonsmärkning.
+  holidaytaxis: {
+    sparas: Boolean(process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK),
+    adress: ({ sid }) => {
+      const lank = process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK
+      if (!lank) return 'https://www.holidaytaxis.com/'
+      const u = new URL(lank)
+      const marker = u.searchParams.get('marker')
+      if (marker && sid) u.searchParams.set('marker', `${marker.split('.')[0]}.${sid}`)
+      return u.toString()
+    },
+  },
   // Uthyrare utan avtal, se lib/varbo.js. Länken går rakt till deras sida,
   // utan spårning och därför utan annonsmärkning och utan rel="sponsored".
   // Får en av dem ett avtal läggs den till som egen partner här.

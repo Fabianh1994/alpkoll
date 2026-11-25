@@ -725,7 +725,17 @@ function beskriv(e, ort) {
     case 'transfer':
       return {
         titel: `Transfer till ${e.till.namn}`,
-        rad: tidsrad([`${heltal(e.km)} km`, `${langd(e.min)} med bil`, 'transferbuss, taxi eller hyrbil bokas separat']),
+        rad: tidsrad([`${heltal(e.km)} km`, `${langd(e.min)} med bil`]),
+        extra: (
+          <div style={{ marginTop: 10 }}>
+            <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.55, margin: '0 0 8px' }}>
+              Delad transferbuss eller egen taxi från flygplatsen bokas i förväg. Priset ser du när du söker, och hyrbil går också.
+            </p>
+            <Partnerlank partner="holidaytaxis" sid={`resa-transfer-${ort.slug}`} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
+              Boka transfer hos Holiday Taxis ›
+            </Partnerlank>
+          </div>
+        ),
       }
     case 'gang':
       return { titel: `Gå till ${e.till?.namn || 'nästa hållplats'}`, rad: langd(e.min) }

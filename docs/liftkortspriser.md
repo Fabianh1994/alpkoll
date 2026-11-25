@@ -46,6 +46,7 @@ nedan.
 | solden | EUR | 84,50 | **469,00** | 5,55 | 26/27 | v2/v9/v13 lika. Topp 478,50 gäller 19.12–6.1 och 30.1–26.2 |
 | ischgl | EUR | 83 | **385** | 4,64 | 26/27 | VIP-kortet för Ischgl/Samnaun, gäster i Ischgl och Mathon. Ett pris hela säsongen. Silvretta-kortet 451 är större kort (omgång 8) |
 | tignes | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma område som våra 300 km |
+| val-d-isere | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma kort och område som tignes |
 | alpe-d-huez | EUR | 68 | **336,50** | 4,95 | 26/27 | 19.12.26–9.4.27 |
 | courchevel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | meribel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
@@ -408,6 +409,7 @@ dag, km och kronor per km, och tabellen går att sortera.
 
 - **cortina-d-ampezzo** — Dolomiti Superski 453 €, 1 200 km.
 - **chamonix** — Mont-Blanc Unlimited 104 / 499 €, 170 + 41 km (Courmayeur).
+  [Omkontrollen 2026-11-25: för 26/27 gäller kortet också Evasion Mont-Blanc och ger en dag i Crans-Montana, inte Verbier. km satt till null.]
 - **les-arcs** — Paradiski, Essential Pass 78 / 412 € i högsäsong,
   lesarcs-peiseyvallandry.com. 200 + 225 km.
 - **saas-fee** — Destination-kortet för hela Saastal, 428 CHF (fast pris),
@@ -489,7 +491,9 @@ korten gäller samma område som pisttalen, så ingen står i `LIFTKORT`.
 - **serre-chevalier** — 68 / 345 €, vuxen 12–64, säsong 19.12.26–26.3.27
   (serrechevalier-pass.com/fr/grille-tarifaire). Forskaren kunde bara läsa
   priset hos tredje part; granskaren läste liftbolagets sida med Firecrawl,
-  som renderar JavaScript. Början och slutet av säsongen 56 / 283 €.
+  som renderar JavaScript. Början och slutet av säsongen (5–18.12.26 och
+  27.3–4.4.27) 54,50 / 276 €. [Rättat 2026-11-25: 56 / 283 var barnpriset i
+  högsäsong.]
 
 
 ## 2026-11-18 — Omgång 4: tre italienska orter

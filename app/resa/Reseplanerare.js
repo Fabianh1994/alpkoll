@@ -5,6 +5,7 @@ import { bibliotek, harNyckel } from './google'
 import { planeraBil, planeraTag, planeraFlyg, byggFlygresa, stoppLangsVagen, bilMedPauser, BILVAL } from './planera'
 import ResKarta from './ResKarta'
 import Partnerlank from '../Partnerlank'
+import { Kalender, datumSpann } from './Kontroller'
 import { giltigtDatum, rimligt, medResenarer, kanTas, snabbastSatt } from '../../lib/resa/val'
 import {
   FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar, datumFor,
@@ -75,6 +76,8 @@ export default function Reseplanerare({ ort, kurser }) {
   const visDatum = sokt?.datum || datum
   const visHem = sokt?.hemDatum || hemDatum
   const [hemTid, setHemTid] = useState('10:00')
+  const [kalender, setKalender] = useState(false)
+  const stangKalender = useCallback(() => setKalender(false), [])
 
   const laddaLib = useCallback(async () => {
     if (lib) return lib
@@ -356,17 +359,27 @@ export default function Reseplanerare({ ort, kurser }) {
         )}
 
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
-          <label className="resa-falt">
-            <span style={etikett}>Dag</span>
-            <DatumFalt value={datum} min={new Date().toISOString().slice(0, 10)} onChange={setDatum} />
-          </label>
+          <div className="resa-falt resa-datumfalt">
+            <span style={etikett} id="resa-datum-etikett">Datum</span>
+            <button type="button" className="resa-input resa-datumknapp" aria-labelledby="resa-datum-etikett" aria-expanded={kalender} onClick={() => setKalender((k) => !k)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
+              {datumSpann(datum, hemDatum)}
+            </button>
+          </div>
+          {kalender && (
+            <div className="resa-kalrad">
+              <Kalender
+                dit={datum}
+                hem={hemDatum}
+                min={new Date().toISOString().slice(0, 10)}
+                onKlar={(a, b) => { setDatum(a); setHemDatum(b); setKalender(false) }}
+                onAvbryt={stangKalender}
+              />
+            </div>
+          )}
           <label className="resa-falt">
             <span style={etikett}>Åk tidigast</span>
             <input type="time" lang="sv" value={tid} step={900} onChange={(e) => /^\d{2}:\d{2}$/.test(e.target.value) && setTid(e.target.value)} className="resa-input" />
-          </label>
-          <label className="resa-falt">
-            <span style={etikett}>Hem</span>
-            <DatumFalt value={hemDatum} min={plusDagar(datum, 1)} onChange={setHemDatum} />
           </label>
           {hemDatumVal && hemDatumVal <= datum && (
             <p role="status" style={{ gridColumn: '1 / -1', order: 9, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
@@ -853,33 +866,6 @@ function pilar(e) {
   flikar[n].focus()
 }
 
-/**
- * Datumfält som visar det läsaren skriver, men bara skickar vidare ett
- * riktigt datum. Annars skriver React tillbaka det gamla värdet mitt i
- * årtalet och fältet går inte att skriva i.
- */
-function DatumFalt({ value, min, onChange }) {
-  const [text, setText] = useState(value)
-  const [forra, setForra] = useState(value)
-  if (value !== forra) {
-    setForra(value)
-    setText(value)
-  }
-  return (
-    <input
-      type="date"
-      lang="sv"
-      value={text}
-      min={min}
-      onChange={(e) => {
-        setText(e.target.value)
-        if (giltigtDatum(e.target.value)) onChange(e.target.value)
-      }}
-      onBlur={() => setText(value)}
-      className="resa-input"
-    />
-  )
-}
 
 function Sattkort({ satt, r, vald, fokus, snabbast, onClick }) {
   const raknar = r === undefined
@@ -1279,7 +1265,7 @@ function VidareVal({ v, ort, hemat, onValj, andrar, fel }) {
       <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, letterSpacing: '0.04em', color: TEXT, margin: '0 0 12px', fontWeight: 400 }}>
         {hemat ? `Från ${ort.namn} till flygplatsen` : `Från flygplatsen till ${ort.namn}`}
       </h3>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 8 }}>
         <li>
           <button type="button" onClick={() => onValj('kollektivt')} disabled={!k || v.valt === 'kollektivt'} className={`resa-flygrad${v.valt === 'kollektivt' ? ' vald' : ''}`}>
             <Ikon satt={k?.satt.includes('tag') ? 'tag' : 'buss'} farg={k ? ACCENT : 'rgba(240,236,228,0.35)'} storlek={16} />
@@ -1358,10 +1344,13 @@ function AndraFlyg({ alternativ, valt, onValj, andrar }) {
 }
 
 const CSS = `
+.resa-kalrad { grid-column: 1 / -1; }
+.resa-datumknapp { display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .resa-falt-rad { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 760px) {
   .resa-falt-rad { grid-template-columns: 1.4fr 1fr; align-items: start; }
-  .resa-tid { grid-template-columns: repeat(4, minmax(0, 1fr)) 1.2fr; align-items: end; }
+  .resa-tid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; align-items: end; }
+  .resa-kalrad { order: 8; }
 }
 .resa-falt { display: flex; flex-direction: column; gap: 6px; }
 .resa-input {
@@ -1432,7 +1421,7 @@ select.resa-input { appearance: none; cursor: pointer; }
   background: rgba(18,17,16,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px;
   font-family: var(--font-body); font-size: 12px; color: rgba(240,236,228,0.75);
 }
-.resa-steg { background: #1c1a17; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: clamp(18px, 3vw, 26px); }
+.resa-steg { min-width: 0; background: #1c1a17; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: clamp(18px, 3vw, 26px); }
 .resa-lista-steg { list-style: none; margin: 0; padding: 0; }
 .resa-rad { position: relative; display: grid; grid-template-columns: 46px 18px minmax(0, 1fr); column-gap: 10px; padding: 0 0 18px; }
 .resa-rad.vanta-rad { padding-bottom: 14px; }
@@ -1461,7 +1450,7 @@ select.resa-input { appearance: none; cursor: pointer; }
 .resa-flytta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
 .resa-andrar { font-family: var(--font-body); font-size: 12.5px; color: rgba(240,236,228,0.5); }
 .resa-sparknapp:disabled { opacity: .5; cursor: default; }
-.resa-valj { width: auto; padding: 8px 10px; font-size: 14px; }
+.resa-valj { width: auto; max-width: 100%; min-width: 0; text-overflow: ellipsis; padding: 8px 10px; font-size: 14px; }
 .resa-valrad { display: grid; gap: 8px; }
 .resa-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .resa-chip { background: transparent; color: rgba(240,236,228,0.8); border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; padding: 7px 12px; cursor: pointer; font-family: var(--font-body); font-size: 13px; }

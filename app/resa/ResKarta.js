@@ -97,7 +97,7 @@ export default function ResKarta({ lib, resa, hem, mal, stopp, aktiv, onValjEtap
         map: m, position: { lat: s.lat, lng: s.lng }, zIndex: 6,
         icon: { ...bokstav('#121110', '#D4A574', 9), path: g.maps.SymbolPath.CIRCLE },
         label: { text: String(i + 1), color: '#D4A574', fontSize: '11px', fontWeight: '600' },
-        title: s.ort ? `Paus vid ${s.ort}` : 'Paus',
+        title: s.egen ? s.namn : s.ort ? `Paus vid ${s.ort}` : 'Paus',
       }))
     })
 

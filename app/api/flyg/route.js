@@ -3,14 +3,13 @@ import { flygbolag } from '../../../lib/resa/flygbolag'
 
 // Flyg mellan två flygplatser en viss dag, för reseplaneraren.
 //
-// Datan kommer från Travelpayouts (Aviasales Data API): riktiga flyg med
-// bolag, flightnummer, avgångstid, restid och pris, så som de syntes i
-// Aviasales sökningar de senaste dygnen. Det är inte en livesökning — den
-// kräver 50 000 besökare i månaden — men tiderna är flygbolagens egna och
-// priset uppdateras av sig själv. Livepriset ser läsaren när länken öppnas.
+// Datan kommer i första hand live från Ignav (IGNAV_NYCKEL): dagens flyg
+// med bolag, tider och lägsta pris, som Google Flights visar dem. Saknas
+// Ignav eller svarar den inte används Travelpayouts (Aviasales Data API),
+// flyg och priser så som de syntes i Aviasales sökningar de senaste
+// dygnen. Bokningslänken går alltid till Aviasales.
 //
-// Nyckeln ligger i TRAVELPAYOUTS_NYCKEL och lämnar aldrig servern. Saknas
-// den svarar routen tomt, och planeraren visar flygalternativet utan
+// Nycklarna lämnar aldrig servern. Saknas båda svarar routen tomt, och planeraren visar flygalternativet utan
 // avgångar i stället för att gå sönder.
 //
 // Svaret cachas tre timmar per sträcka och dag, så att samma sökning från
@@ -19,6 +18,29 @@ import { flygbolag } from '../../../lib/resa/flygbolag'
 const API = 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates'
 const IATA = /^[A-Z]{3}$/
 const DATUM = /^\d{4}-\d{2}-\d{2}$/
+
+// Skydd för Ignav-kvoten: en vanlig sökning frågar om upp till ett tiotal
+// flygplatspar, så 150 frågor per adress och tio minuter räcker gott för en
+// läsare som byter datum och ort. Den som frågar mer får Aviasales sparade
+// data i stället. Räknas per serverinstans, vilket räcker mot ett skript
+// som hamrar; det är ingen exakt gräns.
+const GRANS = 150
+const FONSTER = 10 * 60000
+const fragor = new Map()
+let rensat = 0
+function forMycket(request) {
+  const ip = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'okand'
+  const nu = Date.now()
+  const lista = (fragor.get(ip) || []).filter((t) => nu - t < FONSTER)
+  lista.push(nu)
+  fragor.set(ip, lista)
+  // Gamla adresser rensas en gång i minuten, inte vid varje fråga.
+  if (nu - rensat > 60000) {
+    rensat = nu
+    for (const [k, v] of fragor) if (nu - v.at(-1) >= FONSTER) fragor.delete(k)
+  }
+  return lista.length > GRANS
+}
 
 export async function GET(request) {
   const url = new URL(request.url)
@@ -29,11 +51,29 @@ export async function GET(request) {
   if (!IATA.test(fran) || !IATA.test(till) || !DATUM.test(datum) || !FLYGPLATSER[fran] || !FLYGPLATSER[till]) {
     return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
   }
+  // Bara datum från i dag och ett år fram, så att ingen kan bränna
+  // flygkvoten på datum som ingen reser.
+  const riktigt = (d) => { if (!DATUM.test(d)) return false; const t = new Date(`${d}T00:00:00Z`); return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d }
+  const idag = new Date().toISOString().slice(0, 10)
+  const omEttAr = new Date(Date.now() + 366 * 86400000).toISOString().slice(0, 10)
+  if (!riktigt(datum)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+  if (datum < idag || datum > omEttAr) return Response.json({ flyg: [], turRetur: null, utanforFonster: true })
+
+  // Tur och retur: lägsta priset för paret med hemdagen. Bara från Ignav.
+  const retur = url.searchParams.get('retur')
+  if (retur) {
+    const dagar = (Date.parse(retur) - Date.parse(datum)) / 86400000
+    if (!riktigt(retur) || !(dagar >= 1 && dagar <= 30)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+    if (retur > omEttAr) return Response.json({ turRetur: null, utanforFonster: true })
+    const nyckelTR = process.env.IGNAV_NYCKEL
+    if (!nyckelTR || forMycket(request)) return Response.json({ turRetur: null })
+    return Response.json({ turRetur: await ignavTurRetur(fran, till, datum, retur, nyckelTR) })
+  }
 
   // Livedata från Ignav när nyckeln finns; annars, eller om Ignav inte
   // svarar, Aviasales sparade sökningar nedan.
   const ignav = process.env.IGNAV_NYCKEL
-  if (ignav && !url.searchParams.get('diag')) {
+  if (ignav && !url.searchParams.get('diag') && !forMycket(request)) {
     const live = await ignavFlyg(fran, till, datum, ignav)
     if (live?.length) return Response.json({ flyg: live, kalla: 'ignav' })
   }
@@ -134,6 +174,42 @@ function aviasalesSok(fran, till, datum) {
   return `https://www.aviasales.com/search/${fran}${datum.slice(8, 10)}${datum.slice(5, 7)}${till}1`
 }
 
+/** Aviasales sökning tur och retur, en person: ARN2002INN27021. */
+function aviasalesTurRetur(fran, till, datum, retur) {
+  const ddmm = (d) => `${d.slice(8, 10)}${d.slice(5, 7)}`
+  return `https://www.aviasales.com/search/${fran}${ddmm(datum)}${till}${ddmm(retur)}1`
+}
+
+/**
+ * Lägsta priset tur och retur från Ignav, med en incheckad väska per
+ * person och högst ett byte. En tur och retur-biljett är ofta billigare än
+ * två enkla. Cachas tre timmar.
+ */
+async function ignavTurRetur(fran, till, datum, retur, nyckel) {
+  try {
+    const svar = await fetch('https://ignav.com/api/fares/round-trip', {
+      method: 'POST',
+      headers: { 'X-Api-Key': nyckel, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, return_date: retur, max_stops: 1, market: 'SE', checked_bags: 1 }),
+      next: { revalidate: 10800 },
+    })
+    if (!svar.ok) return null
+    const d = await svar.json()
+    const billigast = (d?.itineraries || [])
+      .filter((it) => it.price?.currency === 'SEK' && Number.isFinite(it.price.amount))
+      .sort((a, b) => a.price.amount - b.price.amount)[0]
+    if (!billigast) return null
+    return {
+      pris: billigast.price.amount,
+      bolag: billigast.outbound?.carrier || null,
+      vaska: billigast.baggage_pricing?.status || null,
+      lank: aviasalesTurRetur(fran, till, datum, retur),
+    }
+  } catch {
+    return null
+  }
+}
+
 /**
  * Riktiga avgångar för dagen från Ignav (live, svensk marknad, högst ett
  * byte). Svaret cachas tre timmar per sträcka och dag, så samma sökning från
@@ -145,7 +221,9 @@ async function ignavFlyg(fran, till, datum, nyckel) {
     const svar = await fetch('https://ignav.com/api/fares/one-way', {
       method: 'POST',
       headers: { 'X-Api-Key': nyckel, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, max_stops: 1, market: 'SE' }),
+      // En incheckad väska per person: på en skidresa ska priset ha med
+      // väskan, och Ignav lägger till bolagets avgift för den.
+      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, max_stops: 1, market: 'SE', checked_bags: 1 }),
       next: { revalidate: 10800 },
     })
     if (!svar.ok) return null
@@ -170,6 +248,9 @@ async function ignavFlyg(fran, till, datum, nyckel) {
           bolagKod: forsta.marketing_carrier_code || null,
           nummer: forsta.flight_number ? `${forsta.marketing_carrier_code || ''} ${forsta.flight_number}`.trim() : null,
           pris: it.price?.currency === 'SEK' && Number.isFinite(it.price.amount) ? it.price.amount : null,
+          // Om priset har med väskan: 'reported_included' (ingår), 'estimated'
+          // (avgiften uppskattad och tillagd) eller 'unknown'.
+          vaska: it.baggage_pricing?.status || null,
           // Varje flyg för sig, så att bytet syns: var, och hur lång tid.
           delar: seg.map((s) => ({
             fran: s.departure_airport,

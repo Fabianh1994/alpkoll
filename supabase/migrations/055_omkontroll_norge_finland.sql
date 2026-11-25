@@ -21,7 +21,7 @@ where slug = 'geilo' and lift_pass_day_eur = 693 and lift_pass_week_eur = 2871;
 insert into lift_pass_prices
   (resort_slug, season, currency, day_price, week_price, product,
    day_source, week_source, source_url, captured_on, note)
-select 'geilo', '2026/2027', 'NOK', 690.00, 3173.50, 'Skipass, 6–8 dagar',
+select 'geilo', '2026/2027', 'NOK', 690.00, 3173.50, '6–8 dagar',
        'ortens egen sida', 'ortens egen sida',
        'https://geilo.skiperformance.com/no/shopp#/no/buy?skugroup_id=4163', '2026-11-25',
        'Nätpris för start 27 februari 2027; priset ändras med datum. Sex, sju och åtta dagar kostar samma. De närmaste startdagarna kostade 745 / 3 427 (2026-11-25).'
@@ -56,11 +56,11 @@ where slug = 'hemsedal'
 --     32 min. Till den gamla punkten uppe på fjället gav OSRM 45 min.
 update resorts
 set latitude = 67.8076, longitude = 24.8056, airport_distance_km = 14, transfer_minutes = 15
-where slug = 'levi' and latitude = 67.8017 and longitude = 24.8472;
+where slug = 'levi' and round(latitude::numeric, 4) = 67.8017 and round(longitude::numeric, 4) = 24.8472;
 
 update resorts
 set latitude = 66.1673, longitude = 29.1397, airport_distance_km = 29, transfer_minutes = 32
-where slug = 'ruka' and latitude = 66.1667 and longitude = 29.15;
+where slug = 'ruka' and round(latitude::numeric, 4) = 66.1667 and round(longitude::numeric, 4) = 29.15;
 
 -- ── Kontroll ────────────────────────────────────────────────────────
 do $$
@@ -73,13 +73,16 @@ begin
      or (slug = 'hemsedal' and (season_start_month is distinct from 12
           or notes not like '%Vill du åka tåg hela vägen är Hemsedal fel val.%'
           or transport_info not like '%Snälltåget går till Oslo på lördagar och söndagar%'))
-     or (slug = 'levi' and (latitude is distinct from 67.8076 or transfer_minutes is distinct from 15))
-     or (slug = 'ruka' and (latitude is distinct from 66.1673 or transfer_minutes is distinct from 32));
+     or (slug = 'levi' and (round(latitude::numeric, 4) is distinct from 67.8076 or round(longitude::numeric, 4) is distinct from 24.8056
+          or airport_distance_km is distinct from 14 or transfer_minutes is distinct from 15))
+     or (slug = 'ruka' and (round(latitude::numeric, 4) is distinct from 66.1673 or round(longitude::numeric, 4) is distinct from 29.1397
+          or airport_distance_km is distinct from 29 or transfer_minutes is distinct from 32));
   if fel is not null then
     raise exception 'Ändringen gick inte igenom för: %', fel;
   end if;
 
-  if not exists (select 1 from lift_pass_prices where resort_slug = 'geilo' and season = '2026/2027') then
+  if not exists (select 1 from lift_pass_prices where resort_slug = 'geilo' and season = '2026/2027'
+                 and currency = 'NOK' and day_price = 690.00 and week_price = 3173.50) then
     raise exception 'lift_pass_prices saknar geilo 2026/2027';
   end if;
 end $$;

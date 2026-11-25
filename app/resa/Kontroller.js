@@ -52,14 +52,16 @@ export function Zoom({ karta, style }) {
  * Esc stänger utan att ändra något.
  */
 export function Kalender({ dit, hem, min, onKlar, onAvbryt }) {
-  const [a, setA] = useState(dit)
-  const [b, setB] = useState(hem && hem > dit ? hem : null)
+  // En gammal länk kan ha en avresa som redan passerat; då börjar valet om.
+  const start = min && dit < min ? min : dit
+  const [a, setA] = useState(start)
+  const [b, setB] = useState(hem && hem > start ? hem : null)
   const [valjer, setValjer] = useState('dit')
-  const [visa, setVisa] = useState(() => ({ y: Number(dit.slice(0, 4)), m: manNr(dit) }))
+  const [visa, setVisa] = useState(() => ({ y: Number(start.slice(0, 4)), m: manNr(start) }))
   const ruta = useRef(null)
 
   useEffect(() => {
-    ruta.current?.querySelector('[aria-pressed="true"]')?.focus()
+    ruta.current?.querySelector('[data-dag][aria-pressed="true"]')?.focus()
     const esc = (e) => { if (e.key === 'Escape') onAvbryt() }
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
@@ -97,7 +99,7 @@ export function Kalender({ dit, hem, min, onKlar, onAvbryt }) {
         <span aria-live="polite" style={{ fontSize: 15, fontWeight: 600 }}>{MANADER[visa.m].replace(/^./, (c) => c.toUpperCase())} {visa.y}</span>
         <button type="button" aria-label="Nästa månad" onClick={() => flytta(1)} style={runda}>{pil(false)}</button>
       </div>
-      <div role="grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', rowGap: 2, textAlign: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, minmax(0, 1fr))', rowGap: 2, textAlign: 'center' }}>
         {['M', 'T', 'O', 'T', 'F', 'L', 'S'].map((d, i) => <span key={i} aria-hidden="true" style={{ fontSize: 11, color: DOV, padding: '4px 0', letterSpacing: '0.06em' }}>{d}</span>)}
         {Array.from({ length: tomma }, (_, i) => <span key={`t${i}`} />)}
         {Array.from({ length: antal }, (_, i) => {
@@ -107,8 +109,8 @@ export function Kalender({ dit, hem, min, onKlar, onAvbryt }) {
           const forbi = min && d < min
           return (
             <span key={d} style={{ display: 'grid', placeItems: 'center', background: mellan || (ande && b) ? 'rgba(212,165,116,0.14)' : 'none', borderRadius: b && d === a ? '999px 0 0 999px' : d === b ? '0 999px 999px 0' : 0 }}>
-              <button type="button" disabled={forbi} onClick={() => valj(d)} aria-pressed={ande} aria-label={datumKort(d)}
-                style={{ width: 38, height: 38, borderRadius: 999, border: 0, padding: 0, cursor: forbi ? 'default' : 'pointer', fontSize: 14, fontFamily: 'inherit', fontVariantNumeric: 'tabular-nums', background: ande ? GULD : 'none', color: ande ? '#121110' : forbi ? 'rgba(240,236,228,0.25)' : TEXT, fontWeight: ande ? 600 : 400 }}>
+              <button type="button" data-dag disabled={forbi} onClick={() => valj(d)} aria-pressed={ande} aria-label={`${datumKort(d)} ${visa.y}`}
+                style={{ width: '100%', maxWidth: 38, aspectRatio: '1', minWidth: 0, borderRadius: 999, border: 0, padding: 0, cursor: forbi ? 'default' : 'pointer', fontSize: 14, fontFamily: 'inherit', fontVariantNumeric: 'tabular-nums', background: ande ? GULD : 'none', color: ande ? '#121110' : forbi ? 'rgba(240,236,228,0.25)' : TEXT, fontWeight: ande ? 600 : 400 }}>
                 {i + 1}
               </button>
             </span>

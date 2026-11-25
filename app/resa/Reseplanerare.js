@@ -77,7 +77,8 @@ export default function Reseplanerare({ ort, kurser }) {
   const visHem = sokt?.hemDatum || hemDatum
   const [hemTid, setHemTid] = useState('10:00')
   const [kalender, setKalender] = useState(false)
-  const stangKalender = useCallback(() => setKalender(false), [])
+  const datumKnapp = useRef(null)
+  const stangKalender = useCallback(() => { setKalender(false); datumKnapp.current?.focus() }, [])
 
   const laddaLib = useCallback(async () => {
     if (lib) return lib
@@ -361,9 +362,9 @@ export default function Reseplanerare({ ort, kurser }) {
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
           <div className="resa-falt resa-datumfalt">
             <span style={etikett} id="resa-datum-etikett">Datum</span>
-            <button type="button" className="resa-input resa-datumknapp" aria-labelledby="resa-datum-etikett" aria-expanded={kalender} onClick={() => setKalender((k) => !k)}>
+            <button type="button" className="resa-input resa-datumknapp" ref={datumKnapp} aria-labelledby="resa-datum-etikett resa-datum-text" aria-haspopup="dialog" aria-expanded={kalender} onClick={() => setKalender((k) => !k)}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
-              {datumSpann(datum, hemDatum)}
+              <span id="resa-datum-text">{datumSpann(datum, hemDatum)}</span>
             </button>
           </div>
           {kalender && (
@@ -371,8 +372,8 @@ export default function Reseplanerare({ ort, kurser }) {
               <Kalender
                 dit={datum}
                 hem={hemDatum}
-                min={new Date().toISOString().slice(0, 10)}
-                onKlar={(a, b) => { setDatum(a); setHemDatum(b); setKalender(false) }}
+                min={new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })}
+                onKlar={(a, b) => { setDatum(a); setHemDatum(b); stangKalender() }}
                 onAvbryt={stangKalender}
               />
             </div>

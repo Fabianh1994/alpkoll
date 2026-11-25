@@ -125,7 +125,7 @@ export default function ResKarta({ lib, resa, hem, mal, stopp, aktiv, onValjEtap
   }, [lib, resa, hem, mal, stopp, aktiv, onValjEtapp])
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', minHeight: 360, overflow: 'hidden' }}>
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       <div
         ref={ruta}
         role="img"

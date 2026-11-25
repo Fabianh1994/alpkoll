@@ -252,7 +252,8 @@ export async function planeraTag(lib, hem, mal, startMs, { ankomstMs } = {}) {
   const battre = () => ankomstMs
     ? spar[0].start >= alla[0].start - 180 * 60000
     : spar.at(-1).slut <= alla.at(-1).slut + 180 * 60000
-  const valt = sparOk && (!alla?.length || battre()) ? spar : alla
+  // Finns inget annat duger spårresan även med lång promenad.
+  const valt = (sparOk && (!alla?.length || battre())) || (!alla?.length && spar?.length) ? spar : alla
   if (!valt?.length) return { satt: 'tag', saknas: 'Google hittade ingen resa med tåg eller buss den dagen.' }
   const langBuss = valt.find((e) => e.typ === 'buss' && e.slut - e.start >= 90 * 60000)
   return resa('tag', valt, {
@@ -397,7 +398,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   if (!hemat && franKoll) bagage.namn = `Bagage och vidare till ${kollektivtFran.find((e) => e.typ !== 'gang')?.typ === 'buss' ? 'bussen' : 'tåget'}`
   const franEtapper = franKoll
     ? kollektivtFran
-    : [{ ...bilFran, typ: hemat ? 'bil' : 'transfer', start: efter, slut: efter + bilFran.min * 60000 }]
+    : [{ ...bilFran, typ: hemat ? 'bil' : 'transfer', start: efter, slut: efter + bilFran.min * 60000, extra: hemat ? 0 : taxiExtra }]
 
   // Vägen mellan flygplatsen och orten går att göra på två sätt: tåg och
   // buss enligt Googles tidtabeller, eller taxi och transfer på bilvägen.

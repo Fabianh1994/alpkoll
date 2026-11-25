@@ -52,7 +52,7 @@ export default function Reseplanerare({ ort, kurser }) {
   const [aterstalld, setAterstalld] = useState(0)
   const [bilval, setBilval] = useState(BILVAL)
   const [egnaStopp, setEgnaStopp] = useState({ dit: null, hem: null })
-  const [andrar, setAndrar] = useState(false)
+  const [andrar, setAndrar] = useState(null) // färdsättet som räknas om
   const [andraFel, setAndraFel] = useState(null)
   const [sokt, setSokt] = useState(null)
   const anvandarenValde = useRef(false)
@@ -66,7 +66,10 @@ export default function Reseplanerare({ ort, kurser }) {
     : { namn: ort.namn, lat: ort.lat, lng: ort.lng }), [stuga, ort])
 
   // Hemresan förvals en vecka efter avresan, tills läsaren väljer själv.
-  const hemDatum = hemDatumVal || plusDagar(datum, 7)
+  const hemDatum = hemDatumVal && hemDatumVal > datum ? hemDatumVal : plusDagar(datum, 7)
+  // Det sökta datumet gäller resultatet tills läsaren söker igen.
+  const visDatum = sokt?.datum || datum
+  const visHem = sokt?.hemDatum || hemDatum
   const hemTid = '10:00'
 
   const laddaLib = useCallback(async () => {
@@ -96,7 +99,7 @@ export default function Reseplanerare({ ort, kurser }) {
     if (e) sparade.current = {}
     setRiktning(rikt)
     setAndraFel(null)
-    if (e) setSokt({ datum, hemDatum })
+    if (e) setSokt({ datum, hemDatum, tid })
     anvandarenValde.current = false
     setValt(null)
     setAktiv(null)
@@ -106,8 +109,9 @@ export default function Reseplanerare({ ort, kurser }) {
 
     const hemat = rikt === 'hem'
     const [fran, till] = hemat ? [mal, hem] : [hem, mal]
-    const dag = hemat ? hemDatum : datum
-    const startMs = svenskTid(dag, hemat ? hemTid : tid)
+    // Hemresan från fliken använder datumen från den senaste sökningen.
+    const dag = hemat ? (e ? hemDatum : visHem) : (e ? datum : visDatum)
+    const startMs = svenskTid(dag, hemat ? hemTid : (e ? tid : sokt?.tid || tid))
     const samlat = {}
     const klar = (satt) => (r) => {
       if (nr !== sokning.current) return
@@ -130,7 +134,7 @@ export default function Reseplanerare({ ort, kurser }) {
       setSoker(false)
       if (!hemat) setTimeout(() => resultat.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
     }
-  }, [hem, mal, ort, datum, tid, hemDatum, laddaLib, bilval, egnaStopp])
+  }, [hem, mal, ort, datum, tid, hemDatum, laddaLib, bilval, egnaStopp, visDatum, visHem, sokt])
 
   // En delad länk fyller i formuläret. Google laddas först när läsaren
   // trycker på Visa resan, som utan länk.
@@ -150,9 +154,9 @@ export default function Reseplanerare({ ort, kurser }) {
       setHem(f)
       const st = plats(q.get('stuga'))
       if (st) { setStuga(st); setVisaStuga(true) }
-      if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('dag') || '')) setDatum(q.get('dag'))
+      if (giltigtDatum(q.get('dag'))) setDatum(q.get('dag'))
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
-      if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('hem') || '')) setHemDatum(q.get('hem'))
+      if (giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
       setAterstalld((n) => n + 1)
     }, 0)
     return () => clearTimeout(t)
@@ -167,7 +171,10 @@ export default function Reseplanerare({ ort, kurser }) {
   const platsNyckel = (p) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)}`
   const nyckel = (bilresa?.pauser || []).filter((p) => !p.egen).map(platsNyckel).join('|')
   const stopp = useMemo(() => {
-    if (!bilresa?.pauser?.length || stoppSvar.for !== nyckel) return []
+    if (!bilresa?.pauser?.length) return []
+    // Bara egna stopp: inga matställen att hämta.
+    if (!nyckel) return bilresa.pauser
+    if (stoppSvar.for !== nyckel) return []
     const svar = new Map(stoppSvar.lista.map((s) => [platsNyckel(s), s]))
     return bilresa.pauser.map((p) => {
       const s = !p.egen && svar.get(platsNyckel(p))
@@ -178,7 +185,7 @@ export default function Reseplanerare({ ort, kurser }) {
     if (!lib || !nyckel) return
     let aktuell = true
     const punkter = nyckel.split('|').map((x) => { const [lat, lng] = x.split(',').map(Number); return { lat, lng } })
-    stoppLangsVagen(lib, punkter).then((s) => aktuell && setStoppSvar({ for: nyckel, lista: s })).catch(() => {})
+    stoppLangsVagen(lib, punkter).then((s) => aktuell && setStoppSvar({ for: nyckel, lista: s })).catch(() => aktuell && setStoppSvar({ for: nyckel, lista: [] }))
     return () => { aktuell = false }
   }, [lib, nyckel])
 
@@ -216,23 +223,23 @@ export default function Reseplanerare({ ort, kurser }) {
     const inst = { ...(f ? {} : r.vidareInst || {}), ...andra }
     const nr = sokning.current
     const min = ++andring.current
-    setAndrar(true)
+    setAndrar('flyg')
     setAndraFel(null)
     const ny = await byggFlygresa(lib, franPunkt, tillPunkt, fl, r.bilDit[fl.fran], r.bilFran[fl.till], { hemat, vidare: val, ...inst }).catch(() => null)
     if (min !== andring.current) return
-    setAndrar(false)
+    setAndrar(null)
     // En annan avgång ska finnas, samma dag, med tåg eller buss, och åt
     // rätt håll: tidigare hemåt, senare dit.
     if (andra.kollTid) {
       const forra = r.vidare?.kollektivt
       const k = ny?.vidare?.kollektivt
-      const ratt = forra && k && (hemat ? k.start < forra.start : k.start > forra.start)
+      const ratt = forra && k && (hemat ? k.start < forra.start || k.slut < forra.slut : k.start > forra.start)
       if (!k || ny.vidare.valt !== 'kollektivt' || (forra && (datumFor(k.start) !== datumFor(forra.start) || !ratt))) {
-        if (nr === sokning.current) setAndraFel(hemat ? 'Det finns ingen tidigare avgång samma dag.' : 'Det finns ingen senare avgång samma dag.')
+        if (nr === sokning.current) setAndraFel({ satt: 'flyg', text: hemat ? 'Google hittade ingen tidigare avgång samma dag.' : 'Google hittade ingen senare avgång samma dag.' })
         return
       }
     }
-    if (!ny) { if (nr === sokning.current) setAndraFel('Något gick fel. Prova igen.'); return }
+    if (!ny) { if (nr === sokning.current) setAndraFel({ satt: 'flyg', text: 'Något gick fel. Prova igen.' }); return }
     if (ny) uppdatera('flyg', { ...r, ...ny, tidigare: f ? false : r.tidigare, vidareValt: val, vidareInst: inst }, nr)
   }, [lib, resor, franPunkt, tillPunkt, hemat, uppdatera])
 
@@ -253,16 +260,18 @@ export default function Reseplanerare({ ort, kurser }) {
     if (!lib || !b || b.saknas) return
     const nr = sokning.current
     const min = ++andring.current
-    setAndrar(true)
+    setAndrar('bil')
     setAndraFel(null)
     const ny = await planeraBil(lib, franPunkt, tillPunkt, b.start, { ...bilval, egetStopp: stoppet }).catch(() => null)
     if (min !== andring.current) return
-    setAndrar(false)
+    setAndrar(null)
     if (!ny || ny.saknas) {
-      if (nr === sokning.current) setAndraFel(stoppet ? 'Google hittade ingen bilväg via den platsen. Prova en annan.' : 'Något gick fel. Prova igen.')
+      if (nr === sokning.current) setAndraFel({ satt: 'bil', text: stoppet ? 'Google hittade ingen bilväg via den platsen. Prova en annan.' : 'Något gick fel. Prova igen.' })
       return
     }
-    if (uppdatera('bil', ny, nr)) setEgnaStopp((x) => ({ ...x, [riktning]: stoppet }))
+    if (!uppdatera('bil', ny, nr)) return false
+    setEgnaStopp((x) => ({ ...x, [riktning]: stoppet }))
+    return true
   }, [lib, resor, franPunkt, tillPunkt, bilval, riktning, uppdatera])
 
   // Tidigare eller senare tågresa samma dag.
@@ -271,17 +280,17 @@ export default function Reseplanerare({ ort, kurser }) {
     if (!lib || !r || r.saknas) return
     const nr = sokning.current
     const min = ++andring.current
-    setAndrar(true)
+    setAndrar('tag')
     setAndraFel(null)
     const ny = await (hur === 'senare'
       ? planeraTag(lib, franPunkt, tillPunkt, r.start + 15 * 60000)
       : planeraTag(lib, franPunkt, tillPunkt, r.start, { ankomstMs: r.slut - 60000 })).catch(() => null)
     if (min !== andring.current) return
-    setAndrar(false)
+    setAndrar(null)
     // Tidigare ska gå tidigare och senare gå senare, samma dag.
-    const ok = ny && !ny.saknas && (hur === 'senare' ? ny.start > r.start : ny.start < r.start) && datumFor(ny.start) === datumFor(r.start)
+    const ok = ny && !ny.saknas && (hur === 'senare' ? ny.start > r.start : ny.start < r.start || ny.slut < r.slut) && datumFor(ny.start) === datumFor(r.start)
     if (!ok) {
-      if (nr === sokning.current) setAndraFel(hur === 'senare' ? 'Det finns ingen senare resa samma dag.' : 'Det finns ingen tidigare resa samma dag.')
+      if (nr === sokning.current) setAndraFel({ satt: 'tag', text: hur === 'senare' ? 'Google hittade ingen senare resa samma dag.' : 'Google hittade ingen tidigare resa samma dag.' })
       return
     }
     uppdatera('tag', ny, nr)
@@ -339,15 +348,15 @@ export default function Reseplanerare({ ort, kurser }) {
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
           <label className="resa-falt">
             <span style={etikett}>Dag</span>
-            <input type="date" lang="sv" value={datum} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDatum(e.target.value)} className="resa-input" />
+            <input type="date" lang="sv" value={datum} min={new Date().toISOString().slice(0, 10)} onChange={(e) => giltigtDatum(e.target.value) && setDatum(e.target.value)} className="resa-input" />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Åk tidigast</span>
-            <input type="time" lang="sv" value={tid} step={900} onChange={(e) => setTid(e.target.value)} className="resa-input" />
+            <input type="time" lang="sv" value={tid} step={900} onChange={(e) => /^\d{2}:\d{2}$/.test(e.target.value) && setTid(e.target.value)} className="resa-input" />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Hem</span>
-            <input type="date" lang="sv" value={hemDatum} min={datum} onChange={(e) => setHemDatum(e.target.value)} className="resa-input" />
+            <input type="date" lang="sv" value={hemDatum} min={datum} onChange={(e) => giltigtDatum(e.target.value) && setHemDatum(e.target.value)} className="resa-input" />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Resenärer</span>
@@ -370,14 +379,14 @@ export default function Reseplanerare({ ort, kurser }) {
       {resor && (
         <div ref={resultat} style={{ scrollMarginTop: 80 }}>
           <div className="resa-riktning" role="tablist" aria-label="Dit eller hem">
-            {[['dit', `Dit · ${dag(svenskTid(datum, tid))}`], ['hem', `Hem · ${dag(svenskTid(hemDatum, hemTid))}`]].map(([r, text]) => (
+            {[['dit', `Dit · ${dag(svenskTid(visDatum, sokt?.tid || tid))}`], ['hem', `Hem · ${dag(svenskTid(visHem, hemTid))}`]].map(([r, text]) => (
               <button
                 key={r}
                 type="button"
                 role="tab"
                 aria-selected={riktning === r}
                 className={`resa-riktknapp${riktning === r ? ' vald' : ''}`}
-                disabled={(soker || andrar) && riktning !== r}
+                disabled={(soker || !!andrar) && riktning !== r}
                 onClick={() => riktning !== r && sok(null, r)}
               >
                 {versal(text)}
@@ -427,8 +436,8 @@ export default function Reseplanerare({ ort, kurser }) {
                   setAktiv={setAktiv}
                   stopp={valt === 'bil' ? stopp : []}
                   onValjFlyg={valjFlyg}
-                  andrar={andrar || soker}
-                  andraFel={andraFel}
+                  andrar={andrar === valt || soker}
+                  andraFel={andraFel?.satt === valt ? andraFel.text : null}
                   bilval={bilval}
                   onBilval={andraBilval}
                   egetStopp={egnaStopp[riktning]}
@@ -442,7 +451,7 @@ export default function Reseplanerare({ ort, kurser }) {
                 <>
                   <Kostnad resa={vald} antal={antal} kurser={kurser} hemat={hemat} />
                   {vald.satt === 'flyg' && !hemat && vald.flyget && !vald.flyget.narliggande && (
-                    <TurRetur flyget={vald.flyget} datum={sokt?.datum || datum} retur={sokt?.hemDatum || hemDatum} ort={ort} />
+                    <TurRetur flyget={vald.flyget} datum={visDatum} retur={visHem} ort={ort} />
                   )}
                   <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={datum} tid={tid} hemDatum={hemDatum} antal={antal} />
                 </>
@@ -482,7 +491,7 @@ function TurRetur({ flyget, datum, retur, ort }) {
     <section style={{ marginTop: 18, padding: '14px 16px', background: 'rgba(212,165,116,0.08)', border: '1px solid rgba(212,165,116,0.3)', borderRadius: 10 }}>
       <div style={{ ...etikett, marginBottom: 6 }}>Tur och retur {fran}–{till}, {kortDatum(datum)}–{kortDatum(retur)}</div>
       <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, color: TEXT, lineHeight: 1.5 }}>
-        Från <strong>{heltal(Math.round(tr.pris))} kr</strong> per person, båda vägarna{tr.vaska === 'reported_included' ? ', med en incheckad väska' : tr.vaska === 'estimated' ? ', med uppskattad väskavgift' : ''}.
+        Från <strong>{heltal(Math.round(tr.pris))} kr</strong> per vuxen, båda vägarna{tr.vaska === 'reported_included' ? ', med en incheckad väska' : tr.vaska === 'estimated' ? ', med uppskattad väskavgift' : ''}.
       </div>
       <div style={{ marginTop: 10 }}>
         <Partnerlank partner="aviasales" sid={`resa-turretur-${ort.slug}`} sok={{ url: tr.lank }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
@@ -495,6 +504,9 @@ function TurRetur({ flyget, datum, retur, ort }) {
     </section>
   )
 }
+
+/** Ett riktigt datum som YYYY-MM-DD, inte bara rätt form. */
+const giltigtDatum = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '') && !Number.isNaN(Date.parse(`${d}T12:00:00Z`)) && new Date(`${d}T12:00:00Z`).toISOString().slice(0, 10) === d
 
 const kortDatum = (d) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`)).replace('.', '')
 
@@ -648,7 +660,7 @@ function kalenderfil(resa, mal, url) {
 
 // ── Adressfältet ────────────────────────────────────────────────────────
 
-function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara }) {
+function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara, regioner = ['se', 'no', 'dk', 'fi'] }) {
   const [text, setText] = useState(varde?.adress || varde?.namn || '')
   const [forslag, setForslag] = useState([])
   const [oppen, setOppen] = useState(false)
@@ -672,7 +684,7 @@ function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, posit
       try {
         const fraga = { input, sessionToken: session.current, language: 'sv', region: 'se' }
         if (nara) fraga.locationBias = { center: nara, radius: 30000 }
-        else fraga.includedRegionCodes = ['se', 'no', 'dk', 'fi']
+        else fraga.includedRegionCodes = regioner
         const { suggestions } = await AutocompleteSuggestion.fetchAutocompleteSuggestions(fraga)
         setForslag((suggestions || []).filter((x) => x.placePrediction).slice(0, 5))
         setOppen(true)
@@ -968,11 +980,11 @@ function beskriv(e, ort) {
     case 'transfer':
       return {
         titel: `Transfer till ${e.till.namn}${e.till.kod ? ' flygplats' : ''}`,
-        rad: tidsrad([`${heltal(e.km)} km`, `${langd(e.min)} med bil`]),
+        rad: tidsrad([`${heltal(e.km)} km`, e.extra ? `ca ${langd(e.min)}` : `${langd(e.min)} med bil`]),
         extra: (
           <div style={{ marginTop: 10 }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.55, margin: '0 0 8px' }}>
-              Egen taxi från flygplatsen bokas i förväg till fast pris, som du ser när du söker. Hyrbil går också.
+              {e.extra ? 'Delad transfer bokas i förväg och stannar ofta vid flera hotell, så tiden är en uppskattning. Egen taxi går fortare.' : 'Egen taxi från flygplatsen bokas i förväg till fast pris, som du ser när du söker. Hyrbil går också.'}
             </p>
             <Partnerlank partner="kiwitaxi" sid={`resa-transfer-${ort.slug}`} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
               Boka transfer hos Kiwitaxi ›
@@ -1100,6 +1112,9 @@ function Pausrad({ r, ort }) {
   )
 }
 
+/** Länder ett eget stopp kan ligga i på vägen till fjällen och Alperna (Google tar högst 15). */
+const STOPPLANDER = ['se', 'no', 'dk', 'fi', 'de', 'at', 'ch', 'it', 'fr', 'nl', 'be', 'pl', 'cz', 'ad', 'es']
+
 /** Läsarens egna val för bilresan: pauserna, dagarna och ett eget stopp. */
 function BilVal({ val, onVal, egetStopp, onEgetStopp, andrar, fel, lib, laddaLib }) {
   const [oppen, setOppen] = useState(false)
@@ -1139,12 +1154,12 @@ function BilVal({ val, onVal, egetStopp, onEgetStopp, andrar, fel, lib, laddaLib
               </div>
             ) : (
               <div style={{ display: 'grid', gap: 8 }}>
-                <AdressFalt id="resa-eget-stopp" label="Sök en plats" placeholder="T.ex. släkten i Jönköping eller en restaurang" varde={plats} onVal={setPlats} lib={lib} laddaLib={laddaLib} />
+                <AdressFalt id="resa-eget-stopp" label="Sök en plats" regioner={STOPPLANDER} placeholder="T.ex. släkten i Jönköping eller en restaurang" varde={plats} onVal={setPlats} lib={lib} laddaLib={laddaLib} />
                 <div className="resa-flytta">
                   <select className="resa-input resa-valj" value={stoppMin} onChange={(e) => setStoppMin(Number(e.target.value))} aria-label="Hur länge du stannar">
                     {[[30, '30 min'], [60, '1 tim'], [120, '2 tim'], [180, '3 tim'], [0, 'Övernatta']].map(([v, t]) => <option key={v} value={v}>{t}</option>)}
                   </select>
-                  <button type="button" className="resa-knapp" style={{ padding: '10px 16px', fontSize: 14 }} disabled={!plats || andrar} onClick={() => { onEgetStopp({ namn: plats.namn, lat: plats.lat, lng: plats.lng, min: stoppMin }); setPlats(null) }}>
+                  <button type="button" className="resa-knapp" style={{ padding: '10px 16px', fontSize: 14 }} disabled={!plats || andrar} onClick={async () => { if (await onEgetStopp({ namn: plats.namn, lat: plats.lat, lng: plats.lng, min: stoppMin })) setPlats(null) }}>
                     {andrar ? 'Räknar om …' : 'Lägg till stoppet'}
                   </button>
                 </div>
@@ -1204,10 +1219,10 @@ function VidareVal({ v, ort, hemat, onValj, andrar, fel }) {
             <label className="resa-flytta" style={{ marginTop: 6, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
               Restid
               <select className="resa-input resa-valj" value={v.taxiExtra || 0} disabled={andrar} onChange={(e) => onValj('taxi', { taxiExtra: Number(e.target.value) })}>
-                <option value={0}>{langd(v.taxi.min - (v.taxiExtra || 0))}, egen taxi</option>
-                <option value={30}>{langd(v.taxi.min - (v.taxiExtra || 0) + 30)}, delad transfer</option>
-                <option value={60}>{langd(v.taxi.min - (v.taxiExtra || 0) + 60)}, delad transfer med många stopp</option>
-                <option value={90}>{langd(v.taxi.min - (v.taxiExtra || 0) + 90)}, delad transfer i rusningstid</option>
+                <option value={0}>{langd(v.taxi.min - (v.taxiExtra || 0))}, egen taxi (Googles körtid)</option>
+                <option value={30}>Räkna med ca {langd(v.taxi.min - (v.taxiExtra || 0) + 30)}, delad transfer</option>
+                <option value={60}>Räkna med ca {langd(v.taxi.min - (v.taxiExtra || 0) + 60)}, delad transfer med många stopp</option>
+                <option value={90}>Räkna med ca {langd(v.taxi.min - (v.taxiExtra || 0) + 90)}, med god marginal</option>
               </select>
             </label>
           )}

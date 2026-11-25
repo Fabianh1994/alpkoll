@@ -132,6 +132,9 @@ export default function Reseplanerare({ ort, kurser }) {
         const p = { lat: Number(lat), lng: Number(lng), namn: namn.join(',') || 'Delad adress' }
         return Number.isFinite(p.lat) && Number.isFinite(p.lng) && v ? { ...p, adress: p.namn } : null
       }
+      // Antalet resenärer gäller även utan adress, t.ex. ?antal=4 från en familjesida.
+      const n = Number(q.get('antal'))
+      if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       const f = plats(q.get('fran'))
       if (!f) return
       setHem(f)
@@ -140,8 +143,6 @@ export default function Reseplanerare({ ort, kurser }) {
       if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('dag') || '')) setDatum(q.get('dag'))
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
       if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('hem') || '')) setHemDatum(q.get('hem'))
-      const n = Number(q.get('antal'))
-      if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       setAterstalld((n) => n + 1)
     }, 0)
     return () => clearTimeout(t)

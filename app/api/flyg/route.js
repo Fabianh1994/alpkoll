@@ -29,11 +29,17 @@ export async function GET(request) {
   if (!IATA.test(fran) || !IATA.test(till) || !DATUM.test(datum) || !FLYGPLATSER[fran] || !FLYGPLATSER[till]) {
     return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
   }
+  // Bara datum från i dag och ett år fram, så att ingen kan bränna
+  // flygkvoten på datum som ingen reser.
+  const idag = new Date().toISOString().slice(0, 10)
+  const omEttAr = new Date(Date.now() + 366 * 86400000).toISOString().slice(0, 10)
+  if (datum < idag || datum > omEttAr) return Response.json({ fel: 'datum utanför ett år framåt' }, { status: 400 })
 
   // Tur och retur: lägsta priset för paret med hemdagen. Bara från Ignav.
   const retur = url.searchParams.get('retur')
   if (retur) {
-    if (!DATUM.test(retur) || retur <= datum) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+    const dagar = (Date.parse(retur) - Date.parse(datum)) / 86400000
+    if (!DATUM.test(retur) || !(dagar >= 1 && dagar <= 30)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
     const nyckelTR = process.env.IGNAV_NYCKEL
     if (!nyckelTR) return Response.json({ turRetur: null })
     return Response.json({ turRetur: await ignavTurRetur(fran, till, datum, retur, nyckelTR) })

@@ -227,19 +227,21 @@ const gangMin = (et) => et.filter((e) => e.typ === 'gang').reduce((s, e) => s + 
  * Resan med tåg och buss. Tåget går först: få sätter sig på en långfärdsbuss
  * en bit av en tågresa. Google frågas två gånger, med bara spår och med
  * allt. Spårresan väljs om den finns, inte kräver lång promenad och inte
- * är mer än tre timmar längre. Annars blir det resan med buss, och en lång
+ * tar mer än tre timmar längre. Annars blir det resan med buss, och en lång
  * bussträcka sägs ut.
  *
  * Med `ankomstMs` söks en resa som är framme senast då (tidigare avgång).
  */
 export async function planeraTag(lib, hem, mal, startMs, { ankomstMs } = {}) {
-  const tid = ankomstMs ? { ankomstMs } : { startMs }
+  const nar = ankomstMs ? { ankomstMs } : { startMs }
   const [spar, alla] = await Promise.all([
-    kollektivEtapper(lib, hem, mal, { ...tid, lagen: SPAR }).catch(() => null),
-    kollektivEtapper(lib, hem, mal, tid).catch(() => null),
+    kollektivEtapper(lib, hem, mal, { ...nar, lagen: SPAR }).catch(() => null),
+    kollektivEtapper(lib, hem, mal, nar).catch(() => null),
   ])
   const sparOk = spar?.length && gangMin(spar) <= 40
-  const valt = sparOk && (!alla?.length || spar.at(-1).slut <= alla.at(-1).slut + 180 * 60000) ? spar : alla
+  // Restiden jämförs, så att regeln gäller både framåt och bakåt i tiden.
+  const tid = (et) => et.at(-1).slut - et[0].start
+  const valt = sparOk && (!alla?.length || tid(spar) <= tid(alla) + 180 * 60000) ? spar : alla
   if (!valt?.length) return { satt: 'tag', saknas: 'Google hittade ingen resa med tåg eller buss den dagen.' }
   const langBuss = valt.find((e) => e.typ === 'buss' && e.slut - e.start >= 90 * 60000)
   return resa('tag', valt, {
@@ -350,7 +352,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
     linje: f.nummer,
     byten: f.byten,
     pris: f.pris,
-    medVaska: ['reported_included', 'estimated'].includes(f.vaska),
+    vaska: f.vaska || null,
     lank: f.lank,
     delar: f.delar || null,
     // Flygbågen går via bytesflygplatsen när den är känd.

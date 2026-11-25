@@ -202,8 +202,8 @@ export function Veckan({ v, tagetGar }) {
           stycke. Flyttar du resan en vecka betalar du lika mycket.
         </p>
         <p style={{ ...brod, fontSize: 15, margin: '14px 0 0' }}>
-          Sölden är undantaget. Där kostar veckan 478,50 € till och med 26 februari och
-          469 € efter det.{' '}{{
+          Sölden och Obergurgl är undantagen. Där kostar veckan på Ötztal Superskipass
+          478,50 € till och med 26 februari och 469 € efter det.{' '}{{
             fore: `Vecka ${v.nr} ligger helt i det dyrare bandet.`,
             over: `Vecka ${v.nr} spänner över gränsen: sänkningen kommer på veckans sista dag.`,
             efter: `Vecka ${v.nr} ligger helt efter sänkningen.`,

@@ -60,7 +60,7 @@ nedan.
 | voss | NOK | 675 | **2 750** | 4,07 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Nätpris ur bokningskalendern, 2 750 för varje startdag 8.2–7.3.2027 och dagskortet 675 varje dag (049). 2026-08-25 visade kalendern 2 990 och 675 / 720 |
 | riksgransen | SEK | 546 | **2 673** | 4,90 | 26/27 | 5 dagar 2 304 + extra dag 369; ingen egen sexdagarsrad finns. Ett pris hela säsongen (049). **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
 | zermatt | CHF | 122 | **574** | 4,70 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Dynamiskt, start 27.2.2027 (036, bekräftat i omgång 9). Zermatt ensamt: 104/510 |
-| st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
+| st-anton | EUR | 85 | **468** | 5,51 | 26/27 | Ski Arlberg, peak season 19.12.26–2.4.27, som v9 ligger i. Ski Arlberg kallar priset preliminärt. 25/26: 450 (030) |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
 | les-arcs | EUR | 71 | **368** | 5,18 | 26/27 | Classic Pass = Les Arcs/Peisey-Vallandry, 200 km, våra tal. 19.12.26–16.4.27 |
 | saas-fee | CHF | 84 | **413** | 4,92 | 26/27 | Saas-Fee-kortet (Saas-Fee + Saas-Almagell). Destination-kortet gäller hela Saastal och är inte detta |

@@ -177,8 +177,11 @@ export function bilMedPauser(e, val = BILVAL) {
   // dagens del, och efter klockan 20 med mer än tre timmar kvar föreslås
   // natten ändå. Med mindre kvar kör de flesta hela vägen fram. Väljer
   // läsaren att köra hela vägen blir det ingen natt alls.
-  const dagar = v.maxDag ? Math.max(1, Math.ceil(e.min / v.maxDag)) : 1
-  const perDag = e.min / dagar
+  // "Hela vägen" betyder ingen natt, men över 16 timmar bakom ratten
+  // läggs en natt in ändå.
+  const maxDag = v.maxDag || (e.min > 960 ? 960 : 0)
+  const dagar = maxDag ? Math.max(1, Math.ceil(e.min / maxDag)) : 1
+  let perDag = e.min / dagar
   let nastaNatt = perDag
 
   // Läsarens eget stopp ersätter de automatiska pauserna nära det.
@@ -197,6 +200,9 @@ export function bilMedPauser(e, val = BILVAL) {
     const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
     const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))
     tillagt += langdMin
+    // Resten av vägen delas om i lika långa dagar från natten.
+    const kvar = e.min - p.efterMin
+    if (maxDag) perDag = kvar / Math.max(1, Math.ceil(kvar / maxDag))
     nastaNatt = p.efterMin + perDag
     return { ...p, startMs, langdMin, natt: true }
   }
@@ -209,8 +215,8 @@ export function bilMedPauser(e, val = BILVAL) {
       tillagt += p.onskadMin
       return { ...p, startMs, langdMin: p.onskadMin }
     }
-    const dags = dagar > 1 && p.efterMin >= nastaNatt - 75
     const sent = v.maxDag > 0 && (timme >= 20 || timme < 5)
+    const dags = maxDag > 0 && p.efterMin >= nastaNatt - 75
     if ((dags || sent) && kvar > 180) return natt(p, startMs, timme)
     const langdMin = timme >= 11 && timme < 14 ? lunch : kort
     tillagt += langdMin
@@ -238,10 +244,15 @@ export async function planeraTag(lib, hem, mal, startMs, { ankomstMs } = {}) {
     kollektivEtapper(lib, hem, mal, { ...nar, lagen: SPAR }).catch(() => null),
     kollektivEtapper(lib, hem, mal, nar).catch(() => null),
   ])
-  const sparOk = spar?.length && gangMin(spar) <= 40
-  // Restiden jämförs, så att regeln gäller både framåt och bakåt i tiden.
-  const tid = (et) => et.at(-1).slut - et[0].start
-  const valt = sparOk && (!alla?.length || tid(spar) <= tid(alla) + 180 * 60000) ? spar : alla
+  // Resan ska gå den valda dagen: framåt räknas avgången, bakåt ankomsten.
+  const dag = datumFor(ankomstMs || startMs)
+  const ratDag = (et) => !!et?.length && datumFor(ankomstMs ? et.at(-1).slut : et[0].start) === dag
+  const sparOk = spar?.length && gangMin(spar) <= 40 && (ratDag(spar) || !ratDag(alla))
+  // Framåt jämförs när resan är framme, bakåt när den går.
+  const battre = () => ankomstMs
+    ? spar[0].start >= alla[0].start - 180 * 60000
+    : spar.at(-1).slut <= alla.at(-1).slut + 180 * 60000
+  const valt = sparOk && (!alla?.length || battre()) ? spar : alla
   if (!valt?.length) return { satt: 'tag', saknas: 'Google hittade ingen resa med tåg eller buss den dagen.' }
   const langBuss = valt.find((e) => e.typ === 'buss' && e.slut - e.start >= 90 * 60000)
   return resa('tag', valt, {
@@ -270,6 +281,7 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum, { hemat = 
     fetch(`/api/flyg?fran=${f}&till=${t}&datum=${datum}`).then((r) => r.json()).catch(() => ({ flyg: [] }))))
 
   if (svar.every((s) => s.saknarNyckel)) return { satt: 'flyg', saknas: 'Flygdatan är inte inkopplad än.' }
+  if (svar.every((s) => s.utanforFonster)) return { satt: 'flyg', saknas: 'Flyg går att söka från i dag och ett år framåt.' }
   const flyg = svar.flatMap((s) => s.flyg || []).filter((f) => f.byten <= 1 && FLYGPLATSER[f.fran] && FLYGPLATSER[f.till])
   if (!flyg.length) return { satt: 'flyg', saknas: hemat ? 'Inga flyg hem hittades den dagen.' : 'Inga flyg hittades den dagen från flygplatserna närmast dig.' }
 
@@ -460,7 +472,7 @@ export async function stoppLangsVagen(lib, pauser) {
       return { ...p, platser: [] }
     }
   }))
-  return svar.filter((s) => s.egen || s.platser.length)
+  return svar
 }
 
 /** "Storgatan 1, 792 30 Mora, Sverige" -> "Mora" */

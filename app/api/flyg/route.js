@@ -31,15 +31,18 @@ export async function GET(request) {
   }
   // Bara datum från i dag och ett år fram, så att ingen kan bränna
   // flygkvoten på datum som ingen reser.
+  const riktigt = (d) => DATUM.test(d) && new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d
   const idag = new Date().toISOString().slice(0, 10)
   const omEttAr = new Date(Date.now() + 366 * 86400000).toISOString().slice(0, 10)
-  if (datum < idag || datum > omEttAr) return Response.json({ fel: 'datum utanför ett år framåt' }, { status: 400 })
+  if (!riktigt(datum)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+  if (datum < idag || datum > omEttAr) return Response.json({ flyg: [], turRetur: null, utanforFonster: true })
 
   // Tur och retur: lägsta priset för paret med hemdagen. Bara från Ignav.
   const retur = url.searchParams.get('retur')
   if (retur) {
     const dagar = (Date.parse(retur) - Date.parse(datum)) / 86400000
-    if (!DATUM.test(retur) || !(dagar >= 1 && dagar <= 30)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+    if (!riktigt(retur) || !(dagar >= 1 && dagar <= 30)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+    if (retur > omEttAr) return Response.json({ turRetur: null, utanforFonster: true })
     const nyckelTR = process.env.IGNAV_NYCKEL
     if (!nyckelTR) return Response.json({ turRetur: null })
     return Response.json({ turRetur: await ignavTurRetur(fran, till, datum, retur, nyckelTR) })
@@ -177,7 +180,7 @@ async function ignavTurRetur(fran, till, datum, retur, nyckel) {
     return {
       pris: billigast.price.amount,
       bolag: billigast.outbound?.carrier || null,
-      medVaska: ['reported_included', 'estimated'].includes(billigast.baggage_pricing?.status),
+      vaska: billigast.baggage_pricing?.status || null,
       lank: aviasalesTurRetur(fran, till, datum, retur),
     }
   } catch {

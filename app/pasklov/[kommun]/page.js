@@ -57,12 +57,14 @@ export async function generateMetadata({ params }) {
   const ledigt = ledigtIRad(rad)
   const skidvecka = skidveckaInom(ledigt)
   const title = ledigt
-    ? `Påsklov ${AR} ${rad.kommun} v. ${rad.vecka}: ${ledigt.dagar} dagar ledigt i rad | Alpkoll`
+    ? `Påsklov ${AR} ${rad.kommun} v. ${rad.vecka}: ${ledigt.dagar} lediga dagar i rad | Alpkoll`
     : `Påsklov ${AR} ${rad.kommun}: vecka ${rad.vecka} | Alpkoll`
   const description = ledigt
-    ? `Lovet är ${lovet(rad)} ${AR}. Barnen är lediga ${spann(ledigt.start, ledigt.slut)}` +
-      (skidvecka ? `, så en skidvecka ${spann(skidvecka.start, skidvecka.slut)} ryms. ` : '. ') +
-      'Se var snön är säkrast i påsk.'
+    ? `Lovet är ${lovet(rad)} ${AR}.` +
+      // Härjedalen räknar helgerna in i lovet, och då står spannet redan där.
+      (ledigt.start === rad.start && ledigt.slut === rad.slut ? '' : ` Med helgerna blir det ${spann(ledigt.start, ledigt.slut)}.`) +
+      (skidvecka ? ` En skidvecka ${spann(skidvecka.start, skidvecka.slut)} ryms.` : '') +
+      ' Se var snön är säkrast i påsk.'
     : `${rad.kommun} har påsklov vecka ${rad.vecka}. Se var snön är säkrast i påsk.`
   const url = `${SITE_URL}/pasklov/${rad.slug}`
 

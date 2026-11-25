@@ -59,9 +59,9 @@ export async function generateMetadata({ params }) {
     ? `Sportlov ${AR} ${rad.kommun} v. ${v.nr}: skidvecka ${kortSpann(skid.start, skid.slut)} | Alpkoll`
     : `Sportlov ${AR} ${rad.kommun}: vecka ${v.nr}, ${skoldagar(v)} | Alpkoll`
   const description =
-    `Lovet är ${skoldagar(v)} ${AR}.` +
-    (skid ? ` Skidveckan går lördag ${dag(skid.start)} till lördag ${dag(skid.slut)}.` : '') +
-    ' Nattåget den veckan, vad den gör med liftkortspriset och bilresan till fjällen.'
+    `Lovet är ${skoldagar(v)} ${AR}` +
+    (skid ? `, skidveckan lördag till lördag ${spann(skid.start, skid.slut)}.` : '.') +
+    ' Nattåget den veckan, vad den gör med liftkortspriset och bilresan dit.'
   const url = `${SITE_URL}/sportlov/${kommunSlug(rad.kommun)}`
 
   return {

@@ -71,7 +71,11 @@ export async function GET(request) {
         return { steg: s.namn, fel: String(e) }
       }
     }))
-    return Response.json({ diag: rader })
+    const live = ignav ? await ignavFlyg(fran, till, datum, ignav) : null
+    return Response.json({
+      ignav: ignav ? { antal: live?.length ?? null, forsta: live?.[0] ? `${live[0].nummer} ${live[0].avgang} ${live[0].pris} kr` : null } : 'ingen nyckel',
+      diag: rader,
+    })
   }
 
   let data

@@ -175,9 +175,15 @@ export default async function Liftkortspriser() {
           orten och räknas inte in i ordningen.{' '}
           Kronbeloppet är omräknat mot Europeiska centralbankens kurs den{' '}
           {skrivDatum(kurser.datum)} och avrundat till närmaste femtio. Ortens eget
-          belopp står under. Raderna märkta{' '}
-          <strong style={{ color: 'rgba(255,255,255,0.5)' }}>25/26</strong> avser förra
-          säsongen — orten har inte publicerat årets pris än.
+          belopp står under.
+          {/* Visas bara när någon ort fortfarande bär förra säsongens pris. */}
+          {Object.values(VERIFIERADE).some((v) => v.sasong === '25/26') && (
+            <>
+              {' '}Raderna märkta{' '}
+              <strong style={{ color: 'rgba(255,255,255,0.5)' }}>25/26</strong> avser förra
+              säsongen — orten har inte publicerat årets pris än.
+            </>
+          )}
         </p>
 
         {/* ── Noteringar per ort ──

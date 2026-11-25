@@ -51,7 +51,7 @@ nedan.
 | meribel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | val-thorens | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | verbier | CHF | 94 | **409** | 4,35 | 26/27 | 4 Vallées, samma som våra 412 km. Verbier–Tzoumaz ensamt: 86/374 |
-| geilo | NOK | 693 | **2 871** | 4,14 | 25/26 | produkten heter "6–8 dagar" |
+| geilo | NOK | 690 | **3 174** | 4,60 | 26/27 | nätpris, dynamiskt, start 27.2.2027; produkten heter "6–8 dagar" |
 | are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, lika för start 27.2 och 1.3 (omläst 2026-11-18) |
 | salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil. Lika för 27.2 och 1.3 |
 | trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan. Lika för 27.2 och 1.3 |
@@ -730,3 +730,17 @@ Klicka fram SkiPass från ortens egen sida.
   högperioden "19 dec – 4 jan & 14 feb – 3 maj" men ännu inga belopp.
   pistat.se och skiresort visar 605 / 2 685, troligen förra årets tal, som
   inte tas in.
+
+## Omkontrollen 2026-11-25, Norge och Finland (migration 055)
+
+- **geilo** — 26/27 finns nu. Butikens prisfunktion
+  (`geilo.skiperformance.com`, samma anrop som köpkalendern gör) ger för
+  start 27.2.2027 vuxen 690 NOK för en dag och 3 173,50 för 6–8 dagar.
+  Orten publicerar inget kassapris eller överstruket pris, så nätpriset
+  lagras som för Voss. De närmaste startdagarna (28.11–1.12.2026) kostade
+  745 / 3 427, vilket tyder på ett grundpris och ett förköpspris. Det är
+  obekräftat; läs om i februari. Kvot 4,60.
+- **trysil** och **salen** — noten säger nu att två av veckokortets dagar
+  kan användas i den andra orten (skistar.com), inte att två dagar ingår
+  utöver.
+

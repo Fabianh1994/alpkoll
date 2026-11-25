@@ -801,10 +801,10 @@ function beskriv(e, ort) {
         extra: (
           <div style={{ marginTop: 10 }}>
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.55, margin: '0 0 8px' }}>
-              Delad transferbuss eller egen taxi från flygplatsen bokas i förväg. Priset ser du när du söker, och hyrbil går också.
+              Egen taxi från flygplatsen bokas i förväg till fast pris, som du ser när du söker. Hyrbil går också.
             </p>
-            <Partnerlank partner="holidaytaxis" sid={`resa-transfer-${ort.slug}`} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
-              Boka transfer hos Holiday Taxis ›
+            <Partnerlank partner="kiwitaxi" sid={`resa-transfer-${ort.slug}`} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
+              Boka transfer hos Kiwitaxi ›
             </Partnerlank>
           </div>
         ),

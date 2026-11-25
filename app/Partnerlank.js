@@ -44,22 +44,15 @@ const PARTNERS = {
       return u.toString()
     },
   },
-  // Transfer från flygplatsen via Travelpayouts (Holiday Taxis). Länken
-  // skapas i Travelpayouts när programmet är godkänt och läggs i
-  // NEXT_PUBLIC_HOLIDAYTAXIS_LANK; spårningsnamnet läggs efter markören med
-  // en punkt, som för Aviasales. Utan länk går knappen rakt till Holiday
-  // Taxis, utan provision och utan annonsmärkning.
-  holidaytaxis: {
-    namn: 'Holiday Taxis',
-    sparas: Boolean(process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK),
-    adress: ({ sid }) => {
-      const lank = process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK
-      if (!lank) return 'https://www.holidaytaxis.com/'
-      const u = new URL(lank)
-      const marker = u.searchParams.get('marker')
-      if (marker && sid) u.searchParams.set('marker', `${marker.split('.')[0]}.${sid}`)
-      return u.toString()
-    },
+  // Transfer från flygplatsen via Travelpayouts (Kiwitaxi). Holiday Taxis
+  // finns inte i Travelpayouts katalog. Länken skapades under Links i
+  // Travelpayouts 2026-11-25 och går till kiwitaxi.com med kontots
+  // spårning; den är offentlig och ligger därför i koden. Kortlänken tar
+  // inget spårningsnamn, så alla transferklick syns som en rad i rapporten.
+  kiwitaxi: {
+    namn: 'Kiwitaxi',
+    sparas: true,
+    adress: () => 'https://kiwitaxi.tpx.gr/zrbgr33p',
   },
   // Uthyrare utan avtal, se lib/varbo.js. Länken går rakt till deras sida,
   // utan spårning och därför utan annonsmärkning och utan rel="sponsored".

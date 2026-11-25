@@ -131,7 +131,7 @@ export default function PrivacyPage() {
               gäller reseplaneraren (Resan dit): Google laddas först när du
               klickar i adressfältet. Adressen du skriver skickas till Google
               för att räkna ut vägen och sparas inte av Alpkoll. Flygsökningen
-              skickar bara flygplatskoder och datum till Travelpayouts. Tjänster
+              skickar bara flygplatskoder och datum till Ignav och Travelpayouts. Tjänster
               vi länkar till kan använda kakor på sina egna domäner.
             </p>
           </>
@@ -147,7 +147,7 @@ export default function PrivacyPage() {
           reseplaneraren (Resan dit): Google laddas först när du klickar i
           adressfältet. Adressen du skriver skickas till Google för att räkna
           ut vägen och sparas inte av Alpkoll. Flygsökningen skickar bara
-          flygplatskoder och datum till Travelpayouts. Tjänster vi länkar till
+          flygplatskoder och datum till Ignav och Travelpayouts. Tjänster vi länkar till
           kan använda kakor på sina egna domäner.
         </p>
         )}

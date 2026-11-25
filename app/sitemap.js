@@ -90,6 +90,12 @@ export default async function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.8,
     })),
+    ...slugs.map((slug) => ({
+      url: `${SITE_URL}/resa/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    })),
     // Bara de par som ska indexeras, och bara där båda orterna är
     // publicerade. Par-listorna står i koden och publiceringen i
     // databasen; utan filtret hade en dold ort lagt en 404 i sitemapen.

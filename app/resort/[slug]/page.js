@@ -3,7 +3,8 @@ import Link from 'next/link'
 import { landsidaAdress } from '../../../lib/landsidor'
 import Image from 'next/image'
 import { farOptimeras } from '../../../lib/images'
-import Karta from './Karta'
+import Reseplanerare from '../../resa/Reseplanerare'
+import TreFlygplatser from '../../resa/TreFlygplatser'
 import { PLANERAREN_SYNLIG } from '../../../lib/features'
 import SiteHeader from '../../SiteHeader'
 import SiteFooter from '../../SiteFooter'
@@ -142,7 +143,6 @@ export default async function ResortPage({ params }) {
   const estimatedTransferMins = restid(resort)
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
-  const mapsEmbedUrl = `https://maps.google.com/maps?q=${resort.latitude},${resort.longitude}&z=12&output=embed`
   // Utan bild med licens visas ingen bild alls, i stället för ett
   // stockfoto från en annan ort — se utanOlicensieradBild i lib/images.js.
   const heroImageUrl = resort.image_url
@@ -763,6 +763,9 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
+                {/* I Norden är bilen eller tåget den vanliga vägen, så flygplatsrutan
+                    visas bara för orterna i Alperna. */}
+                {!arNordisk(resort) && <TreFlygplatser slug={resort.slug} ortnamn={resort.name} />}
                 {resort.transport_info && (
                   <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
                     {/* "Med tåg och flyg" stod över texter som mest handlade
@@ -806,8 +809,15 @@ export default async function ResortPage({ params }) {
                   <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
                 </div>
               </div>
-              <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)', height: 320 }}>
-                <Karta embedUrl={mapsEmbedUrl} namn={resort.name} />
+              {/* Resan hit räknas live från läsarens adress: bil, tåg och
+                  flyg dörr till dörr på kartan. De fasta restiderna ovan står
+                  kvar som ett snabbt hum. */}
+              <div id="resan-hit" style={{ scrollMarginTop: 90 }}>
+                <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 26, letterSpacing: '0.03em', color: '#f0ece4', margin: '26px 0 6px' }}>Resan hit från din dörr</h3>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: '0 0 14px' }}>
+                  Skriv var du bor, så visas resan med bil, tåg och flyg på kartan.
+                </p>
+                <Reseplanerare ort={{ slug: resort.slug, namn: resort.name, lat: Number(resort.latitude), lng: Number(resort.longitude), portkod: resort.nearest_airport_code || null }} kurser={kurser} />
               </div>
             </div>
 

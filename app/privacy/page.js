@@ -127,8 +127,12 @@ export default function PrivacyPage() {
             <p style={{ marginTop: 12 }}>
               Vercel Web Analytics och partnerlänkarna sätter inga kakor.
               Kartan på ortsidorna kommer från Google och laddas först när du
-              klickar på Visa karta; då kan Google sätta sina kakor. Tjänster vi
-              länkar till kan använda kakor på sina egna domäner.
+              klickar på Visa karta; då kan Google sätta sina kakor. Samma sak
+              gäller reseplaneraren (Resan dit): Google laddas först när du
+              klickar i adressfältet. Adressen du skriver skickas till Google
+              för att räkna ut vägen och sparas inte av Alpkoll. Flygsökningen
+              skickar bara flygplatskoder och datum till Travelpayouts. Tjänster
+              vi länkar till kan använda kakor på sina egna domäner.
             </p>
           </>
         ) : (
@@ -139,7 +143,11 @@ export default function PrivacyPage() {
           partnerlänkarna: de är vanliga länkar, och ingenting från vår
           partner laddas eller lagras medan du är kvar på Alpkoll. Kartan på
           ortsidorna kommer från Google och laddas först när du klickar på
-          Visa karta; då kan Google sätta sina kakor. Tjänster vi länkar till
+          Visa karta; då kan Google sätta sina kakor. Samma sak gäller
+          reseplaneraren (Resan dit): Google laddas först när du klickar i
+          adressfältet. Adressen du skriver skickas till Google för att räkna
+          ut vägen och sparas inte av Alpkoll. Flygsökningen skickar bara
+          flygplatskoder och datum till Travelpayouts. Tjänster vi länkar till
           kan använda kakor på sina egna domäner.
         </p>
         )}

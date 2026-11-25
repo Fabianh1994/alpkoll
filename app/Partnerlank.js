@@ -28,6 +28,20 @@ const PARTNERS = {
     adress: ({ destination, checkin, checkout, sid }) =>
       bookingUrl(destination, { lang: 'sv', label: sid, checkin, checkout }),
   },
+  // Flyg via Travelpayouts (Aviasales). Markören är kontots id och står i
+  // NEXT_PUBLIC_TRAVELPAYOUTS_MARKER; spårningsnamnet följer efter en punkt,
+  // som Travelpayouts läser som SubID. Utan markör blir det en vanlig länk
+  // till Aviasales, utan provision och utan annonsmärkning.
+  aviasales: {
+    sparas: Boolean(process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER),
+    adress: ({ url, sid }) => {
+      const marker = process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER
+      if (!marker) return url
+      const u = new URL(url)
+      u.searchParams.set('marker', sid ? `${marker}.${sid}` : marker)
+      return u.toString()
+    },
+  },
   // Uthyrare utan avtal, se lib/varbo.js. Länken går rakt till deras sida,
   // utan spårning och därför utan annonsmärkning och utan rel="sponsored".
   // Får en av dem ett avtal läggs den till som egen partner här.

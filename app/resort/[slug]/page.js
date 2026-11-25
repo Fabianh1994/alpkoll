@@ -803,6 +803,7 @@ export default async function ResortPage({ params }) {
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <Link href={`/resa/${resort.slug}`} style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#121110', background: '#D4A574', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.02em' }}>Planera resan hemifrån →</Link>
                   <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
                 </div>
               </div>

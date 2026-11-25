@@ -174,11 +174,11 @@ export default function Reseplanerare({ ort }) {
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
           <label className="resa-falt">
             <span style={etikett}>Dag</span>
-            <input type="date" value={datum} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDatum(e.target.value)} className="resa-input" />
+            <input type="date" lang="sv" value={datum} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDatum(e.target.value)} className="resa-input" />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Åk tidigast</span>
-            <input type="time" value={tid} step={900} onChange={(e) => setTid(e.target.value)} className="resa-input" />
+            <input type="time" lang="sv" value={tid} step={900} onChange={(e) => setTid(e.target.value)} className="resa-input" />
           </label>
           <button type="submit" disabled={!hem || soker} className="resa-knapp">
             {soker ? 'Räknar ut resan …' : 'Visa resan'}
@@ -392,7 +392,7 @@ function Sattkort({ satt, r, vald, snabbast, onClick }) {
       <span style={{ display: 'flex', alignItems: 'center', gap: 8, color: vald ? ACCENT : 'rgba(240,236,228,0.75)' }}>
         <Ikon satt={satt} />
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, letterSpacing: '0.02em' }}>{SATTNAMN[satt]}</span>
-        {snabbast && !raknar && !saknas && <span className="resa-bricka">Snabbast</span>}
+        {snabbast && !raknar && !saknas && <span className="resa-bricka">Först framme</span>}
       </span>
       {raknar && <span className="resa-skelett" aria-label="Räknas ut" />}
       {saknas && <span style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.45)', lineHeight: 1.45, textAlign: 'left' }}>{saknas}</span>}
@@ -412,7 +412,7 @@ function Sattkort({ satt, r, vald, snabbast, onClick }) {
 const versal = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 
 function underrad(r) {
-  if (r.satt === 'bil') return `${heltal(r.km)} km`
+  if (r.satt === 'bil') return r.pausMin ? `${heltal(r.km)} km · med ${r.pauser.length} ${r.pauser.length === 1 ? 'paus' : 'pauser'}` : `${heltal(r.km)} km`
   if (r.satt === 'flyg') {
     const f = r.flyget
     const delar = [f.bolag, `${f.fran}–${f.till}`]
@@ -450,7 +450,7 @@ function Tidslinje({ resa, ort, mal, aktiv, setAktiv, stopp, onValjFlyg }) {
     // Bilresans pauser står i tidslinjen, på ungefär den tid du är där.
     if (e.typ === 'bil' && resa.satt === 'bil') {
       ;(stopp.length ? stopp : resa.pauser || []).forEach((p, j) => {
-        rader.push({ paus: true, p, nr: j + 1, start: e.start + p.efterMin * 60000, laddar: !stopp.length, key: `p${i}-${j}` })
+        rader.push({ paus: true, p, nr: j + 1, start: p.startMs ?? e.start + p.efterMin * 60000, laddar: !stopp.length, key: `p${i}-${j}` })
       })
     }
   })
@@ -496,9 +496,9 @@ function Tidslinje({ resa, ort, mal, aktiv, setAktiv, stopp, onValjFlyg }) {
       )}
 
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(240,236,228,0.4)', lineHeight: 1.6, margin: '22px 0 0' }}>
-        {resa.satt === 'bil' && 'Restiden är Googles för normal trafik. Vinterväglag och raster gör resan längre. '}
+        {resa.satt === 'bil' && `Körtiden är Googles för normal trafik${resa.pausMin ? `, och pauserna lägger till ${langd(resa.pausMin)}` : ''}. Vinterväglag och köer gör resan längre. `}
         {resa.satt === 'flyg' && `Vi räknar med att du är på flygplatsen ${langd(FLYGPLATS_FORE)} före avgång. Flygen kommer från Aviasales sökningar de senaste dygnen; priset gäller när det syntes och kan ha ändrats. `}
-        {resa.satt !== 'bil' && 'Tåg- och busstiderna är Googles tidtabeller. Kontrollera tiden hos bolaget innan du bokar.'}
+        {resa.etapper.some((e) => ['tag', 'buss', 'annat'].includes(e.typ)) && 'Tåg- och busstiderna är Googles tidtabeller. Kontrollera tiden hos bolaget innan du bokar.'}
       </p>
     </div>
   )
@@ -530,7 +530,7 @@ function beskriv(e, ort) {
   const tidsrad = (delar) => delar.filter(Boolean).join(' · ')
   switch (e.typ) {
     case 'bil':
-      return { titel: `Bil till ${e.till.namn}`, rad: tidsrad([`${heltal(e.km)} km`, langd(e.min)]) }
+      return { titel: `Bil till ${e.till.namn}`, rad: tidsrad([`${heltal(e.km)} km`, `${langd(e.min)} körning`]) }
     case 'transfer':
       return {
         titel: `Transfer till ${e.till.namn}`,
@@ -598,7 +598,7 @@ function Pausrad({ r }) {
       <div style={{ minWidth: 0 }}>
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: TEXT }}>
           {arLunch(start) ? 'Lunch' : 'Paus'}{p.ort ? ` i ${p.ort}` : ''}
-          <span style={{ fontWeight: 400, fontSize: 12.5, color: 'rgba(240,236,228,0.5)', marginLeft: 8 }}>efter {langd(Math.round(p.efterMin / 15) * 15)} bakom ratten</span>
+          <span style={{ fontWeight: 400, fontSize: 12.5, color: 'rgba(240,236,228,0.5)', marginLeft: 8 }}>{p.langdMin ? `${p.langdMin} min · ` : ''}efter {langd(Math.round(p.efterMin / 15) * 15)} bakom ratten</span>
         </div>
         {laddar && <span className="resa-skelett" style={{ width: '70%' }} aria-label="Hämtar lunchställen" />}
         {!!p.platser?.length && (
@@ -706,7 +706,7 @@ const CSS = `
   .resa-karta { position: sticky; top: 88px; height: calc(100vh - 120px); max-height: 760px; }
 }
 .resa-forklaring {
-  position: absolute; left: 10px; bottom: 10px; display: flex; flex-wrap: wrap; gap: 6px 14px; max-width: calc(100% - 70px);
+  position: absolute; left: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 6px 14px; max-width: calc(100% - 70px);
   background: rgba(18,17,16,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px;
   font-family: var(--font-body); font-size: 12px; color: rgba(240,236,228,0.75);
 }

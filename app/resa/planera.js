@@ -139,7 +139,18 @@ function pos(stopp, reserv) {
 export async function planeraBil(lib, hem, mal, startMs) {
   const e = await bilEtapp(lib, hem, mal, startMs)
   if (!e) return { satt: 'bil', saknas: 'Google hittade ingen bilväg.' }
-  return resa('bil', [e], { km: e.km, pauser: pauspunkter(e.path, e.min) })
+  // Pauserna räknas in i ankomsten: 45 minuter för lunch mellan 11 och 14,
+  // annars 20 minuter. Varje paus skjuter de följande lika mycket.
+  let tillagt = 0
+  const pauser = pauspunkter(e.path, e.min).map((p) => {
+    const startMs = e.start + (p.efterMin + tillagt) * 60000
+    const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
+    const langdMin = timme >= 11 && timme < 14 ? 45 : 20
+    tillagt += langdMin
+    return { ...p, startMs, langdMin }
+  })
+  const r = resa('bil', [{ ...e, slut: e.slut + tillagt * 60000 }], { km: e.km, pauser, pausMin: tillagt, korMin: e.min })
+  return r
 }
 
 /** Resan med tåg och buss. */

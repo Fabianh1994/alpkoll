@@ -820,9 +820,16 @@ function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, posit
 
 // ── Korten för bil, tåg och flyg ────────────────────────────────────────
 
+// Bilen framifrån är Lucides "car-front" (lucide.dev), ISC-licens:
+// Copyright (c) for portions of Lucide are held by Cole Bemis 2013-2022 as
+// part of Feather (MIT). All other copyright (c) for Lucide are held by
+// Lucide Contributors 2022. Permission to use, copy, modify, and/or
+// distribute this software for any purpose with or without fee is hereby
+// granted, provided that the above copyright notice and this permission
+// notice appear in all copies.
 function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
   const p = { width: storlek, height: storlek, viewBox: '0 0 24 24', fill: 'none', stroke: farg, strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
-  if (satt === 'bil' || satt === 'transfer') return <svg {...p}><path d="M5 16V11l2-5h10l2 5v5" /><path d="M3 16h18v2H3z" /><circle cx="7.5" cy="18.5" r="1.5" /><circle cx="16.5" cy="18.5" r="1.5" /><path d="M5 11h14" /></svg>
+  if (satt === 'bil' || satt === 'transfer') return <svg {...p}><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8" /><path d="M7 14h.01" /><path d="M17 14h.01" /><rect width="18" height="8" x="3" y="10" rx="2" /><path d="M5 18v2" /><path d="M19 18v2" /></svg>
   if (satt === 'tag') return <svg {...p}><rect x="6" y="3" width="12" height="13" rx="3" /><path d="M6 10h12" /><circle cx="9" cy="13" r=".6" /><circle cx="15" cy="13" r=".6" /><path d="M8 20l2-4M16 20l-2-4" /></svg>
   if (satt === 'buss') return <svg {...p}><rect x="5" y="3" width="14" height="14" rx="2" /><path d="M5 11h14M7 20v-3M17 20v-3" /></svg>
   if (satt === 'flyg') return <svg {...p}><path d="M10.5 13.5 3 11l1.5-1.5 7.5 1L16 6.5c1-1 2.5-1.5 3-1s0 2-1 3L14 12.5l1 7.5-1.5 1.5-2.5-7.5L7.5 17l.5 2.5-1 1L5.5 18 3 16.5l1-1 2.5.5z" /></svg>

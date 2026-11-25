@@ -12,7 +12,8 @@
 -- i samma PR.
 --
 -- Textändringar är replace() på en exakt fras och kräver att frasen
--- finns. Kontrollen i slutet stoppar allt om något inte gick igenom.
+-- finns. Kontrollen i slutet kräver de nya värdena och texterna och
+-- stoppar allt om något inte gick igenom. Kan köras två gånger utan skada.
 --
 -- Körordning: kan köras före eller efter merge. Ingenting i koden
 -- förutsätter de nya talen.
@@ -98,13 +99,14 @@ declare
 begin
   select string_agg(slug, ', ') into fel
   from resorts
-  where (slug = 'idre-fjall' and (lift_pass_day_eur <> 745 or lift_pass_week_eur <> 3142))
-     or (slug = 'funasfjallen' and (total_lifts <> 39 or lift_capacity_per_hour <> 47453 or season_start_month <> 10
-          or notes like '%skidbussen mellan dem ingår i liftkortet%'
-          or transport_info like '%Skidbussen mellan anläggningarna är gratis%'))
-     or (slug = 'are' and season_start_month <> 12)
-     or (slug = 'riksgransen' and notes like '%Åre öppnar i november.%')
-     or (slug = 'salen' and transport_info like '%Med Snälltåget åker du till Mora och tar bussen%');
+  where (slug = 'idre-fjall' and (lift_pass_day_eur is distinct from 745 or lift_pass_week_eur is distinct from 3142))
+     or (slug = 'funasfjallen' and (total_lifts is distinct from 39 or lift_capacity_per_hour is distinct from 47453
+          or season_start_month is distinct from 10
+          or notes not like '%Under vissa perioder går skidbussen mellan Ramundberget, Funäsdalen och Tänndalen, gratis med liftkortet.%'
+          or transport_info not like '%Under vissa perioder går skidbussen mellan Ramundberget, Funäsdalen och Tänndalen, gratis med Fjällpass Lift.%'))
+     or (slug = 'are' and season_start_month is distinct from 12)
+     or (slug = 'riksgransen' and notes not like '%Hemavan öppnar i november.%')
+     or (slug = 'salen' and transport_info not like '%med Snälltåget på lördagar eller SJ på söndagar%');
   if fel is not null then
     raise exception 'Ändringen gick inte igenom för: %', fel;
   end if;

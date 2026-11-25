@@ -331,8 +331,8 @@ export function Veckan({ v, tagetGar }) {
           Till Åre går två nattåg från Stockholm. SJ kör varje dag
           {sjAvgang ? `, med avgång ${sjAvgang}` : ', men har inte publicerat vinterns tider än'}.
           Snälltåget kör {snall.dagar}, med avgång {snall.fran[0].avgang} och framme {snall.framme.split(',')[0]}.
-          Till Sälen går det på lördagar via Mora, med buss sista biten.
-          {salenViaGoteborg && ' Den här veckan går det via Göteborg både ut och hem.'}
+          Till Sälen går Snälltåget på lördagar och SJ på söndagar, till Mora och med buss sista biten.
+          {salenViaGoteborg && ' Den här veckan går Snälltåget via Göteborg både ut och hem och stannar inte i Stockholm.'}
           {salenUtanStockholm && ' Den här veckan går det från Malmö utan att stanna i Stockholm eller Göteborg.'}
         </p>
         <p style={{ ...brod, fontSize: 13.5, margin: '16px 0 0', color: 'rgba(255,255,255,0.57)' }}>

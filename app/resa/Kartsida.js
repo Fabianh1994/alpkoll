@@ -38,6 +38,10 @@ const ALPLANDER = ['Austria', 'Switzerland', 'France', 'Italy', 'Germany']
 const ALLA = '__alla'
 
 const idagSv = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })
+// Adressen står i länken med tre decimaler (ungefär 100 meter), och din
+// position med två (ungefär en kilometer), så att en delad länk inte pekar
+// ut ett hus.
+const franParam = (h) => { const d = h.namn === 'Din position' ? 2 : 3; return `${h.lat.toFixed(d)},${h.lng.toFixed(d)},${h.namn}` }
 const nyckelFor = (slug, hem, dit) => hem ? `${slug}|${hem.lat.toFixed(4)},${hem.lng.toFixed(4)}|${dit}` : null
 
 /** "13 tim 20 min", och över ett dygn "1 dygn 4 tim". */
@@ -48,7 +52,8 @@ function restid(min) {
   const t = Math.round((min % 1440) / 60)
   return `${d} dygn${t ? ` ${t} tim` : ''}`
 }
-const timmar = (min) => `${Math.round(min / 60)} t`
+/** Kort restid för tabellen: "5 t 40", och över ett dygn hela timmar. */
+const kort = (min) => { const m = Math.round(min); if (m >= 1440) return `${Math.round(m / 60)} t`; const t = Math.floor(m / 60); const r = m % 60; return t ? `${t} t${r ? ` ${String(r).padStart(2, '0')}` : ''}` : `${r} min` }
 
 /** Filterknapparna: Alla, de nordiska länderna, Alperna och övriga länder var för sig. */
 function filterFor(orter) {
@@ -63,6 +68,10 @@ const passar = (filter, o) => filter === ALLA || (filter === 'alperna' ? ALPLAND
 
 function lasMinne() {
   try { return window.localStorage.getItem(MINNE) === 'ja' } catch { return false }
+}
+function glomKartan() {
+  try { window.localStorage.removeItem(MINNE) } catch { /* inget sparat */ }
+  window.location.reload()
 }
 function sparaMinne() {
   try { window.localStorage.setItem(MINNE, 'ja') } catch { /* privat läge: frågar igen nästa gång */ }
@@ -129,7 +138,7 @@ export default function Kartsida({ orter, kurser }) {
       if (lankDag && giltigtDatum(q.get('hem'))) setHemDag(q.get('hem'))
       const [lat, lng, ...namn] = (q.get('fran') || '').split(',')
       const p = { lat: Number(lat), lng: Number(lng), namn: namn.join(',') || 'Din adress' }
-      if (q.get('fran') && Number.isFinite(p.lat) && Number.isFinite(p.lng)) {
+      if (lat && lng && Number.isFinite(p.lat) && Number.isFinite(p.lng) && Math.abs(p.lat) <= 90 && Math.abs(p.lng) <= 180) {
         setHem({ ...p, adress: p.namn })
         setAdressNr((x) => x + 1)
       }
@@ -146,7 +155,7 @@ export default function Kartsida({ orter, kurser }) {
     q.set('ort', vald)
     if (fasta.length) q.set('jamfor', fasta.join(','))
     if (filter !== ALLA) q.set('land', filter)
-    if (hem) q.set('fran', `${hem.lat.toFixed(5)},${hem.lng.toFixed(5)},${hem.namn}`)
+    if (hem) q.set('fran', franParam(hem))
     q.set('dag', dit)
     if (hemDag) q.set('hem', hemresa)
     if (antal !== 2) q.set('antal', String(antal))
@@ -157,7 +166,7 @@ export default function Kartsida({ orter, kurser }) {
   const paborjade = useRef(new Set())
   useEffect(() => {
     if (!hem || !lib) return
-    // En kort paus, så att den som bläddrar snabbt med ‹ › inte räknar alla orter på vägen.
+    // En och en halv sekunds paus: den som bläddrar med ‹ › räknar bara orten den stannar vid.
     const t = setTimeout(() => {
       const startMs = svenskTid(dit, AVRESA)
       for (const slug of [...new Set([vald, ...fasta])]) {
@@ -167,13 +176,14 @@ export default function Kartsida({ orter, kurser }) {
         const o = perSlug[slug]
         const mal = { namn: o.namn, lat: o.lat, lng: o.lng }
         const klar = (s) => (r) => setSvar((f) => ({ ...f, [n]: { ...f[n], [s]: r } }))
-        const fel = (s) => () => klar(s)({ satt: s, saknas: 'Något gick fel när resan räknades ut.' })
+        // Ett fel sparas inte: nästa gång orten väljs räknas den om.
+        const fel = (s) => () => { paborjade.current.delete(n); klar(s)({ satt: s, saknas: 'Något gick fel när resan räknades ut. Välj orten igen för att försöka på nytt.' }) }
         setSvar((f) => ({ ...f, [n]: f[n] || {} }))
         planeraBil(lib, hem, mal, startMs).then(klar('bil'), fel('bil'))
         planeraTag(lib, hem, mal, startMs).then(klar('tag'), fel('tag'))
         planeraFlyg(lib, hem, mal, o, startMs, dit).then(klar('flyg'), fel('flyg'))
       }
-    }, 450)
+    }, 1500)
     return () => clearTimeout(t)
   }, [hem, lib, dit, vald, fasta, perSlug])
 
@@ -185,7 +195,7 @@ export default function Kartsida({ orter, kurser }) {
     return s ? { satt: s, min: r[s].min } : null
   }, [resorFor])
 
-  // Orterna i filtret: närmast först när adressen finns, annars i bokstavsordning.
+  // Orterna i filtret: närmast först när adressen finns, annars i samma ordning som sidan fick dem (getResorts sorterar på svenska).
   const synliga = useMemo(() => {
     const l = orter.filter((o) => passar(filter, o))
     if (!hem) return l
@@ -208,7 +218,7 @@ export default function Kartsida({ orter, kurser }) {
       disableDefaultUI: true, zoomControl: false, gestureHandling: 'greedy', clickableIcons: false,
     })
     karta.current = m
-    m.addListener('zoom_changed', () => ruta.current?.classList.toggle('kf-nara', m.getZoom() >= 7))
+    m.addListener('zoom_changed', () => ruta.current?.classList.toggle('kf-nara', m.getZoom() >= 9))
     const Nal = nalKlass(g, (slug) => { setVald(slug); setStor(false) })
     orter.forEach((o) => { const n = new Nal(o); n.setMap(m); nalar.current[o.slug] = n })
     hemNal.current = (p) => { const n = new Nal(p, true); n.setMap(m); return n }
@@ -222,7 +232,7 @@ export default function Kartsida({ orter, kurser }) {
       const snabb = snabbastFor(s)
       n.el.classList.toggle('vald', s === vald)
       n.el.classList.toggle('fast', fasta.includes(s))
-      n.el.style.display = passar(filter, n.o) ? '' : 'none'
+      n.el.style.display = passar(filter, n.o) || s === vald || fasta.includes(s) ? '' : 'none'
       n.el.setAttribute('aria-label', `${n.o.namn}${snabb ? `, ${restid(snabb.min)}` : ''}`)
       n.el.setAttribute('aria-pressed', String(s === vald))
       n.el.innerHTML = ''
@@ -231,7 +241,7 @@ export default function Kartsida({ orter, kurser }) {
       n.el.appendChild(b)
       if (snabb) {
         const t = document.createElement('span')
-        t.textContent = timmar(snabb.min)
+        t.textContent = kort(snabb.min)
         n.el.appendChild(t)
       }
     })
@@ -298,7 +308,7 @@ export default function Kartsida({ orter, kurser }) {
 
   const helaResan = (slug) => {
     const q = new URLSearchParams()
-    if (hem) q.set('fran', `${hem.lat.toFixed(5)},${hem.lng.toFixed(5)},${hem.namn}`)
+    if (hem) q.set('fran', franParam(hem))
     q.set('dag', dit)
     if (hemDag) q.set('hem', hemresa)
     if (antal !== 2) q.set('antal', String(antal))
@@ -359,7 +369,7 @@ export default function Kartsida({ orter, kurser }) {
   const resor = resorFor(vald)
   const snabbast = resor && SATT.every((s) => resor[s] !== undefined) ? snabbastSatt(resor, SATT) : null
 
-  const Rad = ({ s }) => {
+  const rad = (s) => {
     const r = resor?.[s]
     const basta = snabbast === s && kanTas(r)
     let under = ''
@@ -379,7 +389,7 @@ export default function Kartsida({ orter, kurser }) {
       }
     }
     return (
-      <div className="kf-rad">
+      <div key={s} className="kf-rad">
         <span style={{ display: 'grid', placeItems: 'center', color: basta ? GULD : 'rgba(240,236,228,0.75)' }}><Ikon satt={s} storlek={18} /></span>
         <span style={{ minWidth: 0 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 15 }}>
@@ -397,6 +407,8 @@ export default function Kartsida({ orter, kurser }) {
     )
   }
 
+  const uppLast = !hem || !lib ? '' : !resor || SATT.some((k) => resor[k] === undefined) ? `Räknar resan till ${ort?.namn}.` : snabbast ? `${ort?.namn}: ${SATTNAMN[snabbast].toLowerCase()} är först framme, ${restid(resor[snabbast].min)}.` : `${ort?.namn}: ingen resa hittades.`
+
   const OrtKort = ort && (
     <section aria-labelledby="kf-ortnamn">
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
@@ -410,12 +422,13 @@ export default function Kartsida({ orter, kurser }) {
         </span>
       </div>
 
+      <span aria-live="polite" className="kf-dold">{uppLast}</span>
       {hem ? (
         <>
           <p style={{ margin: '6px 0 6px', color: DOV, fontSize: 13.5 }}>
             Dörr till dörr från {hem.namn}, {visaDag(svenskTid(dit, AVRESA))} kl. 07.00
           </p>
-          {lib ? SATT.map((s) => <Rad key={s} s={s} />) : (
+          {lib ? SATT.map((s) => rad(s)) : (
             <button type="button" className="resa-knapp" style={{ width: '100%', margin: '8px 0' }} onClick={() => starta().catch(() => {})} disabled={laddar}>
               {laddar ? 'Laddar …' : 'Räkna resan hit'}
             </button>
@@ -454,7 +467,8 @@ export default function Kartsida({ orter, kurser }) {
         <tbody>
           {SATT.map((k) => {
             const varden = fasta.map((s) => { const r = resorFor(s)?.[k]; return r && !r.saknas ? r.min : null })
-            const minst = Math.min(...varden.filter((v) => v != null))
+            // Guld bara för en resa man kan ta: inte ett flyg en annan dag eller före 07.00.
+            const minst = Math.min(...fasta.map((s, i) => (kanTas(resorFor(s)?.[k]) ? varden[i] : null)).filter((v) => v != null))
             return (
               <tr key={k}>
                 <th scope="row" style={{ textAlign: 'left', fontWeight: 400, color: DOV, padding: '8px 0', borderBottom: `1px solid ${LINJE}` }}>
@@ -464,8 +478,8 @@ export default function Kartsida({ orter, kurser }) {
                   const r = resorFor(s)?.[k]
                   const v = varden[i]
                   return (
-                    <td key={s} style={{ padding: '8px 4px', borderBottom: `1px solid ${LINJE}`, color: v != null && v === minst && fasta.length > 1 ? GULD : r === undefined ? DOV : TEXT }}>
-                      {!hem ? '' : r === undefined ? '…' : v == null ? '–' : timmar(v)}
+                    <td key={s} style={{ padding: '8px 4px', borderBottom: `1px solid ${LINJE}`, color: v != null && v === minst && kanTas(r) && fasta.length > 1 ? GULD : r === undefined ? DOV : TEXT }}>
+                      {!hem || !lib ? '' : r === undefined ? (resorFor(s) ? '…' : '') : v == null ? '–' : `${kort(v)}${kanTas(r) ? '' : '*'}`}
                     </td>
                   )
                 })}
@@ -475,6 +489,9 @@ export default function Kartsida({ orter, kurser }) {
         </tbody>
       </table>
       {!hem && <p style={{ margin: '8px 0 0', fontSize: 12.5, color: DOV }}>Restiderna visas när du skrivit din adress.</p>}
+      {hem && fasta.some((s) => SATT.some((k) => { const r = resorFor(s)?.[k]; return r && !r.saknas && !kanTas(r) })) && (
+        <p style={{ margin: '8px 0 0', fontSize: 12.5, color: DOV }}>* Flyget går en annan dag eller kräver att du åker före 07.00.</p>
+      )}
     </section>
   )
 
@@ -505,23 +522,6 @@ export default function Kartsida({ orter, kurser }) {
   return (
     <main className="kf">
       <style>{CSS + KF_CSS}</style>
-      <div className="kf-karta">
-        <div ref={ruta} style={{ position: 'absolute', inset: 0 }} />
-        {!lib && (
-          <div className="kf-tom">
-            <div style={{ maxWidth: 320, textAlign: 'center' }}>
-              <p style={{ margin: '0 0 14px', fontSize: 14, lineHeight: 1.55, color: DOV }}>
-                Kartan kommer från Google, som kan sätta kakor när den laddas.
-              </p>
-              <button type="button" className="resa-knapp" onClick={() => starta().catch(() => {})} disabled={laddar}>{laddar ? 'Laddar kartan …' : 'Visa kartan'}</button>
-              {googleFel && <p role="alert" style={{ margin: '12px 0 0', fontSize: 13, color: '#e8a0a0' }}>{googleFel}</p>}
-            </div>
-          </div>
-        )}
-        <div className="kf-filterplats">{Filter}</div>
-        {lib && <div className="kf-zoom"><Zoom karta={karta} /></div>}
-      </div>
-
       <aside className={`kf-panel${stor ? ' stor' : ''}`} aria-label="Resan">
         <button type="button" className="kf-handtag" onClick={() => setStor((s) => !s)} aria-label={stor ? 'Visa mer av kartan' : 'Visa mer av resan'} aria-expanded={stor}>
           <span />
@@ -536,8 +536,26 @@ export default function Kartsida({ orter, kurser }) {
         {Lista}
         <p style={{ margin: '22px 0 0', fontSize: 11.5, lineHeight: 1.6, color: 'rgba(240,236,228,0.4)' }}>
           Vägar, tåg och bussar: Google Maps. Flyg: Ignav och Aviasales via Travelpayouts. Restiden räknas dörr till dörr med avresa 07.00.
+          {lib && <> <button type="button" onClick={glomKartan} style={{ all: 'unset', cursor: 'pointer', textDecoration: 'underline' }}>Visa inte kartan direkt nästa gång</button></>}
         </p>
       </aside>
+      <div className="kf-karta">
+        <div ref={ruta} style={{ position: 'absolute', inset: 0 }} />
+        {!lib && (
+          <div className="kf-tom">
+            <div style={{ maxWidth: 320, textAlign: 'center' }}>
+              <p style={{ margin: '0 0 14px', fontSize: 14, lineHeight: 1.55, color: DOV }}>
+                Kartan kommer från Google, som kan sätta kakor när den laddas. Valet sparas i den här webbläsaren, så att kartan visas direkt nästa gång.
+              </p>
+              <button type="button" className="resa-knapp" onClick={() => starta().catch(() => {})} disabled={laddar}>{laddar ? 'Laddar kartan …' : 'Visa kartan'}</button>
+              {googleFel && <p role="alert" style={{ margin: '12px 0 0', fontSize: 13, color: '#e8a0a0' }}>{googleFel}</p>}
+            </div>
+          </div>
+        )}
+        <div className="kf-filterplats">{Filter}</div>
+        {lib && <div className="kf-zoom"><Zoom karta={karta} /></div>}
+      </div>
+
     </main>
   )
 }
@@ -578,7 +596,8 @@ function Pil({ vanster = false }) {
 
 const KF_CSS = `
 .kf { display: grid; grid-template-columns: minmax(0, 1fr) 440px; height: calc(100vh - 84px); margin-top: 84px; font-family: var(--font-body); color: #f0ece4; }
-.kf-karta { position: relative; overflow: hidden; background: #121110; }
+.kf-karta { position: relative; overflow: hidden; background: #121110; order: 1; }
+.kf-panel { order: 2; }
 .kf-tom { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; z-index: 2;
   background: radial-gradient(ellipse at 50% 40%, rgba(212,165,116,0.08), transparent 60%), #121110; }
 .kf-filterplats { position: absolute; top: 16px; left: 16px; right: 16px; z-index: 6; pointer-events: none; }
@@ -590,6 +609,7 @@ const KF_CSS = `
 .kf-zoom { position: absolute; right: 20px; bottom: 44px; width: 42px; height: 82px; z-index: 5; }
 .kf-panel { background: #151412; border-left: 1px solid rgba(240,236,228,0.08); padding: 22px 24px 28px; overflow-y: auto; overscroll-behavior: contain; }
 .kf-handtag { display: none; }
+.kf-dold { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .kf-sammanfattning { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; cursor: pointer; padding: 12px 14px; border: 1px solid rgba(240,236,228,0.12); border-radius: 10px; background: #121110; font-size: 14px; color: #f0ece4; }
 .kf-sammanfattning:hover { border-color: rgba(212,165,116,0.5); }
 .kf-sammanfattning:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }

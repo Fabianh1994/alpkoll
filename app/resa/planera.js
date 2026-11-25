@@ -149,8 +149,9 @@ export async function planeraBil(lib, hem, mal, startMs) {
     const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
     const kvar = e.min - p.efterMin
     if ((timme >= 18 || timme < 5) && kvar > 120) {
-      const morgon = svenskTid(datumFor(startMs + (timme >= 19 ? 86400000 : 0)), '08:00')
-      const langdMin = Math.round((morgon - startMs) / 60000)
+      // Efter 18 sovs det till nästa morgon; efter midnatt till samma dags morgon.
+      const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
+      const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))
       tillagt += langdMin
       return { ...p, startMs, langdMin, natt: true }
     }

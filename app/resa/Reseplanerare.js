@@ -139,6 +139,7 @@ export default function Reseplanerare({ ort, kurser }) {
       if (st) { setStuga(st); setVisaStuga(true) }
       if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('dag') || '')) setDatum(q.get('dag'))
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
+      if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('hem') || '')) setHemDatum(q.get('hem'))
       const n = Number(q.get('antal'))
       if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       setAterstalld((n) => n + 1)
@@ -322,7 +323,7 @@ export default function Reseplanerare({ ort, kurser }) {
               {vald ? (
                 <>
                   <Kostnad resa={vald} antal={antal} kurser={kurser} hemat={hemat} />
-                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={datum} tid={tid} antal={antal} />
+                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={datum} tid={tid} hemDatum={hemDatum} antal={antal} />
                 </>
               ) : (
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
@@ -416,13 +417,13 @@ function Kostnad({ resa, antal, kurser, hemat }) {
 
 // ── Dela och spara ──────────────────────────────────────────────────────
 
-const plats = (p) => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${(p.adress || p.namn || '').replace(/,/g, ' ')}`
+const plats = (p) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)},${(p.adress || p.namn || '').replace(/,/g, ' ')}`
 
-function Spara({ resa, hem, stuga, fran, till, ort, datum, tid, antal }) {
+function Spara({ resa, hem, stuga, fran, till, ort, datum, tid, hemDatum, antal }) {
   const [kopierad, setKopierad] = useState(false)
 
   const lank = () => {
-    const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid, antal: String(antal) })
+    const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid, hem: hemDatum, antal: String(antal) })
     if (stuga) q.set('stuga', plats(stuga))
     return `${window.location.origin}${window.location.pathname}?${q}#resan-hit`
   }
@@ -665,7 +666,7 @@ function underrad(r) {
   if (r.satt === 'flyg') {
     const f = r.flyget
     const delar = [f.bolag, `${f.fran}–${f.till}`]
-    if (Number.isFinite(f.pris)) delar.push(`från ${heltal(f.pris)} kr`)
+    if (Number.isFinite(f.pris)) delar.push(`från ${heltal(f.pris)} kr/person`)
     return delar.filter(Boolean).join(' · ')
   }
   return r.byten === 0 ? 'Inga byten' : r.byten === 1 ? '1 byte' : `${r.byten} byten`
@@ -732,7 +733,7 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
           <Etapprad key={r.key} e={r.e} i={r.i} aktiv={aktiv === r.i} onClick={() => setAktiv(aktiv === r.i ? null : r.i)} ort={ort} />
         ))}
         <li className="resa-rad">
-          <span className="resa-klocka" style={{ color: ACCENT }}>{klocka(resa.slut)}</span>
+          <span className="resa-klocka" style={{ color: ACCENT }}>{klocka(resa.slut)}{dagarSenare(resa.start, resa.slut) > 0 && <sup style={{ fontSize: 10, marginLeft: 1 }}>+{dagarSenare(resa.start, resa.slut)}</sup>}</span>
           <span className="resa-prick" style={{ background: ACCENT, borderColor: ACCENT }} />
           <div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: TEXT }}>{hemat ? 'Framme hemma' : `Framme i ${mal.namn}`}</div>
@@ -745,7 +746,7 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
       )}
 
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(240,236,228,0.4)', lineHeight: 1.6, margin: '22px 0 0' }}>
-        {resa.satt === 'bil' && `Körtiden är Googles för normal trafik${resa.pausMin ? `, och pauserna lägger till ${langd(resa.pausMin)}` : ''}. Vinterväglag och köer gör resan längre. `}
+        {resa.satt === 'bil' && `Körtiden är Googles för normal trafik${resa.pausMin ? `, och ${resa.pauser?.some((p) => p.natt) ? 'pauserna och natten' : 'pauserna'} lägger till ${langd(resa.pausMin)}` : ''}. Vinterväglag och köer gör resan längre. `}
         {resa.satt === 'flyg' && `Vi räknar med att du är på flygplatsen ${langd(FLYGPLATS_FORE)} före avgång. Flygen kommer från Aviasales sökningar de senaste dygnen; priset gäller när det syntes och kan ha ändrats. `}
         {resa.etapper.some((e) => ['tag', 'buss', 'annat'].includes(e.typ)) && 'Tåg- och busstiderna är Googles tidtabeller. Kontrollera tiden hos bolaget innan du bokar.'}
       </p>

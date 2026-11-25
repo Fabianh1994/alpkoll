@@ -22,6 +22,7 @@ const ACCENT = '#D4A574'
 const TEXT = '#f0ece4'
 const KORT = '#1c1a17'
 const SATT = ['bil', 'tag', 'flyg']
+const HEMTIDER = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']
 const SATTNAMN = { bil: 'Bil', tag: 'Tåg och buss', flyg: 'Flyg' }
 
 const etikett = {
@@ -70,7 +71,7 @@ export default function Reseplanerare({ ort, kurser }) {
   // Det sökta datumet gäller resultatet tills läsaren söker igen.
   const visDatum = sokt?.datum || datum
   const visHem = sokt?.hemDatum || hemDatum
-  const hemTid = '10:00'
+  const [hemTid, setHemTid] = useState('10:00')
 
   const laddaLib = useCallback(async () => {
     if (lib) return lib
@@ -90,7 +91,7 @@ export default function Reseplanerare({ ort, kurser }) {
   // Dit räknas när läsaren trycker på Visa resan; hem först när läsaren
   // väljer hemresan, så att Googles kvot inte går åt i onödan. Båda sparas
   // tills formuläret ändras.
-  const sok = useCallback(async (e, rikt = 'dit') => {
+  const sok = useCallback(async (e, rikt = 'dit', nyHemTid = null) => {
     e?.preventDefault?.()
     if (!hem) return
     const l = await laddaLib().catch(() => null)
@@ -111,7 +112,7 @@ export default function Reseplanerare({ ort, kurser }) {
     const [fran, till] = hemat ? [mal, hem] : [hem, mal]
     // Hemresan från fliken använder datumen från den senaste sökningen.
     const dag = hemat ? (e ? hemDatum : visHem) : (e ? datum : visDatum)
-    const startMs = svenskTid(dag, hemat ? hemTid : (e ? tid : sokt?.tid || tid))
+    const startMs = svenskTid(dag, hemat ? nyHemTid || hemTid : (e ? tid : sokt?.tid || tid))
     const samlat = {}
     const klar = (satt) => (r) => {
       if (nr !== sokning.current) return
@@ -134,7 +135,7 @@ export default function Reseplanerare({ ort, kurser }) {
       setSoker(false)
       if (!hemat) setTimeout(() => resultat.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
     }
-  }, [hem, mal, ort, datum, tid, hemDatum, laddaLib, bilval, egnaStopp, visDatum, visHem, sokt])
+  }, [hem, mal, ort, datum, tid, hemDatum, laddaLib, bilval, egnaStopp, visDatum, visHem, sokt, hemTid])
 
   // En delad länk fyller i formuläret. Google laddas först när läsaren
   // trycker på Visa resan, som utan länk.
@@ -157,6 +158,7 @@ export default function Reseplanerare({ ort, kurser }) {
       if (giltigtDatum(q.get('dag'))) setDatum(q.get('dag'))
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
       if (giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
+      if (HEMTIDER.includes(q.get('hemtid'))) setHemTid(q.get('hemtid'))
       setAterstalld((n) => n + 1)
     }, 0)
     return () => clearTimeout(t)
@@ -185,7 +187,12 @@ export default function Reseplanerare({ ort, kurser }) {
     if (!lib || !nyckel) return
     let aktuell = true
     const punkter = nyckel.split('|').map((x) => { const [lat, lng] = x.split(',').map(Number); return { lat, lng } })
-    stoppLangsVagen(lib, punkter).then((s) => aktuell && setStoppSvar({ for: nyckel, lista: s })).catch(() => aktuell && setStoppSvar({ for: nyckel, lista: [] }))
+    // Ett misslyckat försök görs om en gång efter en stund innan pauserna visas utan restauranger.
+    const hamta = () => stoppLangsVagen(lib, punkter)
+    hamta()
+      .catch(() => new Promise((ok) => setTimeout(ok, 4000)).then(() => (aktuell ? hamta() : Promise.reject())))
+      .then((s) => aktuell && setStoppSvar({ for: nyckel, lista: s }))
+      .catch(() => aktuell && setStoppSvar({ for: nyckel, lista: [] }))
     return () => { aktuell = false }
   }, [lib, nyckel])
 
@@ -193,7 +200,7 @@ export default function Reseplanerare({ ort, kurser }) {
   useEffect(() => {
     if (!resor || anvandarenValde.current) return
     if (SATT.some((s) => resor[s] === undefined)) return
-    const snabbast = SATT.filter((s) => resor[s] && !resor[s].saknas).sort((a, b) => resor[a].slut - resor[b].slut)[0]
+    const snabbast = snabbastSatt(resor)
     if (snabbast) setValt(snabbast)
   }, [resor])
 
@@ -297,7 +304,7 @@ export default function Reseplanerare({ ort, kurser }) {
   }, [lib, resor, franPunkt, tillPunkt, uppdatera])
 
   const vald = valt && resor?.[valt] && !resor[valt].saknas ? resor[valt] : null
-  const snabbast = resor && SATT.filter((s) => resor[s] && !resor[s].saknas).sort((a, b) => resor[a].slut - resor[b].slut)[0]
+  const snabbast = resor && snabbastSatt(resor)
 
   return (
     <div className="resa">
@@ -395,7 +402,23 @@ export default function Reseplanerare({ ort, kurser }) {
           </div>
           {hemat && (
             <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.5)', margin: '10px 0 0' }}>
-              Hemresan räknas från klockan 10.00, när de flesta boenden checkar ut.
+              Hemresan räknas från klockan{' '}
+              <select
+                aria-label="Hemresan börjar"
+                className="resa-input resa-valj"
+                style={{ display: 'inline-block', width: 'auto', padding: '4px 8px', fontSize: 12.5 }}
+                value={hemTid}
+                disabled={soker || !!andrar}
+                onChange={(ev) => {
+                  const t = ev.target.value
+                  setHemTid(t)
+                  delete sparade.current.hem
+                  sok(null, 'hem', t)
+                }}
+              >
+                {HEMTIDER.map((t) => <option key={t} value={t}>{t.replace(':', '.')}</option>)}
+              </select>
+              {hemTid === '10:00' && ', när de flesta boenden checkar ut.'}
             </p>
           )}
           <div className="resa-kort-rad" role="tablist" aria-label="Färdsätt">
@@ -405,7 +428,7 @@ export default function Reseplanerare({ ort, kurser }) {
                 satt={s}
                 r={resor[s]}
                 vald={valt === s}
-                snabbast={snabbast === s}
+                snabbast={snabbast === s && kanTas(resor[s])}
                 onClick={() => { anvandarenValde.current = true; setValt(s); setAktiv(null); setAndraFel(null) }}
               />
             ))}
@@ -429,6 +452,7 @@ export default function Reseplanerare({ ort, kurser }) {
               {vald ? (
                 <Tidslinje
                   resa={vald}
+                  antal={antal}
                   ort={ort}
                   mal={tillPunkt}
                   hemat={hemat}
@@ -451,9 +475,9 @@ export default function Reseplanerare({ ort, kurser }) {
                 <>
                   <Kostnad resa={vald} antal={antal} kurser={kurser} hemat={hemat} />
                   {vald.satt === 'flyg' && !hemat && vald.flyget && !vald.flyget.narliggande && (
-                    <TurRetur flyget={vald.flyget} datum={visDatum} retur={visHem} ort={ort} />
+                    <TurRetur flyget={vald.flyget} datum={visDatum} retur={visHem} ort={ort} antal={antal} />
                   )}
-                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={visDatum} tid={sokt?.tid || tid} hemDatum={visHem} antal={antal} />
+                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={visDatum} tid={sokt?.tid || tid} hemDatum={visHem} hemTid={hemTid} antal={antal} />
                 </>
               ) : (
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
@@ -474,7 +498,7 @@ export default function Reseplanerare({ ort, kurser }) {
  * Lägsta priset tur och retur för samma flygplatser, med hemdagen. Hämtas
  * först när flygresan visas, en gång per flygplatspar och datum.
  */
-function TurRetur({ flyget, datum, retur, ort }) {
+function TurRetur({ flyget, datum, retur, ort, antal }) {
   const [svar, setSvar] = useState(null)
   const { fran, till } = flyget
   const fraga = `/api/flyg?fran=${fran}&till=${till}&datum=${datum}&retur=${retur}`
@@ -494,7 +518,7 @@ function TurRetur({ flyget, datum, retur, ort }) {
         Från <strong>{heltal(Math.round(tr.pris))} kr</strong> per vuxen, båda vägarna{tr.vaska === 'reported_included' ? ', med en incheckad väska' : tr.vaska === 'estimated' ? ', med uppskattad väskavgift' : ''}.
       </div>
       <div style={{ marginTop: 10 }}>
-        <Partnerlank partner="aviasales" sid={`resa-turretur-${ort.slug}`} sok={{ url: tr.lank }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
+        <Partnerlank partner="aviasales" sid={`resa-turretur-${ort.slug}`} sok={{ url: medResenarer(tr.lank, antal) }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
           Se tur och retur ›
         </Partnerlank>
       </div>
@@ -506,13 +530,36 @@ function TurRetur({ flyget, datum, retur, ort }) {
 }
 
 /** Ett riktigt datum som YYYY-MM-DD, inte bara rätt form. */
-const giltigtDatum = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '') && !Number.isNaN(Date.parse(`${d}T12:00:00Z`)) && new Date(`${d}T12:00:00Z`).toISOString().slice(0, 10) === d
+// Året måste vara rimligt: medan man skriver årtalet rapporterar Chrome
+// mellanlägen som 0002-02-20, och de ska inte sparas.
+const giltigtDatum = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '') && Number(d.slice(0, 4)) >= 2020 && Number(d.slice(0, 4)) <= 2100 && !Number.isNaN(Date.parse(`${d}T12:00:00Z`)) && new Date(`${d}T12:00:00Z`).toISOString().slice(0, 10) === d
+
+/** Ett tal inom gränserna, annars null. Tar både 0,7 och 0.7. */
+const rimligt = (text, min, max) => {
+  const n = Number(String(text).replace(',', '.'))
+  return Number.isFinite(n) && n >= min && n <= max ? n : null
+}
+
+/** Aviasales söksträng slutar med antalet vuxna (1–9). */
+const medResenarer = (url, antal) => (url && antal > 1 ? url.replace(/1$/, String(Math.min(antal, 9))) : url)
+
+// Först framme räknas bara bland resor man faktiskt kan ta: inte ett flyg
+// som går före den valda tiden eller ett närliggande datum.
+const kanTas = (r) => r && !r.saknas && !r.tidigare && !r.flyget?.narliggande
+function snabbastSatt(resor) {
+  const fore = (lista) => lista.sort((a, b) => resor[a].slut - resor[b].slut)[0]
+  return fore(SATT.filter((s) => kanTas(resor[s]))) || fore(SATT.filter((s) => resor[s] && !resor[s].saknas))
+}
 
 const kortDatum = (d) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`)).replace('.', '')
 
 function Kostnad({ resa, antal, kurser, hemat }) {
-  const [forbrukning, setForbrukning] = useState(STANDARD_FORBRUKNING)
-  const [literpris, setLiterpris] = useState(STANDARD_LITERPRIS)
+  // Fälten sparar det läsaren skriver; räkningen tar standardvärdet tills
+  // talet är rimligt, så att "0," går att skriva på väg mot 0,7.
+  const [forbrukningText, setForbrukning] = useState(String(STANDARD_FORBRUKNING))
+  const [literprisText, setLiterpris] = useState(String(STANDARD_LITERPRIS))
+  const forbrukning = rimligt(forbrukningText, 0.2, 3) ?? STANDARD_FORBRUKNING
+  const literpris = rimligt(literprisText, 5, 50) ?? STANDARD_LITERPRIS
   const k = kostnad(resa, { vuxna: antal, barn: 0 }, { forbrukning, literpris }, kurser)
   const tal = { fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }
 
@@ -567,11 +614,11 @@ function Kostnad({ resa, antal, kurser, hemat }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
               Förbrukning
-              <input type="number" inputMode="decimal" min="0.2" max="2" step="0.1" value={forbrukning} onChange={(e) => setForbrukning(Number(e.target.value) || STANDARD_FORBRUKNING)} className="resa-input resa-litet" /> l/mil
+              <input type="number" inputMode="decimal" min="0.2" max="2" step="0.1" value={forbrukningText} onChange={(e) => setForbrukning(e.target.value)} onBlur={() => setForbrukning(String(forbrukning))} className="resa-input resa-litet" /> l/mil
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
               Literpris
-              <input type="number" inputMode="decimal" min="5" max="40" step="0.5" value={literpris} onChange={(e) => setLiterpris(Number(e.target.value) || STANDARD_LITERPRIS)} className="resa-input resa-litet" /> kr
+              <input type="number" inputMode="decimal" min="5" max="40" step="0.5" value={literprisText} onChange={(e) => setLiterpris(e.target.value)} onBlur={() => setLiterpris(String(literpris))} className="resa-input resa-litet" /> kr
             </label>
           </div>
         )}
@@ -589,11 +636,12 @@ function Kostnad({ resa, antal, kurser, hemat }) {
 
 const plats = (p) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)},${(p.adress || p.namn || '').replace(/,/g, ' ')}`
 
-function Spara({ resa, hem, stuga, fran, till, ort, datum, tid, hemDatum, antal }) {
+function Spara({ resa, hem, stuga, fran, till, ort, datum, tid, hemDatum, hemTid, antal }) {
   const [kopierad, setKopierad] = useState(false)
 
   const lank = () => {
     const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid, hem: hemDatum, antal: String(antal) })
+    if (hemTid !== '10:00') q.set('hemtid', hemTid)
     if (stuga) q.set('stuga', plats(stuga))
     return `${window.location.origin}${window.location.pathname}?${q}#resan-hit`
   }
@@ -859,7 +907,7 @@ function Teckenforklaring({ resa }) {
 
 // ── Tidslinjen ──────────────────────────────────────────────────────────
 
-function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg, andrar, andraFel, bilval, onBilval, egetStopp, onEgetStopp, onFlyttaTag, lib, laddaLib }) {
+function Tidslinje({ resa, antal, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg, andrar, andraFel, bilval, onBilval, egetStopp, onEgetStopp, onFlyttaTag, lib, laddaLib }) {
   const rader = []
   resa.etapper.forEach((e, i) => {
     const forra = resa.etapper[i - 1]
@@ -908,7 +956,7 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg, 
             </span>
           </li>
         ) : (
-          <Etapprad key={r.key} e={r.e} i={r.i} aktiv={aktiv === r.i} onClick={() => setAktiv(aktiv === r.i ? null : r.i)} ort={ort} />
+          <Etapprad key={r.key} e={r.e} i={r.i} aktiv={aktiv === r.i} onClick={() => setAktiv(aktiv === r.i ? null : r.i)} ort={ort} antal={antal} />
         ))}
         <li className="resa-rad">
           <span className="resa-klocka" style={{ color: ACCENT }}>{klocka(resa.slut)}{dagarSenare(resa.start, resa.slut) > 0 && <sup style={{ fontSize: 10, marginLeft: 1 }}>+{dagarSenare(resa.start, resa.slut)}</sup>}</span>
@@ -950,9 +998,9 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg, 
   )
 }
 
-function Etapprad({ e, aktiv, onClick, ort }) {
+function Etapprad({ e, aktiv, onClick, ort, antal }) {
   const farg = e.typ === 'vanta' ? 'rgba(240,236,228,0.3)' : (FARG[e.typ] || FARG.annat)
-  const { titel, rad, extra } = beskriv(e, ort)
+  const { titel, rad, extra } = beskriv(e, ort, antal)
   return (
     <li className={`resa-rad${aktiv ? ' aktiv' : ''}${e.typ === 'vanta' ? ' vanta-rad' : ''}`}>
       <span className="resa-klocka">{klocka(e.start)}</span>
@@ -972,7 +1020,7 @@ function Etapprad({ e, aktiv, onClick, ort }) {
   )
 }
 
-function beskriv(e, ort) {
+function beskriv(e, ort, antal) {
   const tidsrad = (delar) => delar.filter(Boolean).join(' · ')
   switch (e.typ) {
     case 'bil':
@@ -1022,7 +1070,7 @@ function beskriv(e, ort) {
               </ul>
             )}
             {e.lank && (
-            <Partnerlank partner="aviasales" sid={`resa-flyg-${ort.slug}`} sok={{ url: e.lank }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
+            <Partnerlank partner="aviasales" sid={`resa-flyg-${ort.slug}`} sok={{ url: medResenarer(e.lank, antal) }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
               Se livepris och boka ›
             </Partnerlank>
             )}

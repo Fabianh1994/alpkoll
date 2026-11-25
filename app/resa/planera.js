@@ -235,7 +235,7 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum, { hemat = 
 }
 
 /** Hela flygresan för ett valt flyg: vägen dit, flygplatsen, flyget och transfern. */
-export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = false } = {}) {
+export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = false, vidare = 'auto' } = {}) {
   const avgang = Date.parse(f.avgang)
   const ankomst = Date.parse(f.ankomst)
   const fran = FLYGPLATSER[f.fran]
@@ -245,7 +245,11 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   // Till flygplatsen: kollektivt om det inte tar mycket längre än bilen.
   const kollektivtDit = await kollektivEtapper(lib, hem, { namn: fran.namn, ...fran }, { ankomstMs: vidFlygplats }).catch(() => null)
   const kollMin = kollektivtDit?.length ? (kollektivtDit.at(-1).slut - kollektivtDit[0].start) / 60000 : Infinity
-  const ditEtapper = kollMin <= bilDit.min * 1.5 + 20
+  // Hemåt är det här vägen från orten, och där får läsaren välja själv.
+  const ditKoll = hemat && vidare !== 'auto'
+    ? vidare === 'kollektivt' && !!kollektivtDit?.length
+    : kollMin <= bilDit.min * 1.5 + 20
+  const ditEtapper = ditKoll
     ? kollektivtDit
     : [{ ...bilDit, start: vidFlygplats - bilDit.min * 60000, slut: vidFlygplats }]
 
@@ -280,11 +284,37 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   const efter = bagage.slut
   const kollektivtFran = await kollektivEtapper(lib, { namn: till.namn, ...till }, mal, { startMs: efter }).catch(() => null)
   const kollFranSlut = kollektivtFran?.at(-1)?.slut ?? Infinity
-  const franEtapper = kollFranSlut - efter <= (bilFran.min * 1.8 + 30) * 60000
+  const franKoll = !hemat && vidare !== 'auto'
+    ? vidare === 'kollektivt' && !!kollektivtFran?.length
+    : kollFranSlut - efter <= (bilFran.min * 1.8 + 30) * 60000
+  const franEtapper = franKoll
     ? kollektivtFran
     : [{ ...bilFran, typ: hemat ? 'bil' : 'transfer', start: efter, slut: efter + bilFran.min * 60000 }]
 
-  return resa('flyg', [...ditEtapper, incheckning, flygEtapp, bagage, ...franEtapper], { flyget: f, hemat })
+  // Vägen mellan flygplatsen och orten går att göra på två sätt: tåg och
+  // buss enligt Googles tidtabeller, eller taxi och transfer på bilvägen.
+  // Båda visas, så att läsaren kan välja.
+  const ortKoll = hemat ? kollektivtDit : kollektivtFran
+  const ortBil = hemat ? bilDit : bilFran
+  const vidareVal = {
+    kollektivt: ortKoll?.length ? {
+      min: Math.round((ortKoll.at(-1).slut - ortKoll[0].start) / 60000),
+      start: ortKoll[0].start,
+      slut: ortKoll.at(-1).slut,
+      byten: Math.max(0, ortKoll.filter((e) => e.typ !== 'gang').length - 1),
+      satt: [...new Set(ortKoll.filter((e) => e.typ !== 'gang').map((e) => e.typ))],
+    } : null,
+    taxi: {
+      min: ortBil.min,
+      km: ortBil.km,
+      start: hemat ? vidFlygplats - ortBil.min * 60000 : efter,
+      slut: hemat ? vidFlygplats : efter + ortBil.min * 60000,
+    },
+    valt: (hemat ? ditKoll : franKoll) ? 'kollektivt' : 'taxi',
+    flygplats: hemat ? fran.namn : till.namn,
+  }
+
+  return resa('flyg', [...ditEtapper, incheckning, flygEtapp, bagage, ...franEtapper], { flyget: f, hemat, vidare: vidareVal })
 }
 
 /**

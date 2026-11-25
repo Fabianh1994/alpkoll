@@ -168,12 +168,16 @@ export default function Reseplanerare({ ort, kurser }) {
   const hemat = riktning === 'hem'
   const [franPunkt, tillPunkt] = hemat ? [mal, hem] : [hem, mal]
 
-  const valjFlyg = useCallback(async (f) => {
+  // Nytt flyg, eller nytt sätt mellan flygplatsen och orten. Läsarens val
+  // av tåg och buss eller taxi följer med när flyget byts.
+  const valjFlyg = useCallback(async (f, vidare) => {
     const r = resor?.flyg
     if (!lib || !r?.bilDit) return
-    const ny = await byggFlygresa(lib, franPunkt, tillPunkt, f, r.bilDit[f.fran], r.bilFran[f.till], { hemat }).catch(() => null)
+    const fl = f || r.flyget
+    const val = vidare || r.vidareValt || 'auto'
+    const ny = await byggFlygresa(lib, franPunkt, tillPunkt, fl, r.bilDit[fl.fran], r.bilFran[fl.till], { hemat, vidare: val }).catch(() => null)
     if (ny) {
-      const flyg = { ...r, ...ny, tidigare: false }
+      const flyg = { ...r, ...ny, tidigare: f ? false : r.tidigare, vidareValt: val }
       if (sparade.current[riktning]) sparade.current[riktning] = { ...sparade.current[riktning], flyg }
       setResor((x) => ({ ...x, flyg }))
     }
@@ -746,6 +750,10 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
         </li>
       </ol>
 
+      {resa.satt === 'flyg' && resa.vidare && (
+        <VidareVal v={resa.vidare} ort={ort} hemat={hemat} onValj={(val) => onValjFlyg(null, val)} />
+      )}
+
       {resa.satt === 'flyg' && resa.alternativ?.length > 1 && (
         <AndraFlyg alternativ={resa.alternativ} valt={resa.flyget} onValj={onValjFlyg} />
       )}
@@ -898,6 +906,47 @@ function Pausrad({ r, ort }) {
         )}
       </div>
     </li>
+  )
+}
+
+const SATT_KORT = { tag: 'tåg', buss: 'buss', annat: 'kollektivt' }
+
+/** Tåg och buss eller taxi mellan flygplatsen och orten, sida vid sida. */
+function VidareVal({ v, ort, hemat, onValj }) {
+  const k = v.kollektivt
+  const tid = (x) => hemat ? `åk ${klocka(x.start)}` : `framme ${klocka(x.slut)}`
+  const kollNamn = k ? versal(k.satt.map((t) => SATT_KORT[t] || t).join(' och ')) : 'Tåg och buss'
+  return (
+    <section style={{ marginTop: 26 }}>
+      <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, letterSpacing: '0.04em', color: TEXT, margin: '0 0 12px', fontWeight: 400 }}>
+        {hemat ? `Från ${ort.namn} till flygplatsen` : `Från flygplatsen till ${ort.namn}`}
+      </h3>
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+        <li>
+          <button type="button" onClick={() => onValj('kollektivt')} disabled={!k || v.valt === 'kollektivt'} className={`resa-flygrad${v.valt === 'kollektivt' ? ' vald' : ''}`}>
+            <Ikon satt={k?.satt.includes('tag') ? 'tag' : 'buss'} farg={k ? ACCENT : 'rgba(240,236,228,0.35)'} storlek={16} />
+            {k ? (
+              <>
+                <span><span style={{ fontWeight: 600, color: TEXT }}>{kollNamn}</span> · {langd(k.min)} · {k.byten ? `${k.byten} ${k.byten === 1 ? 'byte' : 'byten'}` : 'utan byte'}</span>
+                <span style={{ marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{tid(k)}</span>
+              </>
+            ) : (
+              <span>Google hittade inget tåg eller buss {hemat ? 'som hinner till flyget' : 'efter landningen'}.</span>
+            )}
+          </button>
+        </li>
+        <li>
+          <button type="button" onClick={() => onValj('taxi')} disabled={v.valt === 'taxi'} className={`resa-flygrad${v.valt === 'taxi' ? ' vald' : ''}`}>
+            <Ikon satt="transfer" farg={ACCENT} storlek={16} />
+            <span><span style={{ fontWeight: 600, color: TEXT }}>Taxi eller transfer</span> · {langd(v.taxi.min)} · {heltal(v.taxi.km)} km</span>
+            <span style={{ marginLeft: 'auto', textAlign: 'right', whiteSpace: 'nowrap' }}>{tid(v.taxi)}</span>
+          </button>
+        </li>
+      </ul>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(240,236,228,0.4)', margin: '8px 0 0', lineHeight: 1.55 }}>
+        {hemat ? `Till ${v.flygplats}.` : `Från ${v.flygplats}.`} Taxin och transfern tar bilvägen utan köer; delad transferbuss stannar ofta på flera hotell och tar längre tid.
+      </p>
+    </section>
   )
 }
 

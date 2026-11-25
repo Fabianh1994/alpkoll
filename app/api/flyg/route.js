@@ -30,8 +30,16 @@ export async function GET(request) {
     return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
   }
 
+  // Livedata från Ignav när nyckeln finns; annars, eller om Ignav inte
+  // svarar, Aviasales sparade sökningar nedan.
+  const ignav = process.env.IGNAV_NYCKEL
+  if (ignav && !url.searchParams.get('diag')) {
+    const live = await ignavFlyg(fran, till, datum, ignav)
+    if (live?.length) return Response.json({ flyg: live, kalla: 'ignav' })
+  }
+
   const nyckel = process.env.TRAVELPAYOUTS_NYCKEL
-  if (!nyckel) return Response.json({ flyg: [], saknarNyckel: true })
+  if (!nyckel) return Response.json({ flyg: [], saknarNyckel: !ignav })
 
   // Datan bygger på vad folk sökt på, så en enskild dag kan sakna flyg.
   // Därför prövas först dagen med svenska sökningar, sedan dagen med alla
@@ -115,4 +123,57 @@ export async function GET(request) {
     .sort((a, b) => a.avgang.localeCompare(b.avgang))
 
   return Response.json({ flyg, kalla })
+}
+
+/** Aviasales sökning för sträckan och dagen, t.ex. ARN2002INN1. Partnerlank sätter markören. */
+function aviasalesSok(fran, till, datum) {
+  return `https://www.aviasales.com/search/${fran}${datum.slice(8, 10)}${datum.slice(5, 7)}${till}1`
+}
+
+/**
+ * Riktiga avgångar för dagen från Ignav (live, svensk marknad, högst ett
+ * byte). Svaret cachas tre timmar per sträcka och dag, så samma sökning från
+ * många läsare blir ett anrop. Länken går till Aviasales, där läsaren ser
+ * livepriset och Alpkoll får provision.
+ */
+async function ignavFlyg(fran, till, datum, nyckel) {
+  try {
+    const svar = await fetch('https://ignav.com/api/fares/one-way', {
+      method: 'POST',
+      headers: { 'X-Api-Key': nyckel, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, max_stops: 1, market: 'SE' }),
+      next: { revalidate: 10800 },
+    })
+    if (!svar.ok) return null
+    const d = await svar.json()
+    const lank = aviasalesSok(fran, till, datum)
+    return (d?.itineraries || [])
+      .map((it) => {
+        const seg = it.outbound?.segments || []
+        const forsta = seg[0]
+        const sista = seg[seg.length - 1]
+        if (!forsta?.departure_time_utc || !sista?.arrival_time_utc) return null
+        const avgang = Date.parse(forsta.departure_time_utc)
+        const ankomst = Date.parse(sista.arrival_time_utc)
+        return {
+          fran: forsta.departure_airport,
+          till: sista.arrival_airport,
+          avgang: new Date(avgang).toISOString(),
+          ankomst: new Date(ankomst).toISOString(),
+          minuter: Math.round((ankomst - avgang) / 60000),
+          byten: seg.length - 1,
+          bolag: it.outbound?.carrier || flygbolag(forsta.marketing_carrier_code),
+          bolagKod: forsta.marketing_carrier_code || null,
+          nummer: forsta.flight_number ? `${forsta.marketing_carrier_code || ''} ${forsta.flight_number}`.trim() : null,
+          pris: it.price?.currency === 'SEK' && Number.isFinite(it.price.amount) ? it.price.amount : null,
+          lank,
+          live: true,
+        }
+      })
+      .filter(Boolean)
+      .filter((f, i, alla) => alla.findIndex((g) => g.nummer === f.nummer && g.avgang === f.avgang) === i)
+      .sort((a, b) => a.avgang.localeCompare(b.avgang))
+  } catch {
+    return null
+  }
 }

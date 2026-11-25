@@ -408,7 +408,7 @@ function Kostnad({ resa, antal, kurser, hemat }) {
         )}
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(240,236,228,0.4)', lineHeight: 1.55, margin: '10px 0 0' }}>
           {resa.satt === 'bil' && `Literpriset ${STANDARD_LITERPRIS} kr och förbrukningen är antaganden; ändra dem till din bil. `}
-          {resa.satt === 'flyg' && 'Flygpriset är det lägsta Aviasales sett nyligen och kan ha ändrats. '}
+          {resa.satt === 'flyg' && (resa.flyget?.live ? 'Flygpriset är dagens lägsta för det flyget och kan ha ändrats. ' : 'Flygpriset är det lägsta Aviasales sett nyligen och kan ha ändrats. ')}
           Euro och franc räknas om till kronor med dagens kurs.
         </p>
       </div>
@@ -752,7 +752,7 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
 
       <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(240,236,228,0.4)', lineHeight: 1.6, margin: '22px 0 0' }}>
         {resa.satt === 'bil' && `Körtiden är Googles för normal trafik${resa.pausMin ? `, och ${resa.pauser?.some((p) => p.natt) ? 'pauserna och natten' : 'pauserna'} lägger till ${langd(resa.pausMin)}` : ''}. Vinterväglag och köer gör resan längre. `}
-        {resa.satt === 'flyg' && `Vi räknar med att du är på flygplatsen ${langd(FLYGPLATS_FORE)} före avgång. Flygen kommer från Aviasales sökningar de senaste dygnen; priset gäller när det syntes och kan ha ändrats. `}
+        {resa.satt === 'flyg' && `Vi räknar med att du är på flygplatsen ${langd(FLYGPLATS_FORE)} före avgång. ${resa.flyget?.live ? 'Flygen och priserna är hämtade live för dagen och sparas i högst tre timmar; priset kan ha ändrats när du bokar.' : 'Flygen kommer från Aviasales sökningar de senaste dygnen; priset gäller när det syntes och kan ha ändrats.'} `}
         {resa.etapper.some((e) => ['tag', 'buss', 'annat'].includes(e.typ)) && 'Tåg- och busstiderna är Googles tidtabeller. Kontrollera tiden hos bolaget innan du bokar.'}
       </p>
     </div>

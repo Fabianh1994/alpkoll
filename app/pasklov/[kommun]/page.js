@@ -47,14 +47,23 @@ export async function generateMetadata({ params }) {
   const rad = pasklovFranSlug((await params).kommun)
   if (!rad) return {}
 
-  const title = rad.start
-    ? `Påsklov ${AR} ${rad.kommun}: vecka ${rad.vecka}, ${lovet(rad)} | Alpkoll`
-    : `Påsklov ${AR} ${rad.kommun}: vecka ${rad.vecka} | Alpkoll`
+  // Google-texten, ändrad 25 november 2026. Search Console 22–24 november:
+  // kommunsidorna hade 465 visningar på snittplats 6,7 och inga klick.
+  // Datumet stod i titeln, och samma datum står i alla träffar runt
+  // omkring, kommunens egen sida först. Den som bara ville ha datumet fick
+  // det utan att klicka. Det ingen annan träff säger är hur många dagar i
+  // rad barnen är lediga, så det står i titeln. Beskrivningen börjar med
+  // lovdagarna och säger sedan vilken skidvecka som ryms.
   const ledigt = ledigtIRad(rad)
-  const description =
-    `${rad.kommun} har påsklov vecka ${rad.vecka}${rad.start ? `, ${lovet(rad)} ${AR}` : ''}. ` +
-    (ledigt ? `Med helger och röda dagar blir det ${ledigt.dagar} lediga dagar i rad. ` : '') +
-    'Se var snön är säkrast i påsk.'
+  const skidvecka = skidveckaInom(ledigt)
+  const title = ledigt
+    ? `Påsklov ${AR} ${rad.kommun} v. ${rad.vecka}: ${ledigt.dagar} dagar ledigt i rad | Alpkoll`
+    : `Påsklov ${AR} ${rad.kommun}: vecka ${rad.vecka} | Alpkoll`
+  const description = ledigt
+    ? `Lovet är ${lovet(rad)} ${AR}. Barnen är lediga ${spann(ledigt.start, ledigt.slut)}` +
+      (skidvecka ? `, så en skidvecka ${spann(skidvecka.start, skidvecka.slut)} ryms. ` : '. ') +
+      'Se var snön är säkrast i påsk.'
+    : `${rad.kommun} har påsklov vecka ${rad.vecka}. Se var snön är säkrast i påsk.`
   const url = `${SITE_URL}/pasklov/${rad.slug}`
 
   return {

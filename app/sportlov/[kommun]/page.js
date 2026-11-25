@@ -26,6 +26,16 @@ export function generateStaticParams() {
   return KOMMUNER.map((k) => ({ kommun: kommunSlug(k.kommun) }))
 }
 
+const KORT = ['jan', 'feb', 'mars', 'apr', 'maj', 'juni', 'juli', 'aug', 'sep', 'okt', 'nov', 'dec']
+
+/** "27 feb – 6 mars": spannet kort nog för en titel i Google. */
+function kortSpann(start, slut) {
+  const [, m1, d1] = start.split('-')
+  const [, m2, d2] = slut.split('-')
+  const m = (x) => KORT[Number(x) - 1]
+  return m1 === m2 ? `${Number(d1)}–${Number(d2)} ${m(m2)}` : `${Number(d1)} ${m(m1)} – ${Number(d2)} ${m(m2)}`
+}
+
 /** "1–5 mars", måndag till fredag — skoldagarna som är lediga. */
 function skoldagar(v) {
   const fredag = new Date(`${v.start}T12:00:00Z`)
@@ -38,10 +48,20 @@ export async function generateMetadata({ params }) {
   if (!rad) return {}
   const v = veckan(rad.vecka)
 
-  const title = `Sportlov ${AR} ${rad.kommun}: vecka ${v.nr}, ${skoldagar(v)} | Alpkoll`
+  // Google-texten, ändrad 25 november 2026. Search Console 22–24 november:
+  // kommunsidorna hade 238 visningar på snittplats 10 och ett klick.
+  // Datumet för skoldagarna står i alla träffar runt omkring, kommunens
+  // egen sida först. Det ingen annan träff säger är skidveckan, lördag
+  // till lördag, som är de datum en familj bokar efter. Den står i
+  // titeln; skoldagarna står först i beskrivningen.
+  const skid = skidveckan(v.nr)
+  const title = skid
+    ? `Sportlov ${AR} ${rad.kommun} v. ${v.nr}: skidvecka ${kortSpann(skid.start, skid.slut)} | Alpkoll`
+    : `Sportlov ${AR} ${rad.kommun}: vecka ${v.nr}, ${skoldagar(v)} | Alpkoll`
   const description =
-    `${rad.kommun} har sportlov vecka ${v.nr}, ${skoldagar(v)} ${AR}. ` +
-    'Vilken fredag nattåget till Alperna går, vad veckan gör med liftkortspriset och hur lång resan till fjällen är.'
+    `Lovet är ${skoldagar(v)} ${AR}` +
+    (skid ? `, skidveckan lördag till lördag ${spann(skid.start, skid.slut)}.` : '.') +
+    ' Nattåget den veckan, vad den gör med liftkortspriset och bilresan dit.'
   const url = `${SITE_URL}/sportlov/${kommunSlug(rad.kommun)}`
 
   return {

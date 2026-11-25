@@ -46,12 +46,13 @@ nedan.
 | solden | EUR | 84,50 | **469,00** | 5,55 | 26/27 | v2/v9/v13 lika. Topp 478,50 gäller 19.12–6.1 och 30.1–26.2 |
 | ischgl | EUR | 83 | **385** | 4,64 | 26/27 | VIP-kortet för Ischgl/Samnaun, gäster i Ischgl och Mathon. Ett pris hela säsongen. Silvretta-kortet 451 är större kort (omgång 8) |
 | tignes | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma område som våra 300 km |
+| val-d-isere | EUR | 78 | **468** | 6,00 | 26/27 | Tignes–Val d'Isère, samma kort och område som tignes |
 | alpe-d-huez | EUR | 68 | **336,50** | 4,95 | 26/27 | 19.12.26–9.4.27 |
 | courchevel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | meribel | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | val-thorens | EUR | 84,20 | **421** | 5,00 | 26/27 | Les 3 Vallées. Fast pris från 19.12.26; lördagar 67,30 för en dag |
 | verbier | CHF | 94 | **409** | 4,35 | 26/27 | 4 Vallées, samma som våra 412 km. Verbier–Tzoumaz ensamt: 86/374 |
-| geilo | NOK | 693 | **2 871** | 4,14 | 25/26 | produkten heter "6–8 dagar" |
+| geilo | NOK | 690 | **3 174** | 4,60 | 26/27 | nätpris, dynamiskt, start 27.2.2027; produkten heter "6–8 dagar" |
 | are | SEK | 759 | **3 744** | 4,93 | 26/27 | SkiStar, lika för start 27.2 och 1.3 (omläst 2026-11-18) |
 | salen | SEK | 650 | **3 126** | 4,81 | 26/27 | inkluderar två skiddagar i Trysil. Lika för 27.2 och 1.3 |
 | trysil | NOK | 775 | **3 806** | 4,91 | 26/27 | hämtat på SkiStars norska sida, i NOK — se not nedan. Lika för 27.2 och 1.3 |
@@ -60,7 +61,7 @@ nedan.
 | voss | NOK | 675 | **2 750** | 4,07 | 26/27 | "6-8 dagerskort", sammanhängande, kväll och gondol ingår. Nätpris ur bokningskalendern, 2 750 för varje startdag 8.2–7.3.2027 och dagskortet 675 varje dag (049). 2026-08-25 visade kalendern 2 990 och 675 / 720 |
 | riksgransen | SEK | 546 | **2 673** | 4,90 | 26/27 | 5 dagar 2 304 + extra dag 369; ingen egen sexdagarsrad finns. Ett pris hela säsongen (049). **Kortet gäller Björkliden OCH Riksgränsen** — se not nedan |
 | zermatt | CHF | 122 | **574** | 4,70 | 26/27 | Internationellt kort Zermatt–Cervinia = våra 322 km. Dynamiskt, start 27.2.2027 (036, bekräftat i omgång 9). Zermatt ensamt: 104/510 |
-| st-anton | EUR | — | **450** | — | **25/26** | 26/27 ej publicerat. Lågsäsong 380 |
+| st-anton | EUR | 85 | **468** | 5,51 | 26/27 | Ski Arlberg, peak season 19.12.26–2.4.27, som v9 ligger i. Ski Arlberg kallar priset preliminärt. 25/26: 450 (030) |
 | kitzbuehel | EUR | 83 | **423** | 5,10 | 26/27 | KitzSki. Premium 20.12.26–13.3.27. Spar 351, Vorteil 387 |
 | les-arcs | EUR | 71 | **368** | 5,18 | 26/27 | Classic Pass = Les Arcs/Peisey-Vallandry, 200 km, våra tal. 19.12.26–16.4.27 |
 | saas-fee | CHF | 84 | **413** | 4,92 | 26/27 | Saas-Fee-kortet (Saas-Fee + Saas-Almagell). Destination-kortet gäller hela Saastal och är inte detta |
@@ -408,6 +409,7 @@ dag, km och kronor per km, och tabellen går att sortera.
 
 - **cortina-d-ampezzo** — Dolomiti Superski 453 €, 1 200 km.
 - **chamonix** — Mont-Blanc Unlimited 104 / 499 €, 170 + 41 km (Courmayeur).
+  [Omkontrollen 2026-11-25: för 26/27 gäller kortet också Evasion Mont-Blanc och ger en dag i Crans-Montana, inte Verbier. km satt till null.]
 - **les-arcs** — Paradiski, Essential Pass 78 / 412 € i högsäsong,
   lesarcs-peiseyvallandry.com. 200 + 225 km.
 - **saas-fee** — Destination-kortet för hela Saastal, 428 CHF (fast pris),
@@ -489,7 +491,9 @@ korten gäller samma område som pisttalen, så ingen står i `LIFTKORT`.
 - **serre-chevalier** — 68 / 345 €, vuxen 12–64, säsong 19.12.26–26.3.27
   (serrechevalier-pass.com/fr/grille-tarifaire). Forskaren kunde bara läsa
   priset hos tredje part; granskaren läste liftbolagets sida med Firecrawl,
-  som renderar JavaScript. Början och slutet av säsongen 56 / 283 €.
+  som renderar JavaScript. Början och slutet av säsongen (5–18.12.26 och
+  27.3–4.4.27) 54,50 / 276 €. [Rättat 2026-11-25: 56 / 283 var barnpriset i
+  högsäsong.]
 
 
 ## 2026-11-18 — Omgång 4: tre italienska orter
@@ -570,6 +574,11 @@ granskningen av omgång 6 samma dag. Se migration 044. Orterna ligger dolda
   läste ortens bokning renderad; granskaren fick bara sidans skal med curl,
   och pistat.se visar samma tal. Listpris: på nätet dras 5 %, och 10 % vid
   köp mer än 40 dagar före. Priset ändras med veckan. Kvot 4,21.
+  **Rättat 2026-11-25 (migration 054):** 671 / 2 827 var förköpspriset.
+  Bokningen visar "671 SEK 745 SEK" och "2 827 SEK 3 142 SEK", där 745 och
+  3 142 är de överstrukna ordinarie priserna och 671 = 0,9 × 745. pistat.se
+  "utan rabatt" 745 / 3 142. Sajten visar nu 745 / 3 142 SEK, som Kläppen
+  och Hemavan med ordinarie pris. Kvot 4,22.
   Idrepasset (Idre Fjäll, Fjätervålen, Idre Himmelfjäll, Grövelfjäll) är ett
   tilläggskort mellan fyra ägare; priset är inte läst, och det står inte i
   `STORRE_KORT`.
@@ -725,3 +734,17 @@ Klicka fram SkiPass från ortens egen sida.
   högperioden "19 dec – 4 jan & 14 feb – 3 maj" men ännu inga belopp.
   pistat.se och skiresort visar 605 / 2 685, troligen förra årets tal, som
   inte tas in.
+
+## Omkontrollen 2026-11-25, Norge och Finland (migration 055)
+
+- **geilo** — 26/27 finns nu. Butikens prisfunktion
+  (`geilo.skiperformance.com`, samma anrop som köpkalendern gör) ger för
+  start 27.2.2027 vuxen 690 NOK för en dag och 3 173,50 för 6–8 dagar.
+  Orten publicerar inget kassapris eller överstruket pris, så nätpriset
+  lagras som för Voss. De närmaste startdagarna (28.11–1.12.2026) kostade
+  745 / 3 427, vilket tyder på ett grundpris och ett förköpspris. Det är
+  obekräftat; läs om i februari. Kvot 4,60.
+- **trysil** och **salen** — noten säger nu att två av veckokortets dagar
+  kan användas i den andra orten (skistar.com), inte att två dagar ingår
+  utöver.
+

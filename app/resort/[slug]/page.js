@@ -190,9 +190,8 @@ export default async function ResortPage({ params }) {
   // aldrig frågat efter. Det som faktiskt behövs för att förstå 3 744 kr
   // är vad kortet omfattar och vilken säsong det gäller.
   //
-  // Säsongen är inte en detalj. Fyra orter bär 25/26-priser därför att de
-  // inte publicerat nästa säsong — st-anton, madonna-di-campiglio, geilo
-  // och riksgransen. /liftkortspriser märker ut dem med en etikett per
+  // Säsongen är inte en detalj. En ort som inte publicerat nästa säsong
+  // bär förra årets pris (2026-11-25 ingen, Geilo var den sista). /liftkortspriser märker ut dem med en etikett per
   // rad; ortsidan gjorde det inte alls, och visade alltså förra årets
   // pris som om det vore årets.
   const prismeta = prisAttVisa ? VERIFIERADE[resort.slug] : null

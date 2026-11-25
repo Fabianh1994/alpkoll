@@ -88,7 +88,7 @@ export default async function TagTillFjallen() {
     },
     {
       fraga: 'Går det tåg till Sälen?',
-      svar: 'Ja, från vintern 2026/27. Snälltåget kör lördagar från Malmö via Stockholm till Mora, och en transferbuss tar dig vidare till Lindvallen, Högfjället, Tandådalen, Hundfjället och Stöten.',
+      svar: 'Ja, från vintern 2026/27. Snälltåget kör lördagar från Malmö via Stockholm till Mora, och en transferbuss tar dig vidare till Lindvallen, Högfjället, Tandådalen, Hundfjället och Stöten. SJ kör söndagar 17 januari till 4 april från Stockholm till Mora, med buss vidare till SkiStars områden.',
     },
     {
       fraga: 'Går det nattåg till Åre?',
@@ -141,7 +141,7 @@ export default async function TagTillFjallen() {
           <p style={{ ...brod, color: 'rgba(255,255,255,0.82)', margin: 0 }}>
             Till <strong style={{ color: '#f0ece4' }}>{lista(helaVagen)}</strong> går nattåget hela vägen.
             Till <strong style={{ color: '#f0ece4' }}>{lista(medBuss)}</strong> tar du tåget och sedan buss sista biten,
-            och Sälen har fått ett eget tåg till Mora från den här vintern.
+            och till Sälen går det tåg till Mora från den här vintern.
             {utan.length > 0 && <> Till {lista(utan)} går inget tåg.</>}
           </p>
         </section>

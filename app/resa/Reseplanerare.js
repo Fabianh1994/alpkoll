@@ -391,7 +391,7 @@ function Kostnad({ resa, antal, kurser, hemat }) {
         )}
         {k.ovrigt.length > 0 && (
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.6, margin: k.rader.length ? '10px 0 0' : 0 }}>
-            Tillkommer: {k.ovrigt.join(', ').replace(/^./, (c) => c.toUpperCase())}.
+            Tillkommer: {k.ovrigt.map((t) => t.replace(/\.$/, '')).join('; ').replace(/^./, (c) => c.toUpperCase())}.
           </p>
         )}
         {resa.satt === 'bil' && (
@@ -827,7 +827,7 @@ function beskriv(e, ort) {
         rad: tidsrad([
           e.bolag,
           `${e.fran.namn} ${klocka(e.start)} → ${e.till.namn} ${klocka(e.slut)}`,
-          e.hallplatser ? `${e.hallplatser} hållplatser` : null,
+          e.hallplatser ? `${e.hallplatser} ${e.hallplatser === 1 ? 'hållplats' : 'hållplatser'}` : null,
           langd((e.slut - e.start) / 60000),
         ]),
         extra: e.lank && (

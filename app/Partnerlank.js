@@ -24,6 +24,7 @@ import Annonsmarkning from './Annonsmarkning'
 
 const PARTNERS = {
   booking: {
+    namn: 'Booking.com',
     sparas: bookingSparas,
     adress: ({ destination, checkin, checkout, sid }) =>
       bookingUrl(destination, { lang: 'sv', label: sid, checkin, checkout }),
@@ -33,6 +34,7 @@ const PARTNERS = {
   // som Travelpayouts läser som SubID. Utan markör blir det en vanlig länk
   // till Aviasales, utan provision och utan annonsmärkning.
   aviasales: {
+    namn: 'Aviasales',
     sparas: Boolean(process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER),
     adress: ({ url, sid }) => {
       const marker = process.env.NEXT_PUBLIC_TRAVELPAYOUTS_MARKER
@@ -48,6 +50,7 @@ const PARTNERS = {
   // en punkt, som för Aviasales. Utan länk går knappen rakt till Holiday
   // Taxis, utan provision och utan annonsmärkning.
   holidaytaxis: {
+    namn: 'Holiday Taxis',
     sparas: Boolean(process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK),
     adress: ({ sid }) => {
       const lank = process.env.NEXT_PUBLIC_HOLIDAYTAXIS_LANK
@@ -93,7 +96,7 @@ export default function Partnerlank({
 
   return (
     <>
-      {markning && p.sparas && <Annonsmarkning kompakt={markning === 'kompakt'} style={markningStyle} />}
+      {markning && p.sparas && <Annonsmarkning kompakt={markning === 'kompakt'} style={markningStyle} partner={p.namn} aktiv={p.sparas} />}
       <a href={href} target="_blank" rel={rel} style={style}>
         {children}
       </a>

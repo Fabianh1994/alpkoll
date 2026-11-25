@@ -24,9 +24,12 @@ import { hasAffiliateId } from '../lib/booking'
  * @param kompakt  utan den förklarande meningen, för ytor där knappen
  *                 sitter i en smal spalt
  * @param style    marginaler från platsen där märkningen står
+ * @param partner  vem länken går till, t.ex. 'Aviasales'
+ * @param aktiv    om länken ger provision; utelämnad gäller Bookings ID
  */
-export default function Annonsmarkning({ kompakt = false, style }) {
-  if (!hasAffiliateId) return null
+export default function Annonsmarkning({ kompakt = false, style, partner = 'Booking.com', aktiv }) {
+  // Andra partner än Booking avgör själva om länken är kommersiell (aktiv).
+  if (!(aktiv ?? hasAffiliateId)) return null
 
   return (
     <p style={{
@@ -40,8 +43,8 @@ export default function Annonsmarkning({ kompakt = false, style }) {
         Annons
       </span>
       {kompakt
-        ? 'Booking.com. Vi får provision om du bokar.'
-        : 'Länken går till Booking.com. Vi får provision om du bokar där, och priset du betalar är detsamma.'}
+        ? `${partner}. Vi får provision om du bokar.`
+        : `Länken går till ${partner}. Vi får provision om du bokar där, och priset du betalar är detsamma.`}
     </p>
   )
 }

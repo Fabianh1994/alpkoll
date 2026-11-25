@@ -83,7 +83,7 @@ export default async function ResaSida({ params }) {
         )}
 
         <p style={{ fontFamily: 'var(--font-body)', fontSize: 12, lineHeight: 1.7, color: 'rgba(240,236,228,0.4)', margin: '28px 0 0', maxWidth: 760 }}>
-          Vägar, tåg och bussar: Google Maps. Flyg: Aviasales via Travelpayouts.
+          Vägar, tåg och bussar: Google Maps. Flyg: Ignav (live) och Aviasales via Travelpayouts.
           {' '}<Link href={`/resort/${r.slug}`} style={{ color: 'rgba(240,236,228,0.6)' }}>Mer om {r.name}</Link>
         </p>
       </main>

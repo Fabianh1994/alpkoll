@@ -23,6 +23,8 @@ const ACCENT = '#D4A574'
 const TEXT = '#f0ece4'
 const KORT = '#1c1a17'
 const SATT = ['bil', 'tag', 'flyg']
+// Ett färdsättskort går att välja när resan är klar och finns.
+const kanValjas = (r) => r !== undefined && !r?.saknas
 const HEMTIDER = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00']
 const SATTNAMN = { bil: 'Bil', tag: 'Tåg och buss', flyg: 'Flyg' }
 
@@ -366,6 +368,11 @@ export default function Reseplanerare({ ort, kurser }) {
             <span style={etikett}>Hem</span>
             <DatumFalt value={hemDatum} min={plusDagar(datum, 1)} onChange={setHemDatum} />
           </label>
+          {hemDatumVal && hemDatumVal <= datum && (
+            <p role="status" style={{ gridColumn: '1 / -1', order: 9, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
+              Hemresan måste vara efter avresan, så vi räknar med {dag(svenskTid(hemDatum, '10:00'))}.
+            </p>
+          )}
           <label className="resa-falt">
             <span style={etikett}>Resenärer</span>
             <select value={antal} onChange={(e) => setAntal(Number(e.target.value))} className="resa-input">
@@ -432,7 +439,7 @@ export default function Reseplanerare({ ort, kurser }) {
                 satt={s}
                 r={resor[s]}
                 vald={valt === s}
-                fokus={valt ? valt === s : s === SATT[0]}
+                fokus={valt && kanValjas(resor[valt]) ? valt === s : s === SATT.find((x) => kanValjas(resor[x]))}
                 snabbast={snabbast === s && kanTas(resor[s])}
                 onClick={() => { anvandarenValde.current = true; setValt(s); setAktiv(null); setAndraFel(null) }}
               />

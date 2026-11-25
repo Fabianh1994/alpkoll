@@ -27,13 +27,18 @@ const DATUM = /^\d{4}-\d{2}-\d{2}$/
 const GRANS = 150
 const FONSTER = 10 * 60000
 const fragor = new Map()
+let rensat = 0
 function forMycket(request) {
   const ip = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'okand'
   const nu = Date.now()
   const lista = (fragor.get(ip) || []).filter((t) => nu - t < FONSTER)
   lista.push(nu)
   fragor.set(ip, lista)
-  if (fragor.size > 5000) for (const [k, v] of fragor) if (nu - v.at(-1) >= FONSTER) fragor.delete(k)
+  // Gamla adresser rensas en gång i minuten, inte vid varje fråga.
+  if (nu - rensat > 60000) {
+    rensat = nu
+    for (const [k, v] of fragor) if (nu - v.at(-1) >= FONSTER) fragor.delete(k)
+  }
   return lista.length > GRANS
 }
 

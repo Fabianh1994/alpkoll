@@ -131,7 +131,7 @@ test('flygresan tar upp parkeringen vid flygplatsen hemma', () => {
   assert.ok(k.ovrigt.includes('parkeringen vid flygplatsen hemma, för hela resan'))
   // Parkeringen räknas en gång, inte igen på hemresan.
   const hemat = { ...resa, hemat: true, etapper: [...resa.etapper].reverse().map((e, i) => ({ ...e, typ: ['transfer', 'flyg', 'bil'][i] })) }
-  assert.ok(!kostnad(hemat, { vuxna: 2 }, {}, null).ovrigt.some((t) => /parkering/.test(t)))
+  assert.deepEqual(kostnad(hemat, { vuxna: 2 }, {}, null).ovrigt.filter((t) => /parkering/.test(t)), ['parkeringen vid flygplatsen hemma (räknad på resan dit)'])
   assert.equal(k.rader.find((x) => /^Flyget/.test(x.namn)).kr, 2000)
 })
 

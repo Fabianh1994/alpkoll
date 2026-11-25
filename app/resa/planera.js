@@ -31,7 +31,7 @@ export async function bilEtapp(lib, fran, till, startMs, { typ = 'bil' } = {}) {
   return {
     typ,
     fran: { namn: fran.namn, lat: fran.lat, lng: fran.lng },
-    till: { namn: till.namn, lat: till.lat, lng: till.lng },
+    till: { namn: till.namn, lat: till.lat, lng: till.lng, kod: till.kod },
     start: startMs,
     slut: startMs + min * 60000,
     min,
@@ -166,11 +166,12 @@ export async function planeraTag(lib, hem, mal, startMs) {
  *
  * @param ort  { slug, namn, portkod }
  */
-export async function planeraFlyg(lib, hem, mal, ort, startMs, datum) {
+export async function planeraFlyg(lib, hem, mal, ort, startMs, datum, { hemat = false } = {}) {
   if (avstandKm(hem, mal) < 250) return { satt: 'flyg', saknas: 'Orten ligger för nära för att flyget ska löna sig.' }
 
-  const fran = avreseFor(hem)
-  const till = ankomstFor(ort.slug, ort.portkod).filter((k) => !fran.includes(k))
+  // Hemåt är det tvärtom: från ortens flygplatser till de närmaste hemma.
+  const fran = hemat ? ankomstFor(ort.slug, ort.portkod) : avreseFor(hem)
+  const till = (hemat ? avreseFor(mal) : ankomstFor(ort.slug, ort.portkod)).filter((k) => !fran.includes(k))
   if (!till.length) return { satt: 'flyg', saknas: 'Det finns ingen flygplats att flyga till för den här orten.' }
 
   const par = fran.flatMap((f) => till.map((t) => [f, t]))
@@ -179,15 +180,15 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum) {
 
   if (svar.every((s) => s.saknarNyckel)) return { satt: 'flyg', saknas: 'Flygdatan är inte inkopplad än.' }
   const flyg = svar.flatMap((s) => s.flyg || []).filter((f) => f.byten <= 1 && FLYGPLATSER[f.fran] && FLYGPLATSER[f.till])
-  if (!flyg.length) return { satt: 'flyg', saknas: 'Inga flyg hittades den dagen från flygplatserna närmast dig.' }
+  if (!flyg.length) return { satt: 'flyg', saknas: hemat ? 'Inga flyg hem hittades den dagen.' : 'Inga flyg hittades den dagen från flygplatserna närmast dig.' }
 
   // Bilvägen till varje avreseflygplats och från varje ankomstflygplats,
   // en gång per flygplats.
-  const plats = (kod) => ({ namn: FLYGPLATSER[kod].namn, lat: FLYGPLATSER[kod].lat, lng: FLYGPLATSER[kod].lng })
+  const plats = (kod) => ({ namn: FLYGPLATSER[kod].namn, lat: FLYGPLATSER[kod].lat, lng: FLYGPLATSER[kod].lng, kod })
   const unika = (lista) => [...new Set(lista)]
   const [dit, darifran] = await Promise.all([
-    Promise.all(unika(flyg.map((f) => f.fran)).map(async (k) => [k, await bilEtapp(lib, hem, plats(k), 0).catch(() => null)])),
-    Promise.all(unika(flyg.map((f) => f.till)).map(async (k) => [k, await bilEtapp(lib, plats(k), mal, 0, { typ: 'transfer' }).catch(() => null)])),
+    Promise.all(unika(flyg.map((f) => f.fran)).map(async (k) => [k, await bilEtapp(lib, hem, plats(k), 0, hemat ? { typ: 'transfer' } : {}).catch(() => null)])),
+    Promise.all(unika(flyg.map((f) => f.till)).map(async (k) => [k, await bilEtapp(lib, plats(k), mal, 0, hemat ? {} : { typ: 'transfer' }).catch(() => null)])),
   ])
   const bilDit = Object.fromEntries(dit)
   const bilFran = Object.fromEntries(darifran)
@@ -210,7 +211,7 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum) {
     .sort((a, b) => a.framme - b.framme || (a.pris ?? 1e9) - (b.pris ?? 1e9))
 
   const valt = urval[0]
-  const resan = await byggFlygresa(lib, hem, mal, valt, bilDit[valt.fran], bilFran[valt.till])
+  const resan = await byggFlygresa(lib, hem, mal, valt, bilDit[valt.fran], bilFran[valt.till], { hemat })
   return {
     ...resan,
     tidigare: !hinns.length,
@@ -222,7 +223,7 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum) {
 }
 
 /** Hela flygresan för ett valt flyg: vägen dit, flygplatsen, flyget och transfern. */
-export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran) {
+export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = false } = {}) {
   const avgang = Date.parse(f.avgang)
   const ankomst = Date.parse(f.ankomst)
   const fran = FLYGPLATSER[f.fran]
@@ -257,7 +258,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran) {
     fran: flygEtapp.fran, till: flygEtapp.fran,
   }
   const bagage = {
-    typ: 'vanta', namn: 'Bagage och vidare till transfern',
+    typ: 'vanta', namn: hemat ? 'Bagage och vidare hem' : 'Bagage och vidare till transfern',
     start: ankomst, slut: ankomst + EFTER_LANDNING * 60000, path: [],
     fran: flygEtapp.till, till: flygEtapp.till,
   }
@@ -269,9 +270,9 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran) {
   const kollFranSlut = kollektivtFran?.at(-1)?.slut ?? Infinity
   const franEtapper = kollFranSlut - efter <= (bilFran.min * 1.8 + 30) * 60000
     ? kollektivtFran
-    : [{ ...bilFran, typ: 'transfer', start: efter, slut: efter + bilFran.min * 60000 }]
+    : [{ ...bilFran, typ: hemat ? 'bil' : 'transfer', start: efter, slut: efter + bilFran.min * 60000 }]
 
-  return resa('flyg', [...ditEtapper, incheckning, flygEtapp, bagage, ...franEtapper], { flyget: f })
+  return resa('flyg', [...ditEtapper, incheckning, flygEtapp, bagage, ...franEtapper], { flyget: f, hemat })
 }
 
 /**

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { Zoom } from './Kontroller'
 import { KARTSTIL } from './google'
 import { FARG } from '../../lib/resa/resvag'
 
@@ -30,7 +31,7 @@ export default function ResKarta({ lib, resa, hem, mal, stopp, aktiv, onValjEtap
       styles: KARTSTIL,
       backgroundColor: '#121110',
       disableDefaultUI: true,
-      zoomControl: true,
+      zoomControl: false,
       gestureHandling: 'cooperative',
       clickableIcons: false,
     })
@@ -124,11 +125,14 @@ export default function ResKarta({ lib, resa, hem, mal, stopp, aktiv, onValjEtap
   }, [lib, resa, hem, mal, stopp, aktiv, onValjEtapp])
 
   return (
-    <div
-      ref={ruta}
-      role="img"
-      aria-label="Karta över resan"
-      style={{ width: '100%', height: '100%', minHeight: 360, background: '#121110' }}
-    />
+    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+      <div
+        ref={ruta}
+        role="img"
+        aria-label="Karta över resan"
+        style={{ position: 'absolute', inset: 0, background: '#121110' }}
+      />
+      {lib && <Zoom karta={karta} style={{ right: 12, bottom: 12 }} />}
+    </div>
   )
 }

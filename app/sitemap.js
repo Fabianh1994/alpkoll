@@ -90,6 +90,7 @@ export default async function sitemap() {
       changeFrequency: 'weekly',
       priority: 0.8,
     })),
+    { url: `${SITE_URL}/resa`, lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
     ...slugs.map((slug) => ({
       url: `${SITE_URL}/resa/${slug}`,
       lastModified: now,

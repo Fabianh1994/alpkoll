@@ -5,6 +5,7 @@ import { bibliotek, harNyckel } from './google'
 import { planeraBil, planeraTag, planeraFlyg, byggFlygresa, stoppLangsVagen, bilMedPauser, BILVAL } from './planera'
 import ResKarta from './ResKarta'
 import Partnerlank from '../Partnerlank'
+import { Kalender, datumSpann } from './Kontroller'
 import { giltigtDatum, rimligt, medResenarer, kanTas, snabbastSatt } from '../../lib/resa/val'
 import {
   FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar, datumFor,
@@ -75,6 +76,9 @@ export default function Reseplanerare({ ort, kurser }) {
   const visDatum = sokt?.datum || datum
   const visHem = sokt?.hemDatum || hemDatum
   const [hemTid, setHemTid] = useState('10:00')
+  const [kalender, setKalender] = useState(false)
+  const datumKnapp = useRef(null)
+  const stangKalender = useCallback(() => { setKalender(false); datumKnapp.current?.focus() }, [])
 
   const laddaLib = useCallback(async () => {
     if (lib) return lib
@@ -158,9 +162,12 @@ export default function Reseplanerare({ ort, kurser }) {
       setHem(f)
       const st = plats(q.get('stuga'))
       if (st) { setStuga(st); setVisaStuga(true) }
-      if (giltigtDatum(q.get('dag'))) setDatum(q.get('dag'))
+      // En gammal länk med ett datum som passerat får nästa lördag i stället.
+      const idag = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })
+      const lankDag = giltigtDatum(q.get('dag')) && q.get('dag') >= idag ? q.get('dag') : null
+      if (lankDag) setDatum(lankDag)
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
-      if (giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
+      if (lankDag && giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
       if (HEMTIDER.includes(q.get('hemtid'))) setHemTid(q.get('hemtid'))
       setAterstalld((n) => n + 1)
     }, 0)
@@ -356,17 +363,27 @@ export default function Reseplanerare({ ort, kurser }) {
         )}
 
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
-          <label className="resa-falt">
-            <span style={etikett}>Dag</span>
-            <DatumFalt value={datum} min={new Date().toISOString().slice(0, 10)} onChange={setDatum} />
-          </label>
+          <div className="resa-falt resa-datumfalt">
+            <span style={etikett} id="resa-datum-etikett">Datum</span>
+            <button type="button" className="resa-input resa-datumknapp" ref={datumKnapp} aria-labelledby="resa-datum-etikett resa-datum-text" aria-haspopup="dialog" aria-expanded={kalender} onClick={() => setKalender((k) => !k)}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={ACCENT} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" /><path d="M4 10h16M9 3v4M15 3v4" /></svg>
+              <span id="resa-datum-text">{datumSpann(datum, hemDatum)}</span>
+            </button>
+          </div>
+          {kalender && (
+            <div className="resa-kalrad">
+              <Kalender
+                dit={datum}
+                hem={hemDatum}
+                min={new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })}
+                onKlar={(a, b) => { setDatum(a); setHemDatum(b); stangKalender() }}
+                onAvbryt={stangKalender}
+              />
+            </div>
+          )}
           <label className="resa-falt">
             <span style={etikett}>Åk tidigast</span>
             <input type="time" lang="sv" value={tid} step={900} onChange={(e) => /^\d{2}:\d{2}$/.test(e.target.value) && setTid(e.target.value)} className="resa-input" />
-          </label>
-          <label className="resa-falt">
-            <span style={etikett}>Hem</span>
-            <DatumFalt value={hemDatum} min={plusDagar(datum, 1)} onChange={setHemDatum} />
           </label>
           {hemDatumVal && hemDatumVal <= datum && (
             <p role="status" style={{ gridColumn: '1 / -1', order: 9, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
@@ -701,7 +718,7 @@ function kalenderfil(resa, mal, url) {
 
 // ── Adressfältet ────────────────────────────────────────────────────────
 
-function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara, regioner = ['se', 'no', 'dk', 'fi'] }) {
+export function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara, regioner = ['se', 'no', 'dk', 'fi'] }) {
   const [text, setText] = useState(varde?.adress || varde?.namn || '')
   const [forslag, setForslag] = useState([])
   const [oppen, setOppen] = useState(false)
@@ -827,7 +844,7 @@ function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, posit
 // distribute this software for any purpose with or without fee is hereby
 // granted, provided that the above copyright notice and this permission
 // notice appear in all copies.
-function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
+export function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
   const p = { width: storlek, height: storlek, viewBox: '0 0 24 24', fill: 'none', stroke: farg, strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
   if (satt === 'bil' || satt === 'transfer') return <svg {...p}><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8" /><path d="M7 14h.01" /><path d="M17 14h.01" /><rect width="18" height="8" x="3" y="10" rx="2" /><path d="M5 18v2" /><path d="M19 18v2" /></svg>
   if (satt === 'tag') return <svg {...p}><rect x="6" y="3" width="12" height="13" rx="3" /><path d="M6 10h12" /><circle cx="9" cy="13" r=".6" /><circle cx="15" cy="13" r=".6" /><path d="M8 20l2-4M16 20l-2-4" /></svg>
@@ -853,33 +870,6 @@ function pilar(e) {
   flikar[n].focus()
 }
 
-/**
- * Datumfält som visar det läsaren skriver, men bara skickar vidare ett
- * riktigt datum. Annars skriver React tillbaka det gamla värdet mitt i
- * årtalet och fältet går inte att skriva i.
- */
-function DatumFalt({ value, min, onChange }) {
-  const [text, setText] = useState(value)
-  const [forra, setForra] = useState(value)
-  if (value !== forra) {
-    setForra(value)
-    setText(value)
-  }
-  return (
-    <input
-      type="date"
-      lang="sv"
-      value={text}
-      min={min}
-      onChange={(e) => {
-        setText(e.target.value)
-        if (giltigtDatum(e.target.value)) onChange(e.target.value)
-      }}
-      onBlur={() => setText(value)}
-      className="resa-input"
-    />
-  )
-}
 
 function Sattkort({ satt, r, vald, fokus, snabbast, onClick }) {
   const raknar = r === undefined
@@ -1279,7 +1269,7 @@ function VidareVal({ v, ort, hemat, onValj, andrar, fel }) {
       <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, letterSpacing: '0.04em', color: TEXT, margin: '0 0 12px', fontWeight: 400 }}>
         {hemat ? `Från ${ort.namn} till flygplatsen` : `Från flygplatsen till ${ort.namn}`}
       </h3>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 8 }}>
+      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 8 }}>
         <li>
           <button type="button" onClick={() => onValj('kollektivt')} disabled={!k || v.valt === 'kollektivt'} className={`resa-flygrad${v.valt === 'kollektivt' ? ' vald' : ''}`}>
             <Ikon satt={k?.satt.includes('tag') ? 'tag' : 'buss'} farg={k ? ACCENT : 'rgba(240,236,228,0.35)'} storlek={16} />
@@ -1357,11 +1347,14 @@ function AndraFlyg({ alternativ, valt, onValj, andrar }) {
   )
 }
 
-const CSS = `
+export const CSS = `
+.resa-kalrad { grid-column: 1 / -1; }
+.resa-datumknapp { display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .resa-falt-rad { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 760px) {
   .resa-falt-rad { grid-template-columns: 1.4fr 1fr; align-items: start; }
-  .resa-tid { grid-template-columns: repeat(4, minmax(0, 1fr)) 1.2fr; align-items: end; }
+  .resa-tid { grid-template-columns: 1.6fr 1fr 1fr 1.2fr; align-items: end; }
+  .resa-kalrad { order: 8; }
 }
 .resa-falt { display: flex; flex-direction: column; gap: 6px; }
 .resa-input {
@@ -1432,7 +1425,7 @@ select.resa-input { appearance: none; cursor: pointer; }
   background: rgba(18,17,16,0.85); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px;
   font-family: var(--font-body); font-size: 12px; color: rgba(240,236,228,0.75);
 }
-.resa-steg { background: #1c1a17; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: clamp(18px, 3vw, 26px); }
+.resa-steg { min-width: 0; background: #1c1a17; border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: clamp(18px, 3vw, 26px); }
 .resa-lista-steg { list-style: none; margin: 0; padding: 0; }
 .resa-rad { position: relative; display: grid; grid-template-columns: 46px 18px minmax(0, 1fr); column-gap: 10px; padding: 0 0 18px; }
 .resa-rad.vanta-rad { padding-bottom: 14px; }
@@ -1461,7 +1454,7 @@ select.resa-input { appearance: none; cursor: pointer; }
 .resa-flytta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 16px; }
 .resa-andrar { font-family: var(--font-body); font-size: 12.5px; color: rgba(240,236,228,0.5); }
 .resa-sparknapp:disabled { opacity: .5; cursor: default; }
-.resa-valj { width: auto; padding: 8px 10px; font-size: 14px; }
+.resa-valj { width: auto; max-width: 100%; min-width: 0; text-overflow: ellipsis; padding: 8px 10px; font-size: 14px; }
 .resa-valrad { display: grid; gap: 8px; }
 .resa-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .resa-chip { background: transparent; color: rgba(240,236,228,0.8); border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; padding: 7px 12px; cursor: pointer; font-family: var(--font-body); font-size: 13px; }

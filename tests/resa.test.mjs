@@ -183,3 +183,10 @@ test('Först framme bara bland resor man hinner', () => {
   assert.equal(snabbastSatt({ bil: { saknas: 'x' }, tag: { saknas: 'x' }, flyg: { slut: 1, tidigare: true } }, SATT), 'flyg')
   assert.equal(snabbastSatt({ bil: { saknas: 'x' }, tag: undefined, flyg: { saknas: 'x' } }, SATT), null)
 })
+
+test('nästa lördag räknas på svenskt datum, även strax efter midnatt', async () => {
+  const { nastaLordag } = await import('../lib/resa/resvag.js')
+  // Torsdag 26 nov 00:40 i Sverige = onsdag 23:40 UTC
+  assert.equal(nastaLordag(new Date('2026-11-25T23:40:00Z')), '2026-11-28')
+  assert.equal(nastaLordag(new Date('2026-11-28T10:00:00Z')), '2026-12-05')
+})

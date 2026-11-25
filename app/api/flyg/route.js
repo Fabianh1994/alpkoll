@@ -37,19 +37,34 @@ export async function GET(request) {
   // Därför prövas först dagen med svenska sökningar, sedan dagen med alla
   // marknader, och sist hela månaden, där bara flyg tre dagar runt datumet
   // behålls och märks som närliggande.
-  const fraga = (avgang, marknad) => {
+  const fraga = (avgang, marknad, antal = '30') => {
     const q = new URLSearchParams({
-      origin: fran, destination: till, departure_at: avgang, one_way: 'true', sorting: 'price',
-      unique: 'false', currency: 'sek', limit: '30', token: nyckel,
+      origin: fran, destination: till, one_way: 'true', sorting: 'price',
+      unique: 'false', currency: 'sek', limit: antal, token: nyckel,
     })
+    if (avgang) q.set('departure_at', avgang)
     if (marknad) q.set('market', marknad)
     return q
   }
   const steg = [
     { namn: 'dagen-se', q: fraga(datum, 'se') },
     { namn: 'dagen', q: fraga(datum, null) },
-    { namn: 'manaden', q: fraga(datum.slice(0, 7), null), narliggande: true },
+    // Månaden sorteras på pris, så alla dagar hämtas innan de närmaste väljs.
+    { namn: 'manaden', q: fraga(datum.slice(0, 7), null, '1000'), narliggande: true },
   ]
+
+  // ?diag=1 visar hur många flyg varje steg gav, utan nyckeln, för felsökning.
+  if (url.searchParams.get('diag')) {
+    const rader = await Promise.all([...steg, { namn: 'utan-datum', q: fraga(null, null, '5') }].map(async (s) => {
+      try {
+        const d = await (await fetch(`${API}?${s.q}`, { cache: 'no-store' })).json()
+        return { steg: s.namn, success: d?.success ?? null, error: d?.error ?? null, antal: d?.data?.length ?? 0, forsta: d?.data?.[0]?.departure_at ?? null }
+      } catch (e) {
+        return { steg: s.namn, fel: String(e) }
+      }
+    }))
+    return Response.json({ diag: rader })
+  }
 
   let data
   let kalla = null

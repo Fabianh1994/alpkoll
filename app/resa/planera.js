@@ -351,7 +351,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
     : kollMin <= bilDit.min * 1.5 + 20
   const ditEtapper = ditKoll
     ? kollektivtDit
-    : [{ ...bilDit, start: vidFlygplats - bilDit.min * 60000, slut: vidFlygplats }]
+    : [{ ...bilDit, start: vidFlygplats - bilDit.min * 60000, slut: vidFlygplats, extra: hemat ? taxiExtra : 0 }]
 
   const flygEtapp = {
     typ: 'flyg',

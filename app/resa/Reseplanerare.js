@@ -233,7 +233,7 @@ export default function Reseplanerare({ ort, kurser }) {
     if (andra.kollTid) {
       const forra = r.vidare?.kollektivt
       const k = ny?.vidare?.kollektivt
-      const ratt = forra && k && (hemat ? k.start < forra.start || k.slut < forra.slut : k.start > forra.start)
+      const ratt = forra && k && (hemat ? k.start < forra.start : k.start > forra.start)
       if (!k || ny.vidare.valt !== 'kollektivt' || (forra && (datumFor(k.start) !== datumFor(forra.start) || !ratt))) {
         if (nr === sokning.current) setAndraFel({ satt: 'flyg', text: hemat ? 'Google hittade ingen tidigare avgång samma dag.' : 'Google hittade ingen senare avgång samma dag.' })
         return
@@ -288,7 +288,7 @@ export default function Reseplanerare({ ort, kurser }) {
     if (min !== andring.current) return
     setAndrar(null)
     // Tidigare ska gå tidigare och senare gå senare, samma dag.
-    const ok = ny && !ny.saknas && (hur === 'senare' ? ny.start > r.start : ny.start < r.start || ny.slut < r.slut) && datumFor(ny.start) === datumFor(r.start)
+    const ok = ny && !ny.saknas && (hur === 'senare' ? ny.start > r.start : ny.start < r.start) && datumFor(ny.start) === datumFor(r.start)
     if (!ok) {
       if (nr === sokning.current) setAndraFel({ satt: 'tag', text: hur === 'senare' ? 'Google hittade ingen senare resa samma dag.' : 'Google hittade ingen tidigare resa samma dag.' })
       return
@@ -356,7 +356,7 @@ export default function Reseplanerare({ ort, kurser }) {
           </label>
           <label className="resa-falt">
             <span style={etikett}>Hem</span>
-            <input type="date" lang="sv" value={hemDatum} min={datum} onChange={(e) => giltigtDatum(e.target.value) && setHemDatum(e.target.value)} className="resa-input" />
+            <input type="date" lang="sv" value={hemDatum} min={plusDagar(datum, 1)} onChange={(e) => giltigtDatum(e.target.value) && setHemDatum(e.target.value)} className="resa-input" />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Resenärer</span>
@@ -436,7 +436,7 @@ export default function Reseplanerare({ ort, kurser }) {
                   setAktiv={setAktiv}
                   stopp={valt === 'bil' ? stopp : []}
                   onValjFlyg={valjFlyg}
-                  andrar={andrar === valt || soker}
+                  andrar={!!andrar || soker}
                   andraFel={andraFel?.satt === valt ? andraFel.text : null}
                   bilval={bilval}
                   onBilval={andraBilval}
@@ -453,7 +453,7 @@ export default function Reseplanerare({ ort, kurser }) {
                   {vald.satt === 'flyg' && !hemat && vald.flyget && !vald.flyget.narliggande && (
                     <TurRetur flyget={vald.flyget} datum={visDatum} retur={visHem} ort={ort} />
                   )}
-                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={datum} tid={tid} hemDatum={hemDatum} antal={antal} />
+                  <Spara resa={vald} hem={hem} stuga={stuga} fran={franPunkt} till={tillPunkt} ort={ort} datum={visDatum} tid={sokt?.tid || tid} hemDatum={visHem} antal={antal} />
                 </>
               ) : (
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(240,236,228,0.55)', margin: 0 }}>

@@ -31,7 +31,7 @@ export async function GET(request) {
   }
   // Bara datum från i dag och ett år fram, så att ingen kan bränna
   // flygkvoten på datum som ingen reser.
-  const riktigt = (d) => DATUM.test(d) && new Date(`${d}T00:00:00Z`).toISOString().slice(0, 10) === d
+  const riktigt = (d) => { if (!DATUM.test(d)) return false; const t = new Date(`${d}T00:00:00Z`); return !Number.isNaN(t.getTime()) && t.toISOString().slice(0, 10) === d }
   const idag = new Date().toISOString().slice(0, 10)
   const omEttAr = new Date(Date.now() + 366 * 86400000).toISOString().slice(0, 10)
   if (!riktigt(datum)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })

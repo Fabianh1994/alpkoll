@@ -718,7 +718,7 @@ function kalenderfil(resa, mal, url) {
 
 // ── Adressfältet ────────────────────────────────────────────────────────
 
-function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara, regioner = ['se', 'no', 'dk', 'fi'] }) {
+export function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, position = false, nara, regioner = ['se', 'no', 'dk', 'fi'] }) {
   const [text, setText] = useState(varde?.adress || varde?.namn || '')
   const [forslag, setForslag] = useState([])
   const [oppen, setOppen] = useState(false)
@@ -844,7 +844,7 @@ function AdressFalt({ id, label, placeholder, varde, onVal, lib, laddaLib, posit
 // distribute this software for any purpose with or without fee is hereby
 // granted, provided that the above copyright notice and this permission
 // notice appear in all copies.
-function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
+export function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
   const p = { width: storlek, height: storlek, viewBox: '0 0 24 24', fill: 'none', stroke: farg, strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true }
   if (satt === 'bil' || satt === 'transfer') return <svg {...p}><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8" /><path d="M7 14h.01" /><path d="M17 14h.01" /><rect width="18" height="8" x="3" y="10" rx="2" /><path d="M5 18v2" /><path d="M19 18v2" /></svg>
   if (satt === 'tag') return <svg {...p}><rect x="6" y="3" width="12" height="13" rx="3" /><path d="M6 10h12" /><circle cx="9" cy="13" r=".6" /><circle cx="15" cy="13" r=".6" /><path d="M8 20l2-4M16 20l-2-4" /></svg>
@@ -1347,7 +1347,7 @@ function AndraFlyg({ alternativ, valt, onValj, andrar }) {
   )
 }
 
-const CSS = `
+export const CSS = `
 .resa-kalrad { grid-column: 1 / -1; }
 .resa-datumknapp { display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .resa-falt-rad { display: grid; grid-template-columns: 1fr; gap: 14px; }

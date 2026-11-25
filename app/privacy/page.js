@@ -129,7 +129,9 @@ export default function PrivacyPage() {
               Kartan på ortsidorna kommer från Google och laddas först när du
               klickar på Visa karta; då kan Google sätta sina kakor. Samma sak
               gäller reseplaneraren (Resan dit): Google laddas först när du
-              klickar i adressfältet. Adressen du skriver skickas till Google
+              klickar i adressfältet. På kartan med alla orter (/resa) laddas
+              Google när du trycker Visa kartan eller klickar i adressfältet;
+              webbläsaren minns sedan valet, så att kartan visas direkt nästa gång. Adressen du skriver skickas till Google
               för att räkna ut vägen och sparas inte av Alpkoll. Flygsökningen
               skickar bara flygplatskoder och datum till Ignav och Travelpayouts. Tjänster
               vi länkar till kan använda kakor på sina egna domäner.
@@ -145,7 +147,9 @@ export default function PrivacyPage() {
           ortsidorna kommer från Google och laddas först när du klickar på
           Visa karta; då kan Google sätta sina kakor. Samma sak gäller
           reseplaneraren (Resan dit): Google laddas först när du klickar i
-          adressfältet. Adressen du skriver skickas till Google för att räkna
+          adressfältet. På kartan med alla orter (/resa) laddas Google när du
+          trycker Visa kartan eller klickar i adressfältet; webbläsaren minns
+          sedan valet, så att kartan visas direkt nästa gång. Adressen du skriver skickas till Google för att räkna
           ut vägen och sparas inte av Alpkoll. Flygsökningen skickar bara
           flygplatskoder och datum till Ignav och Travelpayouts. Tjänster vi länkar till
           kan använda kakor på sina egna domäner.

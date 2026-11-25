@@ -763,7 +763,9 @@ export default async function ResortPage({ params }) {
                     </div>
                   ))}
                 </div>
-                <TreFlygplatser slug={resort.slug} ortnamn={resort.name} />
+                {/* I Norden är bilen eller tåget den vanliga vägen, så flygplatsrutan
+                    visas bara för orterna i Alperna. */}
+                {!arNordisk(resort) && <TreFlygplatser slug={resort.slug} ortnamn={resort.name} />}
                 {resort.transport_info && (
                   <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px 16px', marginBottom: 16 }}>
                     {/* "Med tåg och flyg" stod över texter som mest handlade

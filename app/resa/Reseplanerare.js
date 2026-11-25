@@ -657,11 +657,11 @@ const versal = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 
 function underrad(r) {
   if (r.satt === 'bil') {
-    const natt = r.pauser?.some((p) => p.natt)
-    const antal = (r.pauser?.length || 0) - (natt ? 1 : 0)
+    const natt = r.pauser?.filter((p) => p.natt).length || 0
+    const antal = (r.pauser?.length || 0) - natt
     const delar = [`${heltal(r.km)} km`]
     if (antal) delar.push(`${antal} ${antal === 1 ? 'paus' : 'pauser'}`)
-    if (natt) delar.push('en övernattning')
+    if (natt) delar.push(natt === 1 ? 'en övernattning' : `${natt} övernattningar`)
     return delar.join(' · ')
   }
   if (r.satt === 'flyg') {

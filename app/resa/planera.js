@@ -141,14 +141,15 @@ export async function planeraBil(lib, hem, mal, startMs) {
   if (!e) return { satt: 'bil', saknas: 'Google hittade ingen bilväg.' }
   // Pauserna räknas in i ankomsten: 45 minuter för lunch mellan 11 och 14,
   // annars 20 minuter. Varje paus skjuter de följande lika mycket. Blir det
-  // kväll (efter 18) med mer än två timmar kvar föreslås en övernattning i stället,
+  // kväll (efter 18) med mer än tre timmar kvar föreslås en övernattning i stället,
+  // (med mindre kvar kör de flesta hela vägen fram),
   // till klockan 08.00 nästa morgon.
   let tillagt = 0
   const pauser = pauspunkter(e.path, e.min).map((p) => {
     const startMs = e.start + (p.efterMin + tillagt) * 60000
     const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
     const kvar = e.min - p.efterMin
-    if ((timme >= 18 || timme < 5) && kvar > 120) {
+    if ((timme >= 18 || timme < 5) && kvar > 180) {
       // Efter 18 sovs det till nästa morgon; efter midnatt till samma dags morgon.
       const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
       const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))

@@ -52,17 +52,25 @@ export function Zoom({ karta, style }) {
  * Esc stänger utan att ändra något.
  */
 export function Kalender({ dit, hem, min, onKlar, onAvbryt }) {
-  // En gammal länk kan ha en avresa som redan passerat; då börjar valet om.
-  const start = min && dit < min ? min : dit
+  // Står sidan öppen över midnatt kan avresan ha passerat. Då börjar valet
+  // på i dag och läsaren väljer hemresan på nytt, i stället för att resan
+  // tyst blir kortare.
+  const passerad = min && dit < min
+  const start = passerad ? min : dit
   const [a, setA] = useState(start)
-  const [b, setB] = useState(hem && hem > start ? hem : null)
-  const [valjer, setValjer] = useState('dit')
+  const [b, setB] = useState(!passerad && hem && hem > start ? hem : null)
+  const [valjer, setValjer] = useState(passerad ? 'hem' : 'dit')
   const [visa, setVisa] = useState(() => ({ y: Number(start.slice(0, 4)), m: manNr(start) }))
   const ruta = useRef(null)
 
   useEffect(() => {
     ruta.current?.querySelector('[data-dag][aria-pressed="true"]')?.focus()
-    const esc = (e) => { if (e.key === 'Escape') onAvbryt() }
+    // Esc stänger bara när fokus är i kalendern (eller ingenstans), inte
+    // när läsaren trycker Esc i ett annat fält.
+    const esc = (e) => {
+      const f = document.activeElement
+      if (e.key === 'Escape' && (!f || f === document.body || ruta.current?.contains(f))) onAvbryt()
+    }
     window.addEventListener('keydown', esc)
     return () => window.removeEventListener('keydown', esc)
   }, [onAvbryt])

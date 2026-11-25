@@ -162,9 +162,12 @@ export default function Reseplanerare({ ort, kurser }) {
       setHem(f)
       const st = plats(q.get('stuga'))
       if (st) { setStuga(st); setVisaStuga(true) }
-      if (giltigtDatum(q.get('dag'))) setDatum(q.get('dag'))
+      // En gammal länk med ett datum som passerat får nästa lördag i stället.
+      const idag = new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })
+      const lankDag = giltigtDatum(q.get('dag')) && q.get('dag') >= idag ? q.get('dag') : null
+      if (lankDag) setDatum(lankDag)
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
-      if (giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
+      if (lankDag && giltigtDatum(q.get('hem'))) setHemDatum(q.get('hem'))
       if (HEMTIDER.includes(q.get('hemtid'))) setHemTid(q.get('hemtid'))
       setAterstalld((n) => n + 1)
     }, 0)

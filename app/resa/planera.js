@@ -218,7 +218,8 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum, { hemat = 
   // sådant visas dagens alla, och tidslinjen säger att du behöver åka tidigare.
   const hinns = kandidater.filter((k) => k.lamna >= startMs - 15 * 60000)
   const urval = (hinns.length ? hinns : kandidater)
-    .sort((a, b) => a.framme - b.framme || (a.pris ?? 1e9) - (b.pris ?? 1e9))
+    // Flyg på den valda dagen går före flyg från dagarna runt omkring.
+    .sort((a, b) => !!a.narliggande - !!b.narliggande || a.framme - b.framme || (a.pris ?? 1e9) - (b.pris ?? 1e9))
 
   const valt = urval[0]
   const resan = await byggFlygresa(lib, hem, mal, valt, bilDit[valt.fran], bilFran[valt.till], { hemat })

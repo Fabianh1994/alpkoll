@@ -715,7 +715,11 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
         <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(240,236,228,0.55)' }}>{versal(dag(resa.start))}</span>
       </div>
 
-      {resa.tidigare && (
+      {resa.flyget?.narliggande && (
+        <p className="resa-notis">Inget flyg har synts för just den dagen. Här är närmaste dag med flyg, {dag(Date.parse(resa.flyget.avgang))}. Sök på ditt datum hos Aviasales för att se alla avgångar.</p>
+      )}
+
+      {resa.tidigare && !resa.flyget?.narliggande && (
         <p className="resa-notis">Inget flyg den dagen går att hinna om du åker {klocka(resa.valdStart)}. Här är dagens snabbaste resa med flyg, och då behöver du åka hemifrån {klocka(resa.start)}.</p>
       )}
 

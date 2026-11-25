@@ -667,7 +667,9 @@ function Spara({ resa, hem, stuga, fran, till, ort, datum, tid, hemDatum, hemTid
   }
 
   const lage = resa.satt === 'tag' ? 'transit' : 'driving'
-  const maps = `https://www.google.com/maps/dir/?api=1&origin=${fran.lat},${fran.lng}&destination=${till.lat},${till.lng}&travelmode=${lage}`
+  // Läsarens eget stopp följer med som delmål på bilresan.
+  const via = resa.satt === 'bil' && resa.bilval?.egetStopp
+  const maps = `https://www.google.com/maps/dir/?api=1&origin=${fran.lat},${fran.lng}&destination=${till.lat},${till.lng}&travelmode=${lage}${via ? `&waypoints=${via.lat},${via.lng}` : ''}`
 
   return (
     <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.07)' }}>

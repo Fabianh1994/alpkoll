@@ -3,14 +3,13 @@ import { flygbolag } from '../../../lib/resa/flygbolag'
 
 // Flyg mellan två flygplatser en viss dag, för reseplaneraren.
 //
-// Datan kommer från Travelpayouts (Aviasales Data API): riktiga flyg med
-// bolag, flightnummer, avgångstid, restid och pris, så som de syntes i
-// Aviasales sökningar de senaste dygnen. Det är inte en livesökning — den
-// kräver 50 000 besökare i månaden — men tiderna är flygbolagens egna och
-// priset uppdateras av sig själv. Livepriset ser läsaren när länken öppnas.
+// Datan kommer i första hand live från Ignav (IGNAV_NYCKEL): dagens flyg
+// med bolag, tider och lägsta pris, som Google Flights visar dem. Saknas
+// Ignav eller svarar den inte används Travelpayouts (Aviasales Data API),
+// flyg och priser så som de syntes i Aviasales sökningar de senaste
+// dygnen. Bokningslänken går alltid till Aviasales.
 //
-// Nyckeln ligger i TRAVELPAYOUTS_NYCKEL och lämnar aldrig servern. Saknas
-// den svarar routen tomt, och planeraren visar flygalternativet utan
+// Nycklarna lämnar aldrig servern. Saknas båda svarar routen tomt, och planeraren visar flygalternativet utan
 // avgångar i stället för att gå sönder.
 //
 // Svaret cachas tre timmar per sträcka och dag, så att samma sökning från

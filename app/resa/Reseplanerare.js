@@ -6,7 +6,7 @@ import { planeraBil, planeraTag, planeraFlyg, byggFlygresa, stoppLangsVagen } fr
 import ResKarta from './ResKarta'
 import Partnerlank from '../Partnerlank'
 import {
-  FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar,
+  FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar, datumFor,
 } from '../../lib/resa/resvag'
 import { FLYGPLATSER } from '../../lib/resa/flygplatser'
 import { kostnad, STANDARD_FORBRUKNING, STANDARD_LITERPRIS } from '../../lib/resa/kostnad'
@@ -654,7 +654,14 @@ function Sattkort({ satt, r, vald, snabbast, onClick }) {
 const versal = (t) => t.charAt(0).toUpperCase() + t.slice(1)
 
 function underrad(r) {
-  if (r.satt === 'bil') return r.pausMin ? `${heltal(r.km)} km · med ${r.pauser.length} ${r.pauser.length === 1 ? 'paus' : 'pauser'}` : `${heltal(r.km)} km`
+  if (r.satt === 'bil') {
+    const natt = r.pauser?.some((p) => p.natt)
+    const antal = (r.pauser?.length || 0) - (natt ? 1 : 0)
+    const delar = [`${heltal(r.km)} km`]
+    if (antal) delar.push(`${antal} ${antal === 1 ? 'paus' : 'pauser'}`)
+    if (natt) delar.push('en övernattning')
+    return delar.join(' · ')
+  }
   if (r.satt === 'flyg') {
     const f = r.flyget
     const delar = [f.bolag, `${f.fran}–${f.till}`]
@@ -712,7 +719,7 @@ function Tidslinje({ resa, ort, mal, hemat, aktiv, setAktiv, stopp, onValjFlyg }
 
       <ol className="resa-lista-steg">
         {rader.map((r) => r.paus ? (
-          <Pausrad key={r.key} r={r} />
+          <Pausrad key={r.key} r={r} ort={ort} />
         ) : r.vant ? (
           <li key={r.key} className="resa-rad vanta-rad">
             <span className="resa-klocka" />
@@ -840,8 +847,10 @@ function arLunch(ms) {
   return t >= 11 && t < 14
 }
 
-function Pausrad({ r }) {
+function Pausrad({ r, ort }) {
   const { p, nr, start, laddar } = r
+  const incheckning = datumFor(start)
+  const fortsatt = start + (p.langdMin || 0) * 60000
   return (
     <li className="resa-rad">
       <span className="resa-klocka" style={{ color: 'rgba(240,236,228,0.6)', fontWeight: 500 }}>ca {klocka(Math.round(start / 900000) * 900000)}</span>
@@ -849,9 +858,24 @@ function Pausrad({ r }) {
       <span className="resa-strack" style={{ background: FARG.bil, opacity: 0.9 }} />
       <div style={{ minWidth: 0 }}>
         <div style={{ fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 600, color: TEXT }}>
-          {arLunch(start) ? 'Lunch' : 'Paus'}{p.ort ? ` i ${p.ort}` : ''}
-          <span style={{ fontWeight: 400, fontSize: 12.5, color: 'rgba(240,236,228,0.5)', marginLeft: 8 }}>{p.langdMin ? `${p.langdMin} min · ` : ''}efter {langd(Math.round(p.efterMin / 15) * 15)} bakom ratten</span>
+          {p.natt ? 'Övernatta' : arLunch(start) ? 'Lunch' : 'Paus'}{p.ort ? ` i ${p.ort}` : ''}
+          <span style={{ fontWeight: 400, fontSize: 12.5, color: 'rgba(240,236,228,0.5)', marginLeft: 8 }}>
+            {p.natt ? `vidare ${klocka(fortsatt)} nästa morgon · ` : p.langdMin ? `${p.langdMin} min · ` : ''}efter {langd(Math.round(p.efterMin / 15) * 15)} bakom ratten
+          </span>
         </div>
+        {p.natt && p.ort && (
+          <div style={{ marginTop: 8 }}>
+            <Partnerlank
+              partner="booking"
+              sid={`resa-natt-${ort.slug}`}
+              sok={{ destination: p.ort, checkin: incheckning, checkout: plusDagar(incheckning, 1) }}
+              style={knappLiten}
+              markningStyle={{ marginBottom: 6 }}
+            >
+              Hotell i {p.ort} på Booking ›
+            </Partnerlank>
+          </div>
+        )}
         {laddar && <span className="resa-skelett" style={{ width: '70%' }} aria-label="Hämtar lunchställen" />}
         {!!p.platser?.length && (
           <ul style={{ listStyle: 'none', margin: '8px 0 0', padding: '10px 12px', display: 'grid', gap: 6, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8 }}>

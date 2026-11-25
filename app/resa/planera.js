@@ -6,7 +6,7 @@
 // direkt, så att kartan och tidslinjen inte behöver veta något om Google.
 
 import {
-  FLYGPLATS_FORE, EFTER_LANDNING, fordon, resa, pauspunkter,
+  FLYGPLATS_FORE, EFTER_LANDNING, fordon, resa, pauspunkter, svenskTid, datumFor,
 } from '../../lib/resa/resvag'
 import { FLYGPLATSER, avreseFor, ankomstFor, avstandKm } from '../../lib/resa/flygplatser'
 
@@ -140,11 +140,20 @@ export async function planeraBil(lib, hem, mal, startMs) {
   const e = await bilEtapp(lib, hem, mal, startMs)
   if (!e) return { satt: 'bil', saknas: 'Google hittade ingen bilväg.' }
   // Pauserna räknas in i ankomsten: 45 minuter för lunch mellan 11 och 14,
-  // annars 20 minuter. Varje paus skjuter de följande lika mycket.
+  // annars 20 minuter. Varje paus skjuter de följande lika mycket. Blir det
+  // kväll (efter 18) med mer än två timmar kvar föreslås en övernattning i stället,
+  // till klockan 08.00 nästa morgon.
   let tillagt = 0
   const pauser = pauspunkter(e.path, e.min).map((p) => {
     const startMs = e.start + (p.efterMin + tillagt) * 60000
-    const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
+    const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
+    const kvar = e.min - p.efterMin
+    if ((timme >= 18 || timme < 5) && kvar > 120) {
+      const morgon = svenskTid(datumFor(startMs + (timme >= 19 ? 86400000 : 0)), '08:00')
+      const langdMin = Math.round((morgon - startMs) / 60000)
+      tillagt += langdMin
+      return { ...p, startMs, langdMin, natt: true }
+    }
     const langdMin = timme >= 11 && timme < 14 ? 45 : 20
     tillagt += langdMin
     return { ...p, startMs, langdMin }

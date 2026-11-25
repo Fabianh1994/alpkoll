@@ -7,6 +7,7 @@ import Partnerlank from '../../Partnerlank'
 import { getResort, getResortSlugs } from '../../../lib/resorts'
 import { bookingSok } from '../../../lib/booking'
 import { SITE_URL } from '../../../lib/lang'
+import { hamtaKurser } from '../../../lib/valuta'
 
 // Resan dörr till dörr till en ort: din adress in, bil, tåg och flyg ut,
 // ritat på kartan längs de riktiga vägarna. Planeraren själv är en
@@ -47,6 +48,7 @@ export default async function ResaSida({ params }) {
     portkod: r.nearest_airport_code || null,
   }
   const boende = bookingSok(r)
+  const kurser = await hamtaKurser()
 
   return (
     <div style={{ background: '#121110', minHeight: '100vh', color: '#f0ece4' }}>
@@ -62,7 +64,7 @@ export default async function ResaSida({ params }) {
           Skriv var du bor, så visas resan dörr till dörr med bil, tåg och flyg, sida vid sida och ritad på kartan.
         </p>
 
-        <Reseplanerare ort={ort} />
+        <Reseplanerare ort={ort} kurser={kurser} />
 
         {boende && (
           <section style={{ marginTop: 34, background: '#1c1a17', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: 'clamp(18px, 3vw, 26px)', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>

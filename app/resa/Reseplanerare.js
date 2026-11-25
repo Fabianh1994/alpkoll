@@ -9,6 +9,7 @@ import {
   FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid,
 } from '../../lib/resa/resvag'
 import { FLYGPLATSER } from '../../lib/resa/flygplatser'
+import { kostnad, STANDARD_FORBRUKNING, STANDARD_LITERPRIS } from '../../lib/resa/kostnad'
 
 // Reseplaneraren: från din dörr till stugan, med bil, tåg och flyg.
 //
@@ -28,7 +29,7 @@ const etikett = {
   textTransform: 'uppercase', color: 'rgba(240,236,228,0.5)',
 }
 
-export default function Reseplanerare({ ort }) {
+export default function Reseplanerare({ ort, kurser }) {
   const [lib, setLib] = useState(null)
   const [laddarGoogle, setLaddarGoogle] = useState(false)
   const [googleFel, setGoogleFel] = useState(null)
@@ -38,6 +39,7 @@ export default function Reseplanerare({ ort }) {
   const [visaStuga, setVisaStuga] = useState(false)
   const [datum, setDatum] = useState(() => nastaLordag())
   const [tid, setTid] = useState('07:00')
+  const [antal, setAntal] = useState(2)
 
   const [resor, setResor] = useState(null) // { bil, tag, flyg } — undefined = räknas
   const [valt, setValt] = useState(null)
@@ -118,6 +120,8 @@ export default function Reseplanerare({ ort }) {
       if (st) { setStuga(st); setVisaStuga(true) }
       if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('dag') || '')) setDatum(q.get('dag'))
       if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
+      const n = Number(q.get('antal'))
+      if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       setAterstalld((n) => n + 1)
     }, 0)
     return () => clearTimeout(t)
@@ -205,6 +209,12 @@ export default function Reseplanerare({ ort }) {
             <span style={etikett}>Åk tidigast</span>
             <input type="time" lang="sv" value={tid} step={900} onChange={(e) => setTid(e.target.value)} className="resa-input" />
           </label>
+          <label className="resa-falt">
+            <span style={etikett}>Resenärer</span>
+            <select value={antal} onChange={(e) => setAntal(Number(e.target.value))} className="resa-input">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => <option key={n} value={n}>{n} {n === 1 ? 'person' : 'personer'}</option>)}
+            </select>
+          </label>
           <button type="submit" disabled={!hem || soker} className="resa-knapp">
             {soker ? 'Räknar ut resan …' : 'Visa resan'}
           </button>
@@ -259,7 +269,10 @@ export default function Reseplanerare({ ort }) {
                 />
               ) : null}
               {vald ? (
-                <Spara resa={vald} hem={hem} stuga={stuga} mal={mal} ort={ort} datum={datum} tid={tid} />
+                <>
+                  <Kostnad resa={vald} antal={antal} kurser={kurser} />
+                  <Spara resa={vald} hem={hem} stuga={stuga} mal={mal} ort={ort} datum={datum} tid={tid} antal={antal} />
+                </>
               ) : (
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
                   {soker ? 'Räknar ut resorna …' : 'Välj ett färdsätt ovanför.'}
@@ -273,15 +286,92 @@ export default function Reseplanerare({ ort }) {
   )
 }
 
+// ── Vad resan kostar ────────────────────────────────────────────────────
+
+function Kostnad({ resa, antal, kurser }) {
+  const [forbrukning, setForbrukning] = useState(STANDARD_FORBRUKNING)
+  const [literpris, setLiterpris] = useState(STANDARD_LITERPRIS)
+  const k = kostnad(resa, { vuxna: antal, barn: 0 }, { forbrukning, literpris }, kurser)
+  const tal = { fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }
+
+  return (
+    <section style={{ marginTop: 22 }}>
+      {resa.satt === 'bil' && k.krav.length > 0 && (
+        <div style={{ marginBottom: 18 }}>
+          <h3 style={{ ...etikett, margin: '0 0 10px' }}>Det här gäller på vägen</h3>
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 10 }}>
+            {k.krav.map((x) => (
+              <li key={x.rubrik} style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, lineHeight: 1.55, color: 'rgba(240,236,228,0.75)' }}>
+                <span style={{ fontWeight: 600, color: TEXT }}>{x.rubrik}.</span> {x.text}
+                {x.kalla && <> <a href={x.kalla} target="_blank" rel="noopener noreferrer" style={{ color: ACCENT, textDecoration: 'none', whiteSpace: 'nowrap' }}>Källa ›</a></>}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '14px 16px' }}>
+        <h3 style={{ ...etikett, margin: '0 0 10px' }}>Vad kostar resan dit</h3>
+        {k.rader.length > 0 && (
+          <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: '8px 16px', fontFamily: 'var(--font-body)', fontSize: 13.5 }}>
+            {k.rader.map((x) => (
+              <div key={x.namn} style={{ display: 'contents' }}>
+                <dt style={{ color: 'rgba(240,236,228,0.8)' }}>
+                  {x.namn}
+                  {x.not && <span style={{ display: 'block', fontSize: 12, color: 'rgba(240,236,228,0.45)' }}>{x.not}</span>}
+                </dt>
+                <dd style={{ margin: 0, color: TEXT, textAlign: 'right', ...tal }}>{heltal(Math.round(x.kr))} kr</dd>
+              </div>
+            ))}
+            <dt style={{ fontWeight: 600, color: TEXT, borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8 }}>
+              {resa.satt === 'bil' ? 'Hela bilen' : 'Totalt'}
+            </dt>
+            <dd style={{ margin: 0, fontWeight: 600, color: ACCENT, textAlign: 'right', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: 8, ...tal }}>
+              {heltal(Math.round(k.summa))} kr
+            </dd>
+          </dl>
+        )}
+        {k.rader.length > 0 && k.antal > 1 && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', margin: '6px 0 0', textAlign: 'right' }}>
+            {heltal(Math.round(k.perPerson))} kr per person, enkel väg
+          </p>
+        )}
+        {k.ovrigt.length > 0 && (
+          <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.6, margin: k.rader.length ? '10px 0 0' : 0 }}>
+            Tillkommer: {k.ovrigt.join(', ').toLowerCase().replace(/^./, (c) => c.toUpperCase())}.
+          </p>
+        )}
+        {resa.satt === 'bil' && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
+              Förbrukning
+              <input type="number" inputMode="decimal" min="0.2" max="2" step="0.1" value={forbrukning} onChange={(e) => setForbrukning(Number(e.target.value) || STANDARD_FORBRUKNING)} className="resa-input resa-litet" /> l/mil
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
+              Literpris
+              <input type="number" inputMode="decimal" min="5" max="40" step="0.5" value={literpris} onChange={(e) => setLiterpris(Number(e.target.value) || STANDARD_LITERPRIS)} className="resa-input resa-litet" /> kr
+            </label>
+          </div>
+        )}
+        <p style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(240,236,228,0.4)', lineHeight: 1.55, margin: '10px 0 0' }}>
+          {resa.satt === 'bil' && `Literpriset ${STANDARD_LITERPRIS} kr och förbrukningen är antaganden; ändra dem till din bil. `}
+          {resa.satt === 'flyg' && 'Flygpriset är det lägsta Aviasales sett nyligen och kan ha ändrats. '}
+          Euro och franc räknas om till kronor med dagens kurs.
+        </p>
+      </div>
+    </section>
+  )
+}
+
 // ── Dela och spara ──────────────────────────────────────────────────────
 
 const plats = (p) => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${(p.adress || p.namn || '').replace(/,/g, ' ')}`
 
-function Spara({ resa, hem, stuga, mal, ort, datum, tid }) {
+function Spara({ resa, hem, stuga, mal, ort, datum, tid, antal }) {
   const [kopierad, setKopierad] = useState(false)
 
   const lank = () => {
-    const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid })
+    const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid, antal: String(antal) })
     if (stuga) q.set('stuga', plats(stuga))
     return `${window.location.origin}${window.location.pathname}?${q}#resan-hit`
   }
@@ -752,7 +842,7 @@ const CSS = `
 .resa-falt-rad { display: grid; grid-template-columns: 1fr; gap: 14px; }
 @media (min-width: 760px) {
   .resa-falt-rad { grid-template-columns: 1.4fr 1fr; align-items: start; }
-  .resa-tid { grid-template-columns: 1fr 1fr 1.2fr; align-items: end; }
+  .resa-tid { grid-template-columns: 1fr 1fr 1fr 1.2fr; align-items: end; }
 }
 .resa-falt { display: flex; flex-direction: column; gap: 6px; }
 .resa-input {
@@ -761,6 +851,8 @@ const CSS = `
   font-family: var(--font-body); font-size: 16px; outline: none; transition: border-color .15s;
 }
 .resa-input:focus { border-color: #D4A574; }
+.resa-litet { width: 72px; padding: 7px 8px; font-size: 14px; }
+select.resa-input { appearance: none; cursor: pointer; }
 .resa-input::placeholder { color: rgba(240,236,228,0.35); }
 .resa-knapp {
   background: #D4A574; color: #121110; border: 0; border-radius: 8px; padding: 14px 20px;

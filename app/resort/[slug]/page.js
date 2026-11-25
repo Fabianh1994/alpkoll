@@ -817,7 +817,7 @@ export default async function ResortPage({ params }) {
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: '0 0 14px' }}>
                   Skriv var du bor, så visas resan med bil, tåg och flyg på kartan.
                 </p>
-                <Reseplanerare ort={{ slug: resort.slug, namn: resort.name, lat: Number(resort.latitude), lng: Number(resort.longitude), portkod: resort.nearest_airport_code || null }} />
+                <Reseplanerare ort={{ slug: resort.slug, namn: resort.name, lat: Number(resort.latitude), lng: Number(resort.longitude), portkod: resort.nearest_airport_code || null }} kurser={kurser} />
               </div>
             </div>
 

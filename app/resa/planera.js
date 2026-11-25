@@ -244,6 +244,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran) {
     slut: ankomst,
     min: f.minuter,
     bolag: f.bolag,
+    bolagKod: f.bolagKod || null,
     linje: f.nummer,
     byten: f.byten,
     pris: f.pris,

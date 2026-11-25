@@ -129,6 +129,17 @@ export default function SiteFooter() {
           color: 'rgba(255,255,255,0.38)', textDecoration: 'none',
         }}>{KONTAKT}</a>
       </p>
+      {/* Förklaringen till "Annons" vid knapparna står här en gång, i
+          stället för en hel mening vid varje knapp. Vid knappen står
+          ordet Annons och vem länken går till, vilket är det som måste
+          synas i direkt anslutning till länken (se Annonsmarkning.js). */}
+      <p style={{
+        fontFamily: 'var(--font-body)', fontSize: 11, lineHeight: 1.6,
+        color: 'rgba(255,255,255,0.38)', margin: '8px 0 0', maxWidth: 640,
+      }}>
+        Knappar märkta Annons går till partner som ger Alpkoll provision om du bokar. Priset du betalar är detsamma, och provisionen påverkar inte jämförelserna.{' '}
+        <a href="/affiliate-disclosure" className="site-footer-link" style={{ color: 'rgba(255,255,255,0.38)' }}>Läs mer</a>
+      </p>
     </footer>
   );
 }

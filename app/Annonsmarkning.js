@@ -17,12 +17,15 @@
 // Booking.com: utan ID byggs en vanlig söklänk som inte ger någon
 // provision, och att kalla den "Annons" vore ett påstående som inte är
 // sant. Märkningen tänds automatiskt samma deploy som spårningen.
+//
+// Vid knappen står bara "Annons" och partnerns namn (Fabian 2026-11-25:
+// en hel mening vid varje knapp blev för mycket). Förklaringen om
+// provision står en gång i sidfoten, SiteFooter.js.
 
 import { hasAffiliateId } from '../lib/booking'
 
 /**
- * @param kompakt  utan den förklarande meningen, för ytor där knappen
- *                 sitter i en smal spalt
+ * @param kompakt  finns kvar för anropen, men märkningen är numera alltid kort
  * @param style    marginaler från platsen där märkningen står
  * @param partner  vem länken går till, t.ex. 'Aviasales'
  * @param aktiv    om länken ger provision; utelämnad gäller Bookings ID
@@ -42,9 +45,7 @@ export default function Annonsmarkning({ kompakt = false, style, partner = 'Book
       }}>
         Annons
       </span>
-      {kompakt
-        ? `${partner}. Vi får provision om du bokar.`
-        : `Länken går till ${partner}. Vi får provision om du bokar där, och priset du betalar är detsamma.`}
+      {partner}
     </p>
   )
 }

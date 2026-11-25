@@ -311,7 +311,11 @@ export async function stoppLangsVagen(lib, pauser) {
       const avstand = (pl) => Math.hypot(pl.location.lat() - p.lat, (pl.location.lng() - p.lng) * Math.cos((p.lat * Math.PI) / 180))
       const land = (pl) => (pl.formattedAddress || '').split(',').pop().trim()
       const narmast = [...(places || [])].filter((pl) => pl.location).sort((a, b) => avstand(a) - avstand(b))[0]
-      const iLandet = (places || []).filter((pl) => !narmast || land(pl) === land(narmast)).slice(0, 3)
+      // Två McDonald's i listan säger ingenting, så varje namn visas en gång.
+      const iLandet = (places || [])
+        .filter((pl) => !narmast || land(pl) === land(narmast))
+        .filter((pl, i, alla) => alla.findIndex((q) => q.displayName === pl.displayName) === i)
+        .slice(0, 3)
       return {
         ...p,
         ort: ortUrAdress(narmast?.formattedAddress),

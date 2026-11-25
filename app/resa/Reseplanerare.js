@@ -643,7 +643,7 @@ function Sattkort({ satt, r, vald, snabbast, onClick }) {
       {!raknar && !saknas && (
         <>
           <span style={{ fontFamily: 'var(--font-heading)', fontSize: 30, letterSpacing: '0.03em', color: TEXT, lineHeight: 1 }}>{langd(r.min)}</span>
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(240,236,228,0.6)' }}>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(240,236,228,0.6)', whiteSpace: 'nowrap' }}>
             {klocka(r.start)} → {klocka(r.slut)}{dagarSenare(r.start, r.slut) > 0 ? ` +${dagarSenare(r.start, r.slut)}` : ''}
           </span>
           <span style={{ fontFamily: 'var(--font-body)', fontSize: 12, color: 'rgba(240,236,228,0.45)' }}>{underrad(r)}</span>
@@ -983,7 +983,7 @@ select.resa-input { appearance: none; cursor: pointer; }
 @media (max-width: 560px) {
   .resa-kort-rad { grid-template-columns: 1fr; }
   .resa-sattkort { min-height: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; row-gap: 2px; align-items: center; }
-  .resa-sattkort > span:first-child { grid-column: 1 / -1; }
+  .resa-sattkort > span:first-child, .resa-sattkort > span:last-child { grid-column: 1 / -1; }
 }
 .resa-skelett { display: block; width: 80%; height: 14px; border-radius: 4px; background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.12), rgba(255,255,255,0.05)); background-size: 200% 100%; animation: resa-glans 1.2s linear infinite; margin-top: 8px; }
 @keyframes resa-glans { from { background-position: 200% 0 } to { background-position: -200% 0 } }

@@ -6,6 +6,7 @@ import assert from 'node:assert/strict'
 import { bilMedPauser, planeraTag, BILVAL } from '../app/resa/planera.js'
 import { kostnad } from '../lib/resa/kostnad.js'
 import { svenskTid } from '../lib/resa/resvag.js'
+import { giltigtDatum, rimligt, medResenarer, kanTas, snabbastSatt } from '../lib/resa/val.js'
 
 const MIN = 60000
 // En rak väg söderut med en punkt per minut, så att pauserna hamnar jämnt.
@@ -127,6 +128,58 @@ test('flygresan tar upp parkeringen vid flygplatsen hemma', () => {
     etapper: [{ typ: 'bil', start: t, slut: t + 40 * MIN }, { typ: 'flyg', start: t + 2 * 3600000, slut: t + 4 * 3600000 }, { typ: 'transfer', start: t + 5 * 3600000, slut: t + 6 * 3600000 }],
   }
   const k = kostnad(resa, { vuxna: 2 }, {}, null)
-  assert.ok(k.ovrigt.includes('parkeringen vid flygplatsen hemma'))
+  assert.ok(k.ovrigt.includes('parkeringen vid flygplatsen hemma, för hela resan'))
+  // Parkeringen räknas en gång, inte igen på hemresan.
+  const hemat = { ...resa, hemat: true, etapper: [...resa.etapper].reverse().map((e, i) => ({ ...e, typ: ['transfer', 'flyg', 'bil'][i] })) }
+  assert.ok(!kostnad(hemat, { vuxna: 2 }, {}, null).ovrigt.some((t) => /parkering/.test(t)))
   assert.equal(k.rader.find((x) => /^Flyget/.test(x.namn)).kr, 2000)
+})
+
+test('datum: bara riktiga datum med rimligt år', () => {
+  assert.equal(giltigtDatum('2027-02-20'), true)
+  assert.equal(giltigtDatum('2028-02-29'), true)
+  assert.equal(giltigtDatum('2027-02-29'), false)
+  assert.equal(giltigtDatum('2027-02-30'), false)
+  assert.equal(giltigtDatum('0002-02-20'), false) // mitt i årtalet
+  assert.equal(giltigtDatum('0202-02-20'), false)
+  assert.equal(giltigtDatum('2019-12-31'), false)
+  assert.equal(giltigtDatum('2101-01-01'), false)
+  assert.equal(giltigtDatum(''), false)
+  assert.equal(giltigtDatum(null), false)
+})
+
+test('tal: komma och punkt, inom gränserna', () => {
+  assert.equal(rimligt('0,7', 0.2, 3), 0.7)
+  assert.equal(rimligt('0.5', 0.2, 3), 0.5)
+  assert.equal(rimligt('0', 0.2, 3), null)
+  assert.equal(rimligt('0,', 0.2, 3), null)
+  assert.equal(rimligt('', 0.2, 3), null)
+  assert.equal(rimligt('12', 0.2, 3), null)
+  assert.equal(rimligt('abc', 5, 50), null)
+})
+
+test('Aviasales-länken får rätt antal vuxna', () => {
+  assert.equal(medResenarer('https://www.aviasales.com/search/ARN2002INN1', 4), 'https://www.aviasales.com/search/ARN2002INN4')
+  assert.equal(medResenarer('https://www.aviasales.com/search/ARN2002INN27021', 3), 'https://www.aviasales.com/search/ARN2002INN27023')
+  assert.equal(medResenarer('https://www.aviasales.com/search/ARN2002INN1', 1), 'https://www.aviasales.com/search/ARN2002INN1')
+  assert.equal(medResenarer('https://www.aviasales.com/search/ARN2002INN1', 12), 'https://www.aviasales.com/search/ARN2002INN9')
+  // Travelpayouts länkar har en frågesträng; bara sökvägen ändras.
+  assert.equal(
+    medResenarer('https://www.aviasales.com/search/ARN2002INN1?t=DY17012345671&expected_price=1451', 2),
+    'https://www.aviasales.com/search/ARN2002INN2?t=DY17012345671&expected_price=1451',
+  )
+  // Okänd form lämnas orörd.
+  assert.equal(medResenarer('https://www.aviasales.com/?origin=ARN', 2), 'https://www.aviasales.com/?origin=ARN')
+  assert.equal(medResenarer(null, 2), null)
+})
+
+test('Först framme bara bland resor man hinner', () => {
+  const SATT = ['bil', 'tag', 'flyg']
+  const resor = { bil: { slut: 300 }, tag: { slut: 200 }, flyg: { slut: 100, tidigare: true } }
+  assert.equal(snabbastSatt(resor, SATT), 'tag')
+  assert.equal(kanTas(resor.flyg), false)
+  assert.equal(snabbastSatt({ ...resor, tag: { slut: 50, flyget: { narliggande: true } } }, SATT), 'bil')
+  // Går inget att hinna väljs ändå den snabbaste, men den får inget märke.
+  assert.equal(snabbastSatt({ bil: { saknas: 'x' }, tag: { saknas: 'x' }, flyg: { slut: 1, tidigare: true } }, SATT), 'flyg')
+  assert.equal(snabbastSatt({ bil: { saknas: 'x' }, tag: undefined, flyg: { saknas: 'x' } }, SATT), null)
 })

@@ -5,6 +5,7 @@ import { bibliotek, harNyckel } from './google'
 import { planeraBil, planeraTag, planeraFlyg, byggFlygresa, stoppLangsVagen, bilMedPauser, BILVAL } from './planera'
 import ResKarta from './ResKarta'
 import Partnerlank from '../Partnerlank'
+import { giltigtDatum, rimligt, medResenarer, kanTas, snabbastSatt } from '../../lib/resa/val'
 import {
   FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar, datumFor,
 } from '../../lib/resa/resvag'
@@ -200,7 +201,7 @@ export default function Reseplanerare({ ort, kurser }) {
   useEffect(() => {
     if (!resor || anvandarenValde.current) return
     if (SATT.some((s) => resor[s] === undefined)) return
-    const snabbast = snabbastSatt(resor)
+    const snabbast = snabbastSatt(resor, SATT)
     if (snabbast) setValt(snabbast)
   }, [resor])
 
@@ -304,7 +305,7 @@ export default function Reseplanerare({ ort, kurser }) {
   }, [lib, resor, franPunkt, tillPunkt, uppdatera])
 
   const vald = valt && resor?.[valt] && !resor[valt].saknas ? resor[valt] : null
-  const snabbast = resor && snabbastSatt(resor)
+  const snabbast = resor && snabbastSatt(resor, SATT)
 
   return (
     <div className="resa">
@@ -355,7 +356,7 @@ export default function Reseplanerare({ ort, kurser }) {
         <div className="resa-falt-rad resa-tid" style={{ marginTop: 14 }}>
           <label className="resa-falt">
             <span style={etikett}>Dag</span>
-            <input type="date" lang="sv" value={datum} min={new Date().toISOString().slice(0, 10)} onChange={(e) => giltigtDatum(e.target.value) && setDatum(e.target.value)} className="resa-input" />
+            <DatumFalt value={datum} min={new Date().toISOString().slice(0, 10)} onChange={setDatum} />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Åk tidigast</span>
@@ -363,7 +364,7 @@ export default function Reseplanerare({ ort, kurser }) {
           </label>
           <label className="resa-falt">
             <span style={etikett}>Hem</span>
-            <input type="date" lang="sv" value={hemDatum} min={plusDagar(datum, 1)} onChange={(e) => giltigtDatum(e.target.value) && setHemDatum(e.target.value)} className="resa-input" />
+            <DatumFalt value={hemDatum} min={plusDagar(datum, 1)} onChange={setHemDatum} />
           </label>
           <label className="resa-falt">
             <span style={etikett}>Resenärer</span>
@@ -385,13 +386,16 @@ export default function Reseplanerare({ ort, kurser }) {
 
       {resor && (
         <div ref={resultat} style={{ scrollMarginTop: 80 }}>
-          <div className="resa-riktning" role="tablist" aria-label="Dit eller hem">
+          <div className="resa-riktning" role="tablist" aria-label="Dit eller hem" onKeyDown={pilar}>
             {[['dit', `Dit · ${dag(svenskTid(visDatum, sokt?.tid || tid))}`], ['hem', `Hem · ${dag(svenskTid(visHem, hemTid))}`]].map(([r, text]) => (
               <button
                 key={r}
                 type="button"
                 role="tab"
+                id={`resa-flik-${r}`}
+                aria-controls="resa-panel"
                 aria-selected={riktning === r}
+                tabIndex={riktning === r ? 0 : -1}
                 className={`resa-riktknapp${riktning === r ? ' vald' : ''}`}
                 disabled={(soker || !!andrar) && riktning !== r}
                 onClick={() => riktning !== r && sok(null, r)}
@@ -421,20 +425,21 @@ export default function Reseplanerare({ ort, kurser }) {
               {hemTid === '10:00' && ', när de flesta boenden checkar ut.'}
             </p>
           )}
-          <div className="resa-kort-rad" role="tablist" aria-label="Färdsätt">
+          <div className="resa-kort-rad" role="tablist" aria-label="Färdsätt" onKeyDown={pilar}>
             {SATT.map((s) => (
               <Sattkort
                 key={s}
                 satt={s}
                 r={resor[s]}
                 vald={valt === s}
+                fokus={valt ? valt === s : s === SATT[0]}
                 snabbast={snabbast === s && kanTas(resor[s])}
                 onClick={() => { anvandarenValde.current = true; setValt(s); setAktiv(null); setAndraFel(null) }}
               />
             ))}
           </div>
 
-          <div className="resa-yta">
+          <div className="resa-yta" id="resa-panel" role="tabpanel" aria-labelledby={`resa-flik-${riktning}${valt ? ` resa-satt-${valt}` : ''}`}>
             <div className="resa-karta">
               <ResKarta
                 lib={lib}
@@ -529,27 +534,6 @@ function TurRetur({ flyget, datum, retur, ort, antal }) {
   )
 }
 
-/** Ett riktigt datum som YYYY-MM-DD, inte bara rätt form. */
-// Året måste vara rimligt: medan man skriver årtalet rapporterar Chrome
-// mellanlägen som 0002-02-20, och de ska inte sparas.
-const giltigtDatum = (d) => /^\d{4}-\d{2}-\d{2}$/.test(d || '') && Number(d.slice(0, 4)) >= 2020 && Number(d.slice(0, 4)) <= 2100 && !Number.isNaN(Date.parse(`${d}T12:00:00Z`)) && new Date(`${d}T12:00:00Z`).toISOString().slice(0, 10) === d
-
-/** Ett tal inom gränserna, annars null. Tar både 0,7 och 0.7. */
-const rimligt = (text, min, max) => {
-  const n = Number(String(text).replace(',', '.'))
-  return Number.isFinite(n) && n >= min && n <= max ? n : null
-}
-
-/** Aviasales söksträng slutar med antalet vuxna (1–9). */
-const medResenarer = (url, antal) => (url && antal > 1 ? url.replace(/1$/, String(Math.min(antal, 9))) : url)
-
-// Först framme räknas bara bland resor man faktiskt kan ta: inte ett flyg
-// som går före den valda tiden eller ett närliggande datum.
-const kanTas = (r) => r && !r.saknas && !r.tidigare && !r.flyget?.narliggande
-function snabbastSatt(resor) {
-  const fore = (lista) => lista.sort((a, b) => resor[a].slut - resor[b].slut)[0]
-  return fore(SATT.filter((s) => kanTas(resor[s]))) || fore(SATT.filter((s) => resor[s] && !resor[s].saknas))
-}
 
 const kortDatum = (d) => new Intl.DateTimeFormat('sv-SE', { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(new Date(`${d}T12:00:00Z`)).replace('.', '')
 
@@ -614,11 +598,11 @@ function Kostnad({ resa, antal, kurser, hemat }) {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
               Förbrukning
-              <input type="number" inputMode="decimal" min="0.2" max="2" step="0.1" value={forbrukningText} onChange={(e) => setForbrukning(e.target.value)} onBlur={() => setForbrukning(String(forbrukning))} className="resa-input resa-litet" /> l/mil
+              <input type="number" inputMode="decimal" min="0.2" max="3" step="0.1" value={forbrukningText} onChange={(e) => setForbrukning(e.target.value)} onBlur={() => setForbrukning(String(forbrukning))} className="resa-input resa-litet" /> l/mil
             </label>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.6)' }}>
               Literpris
-              <input type="number" inputMode="decimal" min="5" max="40" step="0.5" value={literprisText} onChange={(e) => setLiterpris(e.target.value)} onBlur={() => setLiterpris(String(literpris))} className="resa-input resa-litet" /> kr
+              <input type="number" inputMode="decimal" min="5" max="50" step="0.5" value={literprisText} onChange={(e) => setLiterpris(e.target.value)} onBlur={() => setLiterpris(String(literpris))} className="resa-input resa-litet" /> kr
             </label>
           </div>
         )}
@@ -840,14 +824,60 @@ function Ikon({ satt, farg = 'currentColor', storlek = 18 }) {
   return <svg {...p}><circle cx="12" cy="12" r="4" /></svg>
 }
 
-function Sattkort({ satt, r, vald, snabbast, onClick }) {
+/**
+ * Piltangenterna flyttar mellan flikarna (Home och End till första och
+ * sista). Fliken väljs med Enter eller mellanslag, eftersom hemresan
+ * kostar en ny sökning.
+ */
+function pilar(e) {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) return
+  const flikar = [...e.currentTarget.querySelectorAll('[role="tab"]:not([disabled])')]
+  const i = flikar.indexOf(document.activeElement)
+  if (i < 0 || !flikar.length) return
+  e.preventDefault()
+  const n = e.key === 'Home' ? 0 : e.key === 'End' ? flikar.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : -1) + flikar.length) % flikar.length
+  flikar[n].focus()
+}
+
+/**
+ * Datumfält som visar det läsaren skriver, men bara skickar vidare ett
+ * riktigt datum. Annars skriver React tillbaka det gamla värdet mitt i
+ * årtalet och fältet går inte att skriva i.
+ */
+function DatumFalt({ value, min, onChange }) {
+  const [text, setText] = useState(value)
+  const [forra, setForra] = useState(value)
+  if (value !== forra) {
+    setForra(value)
+    setText(value)
+  }
+  return (
+    <input
+      type="date"
+      lang="sv"
+      value={text}
+      min={min}
+      onChange={(e) => {
+        setText(e.target.value)
+        if (giltigtDatum(e.target.value)) onChange(e.target.value)
+      }}
+      onBlur={() => setText(value)}
+      className="resa-input"
+    />
+  )
+}
+
+function Sattkort({ satt, r, vald, fokus, snabbast, onClick }) {
   const raknar = r === undefined
   const saknas = r?.saknas
   return (
     <button
       type="button"
       role="tab"
+      id={`resa-satt-${satt}`}
+      aria-controls="resa-panel"
       aria-selected={vald}
+      tabIndex={fokus ? 0 : -1}
       onClick={onClick}
       disabled={raknar || !!saknas}
       className={`resa-sattkort${vald ? ' vald' : ''}`}

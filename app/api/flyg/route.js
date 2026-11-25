@@ -19,6 +19,24 @@ const API = 'https://api.travelpayouts.com/aviasales/v3/prices_for_dates'
 const IATA = /^[A-Z]{3}$/
 const DATUM = /^\d{4}-\d{2}-\d{2}$/
 
+// Skydd för Ignav-kvoten: en vanlig sökning frågar om upp till ett tiotal
+// flygplatspar, så 150 frågor per adress och tio minuter räcker gott för en
+// läsare som byter datum och ort. Den som frågar mer får Aviasales sparade
+// data i stället. Räknas per serverinstans, vilket räcker mot ett skript
+// som hamrar; det är ingen exakt gräns.
+const GRANS = 150
+const FONSTER = 10 * 60000
+const fragor = new Map()
+function forMycket(request) {
+  const ip = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || 'okand'
+  const nu = Date.now()
+  const lista = (fragor.get(ip) || []).filter((t) => nu - t < FONSTER)
+  lista.push(nu)
+  fragor.set(ip, lista)
+  if (fragor.size > 5000) for (const [k, v] of fragor) if (nu - v.at(-1) >= FONSTER) fragor.delete(k)
+  return lista.length > GRANS
+}
+
 export async function GET(request) {
   const url = new URL(request.url)
   const fran = url.searchParams.get('fran') || ''
@@ -43,14 +61,14 @@ export async function GET(request) {
     if (!riktigt(retur) || !(dagar >= 1 && dagar <= 30)) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
     if (retur > omEttAr) return Response.json({ turRetur: null, utanforFonster: true })
     const nyckelTR = process.env.IGNAV_NYCKEL
-    if (!nyckelTR) return Response.json({ turRetur: null })
+    if (!nyckelTR || forMycket(request)) return Response.json({ turRetur: null })
     return Response.json({ turRetur: await ignavTurRetur(fran, till, datum, retur, nyckelTR) })
   }
 
   // Livedata från Ignav när nyckeln finns; annars, eller om Ignav inte
   // svarar, Aviasales sparade sökningar nedan.
   const ignav = process.env.IGNAV_NYCKEL
-  if (ignav && !url.searchParams.get('diag')) {
+  if (ignav && !url.searchParams.get('diag') && !forMycket(request)) {
     const live = await ignavFlyg(fran, till, datum, ignav)
     if (live?.length) return Response.json({ flyg: live, kalla: 'ignav' })
   }

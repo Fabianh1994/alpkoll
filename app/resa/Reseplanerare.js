@@ -8,7 +8,7 @@ import Partnerlank from '../Partnerlank'
 import {
   FARG, TYPNAMN, FLYGPLATS_FORE, klocka, dag, dagarSenare, langd, heltal, nastaLordag, svenskTid, plusDagar, datumFor,
 } from '../../lib/resa/resvag'
-import { FLYGPLATSER } from '../../lib/resa/flygplatser'
+import { FLYGPLATSER, flygplats } from '../../lib/resa/flygplatser'
 import { kostnad, STANDARD_FORBRUKNING, STANDARD_LITERPRIS } from '../../lib/resa/kostnad'
 
 // Reseplaneraren: från din dörr till stugan, med bil, tåg och flyg.
@@ -670,7 +670,7 @@ function underrad(r) {
   }
   if (r.satt === 'flyg') {
     const f = r.flyget
-    const delar = [f.bolag, `${f.fran}–${f.till}`]
+    const delar = [f.bolag, `${f.fran}–${f.till}`, f.byten ? `${f.byten} byte` : 'direkt']
     if (Number.isFinite(f.pris)) delar.push(`från ${heltal(f.pris)} kr/person`)
     return delar.filter(Boolean).join(' · ')
   }
@@ -816,13 +816,33 @@ function beskriv(e, ort) {
     case 'flyg': {
       const kod = `${e.fran.kod}–${e.till.kod}`
       return {
-        titel: `${e.bolag || 'Flyg'}${e.linje ? ` ${e.linje.replace(/^\S+\s/, '')}` : ''} till ${e.till.namn}`,
+        titel: `${e.bolag || 'Flyg'}${e.linje ? ` ${e.linje}` : ''} till ${e.till.namn}`,
         rad: tidsrad([kod, langd(e.min), e.byten ? `${e.byten} byte` : 'direkt', Number.isFinite(e.pris) ? `från ${heltal(e.pris)} kr` : null, `landar ${klocka(e.slut)}`]),
-        extra: e.lank && (
+        extra: (e.lank || e.delar?.length > 1) && (
           <div style={{ marginTop: 10 }}>
+            {e.delar?.length > 1 && (
+              <ul style={{ listStyle: 'none', margin: '0 0 10px', padding: 0, display: 'grid', gap: 4, fontFamily: 'var(--font-body)', fontSize: 13, color: 'rgba(240,236,228,0.7)', lineHeight: 1.5 }}>
+                {e.delar.map((d, j) => {
+                  const nasta = e.delar[j + 1]
+                  const byte = nasta && d.ankomst && nasta.avgang ? (Date.parse(nasta.avgang) - Date.parse(d.ankomst)) / 60000 : null
+                  return (
+                    <li key={j}>
+                      {d.avgang ? klocka(Date.parse(d.avgang)) : ''}–{d.ankomst ? klocka(Date.parse(d.ankomst)) : ''} {d.nummer || ''} {d.fran}–{d.till}
+                      {nasta && (
+                        <span style={{ display: 'block', color: 'rgba(240,236,228,0.5)' }}>
+                          Byte i {flygplats(d.till)?.namn || d.till}{byte != null ? `, ${langd(byte)}` : ''}
+                        </span>
+                      )}
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+            {e.lank && (
             <Partnerlank partner="aviasales" sid={`resa-flyg-${ort.slug}`} sok={{ url: e.lank }} style={knappLiten} markningStyle={{ marginBottom: 6 }}>
               Se livepris och boka ›
             </Partnerlank>
+            )}
           </div>
         ),
       }

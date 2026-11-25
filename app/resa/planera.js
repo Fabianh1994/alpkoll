@@ -8,7 +8,7 @@
 import {
   FLYGPLATS_FORE, EFTER_LANDNING, fordon, resa, pauspunkter, svenskTid, datumFor,
 } from '../../lib/resa/resvag'
-import { FLYGPLATSER, avreseFor, ankomstFor, avstandKm } from '../../lib/resa/flygplatser'
+import { FLYGPLATSER, avreseFor, ankomstFor, avstandKm, flygplats } from '../../lib/resa/flygplatser'
 
 const punkt = (p) => ({ lat: typeof p.lat === 'function' ? p.lat() : p.lat, lng: typeof p.lng === 'function' ? p.lng() : p.lng })
 const ms = (route, falt) => route?.[falt] ?? route?.staticDurationMillis ?? null
@@ -135,25 +135,36 @@ function pos(stopp, reserv) {
   return reserv || {}
 }
 
+/** Längsta körning en dag innan resan delas med en övernattning, i minuter. */
+const MAX_KOR_PER_DAG = 660
+
 /** Resan med bil, med pausförslag längs vägen. */
 export async function planeraBil(lib, hem, mal, startMs) {
   const e = await bilEtapp(lib, hem, mal, startMs)
   if (!e) return { satt: 'bil', saknas: 'Google hittade ingen bilväg.' }
   // Pauserna räknas in i ankomsten: 45 minuter för lunch mellan 11 och 14,
-  // annars 20 minuter. Varje paus skjuter de följande lika mycket. Blir det
-  // kväll (efter 18) med mer än tre timmar kvar föreslås en övernattning i stället,
-  // (med mindre kvar kör de flesta hela vägen fram),
-  // till klockan 08.00 nästa morgon.
+  // annars 20 minuter. Varje paus skjuter de följande lika mycket.
+  //
+  // Mer än 11 timmars körning delas i lika långa dagar, så att ingen dag
+  // blir mycket längre än den andra. Natten läggs vid pausen närmast
+  // dagens del, och efter klockan 20 med mer än tre timmar kvar föreslås
+  // natten ändå. Med mindre kvar kör de flesta hela vägen fram.
+  const dagar = Math.max(1, Math.ceil(e.min / MAX_KOR_PER_DAG))
+  const perDag = e.min / dagar
+  let nastaNatt = perDag
   let tillagt = 0
   const pauser = pauspunkter(e.path, e.min).map((p) => {
     const startMs = e.start + (p.efterMin + tillagt) * 60000
     const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
     const kvar = e.min - p.efterMin
-    if ((timme >= 18 || timme < 5) && kvar > 180) {
-      // Efter 18 sovs det till nästa morgon; efter midnatt till samma dags morgon.
+    const dags = dagar > 1 && p.efterMin >= nastaNatt - 75
+    const sent = timme >= 20 || timme < 5
+    if ((dags || sent) && kvar > 180) {
+      // Före 05 sovs det till samma dags morgon, annars till nästa.
       const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
       const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))
       tillagt += langdMin
+      nastaNatt = p.efterMin + perDag
       return { ...p, startMs, langdMin, natt: true }
     }
     const langdMin = timme >= 11 && timme < 14 ? 45 : 20
@@ -266,7 +277,13 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
     byten: f.byten,
     pris: f.pris,
     lank: f.lank,
-    path: [{ lat: fran.lat, lng: fran.lng }, { lat: till.lat, lng: till.lng }],
+    delar: f.delar || null,
+    // Flygbågen går via bytesflygplatsen när den är känd.
+    path: [
+      { lat: fran.lat, lng: fran.lng },
+      ...(f.delar || []).slice(0, -1).map((d) => flygplats(d.till)).filter(Boolean).map((p) => ({ lat: p.lat, lng: p.lng })),
+      { lat: till.lat, lng: till.lng },
+    ],
   }
   const incheckning = {
     typ: 'vanta', namn: 'Incheckning och säkerhetskontroll',
@@ -287,6 +304,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   const franKoll = !hemat && vidare !== 'auto'
     ? vidare === 'kollektivt' && !!kollektivtFran?.length
     : kollFranSlut - efter <= (bilFran.min * 1.8 + 30) * 60000
+  if (!hemat && franKoll) bagage.namn = `Bagage och vidare till ${kollektivtFran.find((e) => e.typ !== 'gang')?.typ === 'buss' ? 'bussen' : 'tåget'}`
   const franEtapper = franKoll
     ? kollektivtFran
     : [{ ...bilFran, typ: hemat ? 'bil' : 'transfer', start: efter, slut: efter + bilFran.min * 60000 }]

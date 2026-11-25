@@ -170,6 +170,14 @@ async function ignavFlyg(fran, till, datum, nyckel) {
           bolagKod: forsta.marketing_carrier_code || null,
           nummer: forsta.flight_number ? `${forsta.marketing_carrier_code || ''} ${forsta.flight_number}`.trim() : null,
           pris: it.price?.currency === 'SEK' && Number.isFinite(it.price.amount) ? it.price.amount : null,
+          // Varje flyg för sig, så att bytet syns: var, och hur lång tid.
+          delar: seg.map((s) => ({
+            fran: s.departure_airport,
+            till: s.arrival_airport,
+            avgang: s.departure_time_utc ? new Date(Date.parse(s.departure_time_utc)).toISOString() : null,
+            ankomst: s.arrival_time_utc ? new Date(Date.parse(s.arrival_time_utc)).toISOString() : null,
+            nummer: s.flight_number ? `${s.marketing_carrier_code || ''} ${s.flight_number}`.trim() : null,
+          })),
           lank,
           live: true,
         }

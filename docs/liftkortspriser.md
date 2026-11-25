@@ -570,6 +570,11 @@ granskningen av omgång 6 samma dag. Se migration 044. Orterna ligger dolda
   läste ortens bokning renderad; granskaren fick bara sidans skal med curl,
   och pistat.se visar samma tal. Listpris: på nätet dras 5 %, och 10 % vid
   köp mer än 40 dagar före. Priset ändras med veckan. Kvot 4,21.
+  **Rättat 2026-11-25 (migration 054):** 671 / 2 827 var förköpspriset.
+  Bokningen visar "671 SEK 745 SEK" och "2 827 SEK 3 142 SEK", där 745 och
+  3 142 är de överstrukna ordinarie priserna och 671 = 0,9 × 745. pistat.se
+  "utan rabatt" 745 / 3 142. Sajten visar nu 745 / 3 142 SEK, som Kläppen
+  och Hemavan med ordinarie pris. Kvot 4,22.
   Idrepasset (Idre Fjäll, Fjätervålen, Idre Himmelfjäll, Grövelfjäll) är ett
   tilläggskort mellan fyra ägare; priset är inte läst, och det står inte i
   `STORRE_KORT`.

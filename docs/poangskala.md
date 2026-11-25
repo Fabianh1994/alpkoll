@@ -106,7 +106,7 @@ Pistad svår åkning: branta svarta, längd, fallhöjd. Skiljs från offpist med
 ### Snowpark
 Hoppens och railsens kvalitet och underhåll.
 
-- **10** Laax — fyra parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
+- **10** Laax — fem parker och en superpipe vid Crap Sogn Gion, och inomhushallen Freestyle Academy vid dalstationen
 - **9** Les 3 Vallées (Val Thorens, Méribel, Courchevel) — VT Park vid Plateau, Open Park i Méribel-Mottaret med en liten halfpipe, Family Park i Courchevel
 - **8** Saalbach (Nitro Snowpark Leogang), Livigno, Tignes, Ischgl (två sektioner vid Velill med luftkudde i slutet), Mayrhofen (Penken Park med fem områden, från Pro Area till KidsPark), Grandvalira (tre parker; El Tarters har en av Europas längsta rader av hopp och rails)
 - **6** normal alport
@@ -188,7 +188,7 @@ Migration 014 rättade det som gick att belägga, och bara det: Sälen till 10 p
 
 Bykänsla för Cervinia är 4, inte 3. Platsen var en klätterby med hotell före liftarna, och den gamla motiveringen ("byggdes som liftanläggning", "hårt kritiserad") bars bara delvis av källorna. Afterski-ankaret 5 flyttades från Val Gardena till Alta Badia: Ski Club GB ger båda 2/5, men skiresort ger Val Gardena 4/5 och Alta Badia 3/5, samma skillnad som gav La Plagne 6 och Serre Chevalier 5 i omgång 3.
 
-**Avgjort 2026-11-18 (granskningen av omgång 5):** Snowpark fick sin första tia. Laax har fyra parker, en superpipe och en inomhushall, och tre oberoende källor (skiresort, Ski Club GB, inthesnow) beskriver det som det största freestyleutbudet; Val Thorens står kvar på 9. Engelberg blir ankare för 4 i stället för 3: skiresort skriver att Titlis saknar park, men Iglu räknar en, och ett ytterläge kräver mer än en källa när en annan säger emot (samma regel som offpist för Alta Badia i omgång 4). Offpist 10 får en femte ort, Engelberg, med Laub och Galtiberg som Ski Club GB och Powderhounds kallar världsklass.
+**Avgjort 2026-11-18 (granskningen av omgång 5):** Snowpark fick sin första tia. Laax har fyra parker, en superpipe och en inomhushall [omkontrollen 2026-11-25: fem parker enligt laax.com och flimslaax.com], och tre oberoende källor (skiresort, Ski Club GB, inthesnow) beskriver det som det största freestyleutbudet; Val Thorens står kvar på 9. Engelberg blir ankare för 4 i stället för 3: skiresort skriver att Titlis saknar park, men Iglu räknar en, och ett ytterläge kräver mer än en källa när en annan säger emot (samma regel som offpist för Alta Badia i omgång 4). Offpist 10 får en femte ort, Engelberg, med Laub och Galtiberg som Ski Club GB och Powderhounds kallar världsklass.
 
 Mellannivå 9 kräver mer än Ski Club GB 5/5. Laax och St. Moritz har båda det betyget men får 8, som Tignes med samma betyg och mer pist. Nian bärs av Val Gardena, som når hela Sellaronda med lift, och av Zermatt.
 

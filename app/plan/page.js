@@ -148,7 +148,7 @@ function getWhyText(resort, priorities) {
     snow:    `Snösäkerhet ${resort.snow_guarantee_score}/10. ${resort.altitude_top > 2500 ? 'Höjden gör snötäcket pålitligt.' : 'Bra snöhistorik för sin höjd.'}`,
     terrain: `${resort.total_pistes_km} km pist, ${resort.black_percent} procent svarta nedfarter. ${resort.off_piste_score >= 8 ? 'Ovanligt bra offpist.' : 'Varierad terräng.'}`,
     value:   `${Number.isFinite(resort.lift_pass_week_eur) ? `Veckokort €${resort.lift_pass_week_eur}. ` : ''}${resort.value_score >= 8 ? 'Mycket för pengarna.' : 'Rimligt pris för det du får.'}`,
-    access:  `${restidText} från ${resort.nearest_airport}. ${resort.transfer_minutes && resort.transfer_minutes <= 90 ? 'Snabbt att ta sig dit.' : 'Överkomlig transfer.'}`,
+    access:  `${restidText}${resort.transfer_minutes && resort.transfer_note?.includes('från') ? '' : ` från ${resort.nearest_airport}`}. ${resort.transfer_minutes && resort.transfer_minutes <= 90 ? 'Snabbt att ta sig dit.' : 'Överkomlig transfer.'}`,
     family:  `Familjebetyg ${resort.family_friendly_score}/10. ${resort.beginner_score >= 7 ? 'Bra nybörjarterräng och skidskola.' : 'Bra utbud för barnfamiljer.'}`,
     apres:   `Afterski ${resort.apres_ski_score}/10. ${resort.apres_ski_score >= 9 ? 'Hör till Alpernas livligaste.' : 'Gott om barer och restauranger.'}`,
   };

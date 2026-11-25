@@ -298,15 +298,22 @@ export async function stoppLangsVagen(lib, pauser) {
         fields: ['displayName', 'location', 'googleMapsURI', 'primaryTypeDisplayName', 'formattedAddress'],
         locationRestriction: { center: { lat: p.lat, lng: p.lng }, radius: 12000 },
         includedPrimaryTypes: ['restaurant', 'cafe', 'hamburger_restaurant', 'pizza_restaurant'],
-        maxResultCount: 3,
+        maxResultCount: 6,
         rankPreference: 'POPULARITY',
         language: 'sv',
         region: 'se',
       })
+      // Cirkeln kan gå över vatten: en paus vid Helsingborg fick annars
+      // namn och matställen från Helsingør. Ortnamnet tas från det närmaste
+      // stället, och bara ställen i samma land som det visas.
+      const avstand = (pl) => Math.hypot(pl.location.lat() - p.lat, (pl.location.lng() - p.lng) * Math.cos((p.lat * Math.PI) / 180))
+      const land = (pl) => (pl.formattedAddress || '').split(',').pop().trim()
+      const narmast = [...(places || [])].filter((pl) => pl.location).sort((a, b) => avstand(a) - avstand(b))[0]
+      const iLandet = (places || []).filter((pl) => !narmast || land(pl) === land(narmast)).slice(0, 3)
       return {
         ...p,
-        ort: ortUrAdress(places?.[0]?.formattedAddress),
-        platser: (places || []).map((pl) => ({
+        ort: ortUrAdress(narmast?.formattedAddress),
+        platser: iLandet.map((pl) => ({
           namn: pl.displayName,
           typ: pl.primaryTypeDisplayName || null,
           lank: pl.googleMapsURI ? String(pl.googleMapsURI) : null,
@@ -325,5 +332,7 @@ function ortUrAdress(adress) {
   if (!adress) return null
   const delar = adress.split(',').map((d) => d.trim())
   const medPostnummer = delar.find((d) => /\d{3}\s?\d{2}\s+\D/.test(d) || /^\d{4}\s+\D/.test(d))
-  return medPostnummer ? medPostnummer.replace(/^[\d\s]+/, '') : delar[delar.length - 2] || null
+  const ort = medPostnummer ? medPostnummer.replace(/^[\d\s]+/, '') : delar[delar.length - 2] || null
+  // Tyska rastplatser kan heta "Wittstock/Dosse-AH" (Autohof).
+  return ort ? ort.replace(/-AH$/, '') : null
 }

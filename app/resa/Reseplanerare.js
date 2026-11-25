@@ -390,7 +390,7 @@ function Kostnad({ resa, antal, kurser, hemat }) {
         )}
         {k.ovrigt.length > 0 && (
           <p style={{ fontFamily: 'var(--font-body)', fontSize: 12.5, color: 'rgba(240,236,228,0.55)', lineHeight: 1.6, margin: k.rader.length ? '10px 0 0' : 0 }}>
-            Tillkommer: {k.ovrigt.join(', ').toLowerCase().replace(/^./, (c) => c.toUpperCase())}.
+            Tillkommer: {k.ovrigt.join(', ').replace(/^./, (c) => c.toUpperCase())}.
           </p>
         )}
         {resa.satt === 'bil' && (

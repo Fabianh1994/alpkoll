@@ -44,6 +44,7 @@ export default function Reseplanerare({ ort }) {
   const [aktiv, setAktiv] = useState(null)
   const [stopp, setStopp] = useState([])
   const [soker, setSoker] = useState(false)
+  const [aterstalld, setAterstalld] = useState(0)
   const anvandarenValde = useRef(false)
   const sokning = useRef(0)
   const resultat = useRef(null)
@@ -100,6 +101,28 @@ export default function Reseplanerare({ ort }) {
     }
   }, [hem, mal, ort, datum, tid, laddaLib])
 
+  // En delad länk fyller i formuläret. Google laddas först när läsaren
+  // trycker på Visa resan, som utan länk.
+  useEffect(() => {
+    const t = setTimeout(() => {
+      const q = new URLSearchParams(window.location.search)
+      const plats = (v) => {
+        const [lat, lng, ...namn] = (v || '').split(',')
+        const p = { lat: Number(lat), lng: Number(lng), namn: namn.join(',') || 'Delad adress' }
+        return Number.isFinite(p.lat) && Number.isFinite(p.lng) && v ? { ...p, adress: p.namn } : null
+      }
+      const f = plats(q.get('fran'))
+      if (!f) return
+      setHem(f)
+      const st = plats(q.get('stuga'))
+      if (st) { setStuga(st); setVisaStuga(true) }
+      if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('dag') || '')) setDatum(q.get('dag'))
+      if (/^\d{2}:\d{2}$/.test(q.get('tid') || '')) setTid(q.get('tid'))
+      setAterstalld((n) => n + 1)
+    }, 0)
+    return () => clearTimeout(t)
+  }, [])
+
   // Pauserna längs bilvägen hämtas av sig själva när bilresan är klar.
   const bilresa = resor?.bil
   useEffect(() => {
@@ -134,6 +157,7 @@ export default function Reseplanerare({ ort }) {
       <form onSubmit={sok} className="resa-form" style={{ background: KORT, border: '1px solid rgba(255,255,255,0.07)', borderRadius: 14, padding: 'clamp(18px, 3vw, 28px)' }}>
         <div className="resa-falt-rad">
           <AdressFalt
+            key={`fran-${aterstalld}`}
             id="resa-fran"
             label="Från"
             placeholder="Din adress, t.ex. Götgatan 12, Stockholm"
@@ -159,6 +183,7 @@ export default function Reseplanerare({ ort }) {
         {visaStuga && (
           <div style={{ marginTop: 14 }}>
             <AdressFalt
+              key={`stuga-${aterstalld}`}
               id="resa-stuga"
               label="Stugan eller hotellet"
               placeholder={`Adress eller namn i ${ort.namn}`}
@@ -232,6 +257,9 @@ export default function Reseplanerare({ ort }) {
                   stopp={valt === 'bil' ? stopp : []}
                   onValjFlyg={valjFlyg}
                 />
+              ) : null}
+              {vald ? (
+                <Spara resa={vald} hem={hem} stuga={stuga} mal={mal} ort={ort} datum={datum} tid={tid} />
               ) : (
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(240,236,228,0.55)', margin: 0 }}>
                   {soker ? 'Räknar ut resorna …' : 'Välj ett färdsätt ovanför.'}
@@ -243,6 +271,79 @@ export default function Reseplanerare({ ort }) {
       )}
     </div>
   )
+}
+
+// ── Dela och spara ──────────────────────────────────────────────────────
+
+const plats = (p) => `${p.lat.toFixed(5)},${p.lng.toFixed(5)},${(p.adress || p.namn || '').replace(/,/g, ' ')}`
+
+function Spara({ resa, hem, stuga, mal, ort, datum, tid }) {
+  const [kopierad, setKopierad] = useState(false)
+
+  const lank = () => {
+    const q = new URLSearchParams({ fran: plats(hem), dag: datum, tid })
+    if (stuga) q.set('stuga', plats(stuga))
+    return `${window.location.origin}${window.location.pathname}?${q}#resan-hit`
+  }
+
+  const dela = async () => {
+    const url = lank()
+    const titel = `Resan till ${ort.namn}`
+    try {
+      if (navigator.share) { await navigator.share({ title: titel, url }); return }
+      await navigator.clipboard.writeText(url)
+      setKopierad(true)
+      setTimeout(() => setKopierad(false), 2500)
+    } catch { /* avbrutet av läsaren */ }
+  }
+
+  const kalender = () => {
+    const ics = kalenderfil(resa, mal, lank())
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }))
+    a.download = `resan-till-${ort.slug}.ics`
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  }
+
+  const lage = resa.satt === 'tag' ? 'transit' : 'driving'
+  const maps = `https://www.google.com/maps/dir/?api=1&origin=${hem.lat},${hem.lng}&destination=${mal.lat},${mal.lng}&travelmode=${lage}`
+
+  return (
+    <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.07)' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        <button type="button" className="resa-sparknapp" onClick={dela}>{kopierad ? 'Länken är kopierad' : 'Dela resan'}</button>
+        <button type="button" className="resa-sparknapp" onClick={kalender}>Lägg i kalendern</button>
+        {resa.satt !== 'flyg' && (
+          <a className="resa-sparknapp" href={maps} target="_blank" rel="noopener noreferrer">Öppna i Google Maps ›</a>
+        )}
+      </div>
+      <p style={{ fontFamily: 'var(--font-body)', fontSize: 11.5, color: 'rgba(240,236,228,0.4)', margin: '8px 0 0', lineHeight: 1.5 }}>
+        Länken innehåller adressen du skrev, så tänk på vem du delar den med.
+      </p>
+    </div>
+  )
+}
+
+/** En kalenderhändelse för hela resan, med stegen i beskrivningen. */
+function kalenderfil(resa, mal, url) {
+  const utc = (ms) => new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+  const esc = (t) => String(t).replace(/\\/g, '\\\\').replace(/[,;]/g, (m) => `\\${m}`).replace(/\n/g, '\\n')
+  const steg = resa.etapper
+    .filter((e) => e.typ !== 'vanta')
+    .map((e) => `${klocka(e.start)} ${TYPNAMN[e.typ] || ''}${e.linje ? ` ${e.linje}` : ''} till ${e.till?.namn || ''}`.trim())
+  const rader = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Alpkoll//Reseplaneraren//SV', 'BEGIN:VEVENT',
+    `UID:${resa.start}-${Math.round(mal.lat * 1e4)}@alpkoll.se`,
+    `DTSTAMP:${utc(Date.now())}`,
+    `DTSTART:${utc(resa.start)}`,
+    `DTEND:${utc(resa.slut)}`,
+    `SUMMARY:${esc(`Resan till ${mal.namn} (${SATTNAMN[resa.satt].toLowerCase()})`)}`,
+    `DESCRIPTION:${esc([...steg, '', url].join('\n'))}`,
+    `LOCATION:${esc(mal.namn)}`,
+    'END:VEVENT', 'END:VCALENDAR',
+  ]
+  return rader.join('\r\n')
 }
 
 // ── Adressfältet ────────────────────────────────────────────────────────
@@ -701,6 +802,11 @@ const CSS = `
 @media (prefers-reduced-motion: reduce) { .resa-skelett { animation: none; } }
 .resa-yta { display: grid; grid-template-columns: 1fr; gap: 18px; }
 .resa-karta { position: relative; height: 58vh; min-height: 360px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+/* På mobil kommer svaret först: tidslinjen överst, kartan under den. */
+@media (max-width: 979px) {
+  .resa-steg { order: -1; }
+  .resa-karta { height: 46vh; min-height: 300px; }
+}
 @media (min-width: 980px) {
   .resa-yta { grid-template-columns: minmax(0, 1.35fr) minmax(360px, 1fr); align-items: start; }
   .resa-karta { position: sticky; top: 88px; height: calc(100vh - 120px); max-height: 760px; }
@@ -728,5 +834,12 @@ const CSS = `
   font-family: var(--font-body); font-size: 13px; color: rgba(240,236,228,0.65);
 }
 .resa-flygrad:hover:not(:disabled) { border-color: rgba(212,165,116,0.45); }
+.resa-sparknapp {
+  display: inline-flex; align-items: center; background: transparent; color: #f0ece4; cursor: pointer; text-decoration: none;
+  border: 1px solid rgba(255,255,255,0.14); border-radius: 8px; padding: 9px 14px;
+  font-family: var(--font-body); font-size: 13px; font-weight: 500;
+}
+.resa-sparknapp:hover { border-color: #D4A574; }
+.resa-sparknapp:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .resa-flygrad.vald { border-color: #D4A574; cursor: default; }
 `

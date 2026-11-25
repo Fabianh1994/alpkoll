@@ -13,21 +13,28 @@ import { FLYGPLATSER, avreseFor, ankomstFor, avstandKm, flygplats } from '../../
 const punkt = (p) => ({ lat: typeof p.lat === 'function' ? p.lat() : p.lat, lng: typeof p.lng === 'function' ? p.lng() : p.lng })
 const ms = (route, falt) => route?.[falt] ?? route?.staticDurationMillis ?? null
 
-/** Kortaste bilvägen mellan två punkter, som en etapp. null om Google inte hittar någon. */
-export async function bilEtapp(lib, fran, till, startMs, { typ = 'bil' } = {}) {
+/**
+ * Kortaste bilvägen mellan två punkter, som en etapp. null om Google inte
+ * hittar någon. Med `via` går vägen över läsarens egna stopp, och `viaMin`
+ * säger efter hur lång körning stoppet kommer.
+ */
+export async function bilEtapp(lib, fran, till, startMs, { typ = 'bil', via = null } = {}) {
   const { Route } = lib.routes
-  const { routes } = await Route.computeRoutes({
+  const fraga = {
     origin: { lat: fran.lat, lng: fran.lng },
     destination: { lat: till.lat, lng: till.lng },
     travelMode: 'DRIVING',
     polylineQuality: 'OVERVIEW',
     language: 'sv',
     region: 'se',
-    fields: ['durationMillis', 'staticDurationMillis', 'distanceMeters', 'path'],
-  })
+    fields: ['durationMillis', 'staticDurationMillis', 'distanceMeters', 'path', ...(via ? ['legs'] : [])],
+  }
+  if (via) fraga.intermediates = [{ location: { lat: via.lat, lng: via.lng } }]
+  const { routes } = await Route.computeRoutes(fraga)
   const r = routes?.[0]
   if (!r) return null
   const min = Math.round((ms(r, 'durationMillis') || 0) / 60000)
+  const forsta = via && r.legs?.[0]
   return {
     typ,
     fran: { namn: fran.namn, lat: fran.lat, lng: fran.lng },
@@ -37,6 +44,7 @@ export async function bilEtapp(lib, fran, till, startMs, { typ = 'bil' } = {}) {
     min,
     km: Math.round((r.distanceMeters || 0) / 1000),
     path: (r.path || []).map(punkt),
+    viaMin: forsta ? Math.round((ms(forsta, 'durationMillis') || 0) / 60000) : null,
   }
 }
 
@@ -45,7 +53,7 @@ export async function bilEtapp(lib, fran, till, startMs, { typ = 'bil' } = {}) {
  * som är framme senast då, annars en som går tidigast `startMs`.
  * Returnerar etapperna i ordning, eller null.
  */
-export async function kollektivEtapper(lib, fran, till, { startMs, ankomstMs } = {}) {
+export async function kollektivEtapper(lib, fran, till, { startMs, ankomstMs, lagen = null } = {}) {
   const { Route } = lib.routes
   const fraga = {
     origin: { lat: fran.lat, lng: fran.lng },
@@ -57,6 +65,7 @@ export async function kollektivEtapper(lib, fran, till, { startMs, ankomstMs } =
   }
   if (ankomstMs) fraga.arrivalTime = new Date(ankomstMs)
   else fraga.departureTime = new Date(startMs)
+  if (lagen) fraga.transitPreference = { allowedTransitModes: lagen }
 
   let routes
   try {
@@ -135,51 +144,109 @@ function pos(stopp, reserv) {
   return reserv || {}
 }
 
-/** Längsta körning en dag innan resan delas med en övernattning, i minuter. */
-const MAX_KOR_PER_DAG = 660
+/**
+ * Läsarens val för bilresan. `pausVar` är minuter bakom ratten mellan
+ * pauserna, `maxDag` längsta körning en dag (0 = hela vägen utan natt), och
+ * `egetStopp` ett eget stopp på vägen: { namn, lat, lng, min } där min 0
+ * betyder övernattning.
+ */
+export const BILVAL = { pausVar: 150, pauslangd: 'vanlig', maxDag: 660, egetStopp: null }
+
+/** Paus och lunch i minuter för varje pauslängd. */
+export const PAUSLANGD = { kort: [10, 30], vanlig: [20, 45], lang: [30, 60] }
 
 /** Resan med bil, med pausförslag längs vägen. */
-export async function planeraBil(lib, hem, mal, startMs) {
-  const e = await bilEtapp(lib, hem, mal, startMs)
-  if (!e) return { satt: 'bil', saknas: 'Google hittade ingen bilväg.' }
-  // Pauserna räknas in i ankomsten: 45 minuter för lunch mellan 11 och 14,
-  // annars 20 minuter. Varje paus skjuter de följande lika mycket.
+export async function planeraBil(lib, hem, mal, startMs, val = BILVAL) {
+  const e = await bilEtapp(lib, hem, mal, startMs, { via: val.egetStopp })
+  if (!e) return { satt: 'bil', saknas: val.egetStopp ? 'Google hittade ingen bilväg via ditt stopp.' : 'Google hittade ingen bilväg.' }
+  return bilMedPauser(e, val)
+}
+
+/**
+ * Lägger pauser, luncher och nätter på en bilväg. Körs om direkt när
+ * läsaren ändrar pauserna, utan att fråga Google igen.
+ */
+export function bilMedPauser(e, val = BILVAL) {
+  const v = { ...BILVAL, ...val }
+  const [kort, lunch] = PAUSLANGD[v.pauslangd] || PAUSLANGD.vanlig
+  // Pauserna räknas in i ankomsten: lunch mellan 11 och 14, annars en kort
+  // paus. Varje paus skjuter de följande lika mycket.
   //
-  // Mer än 11 timmars körning delas i lika långa dagar, så att ingen dag
+  // Mer körning än en dags del delas i lika långa dagar, så att ingen dag
   // blir mycket längre än den andra. Natten läggs vid pausen närmast
   // dagens del, och efter klockan 20 med mer än tre timmar kvar föreslås
-  // natten ändå. Med mindre kvar kör de flesta hela vägen fram.
-  const dagar = Math.max(1, Math.ceil(e.min / MAX_KOR_PER_DAG))
+  // natten ändå. Med mindre kvar kör de flesta hela vägen fram. Väljer
+  // läsaren att köra hela vägen blir det ingen natt alls.
+  const dagar = v.maxDag ? Math.max(1, Math.ceil(e.min / v.maxDag)) : 1
   const perDag = e.min / dagar
   let nastaNatt = perDag
+
+  // Läsarens eget stopp ersätter de automatiska pauserna nära det.
+  let punkter = pauspunkter(e.path, e.min, v.pausVar)
+  const eget = v.egetStopp && e.viaMin != null
+    ? { lat: v.egetStopp.lat, lng: v.egetStopp.lng, efterMin: e.viaMin, egen: true, namn: v.egetStopp.namn, onskadMin: v.egetStopp.min }
+    : null
+  if (eget) {
+    punkter = [...punkter.filter((p) => Math.abs(p.efterMin - eget.efterMin) > 45), eget].sort((a, b) => a.efterMin - b.efterMin)
+  }
+
   let tillagt = 0
-  const pauser = pauspunkter(e.path, e.min).map((p) => {
+  const timmeFor = (t) => Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(t)))
+  const natt = (p, startMs, timme) => {
+    // Före 05 sovs det till samma dags morgon, annars till nästa.
+    const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
+    const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))
+    tillagt += langdMin
+    nastaNatt = p.efterMin + perDag
+    return { ...p, startMs, langdMin, natt: true }
+  }
+  const pauser = punkter.map((p) => {
     const startMs = e.start + (p.efterMin + tillagt) * 60000
-    const timme = Number(new Intl.DateTimeFormat('sv-SE', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Stockholm' }).format(new Date(startMs)))
+    const timme = timmeFor(startMs)
     const kvar = e.min - p.efterMin
-    const dags = dagar > 1 && p.efterMin >= nastaNatt - 75
-    const sent = timme >= 20 || timme < 5
-    if ((dags || sent) && kvar > 180) {
-      // Före 05 sovs det till samma dags morgon, annars till nästa.
-      const morgon = svenskTid(datumFor(startMs + (timme >= 5 ? 86400000 : 0)), '08:00')
-      const langdMin = Math.max(0, Math.round((morgon - startMs) / 60000))
-      tillagt += langdMin
-      nastaNatt = p.efterMin + perDag
-      return { ...p, startMs, langdMin, natt: true }
+    if (p.egen) {
+      if (p.onskadMin === 0) return natt(p, startMs, timme)
+      tillagt += p.onskadMin
+      return { ...p, startMs, langdMin: p.onskadMin }
     }
-    const langdMin = timme >= 11 && timme < 14 ? 45 : 20
+    const dags = dagar > 1 && p.efterMin >= nastaNatt - 75
+    const sent = v.maxDag > 0 && (timme >= 20 || timme < 5)
+    if ((dags || sent) && kvar > 180) return natt(p, startMs, timme)
+    const langdMin = timme >= 11 && timme < 14 ? lunch : kort
     tillagt += langdMin
     return { ...p, startMs, langdMin }
   })
-  const r = resa('bil', [{ ...e, slut: e.slut + tillagt * 60000 }], { km: e.km, pauser, pausMin: tillagt, korMin: e.min })
-  return r
+  return resa('bil', [{ ...e, slut: e.slut + tillagt * 60000 }], { km: e.km, pauser, pausMin: tillagt, korMin: e.min, bilvag: e, bilval: v })
 }
 
-/** Resan med tåg och buss. */
-export async function planeraTag(lib, hem, mal, startMs) {
-  const etapper = await kollektivEtapper(lib, hem, mal, { startMs })
-  if (!etapper?.length) return { satt: 'tag', saknas: 'Google hittade ingen resa med tåg eller buss den dagen.' }
-  return resa('tag', etapper)
+/** Spårtrafik: tåg, regionaltåg, tunnelbana och spårvagn. */
+const SPAR = ['TRAIN', 'RAIL', 'SUBWAY', 'LIGHT_RAIL']
+const gangMin = (et) => et.filter((e) => e.typ === 'gang').reduce((s, e) => s + e.min, 0)
+
+/**
+ * Resan med tåg och buss. Tåget går först: få sätter sig på en långfärdsbuss
+ * en bit av en tågresa. Google frågas två gånger, med bara spår och med
+ * allt. Spårresan väljs om den finns, inte kräver lång promenad och inte
+ * är mer än tre timmar längre. Annars blir det resan med buss, och en lång
+ * bussträcka sägs ut.
+ *
+ * Med `ankomstMs` söks en resa som är framme senast då (tidigare avgång).
+ */
+export async function planeraTag(lib, hem, mal, startMs, { ankomstMs } = {}) {
+  const tid = ankomstMs ? { ankomstMs } : { startMs }
+  const [spar, alla] = await Promise.all([
+    kollektivEtapper(lib, hem, mal, { ...tid, lagen: SPAR }).catch(() => null),
+    kollektivEtapper(lib, hem, mal, tid).catch(() => null),
+  ])
+  const sparOk = spar?.length && gangMin(spar) <= 40
+  const valt = sparOk && (!alla?.length || spar.at(-1).slut <= alla.at(-1).slut + 180 * 60000) ? spar : alla
+  if (!valt?.length) return { satt: 'tag', saknas: 'Google hittade ingen resa med tåg eller buss den dagen.' }
+  const langBuss = valt.find((e) => e.typ === 'buss' && e.slut - e.start >= 90 * 60000)
+  return resa('tag', valt, {
+    baraSpar: valt === spar,
+    langBuss: langBuss ? { min: Math.round((langBuss.slut - langBuss.start) / 60000), fran: langBuss.fran?.namn, till: langBuss.till?.namn, bolag: langBuss.bolag } : null,
+    valdStart: startMs,
+  })
 }
 
 /**
@@ -246,7 +313,13 @@ export async function planeraFlyg(lib, hem, mal, ort, startMs, datum, { hemat = 
 }
 
 /** Hela flygresan för ett valt flyg: vägen dit, flygplatsen, flyget och transfern. */
-export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = false, vidare = 'auto' } = {}) {
+export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = false, vidare = 'auto', kollTid = null, taxiExtra = 0 } = {}) {
+  // Läsaren kan säga att vägen mellan flygplatsen och orten tar längre tid
+  // än Googles bilväg, till exempel med delad transferbuss.
+  if (taxiExtra) {
+    if (hemat) bilDit = { ...bilDit, min: bilDit.min + taxiExtra }
+    else bilFran = { ...bilFran, min: bilFran.min + taxiExtra }
+  }
   const avgang = Date.parse(f.avgang)
   const ankomst = Date.parse(f.ankomst)
   const fran = FLYGPLATSER[f.fran]
@@ -254,7 +327,8 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   const vidFlygplats = avgang - FLYGPLATS_FORE * 60000
 
   // Till flygplatsen: kollektivt om det inte tar mycket längre än bilen.
-  const kollektivtDit = await kollektivEtapper(lib, hem, { namn: fran.namn, ...fran }, { ankomstMs: vidFlygplats }).catch(() => null)
+  // Hemåt kan läsaren välja en tidigare avgång från orten (kollTid).
+  const kollektivtDit = await kollektivEtapper(lib, hem, { namn: fran.namn, ...fran }, { ankomstMs: hemat && kollTid ? Math.min(kollTid, vidFlygplats) : vidFlygplats }).catch(() => null)
   const kollMin = kollektivtDit?.length ? (kollektivtDit.at(-1).slut - kollektivtDit[0].start) / 60000 : Infinity
   // Hemåt är det här vägen från orten, och där får läsaren välja själv.
   const ditKoll = hemat && vidare !== 'auto'
@@ -276,6 +350,7 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
     linje: f.nummer,
     byten: f.byten,
     pris: f.pris,
+    medVaska: ['reported_included', 'estimated'].includes(f.vaska),
     lank: f.lank,
     delar: f.delar || null,
     // Flygbågen går via bytesflygplatsen när den är känd.
@@ -299,7 +374,8 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
   // Från flygplatsen: buss eller tåg om det finns och inte är orimligt
   // mycket längre än bilen, annars transfer med bilvägen som karta.
   const efter = bagage.slut
-  const kollektivtFran = await kollektivEtapper(lib, { namn: till.namn, ...till }, mal, { startMs: efter }).catch(() => null)
+  // Dit kan läsaren välja en senare avgång från flygplatsen (kollTid).
+  const kollektivtFran = await kollektivEtapper(lib, { namn: till.namn, ...till }, mal, { startMs: !hemat && kollTid ? Math.max(kollTid, efter) : efter }).catch(() => null)
   const kollFranSlut = kollektivtFran?.at(-1)?.slut ?? Infinity
   const franKoll = !hemat && vidare !== 'auto'
     ? vidare === 'kollektivt' && !!kollektivtFran?.length
@@ -330,6 +406,8 @@ export async function byggFlygresa(lib, hem, mal, f, bilDit, bilFran, { hemat = 
     },
     valt: (hemat ? ditKoll : franKoll) ? 'kollektivt' : 'taxi',
     flygplats: hemat ? fran.namn : till.namn,
+    taxiExtra,
+    flyttad: !!kollTid,
   }
 
   return resa('flyg', [...ditEtapper, incheckning, flygEtapp, bagage, ...franEtapper], { flyget: f, hemat, vidare: vidareVal })
@@ -343,6 +421,8 @@ export async function stoppLangsVagen(lib, pauser) {
   if (!pauser?.length) return []
   const { Place } = lib.places
   const svar = await Promise.all(pauser.map(async (p) => {
+    // Läsarens eget stopp behöver inga förslag.
+    if (p.egen) return { ...p, platser: [] }
     try {
       const { places } = await Place.searchNearby({
         fields: ['displayName', 'location', 'googleMapsURI', 'primaryTypeDisplayName', 'formattedAddress'],
@@ -378,7 +458,7 @@ export async function stoppLangsVagen(lib, pauser) {
       return { ...p, platser: [] }
     }
   }))
-  return svar.filter((s) => s.platser.length)
+  return svar.filter((s) => s.egen || s.platser.length)
 }
 
 /** "Storgatan 1, 792 30 Mora, Sverige" -> "Mora" */

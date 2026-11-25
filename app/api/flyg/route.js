@@ -30,6 +30,15 @@ export async function GET(request) {
     return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
   }
 
+  // Tur och retur: lägsta priset för paret med hemdagen. Bara från Ignav.
+  const retur = url.searchParams.get('retur')
+  if (retur) {
+    if (!DATUM.test(retur) || retur <= datum) return Response.json({ fel: 'ogiltig fråga' }, { status: 400 })
+    const nyckelTR = process.env.IGNAV_NYCKEL
+    if (!nyckelTR) return Response.json({ turRetur: null })
+    return Response.json({ turRetur: await ignavTurRetur(fran, till, datum, retur, nyckelTR) })
+  }
+
   // Livedata från Ignav när nyckeln finns; annars, eller om Ignav inte
   // svarar, Aviasales sparade sökningar nedan.
   const ignav = process.env.IGNAV_NYCKEL
@@ -134,6 +143,42 @@ function aviasalesSok(fran, till, datum) {
   return `https://www.aviasales.com/search/${fran}${datum.slice(8, 10)}${datum.slice(5, 7)}${till}1`
 }
 
+/** Aviasales sökning tur och retur, en person: ARN2002INN27021. */
+function aviasalesTurRetur(fran, till, datum, retur) {
+  const ddmm = (d) => `${d.slice(8, 10)}${d.slice(5, 7)}`
+  return `https://www.aviasales.com/search/${fran}${ddmm(datum)}${till}${ddmm(retur)}1`
+}
+
+/**
+ * Lägsta priset tur och retur från Ignav, med en incheckad väska per
+ * person och högst ett byte. En tur och retur-biljett är ofta billigare än
+ * två enkla. Cachas tre timmar.
+ */
+async function ignavTurRetur(fran, till, datum, retur, nyckel) {
+  try {
+    const svar = await fetch('https://ignav.com/api/fares/round-trip', {
+      method: 'POST',
+      headers: { 'X-Api-Key': nyckel, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, return_date: retur, max_stops: 1, market: 'SE', checked_bags: 1 }),
+      next: { revalidate: 10800 },
+    })
+    if (!svar.ok) return null
+    const d = await svar.json()
+    const billigast = (d?.itineraries || [])
+      .filter((it) => it.price?.currency === 'SEK' && Number.isFinite(it.price.amount))
+      .sort((a, b) => a.price.amount - b.price.amount)[0]
+    if (!billigast) return null
+    return {
+      pris: billigast.price.amount,
+      bolag: billigast.outbound?.carrier || null,
+      medVaska: ['reported_included', 'estimated'].includes(billigast.baggage_pricing?.status),
+      lank: aviasalesTurRetur(fran, till, datum, retur),
+    }
+  } catch {
+    return null
+  }
+}
+
 /**
  * Riktiga avgångar för dagen från Ignav (live, svensk marknad, högst ett
  * byte). Svaret cachas tre timmar per sträcka och dag, så samma sökning från
@@ -145,7 +190,9 @@ async function ignavFlyg(fran, till, datum, nyckel) {
     const svar = await fetch('https://ignav.com/api/fares/one-way', {
       method: 'POST',
       headers: { 'X-Api-Key': nyckel, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, max_stops: 1, market: 'SE' }),
+      // En incheckad väska per person: på en skidresa ska priset ha med
+      // väskan, och Ignav lägger till bolagets avgift för den.
+      body: JSON.stringify({ origin: fran, destination: till, departure_date: datum, max_stops: 1, market: 'SE', checked_bags: 1 }),
       next: { revalidate: 10800 },
     })
     if (!svar.ok) return null
@@ -170,6 +217,9 @@ async function ignavFlyg(fran, till, datum, nyckel) {
           bolagKod: forsta.marketing_carrier_code || null,
           nummer: forsta.flight_number ? `${forsta.marketing_carrier_code || ''} ${forsta.flight_number}`.trim() : null,
           pris: it.price?.currency === 'SEK' && Number.isFinite(it.price.amount) ? it.price.amount : null,
+          // Om priset har med väskan: 'reported_included' (ingår), 'estimated'
+          // (avgiften uppskattad och tillagd) eller 'unknown'.
+          vaska: it.baggage_pricing?.status || null,
           // Varje flyg för sig, så att bytet syns: var, och hur lång tid.
           delar: seg.map((s) => ({
             fran: s.departure_airport,

@@ -6,6 +6,7 @@ import SiteFooter from '../../SiteFooter'
 import { getResort, getResorts, getResortSlugs } from '../../../lib/resorts'
 import { SITE_URL } from '../../../lib/lang'
 import { land, region } from '../../../lib/countries'
+import { restid } from '../../../lib/travel'
 import { bilMening, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { farOptimeras } from '../../../lib/images'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
@@ -457,11 +458,9 @@ export default async function JamforPage({ params }) {
                     <div style={{ ...etikett, marginBottom: 4 }}>Flyg till</div>
                     <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{ort.nearest_airport || '—'}</div>
                   </div>
-                  {/* Den fasta restiden från flygplatsen är ersatt av
-                      reseplaneraren, som räknar resan från läsarens adress. */}
                   <div>
-                    <div style={{ ...etikett, marginBottom: 4 }}>Från din dörr</div>
-                    <Link href={`/resa/${ort.slug}`} style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#D4A574', textDecoration: 'none' }}>Se resan hemifrån ›</Link>
+                    <div style={{ ...etikett, marginBottom: 4 }}>Sista biten</div>
+                    <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 500, color: '#f0ece4' }}>{restid(ort)}</div>
                   </div>
                 </div>
                 {bil && <p style={{ ...brodtext, fontSize: 12 }}>{bil}</p>}

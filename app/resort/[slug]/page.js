@@ -16,7 +16,8 @@ import { pris } from '../../../lib/pris'
 import { hamtaKurser, skrivDatum } from '../../../lib/valuta'
 import { arNordisk, motparten, naraOrter, parFor } from '../../../lib/jamfor'
 import { alpsidaFor, NATTAG_SASONG } from '../../../lib/ellerAlperna'
-import { nattagFor, sasongenSlut } from '../../../lib/nattaget'
+import { nattagFor, restidText, sasongenSlut, stationFor } from '../../../lib/nattaget'
+import { restid } from '../../../lib/travel'
 import { STADER, bilresa, linjeMeningar, linjerFor } from '../../../lib/restider'
 import { land, region } from '../../../lib/countries'
 import { OMFATTNING, REFERENSVECKA, VERIFIERADE, harPris, UTAN_PRIS } from '../../../lib/liftkortspriser'
@@ -139,6 +140,7 @@ export default async function ResortPage({ params }) {
   if (!resort) notFound()
 
   const verticalDrop = fallhojdFor(resort)
+  const estimatedTransferMins = restid(resort)
 
   const mapsUrl = `https://www.google.com/maps?q=${resort.latitude},${resort.longitude}`
   // Utan bild med licens visas ingen bild alls, i stället för ett
@@ -751,6 +753,8 @@ export default async function ResortPage({ params }) {
                     // hit, den flygplats man faktiskt kan boka sig till från
                     // Sverige. Den geografiskt närmaste saknar ibland trafik.
                     { label: 'Flyg till',          value: resort.nearest_airport },
+                    { label: 'Avstånd',            value: `${resort.airport_distance_km} km` },
+                    { label: 'Ungefärlig restid',  value: estimatedTransferMins },
                     { label: 'Boendeområde',       value: resort.accommodation_zone },
                   ].map(item => (
                     <div key={item.label}>
@@ -793,7 +797,7 @@ export default async function ResortPage({ params }) {
                         ? `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG}. ${nattag.station
                             ? `Kliv av i ${nattag.station} och ta transferbussen${nattag.hallplats ? `, som stannar vid ${nattag.hallplats}` : ''}.`
                             : `Sista biten går med transferbuss${nattag.hallplats ? ` till hållplatsen vid ${nattag.hallplats}` : ''}.`}`
-                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${nattag.station}. ${nattag.station === resort.name ? 'Du kliver av mitt i orten utan byte.' : nattag.not || ''}`}
+                        : `Snälltåget kör Malmö–Österrike ${NATTAG_SASONG} och stannar i ${nattag.station}. ${nattag.station === resort.name ? 'Du kliver av mitt i orten utan byte.' : nattag.not || ''} Restiden från Malmö är ${restidText(stationFor(resort.slug)?.restidMin)}.`}
                       {' '}
                       <Link href="/nattaget-till-alperna" style={{ color: '#D4A574', textDecoration: 'none' }}>Tider och orter →</Link>
                     </p>
@@ -803,9 +807,9 @@ export default async function ResortPage({ params }) {
                   <a href={mapsUrl} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: 500, color: 'rgba(255,255,255,0.61)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 6, padding: '9px 16px', textDecoration: 'none', letterSpacing: '0.04em' }}>Visa på Google Maps →</a>
                 </div>
               </div>
-              {/* Resan hit räknas live från läsarens adress i stället för en
-                  fast restid: bil, tåg och flyg dörr till dörr på kartan.
-                  Den ersätter den inbäddade Google-kartan som stod här. */}
+              {/* Resan hit räknas live från läsarens adress: bil, tåg och
+                  flyg dörr till dörr på kartan. De fasta restiderna ovan står
+                  kvar som ett snabbt hum. */}
               <div id="resan-hit" style={{ scrollMarginTop: 90 }}>
                 <h3 style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 26, letterSpacing: '0.03em', color: '#f0ece4', margin: '26px 0 6px' }}>Resan hit från din dörr</h3>
                 <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, margin: '0 0 14px' }}>
@@ -1054,6 +1058,7 @@ export default async function ResortPage({ params }) {
                   // under Snö och förhållanden om varför fältet inte visas.
                   { label: 'Konstsnö',       value: Number.isFinite(resort.snowmaking_coverage_pct) ? `${resort.snowmaking_coverage_pct} %` : '—' },
                   { label: 'Flyg till',      value: resort.nearest_airport },
+                  { label: 'Restid',         value: estimatedTransferMins },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: 8 }}>
                     <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'rgba(255,255,255,0.52)' }}>{row.label}</span>

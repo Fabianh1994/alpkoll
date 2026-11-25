@@ -9,6 +9,7 @@ import { harPris } from '../../../lib/liftkortspriser'
 import { pris, kronorTal } from '../../../lib/pris'
 import { hamtaKurser } from '../../../lib/valuta'
 import { bilresa, timmar } from '../../../lib/restider'
+import { restid } from '../../../lib/travel'
 import { nattagFor } from '../../../lib/nattaget'
 import { fallhojd } from '../../../lib/delomraden'
 import { indexeradeParFor } from '../../../lib/jamfor'
@@ -192,7 +193,7 @@ export default async function SkidorterILand({ params }) {
             const resvag = land.nordisk
               ? bil && `Med bil ${timmar(bil.minuter)} från ${fran.namn}.`
               : [
-                o.nearest_airport && `Flyg till ${o.nearest_airport}.`,
+                o.nearest_airport && `Flyg till ${o.nearest_airport}, sedan ${restid(o)}.`,
                 nattagFor(o.slug) && 'Nattåget från Sverige går hit.',
               ].filter(Boolean).join(' ')
             return (

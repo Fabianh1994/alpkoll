@@ -38,10 +38,15 @@ const ALPLANDER = ['Austria', 'Switzerland', 'France', 'Italy', 'Germany']
 const ALLA = '__alla'
 
 const idagSv = () => new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Stockholm' })
-// Adressen står i länken med tre decimaler (ungefär 100 meter), och din
-// position med två (ungefär en kilometer), så att en delad länk inte pekar
-// ut ett hus.
-const franParam = (h) => { const d = h.namn === 'Din position' ? 2 : 3; return `${h.lat.toFixed(d)},${h.lng.toFixed(d)},${h.namn}` }
+// I länken står bara orten och läget med två decimaler (ungefär en
+// kilometer), inte gatan och numret, så att en delad länk eller sidans
+// statistik inte pekar ut ett hus. Restiden blir i stort sett densamma.
+export function ortFor(h) {
+  if (!h || h.namn === 'Din position') return h?.namn || 'Din adress'
+  const delar = String(h.adress || '').split(',').map((d) => d.trim().replace(/^\d{3}\s?\d{2}\s*/, '')).filter(Boolean)
+  return delar.length >= 3 ? delar[delar.length - 2] : delar.length === 2 ? delar[0] : h.namn
+}
+const franParam = (h) => `${h.lat.toFixed(2)},${h.lng.toFixed(2)},${ortFor(h)}`
 const nyckelFor = (slug, hem, dit) => hem ? `${slug}|${hem.lat.toFixed(4)},${hem.lng.toFixed(4)}|${dit}` : null
 
 /** "13 tim 20 min", och över ett dygn "1 dygn 4 tim". */
@@ -164,6 +169,14 @@ export default function Kartsida({ orter, kurser }) {
 
   // ── Räkna resan för vald och jämförda orter ──────────────────────────
   const paborjade = useRef(new Set())
+  const [forsok, setForsok] = useState(0)
+  // Försök igen räknar om bara den valda orten, och bara efter ett fel.
+  const forsokIgen = () => {
+    const n = nyckelFor(vald, hem, dit)
+    paborjade.current.delete(n)
+    setSvar((f) => { const k = { ...f }; delete k[n]; return k })
+    setForsok((x) => x + 1)
+  }
   useEffect(() => {
     if (!hem || !lib) return
     // En och en halv sekunds paus: den som bläddrar med ‹ › räknar bara orten den stannar vid.
@@ -177,7 +190,7 @@ export default function Kartsida({ orter, kurser }) {
         const mal = { namn: o.namn, lat: o.lat, lng: o.lng }
         const klar = (s) => (r) => setSvar((f) => ({ ...f, [n]: { ...f[n], [s]: r } }))
         // Ett fel sparas inte: nästa gång orten väljs räknas den om.
-        const fel = (s) => () => { paborjade.current.delete(n); klar(s)({ satt: s, saknas: 'Något gick fel när resan räknades ut. Välj orten igen för att försöka på nytt.' }) }
+        const fel = (s) => () => klar(s)({ satt: s, saknas: 'Något gick fel när resan räknades ut.', fel: true })
         setSvar((f) => ({ ...f, [n]: f[n] || {} }))
         planeraBil(lib, hem, mal, startMs).then(klar('bil'), fel('bil'))
         planeraTag(lib, hem, mal, startMs).then(klar('tag'), fel('tag'))
@@ -185,7 +198,7 @@ export default function Kartsida({ orter, kurser }) {
       }
     }, 1500)
     return () => clearTimeout(t)
-  }, [hem, lib, dit, vald, fasta, perSlug])
+  }, [hem, lib, dit, vald, fasta, perSlug, forsok])
 
   const resorFor = useCallback((slug) => svar[nyckelFor(slug, hem, dit)] || null, [svar, hem, dit])
   const snabbastFor = useCallback((slug) => {
@@ -398,6 +411,7 @@ export default function Kartsida({ orter, kurser }) {
           </span>
           <span style={{ display: 'block', fontSize: 13, lineHeight: 1.4, color: DOV }}>
             {r === undefined ? 'Räknar …' : r.saknas ? r.saknas : under}
+            {r?.fel && <> <button type="button" className="kf-textknapp" onClick={forsokIgen}>Försök igen</button></>}
           </span>
         </span>
         <span style={{ fontSize: 16, fontVariantNumeric: 'tabular-nums', textAlign: 'right', whiteSpace: 'nowrap', color: r === undefined ? DOV : TEXT }}>
@@ -407,14 +421,14 @@ export default function Kartsida({ orter, kurser }) {
     )
   }
 
-  const uppLast = !hem || !lib ? '' : !resor || SATT.some((k) => resor[k] === undefined) ? `Räknar resan till ${ort?.namn}.` : snabbast ? `${ort?.namn}: ${SATTNAMN[snabbast].toLowerCase()} är först framme, ${restid(resor[snabbast].min)}.` : `${ort?.namn}: ingen resa hittades.`
+  const uppLast = !hem || !lib ? '' : !resor || SATT.some((k) => resor[k] === undefined) ? `Räknar resan till ${ort?.namn}.` : snabbast && kanTas(resor[snabbast]) ? `${ort?.namn}: ${SATTNAMN[snabbast].toLowerCase()} är först framme, ${restid(resor[snabbast].min)}.` : `${ort?.namn}: restiderna är klara.`
 
   const OrtKort = ort && (
     <section aria-labelledby="kf-ortnamn">
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
         <div style={{ minWidth: 0 }}>
           <div className="kf-etikett">{landNamn(ort.land)}</div>
-          <h2 id="kf-ortnamn" aria-live="polite" style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 32, lineHeight: 1.05, margin: '2px 0 0', letterSpacing: '0.02em' }}>{ort.namn}</h2>
+          <h2 id="kf-ortnamn" style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 32, lineHeight: 1.05, margin: '2px 0 0', letterSpacing: '0.02em' }}>{ort.namn}</h2>
         </div>
         <span style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button type="button" aria-label="Förra orten" onClick={() => bladdra(-1)} className="kf-runda"><Pil vanster /></button>
@@ -520,8 +534,9 @@ export default function Kartsida({ orter, kurser }) {
   )
 
   return (
-    <main className="kf">
+    <main className={`kf${stor ? ' kf-stor' : ''}`}>
       <style>{CSS + KF_CSS}</style>
+      <div className="kf-filterplats">{Filter}</div>
       <aside className={`kf-panel${stor ? ' stor' : ''}`} aria-label="Resan">
         <button type="button" className="kf-handtag" onClick={() => setStor((s) => !s)} aria-label={stor ? 'Visa mer av kartan' : 'Visa mer av resan'} aria-expanded={stor}>
           <span />
@@ -536,7 +551,7 @@ export default function Kartsida({ orter, kurser }) {
         {Lista}
         <p style={{ margin: '22px 0 0', fontSize: 11.5, lineHeight: 1.6, color: 'rgba(240,236,228,0.4)' }}>
           Vägar, tåg och bussar: Google Maps. Flyg: Ignav och Aviasales via Travelpayouts. Restiden räknas dörr till dörr med avresa 07.00.
-          {lib && <> <button type="button" onClick={glomKartan} style={{ all: 'unset', cursor: 'pointer', textDecoration: 'underline' }}>Visa inte kartan direkt nästa gång</button></>}
+          {lib && <> <button type="button" onClick={glomKartan} className="kf-textknapp" style={{ color: 'inherit' }}>Visa inte kartan direkt nästa gång</button></>}
         </p>
       </aside>
       <div className="kf-karta">
@@ -552,7 +567,6 @@ export default function Kartsida({ orter, kurser }) {
             </div>
           </div>
         )}
-        <div className="kf-filterplats">{Filter}</div>
         {lib && <div className="kf-zoom"><Zoom karta={karta} /></div>}
       </div>
 
@@ -595,12 +609,14 @@ function Pil({ vanster = false }) {
 }
 
 const KF_CSS = `
-.kf { display: grid; grid-template-columns: minmax(0, 1fr) 440px; height: calc(100vh - 84px); margin-top: 84px; font-family: var(--font-body); color: #f0ece4; }
+.kf { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 440px; height: calc(100vh - 84px); margin-top: 84px; font-family: var(--font-body); color: #f0ece4; }
 .kf-karta { position: relative; overflow: hidden; background: #121110; order: 1; }
 .kf-panel { order: 2; }
 .kf-tom { position: absolute; inset: 0; display: grid; place-items: center; padding: 24px; z-index: 2;
   background: radial-gradient(ellipse at 50% 40%, rgba(212,165,116,0.08), transparent 60%), #121110; }
-.kf-filterplats { position: absolute; top: 16px; left: 16px; right: 16px; z-index: 6; pointer-events: none; }
+.kf-filterplats { position: absolute; top: 16px; left: 16px; right: 456px; z-index: 6; pointer-events: none; }
+.kf-textknapp { background: none; border: 0; padding: 0; font: inherit; color: #D4A574; text-decoration: underline; cursor: pointer; }
+.kf-textknapp:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .kf-filter { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; pointer-events: auto; width: max-content; max-width: 100%; }
 .kf-filter::-webkit-scrollbar { display: none; }
 .kf-chip { flex-shrink: 0; border: 1px solid rgba(240,236,228,0.16); background: rgba(28,26,23,0.94); color: #f0ece4; border-radius: 999px; padding: 8px 13px; font: 500 13px var(--font-body); cursor: pointer; white-space: nowrap; }
@@ -641,7 +657,8 @@ const KF_CSS = `
 @media (max-width: 899px) {
   .kf { display: block; position: relative; height: calc(100dvh - 84px - 72px); min-height: 480px; }
   .kf-karta { position: absolute; left: 0; right: 0; top: 0; height: 56%; }
-  .kf-filterplats { top: 10px; left: 12px; right: 12px; }
+  .kf-filterplats { top: 10px; left: 12px; right: 12px; z-index: 9; }
+  .kf-stor .kf-filterplats { display: none; }
   .kf-zoom { right: 12px; top: 56px; bottom: auto; }
   .kf-panel { position: absolute; left: 0; right: 0; bottom: 0; height: 50%; z-index: 8; border-left: 0; border-radius: 18px 18px 0 0; padding: 0 18px 24px; box-shadow: 0 -10px 30px rgba(0,0,0,.5); transition: height .25s ease; }
   .kf-panel.stor { height: 90%; }

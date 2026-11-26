@@ -28,7 +28,6 @@ import {
   SAMTYCKE_NYCKEL,
   SAMTYCKE_VERSION,
 } from '../lib/clarity';
-import { DRIVE_SKRIPT } from '../lib/travelpayouts';
 
 function lasVal() {
   try {
@@ -75,17 +74,6 @@ function laddaClarity() {
   // Sedan oktober 2025 kräver Clarity en samtyckessignal för besökare i
   // EES. Analys är godkänt; annonslagring nekas, Alpkoll använder ingen.
   window.clarity('consentv2', { ad_Storage: 'denied', analytics_Storage: 'granted' });
-}
-
-// Travelpayouts Drive, bara när adressen är satt (lib/travelpayouts.js).
-// Ett nej efter ett ja laddar om sidan, så att skriptet inte ligger kvar.
-function laddaDrive() {
-  if (!DRIVE_SKRIPT || window.alpkollDriveLaddad) return;
-  const t = document.createElement('script');
-  t.async = true;
-  t.src = DRIVE_SKRIPT;
-  document.head.appendChild(t);
-  window.alpkollDriveLaddad = true;
 }
 
 function raderaKakor() {
@@ -163,13 +151,10 @@ export default function Kakruta() {
   const visas = val !== 'server' && (galler === null || oppnad);
 
   useEffect(() => {
-    if (galler === 'ja') {
-      laddaClarity();
-      laddaDrive();
-    }
+    if (galler === 'ja') laddaClarity();
     // Ett nej i en annan flik når hit via storage-händelsen. Är Clarity
     // laddat i den här fliken stängs det av här också.
-    if (galler === 'nej' && (window.alpkollClarityLaddad || window.alpkollDriveLaddad)) stangAvClarity();
+    if (galler === 'nej' && window.alpkollClarityLaddad) stangAvClarity();
   }, [galler]);
 
   useEffect(() => {
@@ -246,9 +231,7 @@ export default function Kakruta() {
         margin: '0 0 12px',
         color: 'rgba(240,236,228,0.72)',
       }}>
-        {DRIVE_SKRIPT
-          ? 'De visar hur sidan och partnerlänkarna används, så att den kan bli bättre.'
-          : 'De visar hur sidan används, så att den kan bli bättre.'}{' '}
+        De visar hur sidan används, så att den kan bli bättre.{' '}
         <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›
         </Link>

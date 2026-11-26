@@ -61,12 +61,16 @@ function restid(min) {
 const kort = (min) => { const m = Math.round(min); if (m >= 1440) return `${Math.round(m / 60)} t`; const t = Math.floor(m / 60); const r = m % 60; return t ? `${t} t${r ? ` ${String(r).padStart(2, '0')}` : ''}` : `${r} min` }
 
 /** Filterknapparna: Alla, de nordiska länderna, Alperna och övriga länder var för sig. */
+/** Bottenpanelens höjd på mobilen, som andel av kartan. */
+const LAGEN = { lag: 0.3, mitt: 0.55, hog: 0.9 }
+
 function filterFor(orter) {
   const finns = new Set(orter.map((o) => o.land))
   const f = [[ALLA, 'Alla']]
-  for (const l of ['Sweden', 'Norway', 'Finland']) if (finns.has(l)) f.push([l, landNamn(l)])
-  if (ALPLANDER.some((l) => finns.has(l))) f.push(['alperna', 'Alperna'])
-  for (const l of [...finns].filter((l) => !['Sweden', 'Norway', 'Finland', ...ALPLANDER].includes(l)).sort()) f.push([l, landNamn(l)])
+  // Ett land per knapp: Alperna som en enda knapp gav över 30 orter (Fabian 2026-11-26).
+  const ordning = ['Sweden', 'Norway', 'Finland', 'Austria', 'Switzerland', 'France', 'Italy', 'Germany']
+  for (const l of ordning) if (finns.has(l)) f.push([l, landNamn(l)])
+  for (const l of [...finns].filter((l) => !ordning.includes(l)).sort()) f.push([l, landNamn(l)])
   return f
 }
 const passar = (filter, o) => filter === ALLA || (filter === 'alperna' ? ALPLANDER.includes(o.land) : o.land === filter)
@@ -97,7 +101,8 @@ export default function Kartsida({ orter, kurser }) {
   const [vald, setVald] = useState(() => (orter.find((o) => o.slug === 'mayrhofen') || orter[0]).slug)
   const [fasta, setFasta] = useState([])
   const [kalender, setKalender] = useState(false)
-  const [stor, setStor] = useState(false)
+  // Bottenpanelen på mobilen: låg (mest karta), mitten eller hög (mest resa).
+  const [lage, setLage] = useState('mitt')
   const [svar, setSvar] = useState({}) // nyckel -> { bil, tag, flyg }; undefined = räknas
   const [last, setLast] = useState(false)
   const [adressNr, setAdressNr] = useState(0)
@@ -133,7 +138,8 @@ export default function Kartsida({ orter, kurser }) {
       const j = (q.get('jamfor') || '').split(',').filter((s) => perSlug[s]).slice(0, MAX_JAMFOR)
       if (j.length) setFasta(j)
       const l = q.get('land')
-      if (l && filterLista.some(([k]) => k === l)) setFilter(l)
+      // Gamla länkar med land=alperna fungerar kvar, fast knappen är borta.
+      if (l && (l === 'alperna' || filterLista.some(([k]) => k === l))) setFilter(l)
       const n = Number(q.get('antal'))
       if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       const idag = idagSv()
@@ -232,7 +238,7 @@ export default function Kartsida({ orter, kurser }) {
     })
     karta.current = m
     m.addListener('zoom_changed', () => ruta.current?.classList.toggle('kf-nara', m.getZoom() >= 9))
-    const Nal = nalKlass(g, (slug) => { setVald(slug); setStor(false) })
+    const Nal = nalKlass(g, (slug) => { setVald(slug); setLage('mitt') })
     orter.forEach((o) => { const n = new Nal(o); n.setMap(m); nalar.current[o.slug] = n })
     hemNal.current = (p) => { const n = new Nal(p, true); n.setMap(m); return n }
     g.maps.event.addListenerOnce(m, 'idle', () => setKartaKlar((k) => k + 1))
@@ -282,6 +288,9 @@ export default function Kartsida({ orter, kurser }) {
 
   // Kartan visar orterna i filtret, och hemmet om det finns.
   const mobil = useRef(false)
+  const lageNu = useRef('mitt')
+  useEffect(() => { lageNu.current = lage }, [lage])
+  const nedre = (extra) => Math.round(ruta.current.clientHeight * LAGEN[lageNu.current]) + extra
   useEffect(() => {
     const m = karta.current
     const g = lib?.google
@@ -290,16 +299,68 @@ export default function Kartsida({ orter, kurser }) {
     const b = new g.maps.LatLngBounds()
     orter.filter((o) => passar(filter, o)).forEach((o) => b.extend(o))
     if (hem) b.extend(hem)
-    m.fitBounds(b, mobil.current ? { top: 64, bottom: 56, left: 20, right: 56 } : 50)
+    m.fitBounds(b, mobil.current ? { top: 64, bottom: nedre(16), left: 20, right: 56 } : 50)
   }, [filter, hem, kartaKlar, lib, orter])
 
-  // Byts orten utanför kartan (‹ › eller listan) flyttas kartan om orten inte syns.
+  // På mobilen visar kartan resan: hemmet och den valda orten, ovanför panelen.
+  // Det sker när hemmet sätts eller byts. Byts bara orten flyttas kartan
+  // först när orten inte syns, så att den som zoomat in får behålla zoomen.
+  const senastHem = useRef(null)
   useEffect(() => {
     const m = karta.current
-    if (!m || !ort) return
+    const g = lib?.google
+    if (!m || !g || !ort) return
+    const punkt = { lat: ort.lat, lng: ort.lng }
+    const nyttHem = hem && hem !== senastHem.current
+    senastHem.current = hem
     const b = m.getBounds()
-    if (b && !b.contains({ lat: ort.lat, lng: ort.lng })) m.panTo({ lat: ort.lat, lng: ort.lng })
-  }, [ort, kartaKlar])
+    const syns = b && b.contains(punkt) && (!hem || b.contains(hem))
+    if (mobil.current && hem && (nyttHem || !syns)) {
+      const r = new g.maps.LatLngBounds()
+      r.extend(hem)
+      r.extend(punkt)
+      m.fitBounds(r, { top: 80, bottom: nedre(30), left: 40, right: 70 })
+    } else if (b && !b.contains(punkt)) m.panTo(punkt)
+  }, [hem, ort, lib, kartaKlar])
+
+  // ── Bottenpanelen går att dra ────────────────────────────────────────
+  const panel = useRef(null)
+  const drag = useRef(null)
+  const borjaDra = (e) => {
+    const el = panel.current
+    if (!el || e.button !== 0 || !window.matchMedia('(max-width: 899px)').matches) return
+    dragits.current = false
+    drag.current = { y: e.clientY, h: el.getBoundingClientRect().height, hel: el.parentElement.getBoundingClientRect().height, flyttat: false }
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+  }
+  const dra = (e) => {
+    const d = drag.current
+    if (!d) return
+    const dy = d.y - e.clientY
+    if (Math.abs(dy) > 4) d.flyttat = true
+    const h = Math.min(Math.max(d.h + dy, d.hel * 0.18), d.hel * 0.94)
+    panel.current.style.transition = 'none'
+    panel.current.style.height = `${h}px`
+  }
+  // Ett tryck utan att dra växlar i onClick, som även skärmläsare skickar.
+  const dragits = useRef(false)
+  const vaxlaPanel = () => {
+    if (dragits.current) { dragits.current = false; return }
+    setLage((l) => (l === 'hog' ? 'mitt' : 'hog'))
+  }
+  const slutaDra = () => {
+    const d = drag.current
+    drag.current = null
+    if (!d) return
+    const el = panel.current
+    el.style.transition = ''
+    if (!d.flyttat) { el.style.height = ''; return }
+    dragits.current = true
+    const andel = el.getBoundingClientRect().height / d.hel
+    const narmast = Object.entries(LAGEN).sort((a, b) => Math.abs(a[1] - andel) - Math.abs(b[1] - andel))[0][0]
+    el.style.height = ''
+    setLage(narmast)
+  }
 
   // ── Händelser ────────────────────────────────────────────────────────
   const fast = fasta.includes(vald)
@@ -369,16 +430,6 @@ export default function Kartsida({ orter, kurser }) {
     </div>
   )
 
-  // Med en adress krymper formuläret till en rad, så att orten syns direkt (viktigast på mobilen).
-  const Sammanfattning = hem && (
-    <button type="button" className="kf-sammanfattning" onClick={() => setAndrar(true)} aria-label={`Ändra resan: från ${hem.namn}, ${datumSpann(dit, hemresa)}, ${antal} ${antal === 1 ? 'resenär' : 'resenärer'}`}>
-      <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        Från <b style={{ fontWeight: 600 }}>{hem.namn}</b> · {datumSpann(dit, hemresa)} · {antal} {antal === 1 ? 'resenär' : 'resenärer'}
-      </span>
-      <span style={{ color: GULD, flexShrink: 0 }}>Ändra</span>
-    </button>
-  )
-
   const resor = resorFor(vald)
   const snabbast = resor && SATT.every((s) => resor[s] !== undefined) ? snabbastSatt(resor, SATT) : null
 
@@ -428,7 +479,7 @@ export default function Kartsida({ orter, kurser }) {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
         <div style={{ minWidth: 0 }}>
           <div className="kf-etikett">{landNamn(ort.land)}</div>
-          <h2 id="kf-ortnamn" style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 32, lineHeight: 1.05, margin: '2px 0 0', letterSpacing: '0.02em' }}>{ort.namn}</h2>
+          <h2 id="kf-ortnamn" className="kf-ortnamn" style={{ fontFamily: 'var(--font-heading)', fontWeight: 400, fontSize: 32, lineHeight: 1.05, margin: '2px 0 0', letterSpacing: '0.02em' }}>{ort.namn}</h2>
         </div>
         <span style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
           <button type="button" aria-label="Förra orten" onClick={() => bladdra(-1)} className="kf-runda"><Pil vanster /></button>
@@ -439,9 +490,11 @@ export default function Kartsida({ orter, kurser }) {
       <span aria-live="polite" className="kf-dold">{uppLast}</span>
       {hem ? (
         <>
-          <p style={{ margin: '6px 0 6px', color: DOV, fontSize: 13.5 }}>
-            Dörr till dörr från {hem.namn}, {visaDag(svenskTid(dit, AVRESA))} kl. 07.00
-          </p>
+          {/* Var och när står på en rad under ortnamnet; Ändra öppnar formuläret. */}
+          <button type="button" className="kf-datumrad kf-textrad" onClick={() => { setAndrar(true); setLage('hog'); if (panel.current) panel.current.scrollTop = 0 }} aria-label={`Ändra resan: från ${hem.namn}, avresa ${visaDag(svenskTid(dit, AVRESA))} klockan 07.00, ${antal} ${antal === 1 ? 'resenär' : 'resenärer'}`}>
+            <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Från {hem.namn} · {visaDag(svenskTid(dit, AVRESA))} kl. 07.00 · {antal} {antal === 1 ? 'resenär' : 'resenärer'}</span>
+            <span style={{ color: GULD, flexShrink: 0 }}>Ändra</span>
+          </button>
           {lib ? SATT.map((s) => rad(s)) : (
             <button type="button" className="resa-knapp" style={{ width: '100%', margin: '8px 0' }} onClick={() => starta().catch(() => {})} disabled={laddar}>
               {laddar ? 'Laddar …' : 'Räkna resan hit'}
@@ -522,6 +575,9 @@ export default function Kartsida({ orter, kurser }) {
           </li>
         ))}
       </ul>
+      <p style={{ margin: '18px 0 0', fontSize: 14 }}>
+        <Link href="/nattaget-till-alperna" style={{ color: GULD, textDecoration: 'none' }}>Nattåg till Alperna: tider och priser ›</Link>
+      </p>
     </section>
   )
 
@@ -534,18 +590,28 @@ export default function Kartsida({ orter, kurser }) {
   )
 
   return (
-    <main className={`kf${stor ? ' kf-stor' : ''}`}>
+    <main className={`kf kf-${lage}`}>
       <style>{CSS + KF_CSS}</style>
       <div className="kf-filterplats">{Filter}</div>
-      <aside className={`kf-panel${stor ? ' stor' : ''}`} aria-label="Resan">
-        <button type="button" className="kf-handtag" onClick={() => setStor((s) => !s)} aria-label={stor ? 'Visa mer av kartan' : 'Visa mer av resan'} aria-expanded={stor}>
+      <aside ref={panel} className="kf-panel" aria-label="Resan">
+        <button
+          type="button"
+          className="kf-handtag"
+          onPointerDown={borjaDra}
+          onPointerMove={dra}
+          onPointerUp={slutaDra}
+          onPointerCancel={slutaDra}
+          onClick={vaxlaPanel}
+          aria-label={lage === 'hog' ? 'Visa mer av kartan' : 'Visa mer av resan'}
+          aria-expanded={lage === 'hog'}
+        >
           <span />
         </button>
         <h1 className="kf-rubrik">Resan till skidorten</h1>
         <p className="kf-ingress">Välj ort på kartan, skriv var du bor och jämför bil, tåg och flyg till upp till tre orter.</p>
-        {hem && !andrar ? Sammanfattning : Formular}
+        {hem && !andrar ? null : Formular}
         {hem && andrar && !kalender && <button type="button" className="resa-lank" onClick={() => setAndrar(false)}>Klar ›</button>}
-        <div style={{ height: 22 }} />
+        {(!hem || andrar) && <div style={{ height: 22 }} />}
         {OrtKort}
         {Jamfor}
         {Lista}
@@ -618,6 +684,7 @@ const KF_CSS = `
 .kf-textknapp { background: none; border: 0; padding: 0; font: inherit; color: #D4A574; text-decoration: underline; cursor: pointer; }
 .kf-textknapp:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .kf-filter { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; pointer-events: auto; width: max-content; max-width: 100%; }
+@media (max-width: 420px) { .kf-filter { padding-right: 28px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); } }
 .kf-filter::-webkit-scrollbar { display: none; }
 .kf-chip { flex-shrink: 0; border: 1px solid rgba(240,236,228,0.16); background: rgba(28,26,23,0.94); color: #f0ece4; border-radius: 999px; padding: 8px 13px; font: 500 13px var(--font-body); cursor: pointer; white-space: nowrap; }
 .kf-chip.vald { background: #f0ece4; color: #121110; border-color: #f0ece4; }
@@ -625,10 +692,9 @@ const KF_CSS = `
 .kf-zoom { position: absolute; right: 20px; bottom: 44px; width: 42px; height: 82px; z-index: 5; }
 .kf-panel { background: #151412; border-left: 1px solid rgba(240,236,228,0.08); padding: 22px 24px 28px; overflow-y: auto; overscroll-behavior: contain; }
 .kf-handtag { display: none; }
+.kf-textrad { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; gap: 10px; cursor: pointer; margin: 6px 0 6px; font-size: 13.5px; color: rgba(240,236,228,0.55); }
+.kf-textrad:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .kf-dold { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.kf-sammanfattning { all: unset; box-sizing: border-box; width: 100%; display: flex; justify-content: space-between; gap: 12px; align-items: center; cursor: pointer; padding: 12px 14px; border: 1px solid rgba(240,236,228,0.12); border-radius: 10px; background: #121110; font-size: 14px; color: #f0ece4; }
-.kf-sammanfattning:hover { border-color: rgba(212,165,116,0.5); }
-.kf-sammanfattning:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .kf-rubrik { font-family: var(--font-heading); font-weight: 400; font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: #D4A574; margin: 0 0 4px; }
 .kf-ingress { margin: 0 0 16px; font-size: 13.5px; line-height: 1.55; color: rgba(240,236,228,0.55); }
 .kf-etikett { font-family: var(--font-body); font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(240,236,228,0.5); }
@@ -656,15 +722,23 @@ const KF_CSS = `
 
 @media (max-width: 899px) {
   .kf { display: block; position: relative; height: calc(100dvh - 84px - 72px); min-height: 480px; }
-  .kf-karta { position: absolute; left: 0; right: 0; top: 0; height: 56%; }
+  .kf-karta { position: absolute; inset: 0; }
   .kf-filterplats { top: 10px; left: 12px; right: 12px; z-index: 9; }
-  .kf-stor .kf-filterplats { display: none; }
+  .kf-hog .kf-filterplats { display: none; }
   .kf-zoom { right: 12px; top: 56px; bottom: auto; }
-  .kf-panel { position: absolute; left: 0; right: 0; bottom: 0; height: 50%; z-index: 8; border-left: 0; border-radius: 18px 18px 0 0; padding: 0 18px 24px; box-shadow: 0 -10px 30px rgba(0,0,0,.5); transition: height .25s ease; }
-  .kf-panel.stor { height: 90%; }
-  .kf-handtag { display: block; position: sticky; top: 0; z-index: 3; width: calc(100% + 36px); margin: 0 -18px 4px; height: 26px; border: 0; background: #151412; cursor: pointer; }
+  .kf-panel { position: absolute; left: 0; right: 0; bottom: 0; height: 55%; z-index: 8; border-left: 0; border-radius: 18px 18px 0 0; padding: 0 18px 24px; box-shadow: 0 -10px 30px rgba(0,0,0,.5); transition: height .25s ease; }
+  .kf-lag .kf-panel { height: 30%; }
+  .kf-hog .kf-panel { height: 90%; }
+  .kf-handtag { display: block; position: sticky; top: 0; z-index: 3; width: calc(100% + 36px); margin: 0 -18px 4px; height: 30px; border: 0; background: #151412; cursor: grab; touch-action: none; }
   .kf-handtag span { display: block; width: 40px; height: 4px; border-radius: 2px; background: rgba(240,236,228,.3); margin: 0 auto; }
-  .kf-tom { bottom: 12%; }
+  .kf-tom { bottom: 55%; }
+  .kf-lag .kf-tom { bottom: 30%; }
+  .kf-hog .kf-tom { bottom: 90%; }
+  .kf-ortnamn { font-size: 26px !important; }
+  .kf-datumrad { font-size: 12.5px !important; margin: 2px 0 4px !important; }
+  .kf-rad { padding: 8px 0; gap: 10px; }
+  .kf-rad > span:nth-child(2) > span:last-child { font-size: 12.5px !important; }
+  .kf-runda { width: 34px; height: 34px; }
   .kf-rubrik, .kf-ingress { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (max-width: 899px) and (prefers-reduced-motion: reduce) { .kf-panel { transition: none; } }

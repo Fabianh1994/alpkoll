@@ -57,17 +57,17 @@ export default function MobileNav() {
       isActive: pathname === '/liftkortspriser',
     },
     {
-      label: 'Nattåg',
-      href: '/nattaget-till-alperna',
+      // Reseplaneraren ersatte Nattåg 2026-11-26: planeraren visar även
+      // tåget, och nattågssidan länkas från /resa, startsidan och sidfoten.
+      label: 'Resa',
+      href: '/resa',
       icon: (active) => (
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? '#D4A574' : 'rgba(255,255,255,0.57)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="5" y="3" width="14" height="14" rx="3" />
-          <line x1="5" y1="11" x2="19" y2="11" />
-          <line x1="8" y1="21" x2="10" y2="17" />
-          <line x1="16" y1="21" x2="14" y2="17" />
+          <path d="M12 21s-6-5.5-6-11a6 6 0 0 1 12 0c0 5.5-6 11-6 11z" />
+          <circle cx="12" cy="10" r="2.2" />
         </svg>
       ),
-      isActive: pathname === '/nattaget-till-alperna',
+      isActive: pathname === '/resa' || pathname.startsWith('/resa/'),
     },
   ];
 

@@ -1,7 +1,8 @@
 'use client';
 
 // Kakrutan: frågar om Microsoft Clarity får spela in hur sidan används,
-// och laddar Clarity först efter ett ja.
+// och laddar Clarity först efter ett ja. Är Travelpayouts Drive påslaget
+// (lib/travelpayouts.js) laddas det med samma ja, och rutan säger det.
 //
 // Kraven den är byggd efter (lagen om elektronisk kommunikation 9 kap. 28 §,
 // GDPR och IMY:s vägledning om kakor):
@@ -247,7 +248,7 @@ export default function Kakruta() {
         color: 'rgba(240,236,228,0.72)',
       }}>
         {DRIVE_SKRIPT
-          ? 'De visar hur sidan och partnerlänkarna används, så att den kan bli bättre.'
+          ? 'Microsoft (USA) ser hur sidan används, och vår partner Travelpayouts (Hongkong) vilka länkar som leder till bokningar, så att vi får provision.'
           : 'De visar hur sidan används, så att den kan bli bättre.'}{' '}
         <Link href="/privacy#kakor" style={{ color: '#D4A574', textDecoration: 'none', whiteSpace: 'nowrap' }}>
           Läs mer ›

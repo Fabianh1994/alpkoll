@@ -3,7 +3,7 @@ import "./globals.css";
 import Analys from "./Analys";
 import MobileNav from "./MobileNav";
 import Kakruta from "./Kakruta";
-import { anvanderClarity } from "../lib/clarity";
+import { behoverSamtycke } from "../lib/clarity";
 import { LangProvider } from "../lib/LangContext";
 import { SITE_LANG, SITE_URL } from "../lib/lang";
 
@@ -97,8 +97,8 @@ export default function RootLayout({ children }) {
         <LangProvider lang={SITE_LANG}>
           {children}
           <MobileNav />
-          {/* Kakrutan finns bara när Clarity är påslaget, se lib/clarity.js. */}
-          {anvanderClarity && <Kakruta />}
+          {/* Kakrutan finns bara när något kräver samtycke, se lib/clarity.js. */}
+          {behoverSamtycke && <Kakruta />}
         </LangProvider>
         <Analys />
       </body>

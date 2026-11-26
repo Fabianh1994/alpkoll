@@ -9,7 +9,9 @@ export const metadata = {
   title: 'Integritetspolicy — Alpkoll',
   // Beskrivningen följer brytaren i lib/clarity.js, så att Google inte
   // visar "inga kakor" när Clarity är påslaget.
-  description: anvanderClarity
+  description: anvanderDrive
+    ? 'Så hanterar Alpkoll dina uppgifter: inga konton, och kakor bara om du godkänner Microsoft Clarity och Travelpayouts. Övrig statistik är anonym och databasen ligger inom EU.'
+    : anvanderClarity
     ? 'Så hanterar Alpkoll dina uppgifter: inga konton, och kakor bara om du godkänner Microsoft Clarity. Övrig statistik är anonym och databasen ligger inom EU.'
     : 'Så hanterar Alpkoll dina uppgifter: inga konton, inga egna kakor, ingen spårning. Statistiken är anonym och databasen ligger inom EU.',
   alternates: { canonical: '/privacy' },
@@ -60,15 +62,16 @@ export default function PrivacyPage() {
 
         {anvanderDrive && (
           <p style={{ marginTop: 12 }}>
-            <Stark>Också med ditt ja:</Stark> skriptet Drive från vår
+            <Stark>Med samma ja:</Stark> skriptet Drive från vår
             partner Travelpayouts laddas. Det registrerar vilka sidor du
             besöker och vilka partnerlänkar du klickar på, och tar emot din
             IP-adress och vilken webbläsare du har. Vi använder det för att
             se vilka sidor och länkar som leder till bokningar, och för att
-            Travelpayouts ska kunna bekräfta att länkarna kommer från Alpkoll.
-            Drive får inte ändra sidan: vi har stängt av funktionerna som byter
-            länkar, lägger in annonser eller öppnar nya flikar. Säger du nej,
-            eller inget alls, laddas Drive aldrig.
+            Travelpayouts ska kunna bekräfta att länkarna kommer från Alpkoll,
+            så att vi får provision. Vi har stängt av funktionerna i Drive som
+            byter länkar, lägger in annonser eller öppnar nya flikar.
+            Behandlingen vilar på ditt samtycke (artikel 6.1 a i GDPR). Säger du
+            nej, eller inget alls, laddas Drive aldrig.
           </p>
         )}
 
@@ -112,12 +115,14 @@ export default function PrivacyPage() {
         )}
         {anvanderDrive && (
           <p style={{ marginTop: 12 }}>
-            Uppgifterna från Drive tas emot av Travelpayouts, som har sitt
-            säte i Hongkong. Hongkong saknar ett beslut från EU-kommissionen om
-            att skyddet där är tillräckligt, och överföringen dit sker med
-            stöd av ditt uttryckliga samtycke i kakrutan (artikel 49.1 a i
-            GDPR). Det innebär att dina uppgifter kan få ett svagare skydd än
-            inom EU. Du kan ta tillbaka samtycket när som helst.
+            Uppgifterna från Drive tas emot av Travelpayouts (Go Travel Un
+            Limited) i Hongkong, som också använder dem för att räkna fram
+            provisionen och är personuppgiftsansvariga för det. Travelpayouts
+            anger inte hur länge uppgifterna sparas. Hongkong saknar ett beslut
+            från EU-kommissionen om att skyddet där är tillräckligt, och
+            kakrutan säger därför att uppgifterna går dit. Överföringen sker
+            med stöd av ditt samtycke (artikel 49.1 a i GDPR), och dina
+            uppgifter kan där få ett svagare skydd än inom EU.
           </p>
         )}
       </Avsnitt>
@@ -126,7 +131,7 @@ export default function PrivacyPage() {
         {anvanderClarity ? (
           <>
             <p>
-              Alpkoll sätter kakor bara om du godkänner Microsoft Clarity i
+              Alpkoll sätter kakor bara om du godkänner {anvanderDrive ? 'Microsoft Clarity och Travelpayouts' : 'Microsoft Clarity'} i
               rutan som visas vid första besöket. Sajten fungerar likadant om
               du nekar. Ditt val gäller i tolv
               månader och sparas i din webbläsare (localStorage), inte i en kaka.
@@ -145,7 +150,8 @@ export default function PrivacyPage() {
               <p style={{ marginTop: 12 }}>
                 Med samma ja laddas också Travelpayouts Drive, som kan sätta
                 egna kakor för att känna igen din webbläsare och koppla ett
-                klick till en bokning.
+                klick till en bokning. De raderas inte av ett nej; dem tar du
+                bort i webbläsarens inställningar.
               </p>
             )}
             <p style={{ marginTop: 12 }}>
@@ -153,11 +159,11 @@ export default function PrivacyPage() {
               <Kakinstallningar style={{
                 font: 'inherit', color: '#D4A574',
               }} />{' '}
-              i sidfoten. Ett nej raderar kakorna på alpkoll.se. Microsofts egna
+              i sidfoten. Ett nej raderar Clarity-kakorna på alpkoll.se. Microsofts egna
               på clarity.ms och bing.com tar du bort i webbläsarens inställningar.
             </p>
             <p style={{ marginTop: 12 }}>
-              Vercel Web Analytics och partnerlänkarna sätter inga kakor.
+              Vercel Web Analytics och partnerlänkarna sätter inga egna kakor.
               Kartan på ortsidorna kommer från Google och laddas först när du
               klickar på Visa karta; då kan Google sätta sina kakor. Samma sak
               gäller reseplaneraren (Resan dit): Google laddas först när du
@@ -192,8 +198,8 @@ export default function PrivacyPage() {
       <Avsnitt titel="Dina rättigheter enligt GDPR">
         {anvanderClarity ? (
           <p>
-            Har du godkänt Clarity finns uppgifter om ditt besök hos Microsoft
-            under den tid som anges ovan. Annars samlar vi inte in några
+            Har du godkänt kakor finns uppgifter om ditt besök hos Microsoft
+            {anvanderDrive ? ' och Travelpayouts' : ''} under den tid som anges ovan. Annars samlar vi inte in några
             personuppgifter. Du har rätt att:
           </p>
         ) : (
@@ -207,7 +213,7 @@ export default function PrivacyPage() {
           <li>begära tillgång till dina uppgifter</li>
           <li>begära rättelse eller radering av dem</li>
           <li>invända mot behandlingen</li>
-          {anvanderClarity && <li>ta tillbaka ditt samtycke till Clarity</li>}
+          {anvanderClarity && <li>ta tillbaka ditt samtycke{anvanderDrive ? ' till Clarity och Travelpayouts' : ' till Clarity'}</li>}
           <li>lämna klagomål till Integritetsskyddsmyndigheten (IMY)</li>
         </ul>
         <p style={{ marginTop: 12 }}>

@@ -116,12 +116,9 @@ export default function PrivacyPage() {
         {anvanderDrive && (
           <p style={{ marginTop: 12 }}>
             Uppgifterna från Drive tas emot av Travelpayouts (Go Travel Un
-            Limited) i Hongkong. Travelpayouts är självständigt
-            personuppgiftsansvariga för dem och bestämmer själva hur de
-            används, och då gäller{' '}
-            <Lank href="https://support.travelpayouts.com/hc/en-us/articles/4408491722898-Privacy-Policy">Travelpayouts integritetspolicy</Lank>.
-            Alpkoll ansvarar för att skriptet laddas, och bara efter ditt ja.
-            Travelpayouts anger inte hur länge uppgifterna sparas. Hongkong saknar ett beslut
+            Limited) i Hongkong, som också använder dem för att räkna fram
+            provisionen och är personuppgiftsansvariga för det. Travelpayouts
+            anger inte hur länge uppgifterna sparas. Hongkong saknar ett beslut
             från EU-kommissionen om att skyddet där är tillräckligt, och
             kakrutan säger därför att uppgifterna går dit. Överföringen sker
             med stöd av ditt samtycke (artikel 49.1 a i GDPR), och dina

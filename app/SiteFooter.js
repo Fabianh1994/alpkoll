@@ -9,7 +9,7 @@
 import Link from 'next/link';
 import { AVSANDARE, KONTAKT } from '../lib/kontakt';
 import { LANDSIDOR } from '../lib/landsidor';
-import { behoverSamtycke } from '../lib/clarity';
+import { anvanderClarity } from '../lib/clarity';
 import Kakinstallningar from './Kakinstallningar';
 
 // Innehållssidorna först, de juridiska sist.
@@ -102,7 +102,7 @@ export default function SiteFooter() {
           }}>{link.label}</Link>
         ))}
         {/* Bara när det finns något att samtycka till, se lib/clarity.js. */}
-        {behoverSamtycke && (
+        {anvanderClarity && (
           <Kakinstallningar className="site-footer-link" style={{
             fontFamily: 'var(--font-body)', fontSize: 12,
             color: 'rgba(255,255,255,0.5)',

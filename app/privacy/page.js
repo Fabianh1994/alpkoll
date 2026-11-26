@@ -2,6 +2,7 @@
 import JuridiskSida, { Avsnitt, Lank, Stark, KONTAKT } from '../JuridiskSida';
 import { hasAffiliateId } from '../../lib/booking';
 import { anvanderClarity } from '../../lib/clarity';
+import { anvanderDrive } from '../../lib/travelpayouts';
 import Kakinstallningar from '../Kakinstallningar';
 
 export const metadata = {
@@ -16,7 +17,7 @@ export const metadata = {
 
 export default function PrivacyPage() {
   return (
-    <JuridiskSida titel="Integritetspolicy" uppdaterad={anvanderClarity ? 'november 2026' : 'augusti 2026'}>
+    <JuridiskSida titel="Integritetspolicy" uppdaterad={anvanderClarity || anvanderDrive ? 'november 2026' : 'augusti 2026'}>
       <Avsnitt titel="Vilka vi är">
         <p>
           Alpkoll är ett jämförelseverktyg för skidorter som drivs från Sverige.
@@ -54,6 +55,20 @@ export default function PrivacyPage() {
             Behandlingen vilar på ditt samtycke (artikel 6.1 a i GDPR), och du
             kan ta tillbaka det när som helst. Säger du nej, eller inget alls,
             laddas Clarity aldrig.
+          </p>
+        )}
+
+        {anvanderDrive && (
+          <p style={{ marginTop: 12 }}>
+            <Stark>Också med ditt ja:</Stark> skriptet Drive från vår
+            partner Travelpayouts laddas. Det registrerar vilka sidor du
+            besöker och vilka partnerlänkar du klickar på, och tar emot din
+            IP-adress och vilken webbläsare du har. Vi använder det för att
+            se vilka sidor och länkar som leder till bokningar, och för att
+            Travelpayouts ska kunna bekräfta att länkarna kommer från Alpkoll.
+            Drive får inte ändra sidan: vi har stängt av funktionerna som byter
+            länkar, lägger in annonser eller öppnar nya flikar. Säger du nej,
+            eller inget alls, laddas Drive aldrig.
           </p>
         )}
 
@@ -95,6 +110,16 @@ export default function PrivacyPage() {
             Microsoft själva personuppgiftsansvariga.
           </p>
         )}
+        {anvanderDrive && (
+          <p style={{ marginTop: 12 }}>
+            Uppgifterna från Drive tas emot av Travelpayouts, som har sitt
+            säte i Hongkong. Hongkong saknar ett beslut från EU-kommissionen om
+            att skyddet där är tillräckligt, och överföringen dit sker med
+            stöd av ditt uttryckliga samtycke i kakrutan (artikel 49.1 a i
+            GDPR). Det innebär att dina uppgifter kan få ett svagare skydd än
+            inom EU. Du kan ta tillbaka samtycket när som helst.
+          </p>
+        )}
       </Avsnitt>
 
       <Avsnitt titel="Kakor" id="kakor">
@@ -116,6 +141,13 @@ export default function PrivacyPage() {
                 Microsofts egna kakor, ungefär ett år): känner igen webbläsaren
                 hos Microsoft.</li>
             </ul>
+            {anvanderDrive && (
+              <p style={{ marginTop: 12 }}>
+                Med samma ja laddas också Travelpayouts Drive, som kan sätta
+                egna kakor för att känna igen din webbläsare och koppla ett
+                klick till en bokning.
+              </p>
+            )}
             <p style={{ marginTop: 12 }}>
               Du kan ändra ditt val när som helst under{' '}
               <Kakinstallningar style={{

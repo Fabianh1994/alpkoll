@@ -818,6 +818,9 @@ export default async function ResortPage({ params }) {
                   Skriv var du bor, så visas resan med bil, tåg och flyg på kartan.
                 </p>
                 <Reseplanerare ort={{ slug: resort.slug, namn: resort.name, lat: Number(resort.latitude), lng: Number(resort.longitude), portkod: resort.nearest_airport_code || null }} kurser={kurser} />
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: 14, margin: '14px 0 0' }}>
+                  <Link href={`/resa?ort=${resort.slug}&jamfor=${resort.slug}`} style={{ color: '#D4A574', textDecoration: 'none' }}>Jämför resan hit med andra orter på kartan ›</Link>
+                </p>
               </div>
             </div>
 

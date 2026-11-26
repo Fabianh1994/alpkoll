@@ -31,6 +31,7 @@ const MENY = [
     ],
   },
   { label: 'Jämför', href: '/jamfor', match: (p) => p.startsWith('/jamfor') },
+  { label: 'Reseplanerare', href: '/resa', match: (p) => p === '/resa' || p.startsWith('/resa/') },
   { label: 'Liftkortspriser', href: '/liftkortspriser', match: (p) => p === '/liftkortspriser' },
   {
     label: 'Guider', href: '/sportlov',

@@ -235,7 +235,7 @@ export default function HomeClient({ resorts }) {
           </p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', transform: heroVisible ? 'translateY(0)' : 'translateY(10px)', transition: 'transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.15s' }}>
             <MagBtn href="#resorts" primary>{t.hero.browseResorts}</MagBtn>
-            {PLANERAREN_SYNLIG ? <MagBtn href="/plan">{t.hero.planTrip}</MagBtn> : <MagBtn href="/resa">Planera resan dit</MagBtn>}
+            {PLANERAREN_SYNLIG ? <MagBtn href="/plan">{t.hero.planTrip}</MagBtn> : <MagBtn href="/resa">Planera resan</MagBtn>}
           </div>
         </div>
       </header>

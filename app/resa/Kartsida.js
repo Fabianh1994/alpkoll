@@ -61,6 +61,9 @@ function restid(min) {
 const kort = (min) => { const m = Math.round(min); if (m >= 1440) return `${Math.round(m / 60)} t`; const t = Math.floor(m / 60); const r = m % 60; return t ? `${t} t${r ? ` ${String(r).padStart(2, '0')}` : ''}` : `${r} min` }
 
 /** Filterknapparna: Alla, de nordiska länderna, Alperna och övriga länder var för sig. */
+/** Bottenpanelens höjd på mobilen, som andel av kartan. */
+const LAGEN = { lag: 0.3, mitt: 0.55, hog: 0.9 }
+
 function filterFor(orter) {
   const finns = new Set(orter.map((o) => o.land))
   const f = [[ALLA, 'Alla']]
@@ -135,7 +138,8 @@ export default function Kartsida({ orter, kurser }) {
       const j = (q.get('jamfor') || '').split(',').filter((s) => perSlug[s]).slice(0, MAX_JAMFOR)
       if (j.length) setFasta(j)
       const l = q.get('land')
-      if (l && filterLista.some(([k]) => k === l)) setFilter(l)
+      // Gamla länkar med land=alperna fungerar kvar, fast knappen är borta.
+      if (l && (l === 'alperna' || filterLista.some(([k]) => k === l))) setFilter(l)
       const n = Number(q.get('antal'))
       if (Number.isInteger(n) && n >= 1 && n <= 9) setAntal(n)
       const idag = idagSv()
@@ -234,7 +238,7 @@ export default function Kartsida({ orter, kurser }) {
     })
     karta.current = m
     m.addListener('zoom_changed', () => ruta.current?.classList.toggle('kf-nara', m.getZoom() >= 9))
-    const Nal = nalKlass(g, (slug) => { setVald(slug); setLage((l) => (l === 'hog' ? 'mitt' : l === 'lag' ? 'mitt' : l)) })
+    const Nal = nalKlass(g, (slug) => { setVald(slug); setLage('mitt') })
     orter.forEach((o) => { const n = new Nal(o); n.setMap(m); nalar.current[o.slug] = n })
     hemNal.current = (p) => { const n = new Nal(p, true); n.setMap(m); return n }
     g.maps.event.addListenerOnce(m, 'idle', () => setKartaKlar((k) => k + 1))
@@ -284,6 +288,9 @@ export default function Kartsida({ orter, kurser }) {
 
   // Kartan visar orterna i filtret, och hemmet om det finns.
   const mobil = useRef(false)
+  const lageNu = useRef('mitt')
+  useEffect(() => { lageNu.current = lage }, [lage])
+  const nedre = (extra) => Math.round(ruta.current.clientHeight * LAGEN[lageNu.current]) + extra
   useEffect(() => {
     const m = karta.current
     const g = lib?.google
@@ -292,35 +299,37 @@ export default function Kartsida({ orter, kurser }) {
     const b = new g.maps.LatLngBounds()
     orter.filter((o) => passar(filter, o)).forEach((o) => b.extend(o))
     if (hem) b.extend(hem)
-    m.fitBounds(b, mobil.current ? { top: 64, bottom: Math.round(ruta.current.clientHeight * 0.55) + 16, left: 20, right: 56 } : 50)
+    m.fitBounds(b, mobil.current ? { top: 64, bottom: nedre(16), left: 20, right: 56 } : 50)
   }, [filter, hem, kartaKlar, lib, orter])
 
   // På mobilen visar kartan resan: hemmet och den valda orten, ovanför panelen.
+  // Det sker när hemmet sätts eller byts. Byts bara orten flyttas kartan
+  // först när orten inte syns, så att den som zoomat in får behålla zoomen.
+  const senastHem = useRef(null)
   useEffect(() => {
     const m = karta.current
     const g = lib?.google
-    if (!m || !g || !hem || !ort || !mobil.current) return
-    const b = new g.maps.LatLngBounds()
-    b.extend(hem)
-    b.extend({ lat: ort.lat, lng: ort.lng })
-    m.fitBounds(b, { top: 80, bottom: Math.round(ruta.current.clientHeight * 0.55) + 30, left: 40, right: 70 })
-  }, [hem, ort, lib, kartaKlar])
-
-  // Byts orten utanför kartan (‹ › eller listan) flyttas kartan om orten inte syns.
-  useEffect(() => {
-    const m = karta.current
-    if (!m || !ort) return
+    if (!m || !g || !ort) return
+    const punkt = { lat: ort.lat, lng: ort.lng }
+    const nyttHem = hem && hem !== senastHem.current
+    senastHem.current = hem
     const b = m.getBounds()
-    if (b && !b.contains({ lat: ort.lat, lng: ort.lng })) m.panTo({ lat: ort.lat, lng: ort.lng })
-  }, [ort, kartaKlar])
+    const syns = b && b.contains(punkt) && (!hem || b.contains(hem))
+    if (mobil.current && hem && (nyttHem || !syns)) {
+      const r = new g.maps.LatLngBounds()
+      r.extend(hem)
+      r.extend(punkt)
+      m.fitBounds(r, { top: 80, bottom: nedre(30), left: 40, right: 70 })
+    } else if (b && !b.contains(punkt)) m.panTo(punkt)
+  }, [hem, ort, lib, kartaKlar])
 
   // ── Bottenpanelen går att dra ────────────────────────────────────────
   const panel = useRef(null)
   const drag = useRef(null)
-  const LAGEN = { lag: 0.3, mitt: 0.55, hog: 0.9 }
   const borjaDra = (e) => {
     const el = panel.current
-    if (!el || !window.matchMedia('(max-width: 899px)').matches) return
+    if (!el || e.button !== 0 || !window.matchMedia('(max-width: 899px)').matches) return
+    dragits.current = false
     drag.current = { y: e.clientY, h: el.getBoundingClientRect().height, hel: el.parentElement.getBoundingClientRect().height, flyttat: false }
     e.currentTarget.setPointerCapture?.(e.pointerId)
   }
@@ -333,17 +342,20 @@ export default function Kartsida({ orter, kurser }) {
     panel.current.style.transition = 'none'
     panel.current.style.height = `${h}px`
   }
+  // Ett tryck utan att dra växlar i onClick, som även skärmläsare skickar.
+  const dragits = useRef(false)
+  const vaxlaPanel = () => {
+    if (dragits.current) { dragits.current = false; return }
+    setLage((l) => (l === 'hog' ? 'mitt' : 'hog'))
+  }
   const slutaDra = () => {
     const d = drag.current
     drag.current = null
     if (!d) return
     const el = panel.current
     el.style.transition = ''
-    if (!d.flyttat) {
-      el.style.height = ''
-      setLage((l) => (l === 'hog' ? 'mitt' : 'hog'))
-      return
-    }
+    if (!d.flyttat) { el.style.height = ''; return }
+    dragits.current = true
     const andel = el.getBoundingClientRect().height / d.hel
     const narmast = Object.entries(LAGEN).sort((a, b) => Math.abs(a[1] - andel) - Math.abs(b[1] - andel))[0][0]
     el.style.height = ''
@@ -563,6 +575,9 @@ export default function Kartsida({ orter, kurser }) {
           </li>
         ))}
       </ul>
+      <p style={{ margin: '18px 0 0', fontSize: 14 }}>
+        <Link href="/nattaget-till-alperna" style={{ color: GULD, textDecoration: 'none' }}>Nattåg till Alperna: tider och priser ›</Link>
+      </p>
     </section>
   )
 
@@ -586,7 +601,7 @@ export default function Kartsida({ orter, kurser }) {
           onPointerMove={dra}
           onPointerUp={slutaDra}
           onPointerCancel={slutaDra}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLage((l) => (l === 'hog' ? 'mitt' : 'hog')) } }}
+          onClick={vaxlaPanel}
           aria-label={lage === 'hog' ? 'Visa mer av kartan' : 'Visa mer av resan'}
           aria-expanded={lage === 'hog'}
         >
@@ -669,6 +684,7 @@ const KF_CSS = `
 .kf-textknapp { background: none; border: 0; padding: 0; font: inherit; color: #D4A574; text-decoration: underline; cursor: pointer; }
 .kf-textknapp:focus-visible { outline: 2px solid #D4A574; outline-offset: 2px; }
 .kf-filter { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; pointer-events: auto; width: max-content; max-width: 100%; }
+@media (max-width: 420px) { .kf-filter { padding-right: 28px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 36px), transparent); } }
 .kf-filter::-webkit-scrollbar { display: none; }
 .kf-chip { flex-shrink: 0; border: 1px solid rgba(240,236,228,0.16); background: rgba(28,26,23,0.94); color: #f0ece4; border-radius: 999px; padding: 8px 13px; font: 500 13px var(--font-body); cursor: pointer; white-space: nowrap; }
 .kf-chip.vald { background: #f0ece4; color: #121110; border-color: #f0ece4; }
@@ -716,11 +732,13 @@ const KF_CSS = `
   .kf-handtag { display: block; position: sticky; top: 0; z-index: 3; width: calc(100% + 36px); margin: 0 -18px 4px; height: 30px; border: 0; background: #151412; cursor: grab; touch-action: none; }
   .kf-handtag span { display: block; width: 40px; height: 4px; border-radius: 2px; background: rgba(240,236,228,.3); margin: 0 auto; }
   .kf-tom { bottom: 55%; }
+  .kf-lag .kf-tom { bottom: 30%; }
+  .kf-hog .kf-tom { bottom: 90%; }
   .kf-ortnamn { font-size: 26px !important; }
   .kf-datumrad { font-size: 12.5px !important; margin: 2px 0 4px !important; }
   .kf-rad { padding: 8px 0; gap: 10px; }
   .kf-rad > span:nth-child(2) > span:last-child { font-size: 12.5px !important; }
-    .kf-runda { width: 34px; height: 34px; }
+  .kf-runda { width: 34px; height: 34px; }
   .kf-rubrik, .kf-ingress { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (max-width: 899px) and (prefers-reduced-motion: reduce) { .kf-panel { transition: none; } }

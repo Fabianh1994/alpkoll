@@ -58,7 +58,7 @@ export default function MobileNav() {
     },
     {
       // Reseplaneraren ersatte Nattåg 2026-11-26: planeraren visar även
-      // tåget, och nattågssidan nås från Guider och från orternas sidor.
+      // tåget, och nattågssidan länkas från /resa, startsidan och sidfoten.
       label: 'Resa',
       href: '/resa',
       icon: (active) => (
